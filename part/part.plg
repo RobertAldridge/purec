@@ -1,0 +1,77 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: Engine - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\WINDOWS\TEMP\RSP8051.TMP" with contents
+[
+/nologo /G5 /ML /W4 /GX /Zi /O2 /I "os\list" /I "os\part" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /Fp"Release/Engine.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c 
+"C:\folder\cs250\Engine\Engine.cpp"
+]
+Creating command line "cl.exe @C:\WINDOWS\TEMP\RSP8051.TMP" 
+Creating temporary file "C:\WINDOWS\TEMP\RSP8052.TMP" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib osRelease.lib listRelease.lib fontRelease.lib partRelease.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/EngineRelease.pdb" /debug /machine:I386 /out:"Debug/EngineRelease.exe" /libpath:"os" /libpath:"os\list" /libpath:"os\font" /libpath:"os\part" 
+.\Release\Engine.obj
+.\Release\raster32.obj
+.\Release\animate_stuff.obj
+.\Release\matrix_stuff.obj
+.\Release\model_stuff.obj
+.\Release\vector_stuff.obj
+]
+Creating command line "link.exe @C:\WINDOWS\TEMP\RSP8052.TMP"
+<h3>Output Window</h3>
+Compiling...
+Engine.cpp
+Linking...
+
+
+
+<h3>Results</h3>
+EngineRelease.exe - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: Engine - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\WINDOWS\TEMP\RSP8060.TMP" with contents
+[
+/nologo /G5 /MLd /W4 /Gm /GX /ZI /Od /I "os\list" /I "os\part" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /Fp"Debug/Engine.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"C:\folder\cs250\Engine\Engine.cpp"
+"C:\folder\cs250\Engine\raster32.cpp"
+"C:\folder\cs250\Engine\animate_stuff.c"
+"C:\folder\cs250\Engine\matrix_stuff.c"
+"C:\folder\cs250\Engine\model_stuff.c"
+"C:\folder\cs250\Engine\vector_stuff.c"
+]
+Creating command line "cl.exe @C:\WINDOWS\TEMP\RSP8060.TMP" 
+Creating temporary file "C:\WINDOWS\TEMP\RSP8061.TMP" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib osDebug.lib listDebug.lib fontDebug.lib partDebug.lib /nologo /subsystem:windows /incremental:yes /pdb:"Debug/EngineDebug.pdb" /debug /machine:I386 /out:"Debug/EngineDebug.exe" /pdbtype:sept /libpath:"os" /libpath:"os\list" /libpath:"os\font" /libpath:"os\part" 
+.\Debug\Engine.obj
+.\Debug\raster32.obj
+.\Debug\animate_stuff.obj
+.\Debug\matrix_stuff.obj
+.\Debug\model_stuff.obj
+.\Debug\vector_stuff.obj
+]
+Creating command line "link.exe @C:\WINDOWS\TEMP\RSP8061.TMP"
+<h3>Output Window</h3>
+Compiling...
+Engine.cpp
+animate_stuff.c
+matrix_stuff.c
+model_stuff.c
+vector_stuff.c
+raster32.cpp
+Linking...
+
+
+
+<h3>Results</h3>
+EngineDebug.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

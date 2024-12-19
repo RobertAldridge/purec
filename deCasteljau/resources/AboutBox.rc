@@ -1,0 +1,320 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "..\headers\resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+ABOUTBOX DIALOG DISCARDABLE  32, 32, 212, 267
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION
+CAPTION "About Box -- I give my shouts out here! --"
+FONT 10, "Courier New (Western)"
+BEGIN
+    DEFPUSHBUTTON   "OK -- Version 1.2 -- July 03, 2001",IDOK,48,246,115,14
+    CONTROL         "de Casteljau Algorithm",IDC_STATIC,"Static",
+                    SS_LEFTNOWORDWRAP | WS_GROUP,66,13,79,12
+    CONTROL         "Design, interface, and implementation by:",IDC_STATIC,
+                    "Static",SS_LEFTNOWORDWRAP | WS_GROUP,37,31,137,10
+    CONTROL         "Robert Aldridge of Digipen",IDC_STATIC,"Static",
+                    SS_LEFTNOWORDWRAP | WS_GROUP,60,44,91,9
+    CONTROL         "Special Thanks to",IDC_STATIC,"Static",
+                    SS_LEFTNOWORDWRAP | WS_GROUP,74,156,63,9
+    CONTROL         "Paul de Faget de Casteljau\nJean Gallier\nBruce McQuistan\nBruce Dawson\nNathan Ukrainetz\nMichael Jahn\nMatthew Klassen\n...",
+                    IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,59,171,
+                    94,69
+    CONTROL         "OS independent implementation in C and C++.",IDC_STATIC,
+                    "Static",SS_LEFTNOWORDWRAP | WS_GROUP,29,62,153,9
+    CONTROL         "Example program using and rendering the algorithm\nwritten for Win32 using GDI and DirectX 3.0 in C and C++.",
+                    IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,12,80,
+                    189,22
+    LTEXT           "Line segments and circles rendered using\nbiaffine color interpolation.",
+                    IDC_STATIC,35,104,142,17
+    LTEXT           "Algorithm features subdivision and\n2D homogeneous transformations.",
+                    IDC_STATIC,47,127,118,18
+END
+
+INPUTBOX DIALOG DISCARDABLE  32, 32, 272, 194
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION
+CAPTION 
+"Input Box -- Input your parametrized cubic equations here, and let the blossom do the rest! --"
+
+FONT 10, "Courier New (Western)"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,77,161,50,14
+    CONTROL         "de Casteljau Algorithm",IDC_STATIC,"Static",
+                    SS_LEFTNOWORDWRAP | WS_GROUP,97,13,79,12
+    EDITTEXT        EDITX3_INT,45,28,33,14,ES_AUTOHSCROLL
+    CONTROL         ".",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,79,
+                    31,8,8
+    CONTROL         "Fx( t ) =",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | 
+                    WS_GROUP,18,30,25,8
+    EDITTEXT        EDITX3_DEC,82,28,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "* t^3",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,
+                    124,31,15,8
+    CONTROL         "+",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,144,
+                    31,8,8
+    EDITTEXT        EDITX2_INT,159,28,33,14,ES_AUTOHSCROLL
+    CONTROL         ".",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,193,
+                    31,8,8
+    EDITTEXT        EDITX2_DEC,196,28,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "* t^2",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,
+                    238,31,15,8
+    EDITTEXT        EDITX1_INT,45,47,33,14,ES_AUTOHSCROLL
+    CONTROL         ".",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,79,
+                    50,8,8
+    EDITTEXT        EDITX1_DEC,82,47,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "* t^1",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,
+                    124,50,15,8
+    CONTROL         "+",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,144,
+                    50,8,8
+    EDITTEXT        EDITX0_INT,159,47,33,14,ES_AUTOHSCROLL
+    CONTROL         ".",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,193,
+                    50,8,8
+    EDITTEXT        EDITX0_DEC,196,47,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "* t^0",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,
+                    238,50,15,8
+    EDITTEXT        EDITY3_INT,45,69,33,14,ES_AUTOHSCROLL
+    CONTROL         ".",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,79,
+                    72,8,8
+    CONTROL         "Fy( t ) =",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | 
+                    WS_GROUP,18,71,25,8
+    EDITTEXT        EDITY3_DEC,82,69,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "* t^3",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,
+                    124,72,15,8
+    CONTROL         "+",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,144,
+                    72,8,8
+    EDITTEXT        EDITY2_INT,159,69,33,14,ES_AUTOHSCROLL
+    CONTROL         ".",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,193,
+                    72,8,8
+    EDITTEXT        EDITY2_DEC,196,69,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "* t^2",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,
+                    238,72,15,8
+    EDITTEXT        EDITY1_INT,45,88,33,14,ES_AUTOHSCROLL
+    CONTROL         ".",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,79,
+                    91,8,8
+    EDITTEXT        EDITY1_DEC,82,88,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "* t^1",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,
+                    124,91,15,8
+    CONTROL         "+",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,144,
+                    91,8,8
+    EDITTEXT        EDITY0_INT,159,88,33,14,ES_AUTOHSCROLL
+    CONTROL         ".",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,193,
+                    91,8,8
+    EDITTEXT        EDITY0_DEC,196,88,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "* t^0",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,
+                    238,91,15,8
+    DEFPUSHBUTTON   "CANCEL",IDCANCEL,146,161,50,14
+    CONTROL         "Affine Frame",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | 
+                    WS_GROUP,14,122,42,8
+    EDITTEXT        EDITR_INT,73,119,33,14,ES_AUTOHSCROLL
+    CONTROL         ".",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,107,
+                    122,8,8
+    CONTROL         "r =",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,
+                    60,121,10,8
+    EDITTEXT        EDITR_DEC,110,119,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         ",",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,153,
+                    122,8,8
+    EDITTEXT        EDITS_INT,180,119,33,14,ES_AUTOHSCROLL
+    CONTROL         ".",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,214,
+                    122,8,8
+    CONTROL         "s =",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,
+                    167,121,11,8
+    EDITTEXT        EDITS_DEC,217,119,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    DEFPUSHBUTTON   "Example 1",IDEX1,26,140,40,14
+    DEFPUSHBUTTON   "Example 2",IDEX2,71,140,40,14
+    DEFPUSHBUTTON   "Example 3",IDEX3,116,140,40,14
+    DEFPUSHBUTTON   "Example 4",IDEX4,161,140,40,14
+    DEFPUSHBUTTON   "Example 5",IDEX5,206,140,40,14
+    CONTROL         "+",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,257,
+                    31,8,8
+    CONTROL         "+",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,257,
+                    72,8,8
+END
+
+HELPBOX DIALOG DISCARDABLE  32, 32, 266, 290
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION
+CAPTION 
+"Help Box -- Hey, come on, it's not that complicated! Here's how it works: --"
+
+FONT 10, "Courier New (Western)"
+BEGIN
+    DEFPUSHBUTTON   "OK -- The CodeWarrior --",IDOK,87,269,91,14
+    CONTROL         "de Casteljau Algorithm",IDC_STATIC,"Static",
+                    SS_LEFTNOWORDWRAP | WS_GROUP,93,7,79,12
+    CONTROL         "What are the input keys?",IDC_STATIC,"Static",
+                    SS_LEFTNOWORDWRAP | WS_GROUP,17,19,82,8
+    CONTROL         "Input keys ( work only in the main window ):",
+                    IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,20,32,
+                    142,8
+    CONTROL         "Pressing F5 toggles shell viewing on and off.",
+                    IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,37,47,
+                    147,8
+    CONTROL         "Press F6 to dump all current captures.",IDC_STATIC,
+                    "Static",SS_LEFTNOWORDWRAP | WS_GROUP,53,62,125,8
+    CONTROL         "Press F7 to input a curve via the input box.",
+                    IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,49,79,
+                    140,8
+    CONTROL         "Press F8 to view this help box.",IDC_STATIC,"Static",
+                    SS_LEFTNOWORDWRAP | WS_GROUP,69,94,101,8
+    CONTROL         "-- Press F1, F2, F3, or F4 to activate\n                            different mouse actions. --",
+                    IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,39,124,
+                    145,19
+    CONTROL         "After pressing F1:\n ->  Left-click and drag to move the closest control point.\n ->  Right-click to add a control point.",
+                    IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,24,142,
+                    193,26
+    CONTROL         "After pressing F2:\n ->  Left-click and drag horizontally to move t of f( t ) and its shells.\n ->  Right-click to clear the screen and all control points.",
+                    IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,14,171,
+                    213,26
+    CONTROL         "After pressing F3:\n ->  Left-click and drag to translate the coordinate system.\n ->  Right-click and drag vertically to scale the coordinate system\n      ( up to make everything smaller, down to make it bigger ).",
+                    IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,20,199,
+                    217,34
+    CONTROL         "After pressing F4:\n ->  Left-click and drag horizontally to rotate the coordinate system\n      ( left to rotate everything counter-clockwise, right to rotate clockwise ).\n ->  Right-click to delete the closest control point.",
+                    IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,15,234,
+                    236,34
+    LTEXT           "Press F9 to view the about box.",IDC_STATIC,81,109,103,
+                    8
+END
+
+EXTRABOX DIALOG DISCARDABLE  32, 32, 172, 292
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION
+CAPTION "Extra Box -- The documented undocumented features! --"
+FONT 10, "Courier New (Western)"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,75,271,22,14
+    CONTROL         "de Casteljau Algorithm",IDC_STATIC,"Static",
+                    SS_LEFTNOWORDWRAP | WS_GROUP,46,7,79,12
+    ICON            "HELL_ON_EARTH_ICON",IDC_STATIC,15,31,20,20
+    CONTROL         "RABID DOG\nAPPROVED\n\nGET RABID!\n\n by BOJANGLES\na.k.a BOOMBOTZ\n\nHELL ON EARTH FOREVER BABY!\nROBERT BLAIR ALDRIDGE\nRYAN HENNESSEY MOTE\nANTHONY DELUCA\nAMADOU SAVADOGO\nJOSHUA HOBBS\nMICHAEL KOZINIAK\nDAVID POTASHNIK\nLUCAS SELBE HELE",
+                    IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,44,28,
+                    113,138
+    CONTROL         ":) Pressing 1 toggles control point\n   viewing on and off.",
+                    IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,19,168,
+                    134,16
+    CONTROL         ":) Pressing + increases the amount of\ncalculations and renderings done per frame.",
+                    IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,14,189,
+                    145,18
+    CONTROL         ":) Pressing - decreases the amount of\ncalculations and renderings done per frame.",
+                    IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,14,212,
+                    145,18
+    CONTROL         ":) Press 2 to insert a new curve",IDC_STATIC,"Static",
+                    SS_LEFTNOWORDWRAP | WS_GROUP,29,232,102,8
+    CONTROL         ":) Press 3 to remove a curve",IDC_STATIC,"Static",
+                    SS_LEFTNOWORDWRAP | WS_GROUP,29,244,93,8
+    CONTROL         ":) Press 4 to traverse between curves",IDC_STATIC,
+                    "Static",SS_LEFTNOWORDWRAP | WS_GROUP,19,258,122,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    "ABOUTBOX", DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 205
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 260
+    END
+
+    "INPUTBOX", DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 265
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 187
+    END
+
+    "HELPBOX", DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 259
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 283
+    END
+
+    "EXTRABOX", DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 165
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 285
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+HELL_ON_EARTH_ICON      ICON    DISCARDABLE     "Hell.ico"
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

@@ -1,0 +1,37 @@
+##################################
+#   Set the compile flags
+#CFLAGS  = -Od -Zi -W3 -c
+CFLAGS	= -Ox -W3 -c -Fc
+
+##################################
+#   Set the manifest constants for this build
+#-DITERATE
+
+##################################
+#   Set Linker flags
+#LINKFLAGS = -debug -debugtype:cv
+
+##################################
+#   Define the objects for the lib
+LIBOBJS=listprv.obj
+ 
+##################################
+#   Define the target of the build.
+sort.exe: client.obj list.lib
+    link $(LINKFLAGS) -out:sort.exe list.lib client.obj
+
+##################################
+#   Set build rules for list.lib.
+list.lib: $(LIBOBJS)
+    lib -out:list.lib $(LIBOBJS)
+
+##################################
+#   Compile rules for objects
+client.obj: client.c listprv.h listpub.h makefile potype.h
+        cl $(CFLAGS) client.c
+
+listprv.obj: listprv.c listprv.h listpub.h makefile potype.h
+        cl $(CFLAGS) listprv.c
+
+clean:
+    del *.obj *.exe *.lib *.cod
