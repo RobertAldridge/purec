@@ -1,83 +1,105 @@
 
 // File Name: binpriv.h
 
-#if !defined( BINPRIV )
+#if !defined(BINPRIV)
 #define BINPRIV
 
 #ifdef __cplusplus
-   extern "C" {
+  extern "C" {
 #endif
 
-typedef struct __BINTREE_NODE * PBINTREE_NODE;
+struct BinaryTreeNode;
+struct binaryTree;
 
-#if defined( _MSC_VER )
-   #pragma warning ( disable: 4200 )
-   #pragma warning ( disable: 4201 )
+#if defined(_MSC_VER)
+  #pragma warning (disable: 4200)
+  #pragma warning (disable: 4201)
 #endif
 
-typedef struct __BINTREE_NODE
+// This is a function pointer used to compare the keys of two objects.
+// If you call a function and pass a compare function and an object to
+// check against, the object you pass will be on the left hand side.
+//
+// The role of the compare function cannot change for the same list unless it is
+// reset, otherwise the list will lose its sorted state.
+//
+// return zero if object 1 >= object 2
+// return non-zero if object 1 < object 2
+typedef int(*binaryTreeCompare)(void* keyObject, void* treeObject);
+
+// This is a function pointer when traversing a tree in the dump function.
+// Every object in a tree is visited in a particular order, this function pointer
+// will be called and passed every object, unless the client terminates traversal
+// early.
+//
+// return zero to continue traversal
+// return non-zero to terminate traversal
+typedef int(*binaryTreeEvaluate)(void* treeObject);
+
+// This function checks if two objects are equal, and should be based on their keys.
+// It is used in the find, remove, and other functions.  The left hand side is the
+// object passed to the function.
+//
+// return zero if object 1 != object 2
+// return non-zero if object 1 == object 2
+typedef int(*binaryTreeEquivalence)(void* keyObject, void* treeObject);
+
+struct BinaryTreeNode
 {
-   PBINTREE_NODE LeftChild;
-   PBINTREE_NODE RightChild;
-   PBINTREE_NODE Parent;
+  BinaryTreeNode* left;
+  BinaryTreeNode* right;
+  BinaryTreeNode* parent;
 
-   INDEX_TYPE Color;
+  int color;
 
-   char Object[];
+  char object[];
+};
 
-} BINTREE_NODE;
-
-typedef struct __BINTREE_HEAD
+struct binaryTree
 {
-   PBINTREE_NODE Root;
+  BinaryTreeNode* root;
 
-   PBINTREE_NODE Nil;
+  BinaryTreeNode* nil;
 
-   COMPARE LessThan;
+  binaryTreeCompare LessThan;
 
-   EQUIVALENCE EqualTo;
+  binaryTreeEquivalence EqualTo;
 
-   EVALUATE ClientEvaluate;
+  binaryTreeEvaluate ClientEvaluate;
 
-   INDEX_TYPE MaxNumberOfNodes;
+  int MaxNumberOfNodes;
 
-   INDEX_TYPE NumberOfNodes;
+  int NumberOfNodes;
 
+  ////////////////////////////////////
+  int SizeOfClientAligned;
 
-   ////////////////////////////////////
-   INDEX_TYPE SizeOfClientAligned;
+  int SizeOfClientExact;
 
-   INDEX_TYPE SizeOfClientExact;
+  int MemoryTotalSize;
+  ////////////////////////////////////
 
-   INDEX_TYPE MemoryTotalSize;
-   ////////////////////////////////////
+  ////////////////////////////////////
+  // buffer used to facilitate iterative traversal
+  //
+  // used as either stack or queue based on the order of traversal
+  BinaryTreeNode** TraverseArrayStart;
+  ////////////////////////////////////
 
+  ////////////////////////////////////
+  char** MemoryManagerArrayCurrent;
 
-   ////////////////////////////////////
-   union
-   {
-      PBINTREE_NODE * StackTraverseArrayStart;
-      PBINTREE_NODE * QueueTraverseArrayStart;
-   };
-   ////////////////////////////////////
+  char MemoryManagerNodePoolArrayStart[];
+  ////////////////////////////////////
+};
 
-
-   ////////////////////////////////////
-   char ** MemoryManagerArrayCurrent;
-
-   char MemoryManagerNodePoolArrayStart[];
-   ////////////////////////////////////
-
-
-} BINTREE_HEAD;
-
-#if defined( _MSC_VER )
-   #pragma warning ( default: 4201 )
-   #pragma warning ( default: 4200 )
+#if defined(_MSC_VER)
+  #pragma warning (default: 4201)
+  #pragma warning (default: 4200)
 #endif
 
 #ifdef __cplusplus
-   }
+  }
 #endif
 
 #endif
