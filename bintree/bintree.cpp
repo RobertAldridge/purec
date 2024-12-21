@@ -6,8 +6,8 @@
 
 #include "../../general.h"
 
-#if defined( _MSC_VER )
-   #pragma warning ( push, 4 )
+#if defined(_MSC_VER)
+  #pragma warning (push, 4)
 #endif
 
 #undef DEBUG
@@ -15,8 +15,8 @@
 #undef NDEBUG
 #define NDEBUG
 
-#include < malloc.h >
-#include < memory.h >
+#include <malloc.h>
+#include <memory.h>
 
 #include "ptrtrack.h"
 
@@ -33,12 +33,12 @@ typedef int ORDER;
 #include "../debugutils/log.h"
 
 #ifdef __cplusplus
-   extern "C" {
+  extern "C" {
 #endif
 
-#if defined( _MSC_VER )
-   #pragma warning ( disable: 4127 )
-   #pragma warning ( disable: 4711 )
+#if defined(_MSC_VER)
+  #pragma warning (disable: 4127)
+  #pragma warning (disable: 4711)
 #endif
 
 #undef TRUE
@@ -53,63 +53,47 @@ typedef int ORDER;
 #define RETURN_OK 0
 #define RETURN_ERROR -1
 
-#if !defined( _MSC_VER )
-   #define __forceinline inline
+#if !defined(_MSC_VER)
+  #define __forceinline inline
 #endif
+
+#define GETCLIENT(node) (void*)(node + 1)
 
 const int bintree::ok = 0;
 const int bintree::error = -1;
 
 const int bintree::empty = 1;
 
-const int bintree::preorder   = 0;
-const int bintree::inorder    = 1;
-const int bintree::postorder  = 2;
+const int bintree::preorder = 0;
+const int bintree::inorder = 1;
+const int bintree::postorder = 2;
 const int bintree::levelorder = 3;
 
-__forceinline
-static
-void
-__fastcall
-TreeInsert
-(
-   binaryTree* T,
-   BinaryTreeNode* z
-)
+static void TreeInsert(binaryTree* T, BinaryTreeNode* z)
 {
-   BinaryTreeNode* x = T->root;
-   BinaryTreeNode* y = 0;
+  BinaryTreeNode* x = T->root;
+  BinaryTreeNode* y = 0;
 
-   binaryTreeCompare LessThan = T->LessThan;
+  binaryTreeCompare LessThan = T->LessThan;
 
-   while( x )
-   {
-      y = x;
+  while(x)
+  {
+    y = x;
 
-      if( LessThan( z->object, x->object ) )
-      {
-         x = x->left;
-      }
-      else
-      {
-         x = x->right;
-      }
-   }
+    if(LessThan(GETCLIENT(z), GETCLIENT(x) ) )
+      x = x->left;
+    else
+      x = x->right;
+  }
 
-   z->parent = y;
+  z->parent = y;
 
-   if( !y )
-   {
-      T->root = z;
-   }
-   else if( LessThan( z->object, y->object ) )
-   {
-      y->left = z;
-   }
-   else
-   {
-      y->right = z;
-   }
+  if( !y)
+    T->root = z;
+  else if(LessThan(GETCLIENT(z), GETCLIENT(y) ) )
+    y->left = z;
+  else
+    y->right = z;
 }
 
 // swap a node with its right child
@@ -164,8 +148,8 @@ TreeInsert
 
 static void LeftRotate(binaryTree* T, BinaryTreeNode* x)
 {
-   BinaryTreeNode* y = x->right;
-   
+  BinaryTreeNode* y = x->right;
+
 //                        x->parent
 //                       /  ^      \
 //                      v  /        v
@@ -177,8 +161,8 @@ static void LeftRotate(binaryTree* T, BinaryTreeNode* x)
 //                      v  /        \  v
 //           x->right->left          x->right->right
 
-   // 1 of 6
-   x->right = y->left;
+  // 1 of 6
+  x->right = y->left;
 
 //                        x->parent
 //                       /  ^      \
@@ -191,9 +175,9 @@ static void LeftRotate(binaryTree* T, BinaryTreeNode* x)
 //                 v    v  /        \  v
 //           x->right->left          x->right->right
 
-   // 2 of 6
-   if(y->left)
-      y->left->parent = x;
+  // 2 of 6
+  if(y->left)
+    y->left->parent = x;
 
 //                        x->parent
 //                       /  ^      \
@@ -206,8 +190,8 @@ static void LeftRotate(binaryTree* T, BinaryTreeNode* x)
 //              |  v    v           \  v
 //           x->right->left          x->right->right
 
-   // 3 of 6
-   y->parent = x->parent;
+  // 3 of 6
+  y->parent = x->parent;
 
 //                        x->parent
 //                       /  ^   ^  \
@@ -220,12 +204,12 @@ static void LeftRotate(binaryTree* T, BinaryTreeNode* x)
 //              |  v    v           \  v
 //           x->right->left          x->right->right
 
-   // 4 of 6
-   if( !x->parent )
-      T->root = y;
+  // 4 of 6
+  if( !x->parent)
+    T->root = y;
 
-   else if( x == x->parent->left )
-      x->parent->left = y;
+  else if(x == x->parent->left)
+    x->parent->left = y;
 
 //                        x->parent
 //                          ^ |  ^ \
@@ -238,11 +222,11 @@ static void LeftRotate(binaryTree* T, BinaryTreeNode* x)
 //              |  v    v           \  v
 //           x->right->left          x->right->right
 
-   else /* x == x->parent->right */
-      x->parent->right = y;
+  else /* x == x->parent->right */
+    x->parent->right = y;
 
-   // 5 of 6
-   y->left = x;
+  // 5 of 6
+  y->left = x;
 
 //                        x->parent
 //                          ^ |  ^ \
@@ -255,8 +239,8 @@ static void LeftRotate(binaryTree* T, BinaryTreeNode* x)
 //              |  v                \  v
 //           x->right->left          x->right->right
 
-   // 6 of 6
-   x->parent = y;
+  // 6 of 6
+  x->parent = y;
 
 //                        x->parent
 //                            |  ^ \
@@ -281,699 +265,509 @@ static void LeftRotate(binaryTree* T, BinaryTreeNode* x)
 // x->left                x->right->left
 }
 
-__forceinline
-static
-void
-__fastcall
-RightRotate
-(
-   binaryTree* T,
-   BinaryTreeNode* x
-)
+static void RightRotate(binaryTree* T, BinaryTreeNode* x)
 {
-   BinaryTreeNode* y = x->left;
+  BinaryTreeNode* y = x->left;
 
-   // 1 of 6
-   x->left = y->right;
+  // 1 of 6
+  x->left = y->right;
 
-   // 2 of 6
-   if( y->right )
-   {
-      y->right->parent = x;
-   }
+  // 2 of 6
+  if(y->right)
+    y->right->parent = x;
 
-   // 3 of 6
-   y->parent = x->parent;
+  // 3 of 6
+  y->parent = x->parent;
 
-   // 4 of 6
-   if( !x->parent )
-   {
-      T->root = y;
-   }
-   else if( x == x->parent->right )
-   {
-      x->parent->right = y;
-   }
-   else /* x == x->parent->left */
-   {
-      x->parent->left = y;
-   }
+  // 4 of 6
+  if( !x->parent)
+    T->root = y;
+  else if(x == x->parent->right)
+    x->parent->right = y;
+  else /* x == x->parent->left */
+    x->parent->left = y;
 
-   // 5 of 6
-   y->right = x;
+  // 5 of 6
+  y->right = x;
 
-   // 6 of 6
-   x->parent = y;
+  // 6 of 6
+  x->parent = y;
 }
 
-__forceinline
-static
-void
-__fastcall
-LeftRight1InsertRotate
-(
-   binaryTree* T,
-   BinaryTreeNode* x
-)
+static void LeftRightRotate(binaryTree* T, BinaryTreeNode* x)
 {
-   BinaryTreeNode* xP  = x->parent;
-   BinaryTreeNode* xPP = xP->parent;
+  BinaryTreeNode* xP = x->parent;
+  BinaryTreeNode* xPP = xP->parent;
 
-   // 1 of 10
-   if( x->left )
-   {
-      x->left->parent = xP;
-   }
+  // 1 of 10
+  if(x->left)
+    x->left->parent = xP;
 
-   // 2 of 10
-   xP->right = x->left;
+  // 2 of 10
+  xP->right = x->left;
 
-   // 3 of 10
-   if( x->right )
-   {
-      x->right->parent = xPP;
-   }
+  // 3 of 10
+  if(x->right)
+    x->right->parent = xPP;
 
-   // 4 of 10
-   xPP->left = x->right;
+  // 4 of 10
+  xPP->left = x->right;
 
-   // 5 of 10
-   if( !xPP->parent )
-   {
-      T->root = x;
-   }
-   else if( xPP == xPP->parent->right )
-   {
-      xPP->parent->right = x;
-   }
-   else /* xPP == xPP->parent->left */
-   {
-      xPP->parent->left = x;
-   }
+  // 5 of 10
+  if( !xPP->parent)
+    T->root = x;
+  else if(xPP == xPP->parent->right)
+    xPP->parent->right = x;
+  else /* xPP == xPP->parent->left */
+    xPP->parent->left = x;
 
-   // 6 of 10
-   x->left = xP;
+  // 6 of 10
+  x->left = xP;
 
-   // 7 of 10
-   x->right = xPP;
+  // 7 of 10
+  x->right = xPP;
 
-   // 8 of 10
-   x->parent = xPP->parent;
+  // 8 of 10
+  x->parent = xPP->parent;
 
-   // 9 of 10
-   xP->parent = x;
+  // 9 of 10
+  xP->parent = x;
 
-   // 10 of 10
-   xPP->parent = x;
+  // 10 of 10
+  xPP->parent = x;
 }
 
-__forceinline
-static
-void
-__fastcall
-RightLeft2InsertRotate
-(
-   binaryTree* T,
-   BinaryTreeNode* x
-)
+static void RightLeftRotate(binaryTree* T, BinaryTreeNode* x)
 {
-   BinaryTreeNode* xP  = x->parent;
-   BinaryTreeNode* xPP = xP->parent;
+  BinaryTreeNode* xP = x->parent;
+  BinaryTreeNode* xPP = xP->parent;
 
-   // 1 of 10
-   if( x->right )
-   {
-      x->right->parent = xP;
-   }
+  // 1 of 10
+  if(x->right)
+    x->right->parent = xP;
 
-   // 2 of 10
-   xP->left = x->right;
+  // 2 of 10
+  xP->left = x->right;
 
-   // 3 of 10
-   if( x->left )
-   {
-      x->left->parent = xPP;
-   }
+  // 3 of 10
+  if(x->left)
+    x->left->parent = xPP;
 
-   // 4 of 10
-   xPP->right = x->left;
+  // 4 of 10
+  xPP->right = x->left;
 
-   // 5 of 10
-   if( !xPP->parent )
-   {
-      T->root = x;
-   }
-   else if( xPP == xPP->parent->left )
-   {
-      xPP->parent->left = x;
-   }
-   else /* xPP == xPP->parent->right */
-   {
-      xPP->parent->right = x;
-   }
+  // 5 of 10
+  if( !xPP->parent)
+    T->root = x;
+  else if(xPP == xPP->parent->left)
+    xPP->parent->left = x;
+  else /* xPP == xPP->parent->right */
+    xPP->parent->right = x;
 
-   // 6 of 10
-   x->right = xP;
+  // 6 of 10
+  x->right = xP;
 
-   // 7 of 10
-   x->left = xPP;
+  // 7 of 10
+  x->left = xPP;
 
-   // 8 of 10
-   x->parent = xPP->parent;
+  // 8 of 10
+  x->parent = xPP->parent;
 
-   // 9 of 10
-   xP->parent = x;
+  // 9 of 10
+  xP->parent = x;
 
-   // 10 of 10
-   xPP->parent = x;
+  // 10 of 10
+  xPP->parent = x;
 }
 
-__forceinline
-static
-void
-__fastcall
-LeftRightLeft1DeleteRotate
-(
-   binaryTree* T,
-   BinaryTreeNode* xP
-)
+static void LeftRightLeftRotate(binaryTree* T, BinaryTreeNode* xP)
 {
-   BinaryTreeNode* xPR   = xP->right;
-   BinaryTreeNode* xPRL  = xPR->left;
-   BinaryTreeNode* xPRLL = xPRL->left;
+  BinaryTreeNode* xPR = xP->right;
+  BinaryTreeNode* xPRL = xPR->left;
+  BinaryTreeNode* xPRLL = xPRL->left;
 
-   // 1 of 12
-   xP->right = xPRLL->left;
+  // 1 of 12
+  xP->right = xPRLL->left;
 
-   // 2 of 12
-   if( xPRLL->left )
-   {
-      xPRLL->left->parent = xP;
-   }
+  // 2 of 12
+  if(xPRLL->left)
+    xPRLL->left->parent = xP;
 
-   // 3 of 12
-   xPRL->left = xPRLL->right;
+  // 3 of 12
+  xPRL->left = xPRLL->right;
 
-   // 4 of 12
-   if( xPRLL->right )
-   {
-      xPRLL->right->parent = xPRL;
-   }
+  // 4 of 12
+  if(xPRLL->right)
+    xPRLL->right->parent = xPRL;
 
-   // 5 of 12
-   xPRL->parent = xPRLL;
+  // 5 of 12
+  xPRL->parent = xPRLL;
 
-   // 6 of 12
-   xPRLL->right = xPRL;
+  // 6 of 12
+  xPRLL->right = xPRL;
 
-   // 7 of 12
-   if( !xP->parent )
-   {
-      T->root = xPR;
-   }
-   else if( xP == xP->parent->left )
-   {
-      xP->parent->left = xPR;
-   }
-   else /* xP == xP->parent->right */
-   {
-      xP->parent->right = xPR;
-   }
+  // 7 of 12
+  if( !xP->parent)
+    T->root = xPR;
+  else if(xP == xP->parent->left)
+    xP->parent->left = xPR;
+  else /* xP == xP->parent->right */
+    xP->parent->right = xPR;
 
-   // 8 of 12
-   xPR->parent = xP->parent;
+  // 8 of 12
+  xPR->parent = xP->parent;
 
-   // 9 of 12
-   xP->parent = xPRLL;
+  // 9 of 12
+  xP->parent = xPRLL;
 
-   // 10 of 12
-   xPRLL->left = xP;
+  // 10 of 12
+  xPRLL->left = xP;
 
-   // 11 of 12
-   xPR->left = xPRLL;
+  // 11 of 12
+  xPR->left = xPRLL;
 
-   // 12 of 12
-   xPRLL->parent = xPR;
+  // 12 of 12
+  xPRLL->parent = xPR;
 }
 
-__forceinline
-static
-void
-__fastcall
-LeftLeft1DeleteRotate
-(
-   binaryTree* T,
-   BinaryTreeNode* xP
-)
+static void LeftLeftRotate(binaryTree* T, BinaryTreeNode* xP)
 {
-   BinaryTreeNode* xPR  = xP->right;
-   BinaryTreeNode* xPRL = xPR->left;
+  BinaryTreeNode* xPR = xP->right;
+  BinaryTreeNode* xPRL = xPR->left;
 
-   // 1 of 6
-   if( xPRL->left )
-   {
-      xPRL->left->parent = xP;
-   }
+  // 1 of 6
+  if(xPRL->left)
+    xPRL->left->parent = xP;
 
-   // 2 of 6
-   xP->right = xPRL->left;
+  // 2 of 6
+  xP->right = xPRL->left;
 
-   // 3 of 6
-   if( !xP->parent )
-   {
-      T->root = xPR;
-   }
-   else if( xP == xP->parent->left )
-   {
-      xP->parent->left = xPR;
-   }
-   else /* xP == xP->parent->right */
-   {
-      xP->parent->right = xPR;
-   }
+  // 3 of 6
+  if( !xP->parent)
+    T->root = xPR;
+  else if(xP == xP->parent->left)
+    xP->parent->left = xPR;
+  else /* xP == xP->parent->right */
+    xP->parent->right = xPR;
 
-   // 4 of 6
-   xPR->parent = xP->parent;
+  // 4 of 6
+  xPR->parent = xP->parent;
 
-   // 5 of 6
-   xP->parent = xPRL;
+  // 5 of 6
+  xP->parent = xPRL;
 
-   // 6 of 6
-   xPRL->left = xP;
+  // 6 of 6
+  xPRL->left = xP;
 }
 
-__forceinline
-static
-void
-__fastcall
-RightLeft1DeleteRotate
-(
-   binaryTree* T,
-   BinaryTreeNode* xP
-)
+static void RightLeftRotate(binaryTree* T, BinaryTreeNode* xP)
 {
-   BinaryTreeNode* xPR  = xP->right;
-   BinaryTreeNode* xPRL = xPR->left;
+  BinaryTreeNode* xPR = xP->right;
+  BinaryTreeNode* xPRL = xPR->left;
 
-   // 1 of 10
-   if( xPRL->left )
-   {
-      xPRL->left->parent = xP;
-   }
+  // 1 of 10
+  if(xPRL->left)
+    xPRL->left->parent = xP;
 
-   // 2 of 10
-   xP->right = xPRL->left;
+  // 2 of 10
+  xP->right = xPRL->left;
 
-   // 3 of 10
-   if( xPRL->right )
-   {
-      xPRL->right->parent = xPR;
-   }
+  // 3 of 10
+  if(xPRL->right)
+    xPRL->right->parent = xPR;
 
-   // 4 of 10
-   xPR->left = xPRL->right;
+  // 4 of 10
+  xPR->left = xPRL->right;
 
-   // 5 of 10
-   xPR->parent = xPRL;
+  // 5 of 10
+  xPR->parent = xPRL;
 
-   // 6 of 10
-   xPRL->right = xPR;
+  // 6 of 10
+  xPRL->right = xPR;
 
-   // 7 of 10
-   if( !xP->parent )
-   {
-      T->root = xPRL;
-   }
-   else if( xP == xP->parent->left )
-   {
-      xP->parent->left = xPRL;
-   }
-   else /* xP == xP->parent->right */
-   {
-      xP->parent->right = xPRL;
-   }
+  // 7 of 10
+  if( !xP->parent)
+    T->root = xPRL;
+  else if(xP == xP->parent->left)
+    xP->parent->left = xPRL;
+  else /* xP == xP->parent->right */
+    xP->parent->right = xPRL;
 
-   // 8 of 10
-   xPRL->parent = xP->parent;
+  // 8 of 10
+  xPRL->parent = xP->parent;
 
-   // 9 of 10
-   xP->parent = xPRL;
+  // 9 of 10
+  xP->parent = xPRL;
 
-   // 10 of 10
-   xPRL->left = xP;
+  // 10 of 10
+  xPRL->left = xP;
 }
 
-__forceinline
-static
-void
-__fastcall
-RightLeftRight2DeleteRotate
-(
-   binaryTree* T,
-   BinaryTreeNode* xP
-)
+static void RightLeftRightRotate(binaryTree* T, BinaryTreeNode* xP)
 {
-   BinaryTreeNode* xPL   = xP->left;
-   BinaryTreeNode* xPLR  = xPL->right;
-   BinaryTreeNode* xPLRR = xPLR->right;
+  BinaryTreeNode* xPL = xP->left;
+  BinaryTreeNode* xPLR = xPL->right;
+  BinaryTreeNode* xPLRR = xPLR->right;
 
-   // 1 of 12
-   xP->left = xPLRR->right;
+  // 1 of 12
+  xP->left = xPLRR->right;
 
-   // 2 of 12
-   if( xPLRR->right )
-   {
-      xPLRR->right->parent = xP;
-   }
+  // 2 of 12
+  if(xPLRR->right)
+    xPLRR->right->parent = xP;
 
-   // 3 of 12
-   xPLR->right = xPLRR->left;
+  // 3 of 12
+  xPLR->right = xPLRR->left;
 
-   // 4 of 12
-   if( xPLRR->left )
-   {
-      xPLRR->left->parent = xPLR;
-   }
+  // 4 of 12
+  if(xPLRR->left)
+    xPLRR->left->parent = xPLR;
 
-   // 5 of 12
-   xPLR->parent = xPLRR;
+  // 5 of 12
+  xPLR->parent = xPLRR;
 
-   // 6 of 12
-   xPLRR->left = xPLR;
+  // 6 of 12
+  xPLRR->left = xPLR;
 
-   // 7 of 12
-   if( !xP->parent )
-   {
-      T->root = xPL;
-   }
-   else if( xP == xP->parent->right )
-   {
-      xP->parent->right = xPL;
-   }
-   else /* xP == xP->parent->left */
-   {
-      xP->parent->left = xPL;
-   }
+  // 7 of 12
+  if( !xP->parent)
+    T->root = xPL;
+  else if(xP == xP->parent->right)
+    xP->parent->right = xPL;
+  else /* xP == xP->parent->left */
+    xP->parent->left = xPL;
 
-   // 8 of 12
-   xPL->parent = xP->parent;
+  // 8 of 12
+  xPL->parent = xP->parent;
 
-   // 9 of 12
-   xP->parent = xPLRR;
+  // 9 of 12
+  xP->parent = xPLRR;
 
-   // 10 of 12
-   xPLRR->right = xP;
+  // 10 of 12
+  xPLRR->right = xP;
 
-   // 11 of 12
-   xPL->right = xPLRR;
+  // 11 of 12
+  xPL->right = xPLRR;
 
-   // 12 of 12
-   xPLRR->parent = xPL;
+  // 12 of 12
+  xPLRR->parent = xPL;
 }
 
-__forceinline
-static
-void
-__fastcall
-RightRight2DeleteRotate
-(
-   binaryTree* T,
-   BinaryTreeNode* xP
-)
+static void RightRightRotate(binaryTree* T, BinaryTreeNode* xP)
 {
-   BinaryTreeNode* xPL  = xP->left;
-   BinaryTreeNode* xPLR = xPL->right;
+  BinaryTreeNode* xPL = xP->left;
+  BinaryTreeNode* xPLR = xPL->right;
 
-   // 1 of 6
-   if( xPLR->right )
-   {
-      xPLR->right->parent = xP;
-   }
+  // 1 of 6
+  if(xPLR->right)
+    xPLR->right->parent = xP;
 
-   // 2 of 6
-   xP->left = xPLR->right;
+  // 2 of 6
+  xP->left = xPLR->right;
 
-   // 3 of 6
-   if( !xP->parent )
-   {
-      T->root = xPL;
-   }
-   else if( xP == xP->parent->right )
-   {
-      xP->parent->right = xPL;
-   }
-   else /* xP == xP->parent->left */
-   {
-      xP->parent->left = xPL;
-   }
+  // 3 of 6
+  if( !xP->parent)
+    T->root = xPL;
+  else if(xP == xP->parent->right)
+    xP->parent->right = xPL;
+  else /* xP == xP->parent->left */
+    xP->parent->left = xPL;
 
-   // 4 of 6
-   xPL->parent = xP->parent;
+  // 4 of 6
+  xPL->parent = xP->parent;
 
-   // 5 of 6
-   xP->parent = xPLR;
+  // 5 of 6
+  xP->parent = xPLR;
 
-   // 6 of 6
-   xPLR->right = xP;
+  // 6 of 6
+  xPLR->right = xP;
 }
 
-__forceinline
-static
-void
-__fastcall
-LeftRight2DeleteRotate
-(
-   binaryTree* T,
-   BinaryTreeNode* xP
-)
+static void LeftRightRotate(binaryTree* T, BinaryTreeNode* xP)
 {
-   BinaryTreeNode* xPL  = xP->left;
-   BinaryTreeNode* xPLR = xPL->right;
+  BinaryTreeNode* xPL = xP->left;
+  BinaryTreeNode* xPLR = xPL->right;
 
-   // 1 of 10
-   if( xPLR->right )
-   {
-      xPLR->right->parent = xP;
-   }
+  // 1 of 10
+  if(xPLR->right)
+    xPLR->right->parent = xP;
 
-   // 2 of 10
-   xP->left = xPLR->right;
+  // 2 of 10
+  xP->left = xPLR->right;
 
-   // 3 of 10
-   if( xPLR->left )
-   {
-      xPLR->left->parent = xPL;
-   }
+  // 3 of 10
+  if(xPLR->left)
+    xPLR->left->parent = xPL;
 
-   // 4 of 10
-   xPL->right = xPLR->left;
+  // 4 of 10
+  xPL->right = xPLR->left;
 
-   // 5 of 10
-   xPL->parent = xPLR;
+  // 5 of 10
+  xPL->parent = xPLR;
 
-   // 6 of 10
-   xPLR->left = xPL;
+  // 6 of 10
+  xPLR->left = xPL;
 
-   // 7 of 10
-   if( !xP->parent )
-   {
-      T->root = xPLR;
-   }
-   else if( xP == xP->parent->right )
-   {
-      xP->parent->right = xPLR;
-   }
-   else /* xP == xP->parent->left */
-   {
-      xP->parent->left = xPLR;
-   }
+  // 7 of 10
+  if(!xP->parent)
+    T->root = xPLR;
+  else if(xP == xP->parent->right)
+    xP->parent->right = xPLR;
+  else /* xP == xP->parent->left */
+    xP->parent->left = xPLR;
 
-   // 8 of 10
-   xPLR->parent = xP->parent;
+  // 8 of 10
+  xPLR->parent = xP->parent;
 
-   // 9 of 10
-   xP->parent = xPLR;
+  // 9 of 10
+  xP->parent = xPLR;
 
-   // 10 of 10
-   xPLR->right = xP;
+  // 10 of 10
+  xPLR->right = xP;
 }
 
-__forceinline
-static
-void
-__fastcall
-BinInsert
-(
-   binaryTree* T,
-   BinaryTreeNode* x
-)
+static void BinInsert(binaryTree* T, BinaryTreeNode* x)
 {
-   BinaryTreeNode* y;
-   BinaryTreeNode* xP;
+  BinaryTreeNode* y = 0;
+  BinaryTreeNode* xP = 0;
 
-   TreeInsert( T, x );
+  TreeInsert(T, x);
 
-   x->color = RED;
+  x->color = RED;
 
-   while( x != T->root && ( xP = x->parent )->color == RED )
-   {
-      if( xP == xP->parent->left )
+  while(x != T->root && (xP = x->parent)->color == RED) // todo
+  {
+    if(xP == xP->parent->left)
+    {
+      y = xP->parent->right;
+
+      if(y && y->color == RED)
       {
-         y = xP->parent->right;
+        xP->color = BLACK;
 
-         if( y && y->color == RED )
-         {
-            xP->color = BLACK;
+        y->color = BLACK;
 
-            y->color = BLACK;
+        xP->parent->color = RED;
 
-            xP->parent->color = RED;
-
-            x = xP->parent;
-         }
-         else
-         {
-            xP->parent->color = RED;
-
-            if( x == xP->right )
-            {
-               x->color = BLACK;
-
-               LeftRight1InsertRotate( T, x );
-
-               x = x->left;
-            }
-            else
-            {            
-               xP->color = BLACK;   
-
-               RightRotate( T, xP->parent );
-            }
-         }
+        x = xP->parent;
       }
       else
       {
-         y = xP->parent->left;
+        xP->parent->color = RED;
 
-         if( y && y->color == RED )
-         {
-            xP->color = BLACK;
+        if(x == xP->right)
+        {
+          x->color = BLACK;
 
-            y->color = BLACK;
+          LeftRightRotate(T, x);
 
-            xP->parent->color = RED;
+          x = x->left;
+        }
+        else
+        {
+          xP->color = BLACK;
 
-            x = xP->parent;
-         }
-         else
-         {
-            xP->parent->color = RED;
-
-            if( x == xP->left )
-            {
-               x->color = BLACK;
-
-               RightLeft2InsertRotate( T, x );
-
-               x = x->right;
-            }
-            else
-            {
-               xP->color = BLACK;
-
-               LeftRotate( T, xP->parent );
-            }
-         }
+          RightRotate(T, xP->parent);
+        }
       }
-   }
+    }
+    else
+    {
+      y = xP->parent->left;
 
-   T->root->color = BLACK;
+      if(y && y->color == RED)
+      {
+        xP->color = BLACK;
+
+        y->color = BLACK;
+
+        xP->parent->color = RED;
+
+        x = xP->parent;
+      }
+      else
+      {
+        xP->parent->color = RED;
+
+        if(x == xP->left)
+        {
+          x->color = BLACK;
+
+          RightLeftRotate(T, x);
+
+          x = x->right;
+        }
+        else
+        {
+          xP->color = BLACK;
+
+          LeftRotate(T, xP->parent);
+        }
+      }
+    }
+  }
+
+  T->root->color = BLACK;
 }
 
-int
-__fastcall
-bintree::insert
-(
-   void *  Object,
-   binaryTreeCompare LessThan
-)
+int bintree::insert(void* object, binaryTreeCompare LessThan)
 {
-   binaryTree* T = ( binaryTree* ) this;
+  binaryTree* T = (binaryTree*)this;
 
-   BinaryTreeNode* x;
+  BinaryTreeNode* x = 0;
 
-   if( !T || !Object || T->NumberOfNodes >= T->MaxNumberOfNodes )
-   {
-      // BinTreeInsert(...) bad params
-      _log( "error" );
-      return RETURN_ERROR;
-   }
+  if( !T || !object || T->NumberOfNodes >= T->MaxNumberOfNodes)
+  {
+    // BinTreeInsert(...) bad params
+    _log("error");
+    return RETURN_ERROR;
+  }
 
-   if( LessThan )
-   {
-      T->LessThan = LessThan;
-   }
+  if(LessThan)
+    T->LessThan = LessThan;
 
-   if( !T->LessThan )
-   {
-      // BinTreeInsert(...) NIL binaryTreeCompare function
-      _log( "error" );
-      return RETURN_ERROR;
-   }
+  if( !T->LessThan)
+  {
+    // BinTreeInsert(...) NIL binaryTreeCompare function
+    _log("error");
+    return RETURN_ERROR;
+  }
 
-   x = ( BinaryTreeNode* ) ( *T->MemoryManagerArrayCurrent++ );
+  x = (BinaryTreeNode*)(*T->MemoryManagerArrayCurrent++);
 
-   x->left  = 0;
-   x->right = 0;
+  x->left = 0;
+  x->right = 0;
 
-   if( !x )
-   {
-      // BinTreeInsert(...) bad memory allocation
-      _log( "error" );
-      return RETURN_ERROR;
-   }
+  if( !x)
+  {
+    // BinTreeInsert(...) bad memory allocation
+    _log("error");
+    return RETURN_ERROR;
+  }
 
-   memcpy( x->object, Object, T->SizeOfClientExact );
+  memcpy(GETCLIENT(x), object, T->SizeOfClientExact);
 
-   BinInsert( T, x );
+  BinInsert(T, x);
 
-   T->NumberOfNodes++;
+  T->NumberOfNodes++;
 
-   return RETURN_OK;
+  return RETURN_OK;
 }
 
-__forceinline
-static
-BinaryTreeNode*
-__fastcall
-TreeMinimum
-(
-   BinaryTreeNode* x
-)
+static BinaryTreeNode* TreeMinimum(BinaryTreeNode* x)
 {
-   while( x->left )
-   {
-      x = x->left;
-   }
+  while(x->left)
+    x = x->left;
 
-   return x;
+  return x;
 }
 
-__forceinline
-static
-BinaryTreeNode*
-__fastcall
-TreeMaximum
-(
-   BinaryTreeNode* x
-)
+static BinaryTreeNode* TreeMaximum(BinaryTreeNode* x)
 {
-   while( x->right )
-   {
-      x = x->right;
-   }
+  while(x->right)
+    x = x->right;
 
-   return x;
+  return x;
 }
 
 //
@@ -982,1172 +776,1182 @@ TreeMaximum
 //               value to be returned.
 //
 
-int
-__fastcall
-bintree::getExtrema
-(
-   int GetGreatest,
-   void *     ObjectReturn
-)
+int bintree::getExtrema(int GetGreatest, void* objectReturn)
 {
-   binaryTree* Head = ( binaryTree* ) this;
+  binaryTree* Head = (binaryTree*)this;
 
-   BinaryTreeNode* Node = 0;
+  BinaryTreeNode* Node = 0;
 
-   if( !Head || ( GetGreatest != TRUE && GetGreatest != FALSE ) )
-   {
-      // BinGetExtrema(...) bad params
-      _log( "error" );
-      return RETURN_ERROR;
-   }
+  if( !Head || (GetGreatest != TRUE && GetGreatest != FALSE) )
+  {
+    // BinGetExtrema(...) bad params
+    _log("error");
+    return RETURN_ERROR;
+  }
 
-   if( GetGreatest == FALSE )
-   {
-      if( Head->root )
-      {
-         Node = TreeMinimum( Head->root );
-      }
-   }
-   else /* GetGreatest == TRUE */
-   {
-      if( Head->root )
-      {
-         Node = TreeMaximum( Head->root );
-      }
-   }
+  if(GetGreatest == FALSE)
+  {
+    if(Head->root)
+      Node = TreeMinimum(Head->root);
+  }
+  else /* GetGreatest == TRUE */
+  {
+    if(Head->root)
+      Node = TreeMaximum(Head->root);
+  }
 
-   if( !Node )
-   {
-      // BinGetExtrema(...) empty tree
-      return RETURN_ERROR;
-   }
+  if( !Node)
+  {
+    // BinGetExtrema(...) empty tree
+    return RETURN_ERROR;
+  }
 
-   if( ObjectReturn )
-   {
-      memcpy( ObjectReturn, Node->object, Head->SizeOfClientExact );
-   }
+  if(objectReturn)
+    memcpy(objectReturn, GETCLIENT(Node), Head->SizeOfClientExact);
 
-   return RETURN_OK;
+  return RETURN_OK;
 }
 
-__forceinline
-static
-BinaryTreeNode*
-__fastcall
-TreeSuccessor
-(
-   BinaryTreeNode* x
-)
+static BinaryTreeNode* TreeSuccessor(BinaryTreeNode* x)
 {
-   BinaryTreeNode* y;
+  BinaryTreeNode* y = 0;
 
-   if( x->right )
-   {
-      return TreeMinimum( x->right );
-   }
+  if(x->right)
+    return TreeMinimum(x->right);
 
-   y = x->parent;
+  y = x->parent;
 
-   while( y && x == y->right )
-   {
-      x = y;
+  while(y && x == y->right)
+  {
+    x = y;
 
-      y = y->parent;
-   }
+    y = y->parent;
+  }
 
-   return y;
+  return y;
 }
 
-__forceinline
-static
-void
-__fastcall
-BinDeleteFixup
-(
-   binaryTree* T,
-   BinaryTreeNode* x
-)
+#if 0
+rb-delete-fixup
 {
-   BinaryTreeNode* w;
-   BinaryTreeNode* xP;
+  while x != tree->root && x->color == black
+  {
+    if x == x->parent->left
+    {
+      w = x->parent->right
 
-   while( x != T->root && x->color == BLACK )
-   {
-      xP = x->parent;
-
-      if( x == xP->left )
+      // case 1
+      if w->color == red
       {
-         w = xP->right;
-
-         if( w->color == RED )
-         {
-            // prestep
-            w = w->left;
-
-            if( ( !w->left || w->left->color == BLACK ) &&
-                ( !w->right || w->right->color == BLACK )
-              )
-            {
-               // prestep
-               w = xP->right;
-
-               // step 1 of 2
-               w->color = BLACK;
-
-               xP->color = RED;
-
-               LeftRotate( T, xP );
-
-               w = xP->right;
-
-               // step 2 of 2
-               w->color = RED;
-
-               x = xP;
-            }
-            else if( !w->right || w->right->color == BLACK )
-            {
-               // prestep
-               w = xP->right;
-
-               // step 1 of 4
-               w->color = BLACK;
-
-               xP->color = RED;
-
-               // step 2 of 4
-               LeftRightLeft1DeleteRotate( T, xP );
-
-               // step 3 of 4
-               w = xP->parent;
-
-               w->color = xP->color;
-
-               xP->color = BLACK;
-
-               w->right->color = BLACK;
-
-               // step 4 of 4
-               x = T->root;
-            }
-            else
-            {
-               // prestep
-               w = xP->right;
-
-               // step 1 of 3
-               w->color = BLACK;
-
-               xP->color = RED;
-
-               LeftLeft1DeleteRotate( T, xP );
-
-               w = xP->parent;
-
-               // step 2 of 3
-               w->color = xP->color;
-
-               xP->color = BLACK;
-
-               w->right->color = BLACK;
-
-               // step 3 of 3
-               x = T->root;
-            }
-         }
-         else /* w->color == BLACK */
-         {
-            if( ( !w->left || w->left->color == BLACK ) &&
-                ( !w->right || w->right->color == BLACK )
-              )
-            {
-               // step 1 of 1
-               w->color = RED;
-
-               x = xP;
-            }
-            else if( !w->right || w->right->color == BLACK )
-            {
-               // step 1 of 3
-               w->left->color = BLACK;
-
-               w->color = RED;
-
-               RightLeft1DeleteRotate( T, xP );
-
-               w = xP->parent;
-
-               // step 2 of 3
-               w->color = xP->color;
-
-               xP->color = BLACK;
-
-               w->right->color = BLACK;
-
-               // step 3 of 3
-               x = T->root;
-            }
-            else
-            {
-               // step 1 of 2
-               w->color = xP->color;
-
-               xP->color = BLACK;
-
-               w->right->color = BLACK;
-
-               LeftRotate( T, xP );
-
-               // step 2 of 2
-               x = T->root;
-            }
-         }
+        w->color = black
+        x->parent->color = red
+        left-rotate(tree, x->parent)
+        w = x->parent->right
       }
-      else /* x == xP->right */
+
+      // case 2
+      if w->left->color == black && w->right->color == black
       {
-         w = xP->left;
-
-         if( w->color == RED )
-         {
-            // prestep
-            w = w->right;
-
-            if( ( !w->right || w->right->color == BLACK ) &&
-                ( !w->left || w->left->color == BLACK )
-              )
-            {
-               // prestep
-               w = xP->left;
-
-               // step 1 of 2
-               w->color = BLACK;
-
-               xP->color = RED;
-
-               RightRotate( T, xP );
-
-               w = xP->left;
-
-               // step 2 of 2
-               w->color = RED;
-
-               x = xP;
-            }
-            else if( !w->left || w->left->color == BLACK )
-            {
-               // prestep
-               w = xP->left;
-
-               // step 1 of 4
-               w->color = BLACK;
-
-               xP->color = RED;
-
-               // step 2 of 4
-               RightLeftRight2DeleteRotate( T, xP );
-
-               // step 3 of 4
-               w = xP->parent;
-
-               w->color = xP->color;
-
-               xP->color = BLACK;
-
-               w->left->color = BLACK;
-
-               // step 4 of 4
-               x = T->root;
-            }
-            else
-            {
-               // prestep
-               w = xP->left;
-
-               // step 1 of 3
-               w->color = BLACK;
-
-               xP->color = RED;
-
-               RightRight2DeleteRotate( T, xP );
-
-               w = xP->parent;
-
-               // step 2 of 3
-               w->color = xP->color;
-
-               xP->color = BLACK;
-
-               w->left->color = BLACK;
-
-               // step 3 of 3
-               x = T->root;
-            }
-         }
-         else /* w->color == BLACK */
-         {
-            if( ( !w->right || w->right->color == BLACK ) &&
-                ( !w->left || w->left->color == BLACK )
-              )
-            {
-               // step 1 of 1
-               w->color = RED;
-
-               x = xP;
-            }
-            else if( !w->left || w->left->color == BLACK )
-            {
-               // step 1 of 3
-               w->right->color = BLACK;
-
-               w->color = RED;
-
-               LeftRight2DeleteRotate( T, xP );
-
-               w = xP->parent;
-
-               // step 2 of 3
-               w->color = xP->color;
-
-               xP->color = BLACK;
-
-               w->left->color = BLACK;
-
-               // step 3 of 3
-               x = T->root;
-            }
-            else
-            {
-               // step 1 of 2
-               w->color = xP->color;
-
-               xP->color = BLACK;
-
-               w->left->color = BLACK;
-
-               RightRotate( T, xP );
-
-               // step 2 of 2
-               x = T->root;
-            }
-         }
+        w->color = red
+        x = x->parent
       }
-   }
 
-   x->color = BLACK;
+      // case 3
+      else
+      {
+        if w->right->color == black
+        {
+          w->left->color = black
+          w->color = red
+          right-rotate(tree, w)
+          w = x->parent->right
+        }
+
+        // case 4
+        w->color = x->parent->color
+        x->parent->color = black
+        w->right->color = black
+        left-rotate(tree, x->parent)
+        x = tree->root
+      }
+    }
+    else(same with "right" and "left" exchanged) // if x == x->parent->right
+    {
+      w = x->parent->left
+
+      // case 1
+      if w->color == red
+      {
+        w->color = black
+        x->parent->color = red
+        right-rotate(tree, x->parent)
+        w = x->parent->left
+      }
+
+      // case 2
+      if w->right->color == black && w->left->color == black
+      {
+        w->color = red
+        x = x->parent
+      }
+
+      // case 3
+      else
+      {
+        if w->left->color == black
+        {
+          w->right->color = black
+          w->color = red
+          left-rotate(tree, w)
+          w = x->parent->left
+        }
+
+        // case 4
+        w->color = x->parent->color
+        x->parent->color = black
+        w->left->color = black
+        right-rotate(tree, x->parent)
+        x = tree->root
+      }
+    }
+  }
+}
+
+left
+left
+left-left
+left-right
+left-right-left
+
+right
+right
+right-right
+right-left
+right-left-right
+#endif
+
+// fully optimized
+static void BinDeleteFixup(binaryTree* T, BinaryTreeNode* x)
+{
+  BinaryTreeNode* w = 0;
+  BinaryTreeNode* xP = 0;
+
+  while(x != T->root && x->color == BLACK)
+  {
+    xP = x->parent;
+
+    if(x == xP->left)
+    {
+      w = xP->right;
+
+      if(w->color == RED)
+      {
+        // prestep
+        w = w->left;
+
+        if( ( !w->left || w->left->color == BLACK) && ( !w->right || w->right->color == BLACK) )
+        {
+          // prestep
+          w = xP->right;
+          
+          // 1A w->color = black
+          // 1B x->parent->color = red
+          // 1C left-rotate(tree, x->parent)
+          // 1D w = x->parent-right
+          
+          // 2A w->color = red
+          // 2B x = x->parent
+
+          // case 1
+          w->color = BLACK; // 1A
+
+          xP->color = RED; // 1B
+
+          LeftRotate(T, xP); // 1C
+
+          w = xP->right; // 1D
+
+          // case 2
+          w->color = RED; // 2A
+
+          x = xP; // 2B
+        }
+        else if( !w->right || w->right->color == BLACK)
+        {
+          // prestep
+          w = xP->right;
+          
+          // 1A w->color = black
+          // 1B x->parent->color = red
+          // 1C left-rotate(tree, x->parent)
+          // 1D w = x->parent-right
+          
+          // 3A w->left->color = black
+          // 3B w->color = red
+          // 3C right-rotate(tree, w)
+          // 3D w = x->parent->right
+          
+          // 4A w->color = x->parent->color
+          // 4B x->parent->color = black
+          // 4C w->right->color = black
+          // 4D left-rotate(tree, x->parent)
+          // 4E x = tree->root
+
+          // case 1
+          w->color = BLACK; // 1A
+
+          xP->color = RED; // 1B
+
+          // case 1 -> 3 -> 4
+          LeftRightLeftRotate(T, xP); // 1C 3C 4D
+          
+          // w = x->parent->right 1D
+
+          // w->left->color = black 3A
+          // w->color = red 3B
+
+          // case 3
+          w = xP->parent; // w = x->parent->right transformed 3D
+
+          // case 4
+          w->color = xP->color; // 4A
+
+          xP->color = BLACK; // 4B
+
+          w->right->color = BLACK; // 4C
+
+          x = T->root; // 4E
+        }
+        else
+        {
+          // prestep
+          w = xP->right;
+          
+          // 1A w->color = black
+          // 1B x->parent->color = red
+          // 1C left-rotate(tree, x->parent)
+          // 1D w = x->parent-right
+          
+          // 4A w->color = x->parent->color
+          // 4B x->parent->color = black
+          // 4C w->right->color = black
+          // 4D left-rotate(tree, x->parent)
+          // 4E x = tree->root
+          
+          // case 1
+          w->color = BLACK; // 1A
+
+          xP->color = RED; // 1B
+
+          // case 1 -> 4
+          LeftLeftRotate(T, xP); // 1C 4D
+
+          w = xP->parent; // w = x->parent->right transformed 1D
+
+          // case 4
+          w->color = xP->color; // 4A
+
+          xP->color = BLACK; // 4B
+
+          w->right->color = BLACK; // 4C
+
+          x = T->root; // 4E
+        }
+      }
+      else /* w->color == BLACK */
+      {
+        if( ( !w->left || w->left->color == BLACK) && ( !w->right || w->right->color == BLACK) )
+        {
+          // 2A w->color = red
+          // 2B x = x->parent
+
+          // case 2
+          w->color = RED; // 2A
+
+          x = xP; // 2B
+        }
+        else if( !w->right || w->right->color == BLACK)
+        {
+          // 3A w->left->color = black
+          // 3B w->color = red
+          // 3C right-rotate(tree, w)
+          // 3D w = x->parent->right
+          
+          // 4A w->color = x->parent->color
+          // 4B x->parent->color = black
+          // 4C w->right->color = black
+          // 4D left-rotate(tree, x->parent)
+          // 4E x = tree->root
+          
+          // case 3
+          w->left->color = BLACK; // 3A
+
+          w->color = RED; // 3B
+
+          // case 3 -> 4
+          RightLeftRotate(T, xP); // 3C 4D
+
+          w = xP->parent; // w = x->parent->right transformed 3D
+
+          // case 4
+          w->color = xP->color; // 4A
+
+          xP->color = BLACK; // 4B
+
+          w->right->color = BLACK; // 4C
+
+          x = T->root; // 4E
+        }
+        else
+        {
+          // 4A w->color = x->parent->color
+          // 4B x->parent->color = black
+          // 4C w->right->color = black
+          // 4D left-rotate(tree, x->parent)
+          // 4E x = tree->root
+          
+          // case 4
+          w->color = xP->color; // 4A
+
+          xP->color = BLACK; // 4B
+
+          w->right->color = BLACK; // 4C
+
+          LeftRotate(T, xP); // 4D
+
+          x = T->root; // 4E
+        }
+      }
+    }
+    else /* x == xP->right */
+    {
+      w = xP->left;
+
+      if(w->color == RED)
+      {
+        // prestep
+        w = w->right;
+
+        if( ( !w->right || w->right->color == BLACK) && ( !w->left || w->left->color == BLACK) )
+        {
+          // prestep
+          w = xP->left;
+          
+          // 1A w->color = black
+          // 1B x->parent->color = red
+          // 1C right-rotate(tree, x->parent)
+          // 1D w = x->parent-left
+          
+          // 2A w->color = red
+          // 2B x = x->parent
+
+          // case 1
+          w->color = BLACK; // 1A
+
+          xP->color = RED; // 1B
+
+          RightRotate(T, xP); // 1C
+
+          w = xP->left; // 1D
+
+          // case 2
+          w->color = RED; // 2A
+
+          x = xP; // 2B
+        }
+        else if( !w->left || w->left->color == BLACK)
+        {
+          // prestep
+          w = xP->left;
+          
+          // 1A w->color = black
+          // 1B x->parent->color = red
+          // 1C right-rotate(tree, x->parent)
+          // 1D w = x->parent-left
+          
+          // 3A w->right->color = black
+          // 3B w->color = red
+          // 3C left-rotate(tree, w)
+          // 3D w = x->parent->left
+          
+          // 4A w->color = x->parent->color
+          // 4B x->parent->color = black
+          // 4C w->left->color = black
+          // 4D right-rotate(tree, x->parent)
+          // 4E x = tree->root
+
+          // case 1
+          w->color = BLACK; // 1A
+
+          xP->color = RED; // 1B
+
+          // case 1 -> 3 -> 4
+          RightLeftRightRotate(T, xP); // 1C 3C 4D
+          
+          // w = x->parent->left 1D
+
+          // w->right->color = black 3A
+          // w->color = red 3B
+
+          // case 3
+          w = xP->parent; // w = x->parent->left transformed 3D
+
+          // case 4
+          w->color = xP->color; // 4A
+
+          xP->color = BLACK; // 4B
+
+          w->left->color = BLACK; // 4C
+
+          x = T->root; // 4E
+        }
+        else
+        {
+          // prestep
+          w = xP->left;
+          
+          // 1A w->color = black
+          // 1B x->parent->color = red
+          // 1C right-rotate(tree, x->parent)
+          // 1D w = x->parent-left
+          
+          // 4A w->color = x->parent->color
+          // 4B x->parent->color = black
+          // 4C w->left->color = black
+          // 4D right-rotate(tree, x->parent)
+          // 4E x = tree->root
+
+          // case 1
+          w->color = BLACK; // 1A
+
+          xP->color = RED; // 1B
+
+          // case 1 -> 4
+          RightRightRotate(T, xP); // 1C 4D
+
+          w = xP->parent; // w = x->parent-left transformed 1D
+
+          // case 4
+          w->color = xP->color; // 4A
+
+          xP->color = BLACK; // 4B
+
+          w->left->color = BLACK; // 4C
+
+          x = T->root; // 4E
+        }
+      }
+      else /* w->color == BLACK */
+      {
+        if( ( !w->right || w->right->color == BLACK) && ( !w->left || w->left->color == BLACK) )
+        {
+          // 2A w->color = red
+          // 2B x = x->parent
+          
+          // case 2
+          w->color = RED; // 2A
+
+          x = xP; // 2B
+        }
+        else if( !w->left || w->left->color == BLACK)
+        {
+          // 3A w->right->color = black
+          // 3B w->color = red
+          // 3C left-rotate(tree, w)
+          // 3D w = x->parent->left
+          
+          // 4A w->color = x->parent->color
+          // 4B x->parent->color = black
+          // 4C w->left->color = black
+          // 4D right-rotate(tree, x->parent)
+          // 4E x = tree->root
+          
+          // case 3
+          w->right->color = BLACK; // 3A
+
+          w->color = RED; // 3B
+
+          // case 3 -> 4
+          LeftRightRotate(T, xP); // 3C 4D
+
+          w = xP->parent; // w = x->parent->left transformed 3D
+
+          // case 4
+          w->color = xP->color; // 4A
+
+          xP->color = BLACK; // 4B
+
+          w->left->color = BLACK; // 4C
+
+          x = T->root; // 4E
+        }
+        else
+        {
+          // 4A w->color = x->parent->color
+          // 4B x->parent->color = black
+          // 4C w->left->color = black
+          // 4D right-rotate(tree, x->parent)
+          // 4E x = tree->root
+          
+          // case 4
+          w->color = xP->color; // 4A
+
+          xP->color = BLACK; // 4B
+
+          w->left->color = BLACK; // 4C
+
+          RightRotate(T, xP); // 4D
+
+          x = T->root; // 4E
+        }
+      }
+    }
+  }
+
+  x->color = BLACK;
 }
 
 // we are swapping which node will be removed from the tree, so there's no rotation
 static bool BinSwapNodes(binaryTree* tree, BinaryTreeNode* remove, BinaryTreeNode* insert)
 {
-	bool result = false;
+  bool result = false;
 
-	if( !tree || !remove || !insert || insert == remove)
-		goto returnLabel;
+  if( !tree || !remove || !insert || insert == remove)
+    goto returnLabel;
 
-	if( remove->parent )
-	{
-		if( remove == remove->parent->left )
-		{
-			remove->parent->left = insert;
-		}
-		else
-		{
-			remove->parent->right = insert;
-		}
-	}
+  if(remove->parent)
+  {
+    if(remove == remove->parent->left)
+      remove->parent->left = insert;
+    else
+      remove->parent->right = insert;
+  }
 
-	if( remove->left )
-	{
-		remove->left->parent = insert;
-	}
+  if(remove->left)
+    remove->left->parent = insert;
 
-	if( remove->right )
-	{
-		remove->right->parent = insert;
-	}
+  if(remove->right)
+    remove->right->parent = insert;
 
-	// god why no sentinel
-	if( remove == tree->root )
-	{
-		tree->root = insert;
-	}
+  // god why no sentinel
+  if(remove == tree->root)
+    tree->root = insert;
 
-	insert->parent = remove->parent;
-	insert->left  = remove->left;
-	insert->right = remove->right;
+  insert->parent = remove->parent;
+  insert->left = remove->left;
+  insert->right = remove->right;
 
-	insert->color = remove->color;
-	
-	result = true;
+  insert->color = remove->color;
 
-returnLabel:
+  result = true;
 
-	return result;
+  returnLabel:
+
+  return result;
 }
 
-__forceinline
-static
-BinaryTreeNode*
-__fastcall
-BinDelete
-(
-   binaryTree* T,
-   BinaryTreeNode* z
-)
+static BinaryTreeNode* BinDelete(binaryTree* T, BinaryTreeNode* z)
 {
-   int Color;
+  int Color = 0;
 
-   // Sentinel {
-   BinaryTreeNode* T_Nil = T->nil;
-   // Sentinel }
+// Sentinel {
+  BinaryTreeNode* T_Nil = T->nil;
+// Sentinel }
 
-   BinaryTreeNode* x;
-   BinaryTreeNode* y;
+  BinaryTreeNode* x = 0;
+  BinaryTreeNode* y = 0;
 
-   if( !z->left || !z->right )
-   {
+  if( !z->left || !z->right)
+    y = z;
+  else
+    y = TreeSuccessor(z);
+
+// Sentinel {
+  T_Nil->parent = y;
+
+  T_Nil->color = BLACK;
+
+  if( !y->left)
+    y->left = T_Nil;
+
+  if( !y->right)
+    y->right = T_Nil;
+// Sentinel }
+
+// Sentinel {
+  if(y->left != T_Nil)
+// Sentinel }
+    x = y->left;
+  else
+    x = y->right;
+
+  x->parent = y->parent;
+
+  if( !y->parent)
+    T->root = x;
+  else if(y == y->parent->left)
+    y->parent->left = x;
+  else
+    y->parent->right = x;
+
+  Color = y->color;
+
+  if(y != z)
+  {
+    // the condition for when to swap nodes instead of copying client data
+    // should be based on empirical testing, otherwise it is arbitrary
+    bool swapNodesInsteadOfCopyingClientData = (T->SizeOfClientAligned > sizeof(BinaryTreeNode) * sizeof(void*) );
+
+    // swap nodes instead of copying client data, so we are O(1) instead of
+    // O(SizeOfClient)
+    if(swapNodesInsteadOfCopyingClientData && BinSwapNodes(T, z/*remove*/, y/*insert*/) )
+    {
       y = z;
-   }
-   else
-   {
-      y = TreeSuccessor( z );
-   }
+    }
+    else // copyClientDataInsteadOfSwappingNodes
+    {
+      // copy all fields besides left right parent color
+      memcpy(GETCLIENT(z), GETCLIENT(y), T->SizeOfClientAligned);
+    }
+  }
 
-   // Sentinel {
-   T_Nil->parent = y;
+  if(Color == BLACK)
+    BinDeleteFixup(T, x);
 
-   T_Nil->color = BLACK;
+  if(T->NumberOfNodes == 1)
+    T->root = 0;
+// Sentinel {
+  else if(T_Nil->parent->left == T_Nil)
+    T_Nil->parent->left = 0;
+  else if(T_Nil->parent->right == T_Nil)
+    T_Nil->parent->right = 0;
 
-   if( !y->left )
-   {
-      y->left = T_Nil;
-   }
+  T_Nil->left = 0;
+  T_Nil->right = 0;
+// Sentinel }
 
-   if( !y->right )
-   {
-      y->right = T_Nil;
-   }
-   // Sentinel }
-
-   // Sentinel {
-   if( y->left != T_Nil )
-   // Sentinel }
-   {
-      x = y->left;
-   }
-   else
-   {
-      x = y->right;
-   }
-
-   x->parent = y->parent;
-
-   if( !y->parent )
-   {
-      T->root = x;
-   }
-   else if( y == y->parent->left )
-   {
-      y->parent->left = x;
-   }
-   else
-   {
-      y->parent->right = x;
-   }
-
-   Color = y->color;
-
-   if( y != z )
-   {
-      // the condition for when to swap nodes instead of copying client data
-	  // should be based on empirical testing, otherwise it is arbitrary
-      bool swapNodesInsteadOfCopyingClientData =
-	     (T->SizeOfClientAligned > sizeof( BinaryTreeNode ) * 4);
-
-      // swap nodes instead of copying client data, so we are O(1) instead of
-	  // O(SizeOfClient)
-      if(swapNodesInsteadOfCopyingClientData && BinSwapNodes(T, z/*remove*/, y/*insert*) )
-      {
-         y = z;
-      }
-      else // copyClientDataInsteadOfSwappingNodes
-      {
-         // copy all fields besides left right parent color
-         memcpy( z->object, y->object, T->SizeOfClientAligned );
-      }
-   }
-
-   if( Color == BLACK )
-   {
-      BinDeleteFixup( T, x );
-   }
-
-   if( T->NumberOfNodes == 1 )
-   {
-      T->root = 0;
-   }
-   // Sentinel {
-   else if( T_Nil->parent->left == T_Nil )
-   {
-      T_Nil->parent->left = 0;
-   }
-   else if( T_Nil->parent->right == T_Nil )
-   {
-      T_Nil->parent->right = 0;
-   }
-
-   T_Nil->left  = 0;
-   T_Nil->right = 0;
-   // Sentinel }
-
-   return y;
+  return y;
 }
 
-__forceinline
-static
-BinaryTreeNode*
-__fastcall
-TreeSearch
-(
-   BinaryTreeNode* x,
-   void *        k,
-   binaryTreeCompare       LessThan,
-   binaryTreeEquivalence   EqualTo
-)
+static BinaryTreeNode* TreeSearch(BinaryTreeNode* x, void* objectKey, binaryTreeCompare LessThan, binaryTreeEquivalence EqualTo)
 {
-   while( x && !EqualTo( k, x->object ) )
-   {
-      if( LessThan( k, x->object ) )
-      {
-         x = x->left;
-      }
-      else
-      {
-         x = x->right;
-      }
-   }
+  while(x && !EqualTo(objectKey, GETCLIENT(x) ) )
+  {
+    if(LessThan(objectKey, GETCLIENT(x) ) )
+      x = x->left;
+    else
+      x = x->right;
+  }
 
-   return x;
+  return x;
 }
 
-int
-__fastcall
-bintree::remove
-(
-   void *      Object1,
-   binaryTreeEquivalence EqualTo,
-   void *      ObjectReturn
-)
+int bintree::remove(void* objectKey, binaryTreeEquivalence EqualTo, void* objectResult)
 {
-   binaryTree* T = ( binaryTree* ) this;
+  binaryTree* T = (binaryTree*)this;
 
-   BinaryTreeNode* t;
-   BinaryTreeNode* z;
+  BinaryTreeNode* t = 0;
+  BinaryTreeNode* z = 0;
 
-   if( !T || !Object1 || T->NumberOfNodes <= 0 )
-   {
-      // BinTreeRemove(...) bad params
-      _log( "error" );
-      return RETURN_ERROR;
-   }
+  if( !T || !objectKey || T->NumberOfNodes <= 0)
+  {
+    // BinTreeRemove(...) bad params
+    _log("error");
+    return RETURN_ERROR;
+  }
 
-   if( EqualTo )
-   {
-      T->EqualTo = EqualTo;
-   }
+  if(EqualTo)
+    T->EqualTo = EqualTo;
 
-   if( !T->EqualTo )
-   {
-      // BinTreeRemove(...) NIL binaryTreeEquivalence function
-      _log( "error" );
-      return RETURN_ERROR;
-   }
+  if( !T->EqualTo)
+  {
+    // BinTreeRemove(...) NIL binaryTreeEquivalence function
+    _log("error");
+    return RETURN_ERROR;
+  }
 
-   z = TreeSearch( T->root, Object1, T->LessThan, T->EqualTo );
+  z = TreeSearch(T->root, objectKey, T->LessThan, T->EqualTo);
 
-   if( !z )
-   {
-      // BinTreeRemove(...) TreeSearch(...) cannot find Object in tree
-      _log( "error" );
-      return RETURN_ERROR;
-   }
+  if( !z)
+  {
+    // BinTreeRemove(...) TreeSearch(...) cannot find Object in tree
+    _log("error");
+    return RETURN_ERROR;
+  }
 
-   if( ObjectReturn )
-   {
-      memcpy( ObjectReturn, z->object, T->SizeOfClientExact );
-   }
+  if(objectResult)
+    memcpy(objectResult, GETCLIENT(z), T->SizeOfClientExact);
 
-   t = BinDelete( T, z );
+  t = BinDelete(T, z);
 
-   z = t;
+  z = t;
 
-   if( !z )
-   {
-      // BinTreeRemove(...) BINDelete(...) cannot find Object in tree
-      _log( "error" );
-      return RETURN_ERROR;
-   }
+  if( !z)
+  {
+    // BinTreeRemove(...) BINDelete(...) cannot find Object in tree
+    _log("error");
+    return RETURN_ERROR;
+  }
 
-   * ( --T->MemoryManagerArrayCurrent ) = ( char * ) z;
+  *( --T->MemoryManagerArrayCurrent) = (char*)z;
 
-   T->NumberOfNodes--;
+  T->NumberOfNodes--;
 
-   return RETURN_OK;
+  return RETURN_OK;
 }
 
-int
-__fastcall
-bintree::find
-(
-   void *      Object1,
-   binaryTreeEquivalence EqualTo,
-   void *      ObjectReturn
-)
+int bintree::find(void* Object1, binaryTreeEquivalence EqualTo, void* ObjectReturn)
 {
-   binaryTree* Head = ( binaryTree* ) this;
+  binaryTree* Head = (binaryTree*)this;
 
-   BinaryTreeNode* Node;
+  BinaryTreeNode* Node = 0;
 
-   if( !Head || !Object1 )
-   {
-      // BinTreeFind(...) bad params
-      _log( "error" );
-      return RETURN_ERROR;
-   }
+  if( !Head || !Object1)
+  {
+    // BinTreeFind(...) bad params
+    _log("error");
+    return RETURN_ERROR;
+  }
 
-   if( EqualTo )
-   {
-      Head->EqualTo = EqualTo;
-   }
+  if(EqualTo)
+    Head->EqualTo = EqualTo;
 
-   if( !Head->EqualTo )
-   {
-      // BinTreeFind(...) NIL binaryTreeEquivalence function
-      _log( "error" );
-      return RETURN_ERROR;
-   }
+  if( !Head->EqualTo)
+  {
+    // BinTreeFind(...) NIL binaryTreeEquivalence function
+    _log("error");
+    return RETURN_ERROR;
+  }
 
-   Node = TreeSearch( Head->root, Object1, Head->LessThan, Head->EqualTo );
+  Node = TreeSearch(Head->root, Object1, Head->LessThan, Head->EqualTo);
 
-   if( Node )
-   {
-      if( ObjectReturn )
-      {
-         memcpy( ObjectReturn, Node->object, Head->SizeOfClientExact );
-      }
+  if(Node)
+  {
+    if(ObjectReturn)
+      memcpy(ObjectReturn, GETCLIENT(Node), Head->SizeOfClientExact);
 
-      return RETURN_OK;
-   }
+    return RETURN_OK;
+  }
 
-   return RETURN_ERROR;
+  return RETURN_ERROR;
 }
 
-int
-__fastcall
-bintree::reset
-(
-)
+int bintree::reset()
 {
-   binaryTree* Head = ( binaryTree* ) this;
+  binaryTree* Head = (binaryTree*)this;
 
-   if( Head )
-   {
-      char * Memory = ( char * ) Head->TraverseArrayStart;
+  if(Head)
+  {
+    char* Memory = (char*)Head->TraverseArrayStart;
 
-      int MemoryArrayPointerSize = sizeof( char * ) * Head->MaxNumberOfNodes;
+    int MemoryArrayPointerSize = sizeof(char*) * Head->MaxNumberOfNodes;
 
-      int loop;
+    int loop = 0;
 
-      Head->NumberOfNodes = 0;
+    Head->NumberOfNodes = 0;
 
-      Memory += MemoryArrayPointerSize;
+    Memory += MemoryArrayPointerSize;
 
-      Head->MemoryManagerArrayCurrent = ( char ** ) Memory;
+    Head->MemoryManagerArrayCurrent = (char**)Memory;
 
-      Memory += MemoryArrayPointerSize;
+    Memory += MemoryArrayPointerSize;
 
-      for( loop = 0; loop < Head->MaxNumberOfNodes; loop++ )
-      {
-         Head->MemoryManagerArrayCurrent[ loop ] = Memory;
+    for(loop = 0; loop < Head->MaxNumberOfNodes; loop++)
+    {
+      Head->MemoryManagerArrayCurrent[loop] = Memory;
 
-         Memory += Head->SizeOfClientAligned + sizeof( BinaryTreeNode );
-      }
+      Memory += Head->SizeOfClientAligned + sizeof(BinaryTreeNode);
+    }
 
-      Head->root = 0;
-      
-      return RETURN_OK;
-   }
+    Head->root = 0;
 
-	// BinTreeReset(...) bad params
-   _log( "error" );
-   return RETURN_ERROR;
+    return RETURN_OK;
+  }
+
+  // BinTreeReset(...) bad params
+  _log("error");
+  return RETURN_ERROR;
 }
 
-int
-__fastcall
-bintree::term
-(
-)
+int bintree::term()
 {
-   binaryTree* Head = ( binaryTree* ) this;
+  binaryTree* Head = (binaryTree*)this;
 
-   if( Head )
-   {
-      memset( Head, 0, Head->MemoryTotalSize );
+  if(Head)
+  {
+    memset(Head, 0, Head->MemoryTotalSize);
 
-      free( Head );
+    free(Head);
 
-      return RETURN_OK;
-   }
+    return RETURN_OK;
+  }
 
-   // BinTreeTerminate(...) bad params
-   _log( "error" );
-   return RETURN_ERROR;
+  // BinTreeTerminate(...) bad params
+  _log("error");
+  return RETURN_ERROR;
 }
 
 // Preorder is fully optimized
-__forceinline
-static
-void
-__fastcall
-IterativePreorderTreeTraverse
-(
-   binaryTree* Head,
-   BinaryTreeNode* Node,
-   binaryTreeEvaluate      ClientEvaluate
-)
+static void IterativePreorderTreeTraverse(binaryTree* Head, BinaryTreeNode* Node, binaryTreeEvaluate ClientEvaluate)
 {
-   // PSTACK Stack = InitStack( );
-   BinaryTreeNode** StackTraverseArrayStart = Head->TraverseArrayStart;
-   BinaryTreeNode** StackTraverseArrayCurrentTop = StackTraverseArrayStart;
+  // PSTACK Stack = InitStack()
+  BinaryTreeNode** StackTraverseArrayStart = Head->TraverseArrayStart;
+  BinaryTreeNode** StackTraverseArrayCurrentTop = StackTraverseArrayStart;
 
-   BinaryTreeNode* LeftChild = 0;
-   BinaryTreeNode* RightChild = 0;
+  BinaryTreeNode* LeftChild = 0;
+  BinaryTreeNode* RightChild = 0;
 
-   while( 1 )
-   {
-      if( ClientEvaluate( Node->object ) )
+  while(1)
+  {
+    if(ClientEvaluate(GETCLIENT(Node) ) )
+      break;
+
+    LeftChild = Node->left;
+    RightChild = Node->right;
+
+    if(RightChild)
+    {
+      if(LeftChild)
       {
-         break;
+        // Stack->Push(RightChild)
+        *StackTraverseArrayCurrentTop++ = RightChild;
+
+        // Stack->Push(LeftChild)
+        // Node = Stack->Pop()
+        Node = LeftChild;
       }
-
-      LeftChild = Node->left;
-      RightChild = Node->right;
-
-      if( RightChild )
+      else /* !Node->left */
       {
-         if( LeftChild )
-         {
-            // Stack->Push( RightChild );
-            *StackTraverseArrayCurrentTop++ = RightChild;
+        // Stack->Push(RightChild)
+        // Node = Stack->Pop()
+        Node = RightChild;
+      }
+    }
+    else if(LeftChild)
+    {
+      // Stack->Push(LeftChild)
+      // Node = Stack->Pop()
+      Node = LeftChild;
+    }
+    else
+    {
+      // if(Stack->Empty() == TRUE)
+      if(StackTraverseArrayCurrentTop == StackTraverseArrayStart)
+        break;
 
-            // Stack->Push( LeftChild );
-            // Node = Stack->Pop( );
-            Node = LeftChild;
-         }
-         else /* !Node->left */
-         {
-            // Stack->Push( RightChild );
-            // Node = Stack->Pop( );
-            Node = RightChild;
-         }
-      }
-      else if( LeftChild )
-      {
-         // Stack->Push( LeftChild );
-         // Node = Stack->Pop( );
-         Node = LeftChild;
-      }
-      else
-      {
-         // if ( Stack->Empty( ) == TRUE )
-         if( StackTraverseArrayCurrentTop == StackTraverseArrayStart )
-         {
-            break;
-         }
-
-         // Node = Stack->Pop( );
-         Node = * ( --StackTraverseArrayCurrentTop );
-      }
-   }
+      // Node = Stack->Pop()
+      Node = *( --StackTraverseArrayCurrentTop);
+    }
+  }
 }
 
 // Inorder requires one extra optimization-
 // When the left nodes are pushed on the stack,
 // a left node is immediately popped off of the stack
 // after you break out of the inner loop.
-__forceinline
-static
-void
-__fastcall
-IterativeInorderTreeTraverse
-(
-   binaryTree* Head,
-   BinaryTreeNode* Node,
-   binaryTreeEvaluate      ClientEvaluate
-)
+static void IterativeInorderTreeTraverse(binaryTree* Head, BinaryTreeNode* Node, binaryTreeEvaluate ClientEvaluate)
 {
-   // PSTACK Stack = InitStack( );
-   BinaryTreeNode** StackTraverseArrayStart = Head->TraverseArrayStart;
-   BinaryTreeNode** StackTraverseArrayCurrentTop = StackTraverseArrayStart;
+  // PSTACK Stack = InitStack()
+  BinaryTreeNode** StackTraverseArrayStart = Head->TraverseArrayStart;
+  BinaryTreeNode** StackTraverseArrayCurrentTop = StackTraverseArrayStart;
 
-   while( 1 )
-   {
-      while( Node )
-      {
-         // Stack->Push( Node );
-         *StackTraverseArrayCurrentTop++ = Node;
+  while(1)
+  {
+    while(Node)
+    {
+      // Stack->Push(Node)
+      *StackTraverseArrayCurrentTop++ = Node;
 
-         Node = Node->left;
-      }
+      Node = Node->left;
+    }
 
-      // if ( Stack->Empty( ) == TRUE )
-      if( StackTraverseArrayCurrentTop == StackTraverseArrayStart )
-      {
-         break;
-      }
+    // if(Stack->Empty() == TRUE)
+    if(StackTraverseArrayCurrentTop == StackTraverseArrayStart)
+      break;
 
-      // Node = Stack->Pop( );
-      Node = * ( --StackTraverseArrayCurrentTop );
+    // Node = Stack->Pop()
+    Node = * ( --StackTraverseArrayCurrentTop);
 
-      if( ClientEvaluate( Node->object ) )
-      {
-         break;
-      }
+    if(ClientEvaluate(GETCLIENT(Node) ) )
+      break;
 
-      Node = Node->right;
-   }
+    Node = Node->right;
+  }
 }
 
 // ! I have no idea if Postorder is fully optimized or not!
 // I optimized it alot, but I am still not sure if it is fully optimized.
 // Function courtesy of Bruce Mcquistan ( brucemc@digipen.edu )
-__forceinline
-static
-void
-__fastcall
-IterativePostorderTreeTraverse
-(
-   binaryTree* Head,
-   BinaryTreeNode* Node,
-   binaryTreeEvaluate      ClientEvaluate
-)
+static void IterativePostorderTreeTraverse(binaryTree* Head, BinaryTreeNode* Node, binaryTreeEvaluate ClientEvaluate)
 {
-   // PSTACK Stack = InitStack( );
-   BinaryTreeNode** StackTraverseArrayStart = Head->TraverseArrayStart;
-   BinaryTreeNode** StackTraverseArrayCurrentTop = StackTraverseArrayStart;
+  // PSTACK Stack = InitStack()
+  BinaryTreeNode** StackTraverseArrayStart = Head->TraverseArrayStart;
+  BinaryTreeNode** StackTraverseArrayCurrentTop = StackTraverseArrayStart;
 
-   BinaryTreeNode* NodePushed = 0
-   BinaryTreeNode* RightChild = 0;
+  BinaryTreeNode* NodePushed = 0;
+  BinaryTreeNode* RightChild = 0;
 
-   while( 1 )
-   {
-      postorder1:
+  while(1)
+  {
+postorder1:
 
-      do
-      {
-         // Stack->Push( Node );
-         *StackTraverseArrayCurrentTop++ = Node;
+    do
+    {
+      // Stack->Push(Node)
+      *StackTraverseArrayCurrentTop++ = Node;
 
-         Node = Node->left;
+      Node = Node->left;
 
-      }while( Node );
+    }while(Node);
 
-      postorder2:
+postorder2:
 
-      // if ( Stack->Empty( ) == TRUE )
-      if( StackTraverseArrayCurrentTop == StackTraverseArrayStart )
-      {
-         break;
-      }
+    // if(Stack->Empty() == TRUE)
+    if(StackTraverseArrayCurrentTop == StackTraverseArrayStart)
+      break;
 
-      // Node = Stack->Pop( );
-      Node = * ( --StackTraverseArrayCurrentTop );
+    // Node = Stack->Pop()
+    Node = *( --StackTraverseArrayCurrentTop);
 
-      RightChild = Node->right;
+    RightChild = Node->right;
 
-      if( RightChild && ( RightChild != NodePushed ) )
-      {
-         // Stack->Push( Node );
-         *StackTraverseArrayCurrentTop++ = Node;
+    if(RightChild && RightChild != NodePushed)
+    {
+      // Stack->Push(Node)
+      *StackTraverseArrayCurrentTop++ = Node;
 
-         NodePushed = RightChild;
+      NodePushed = RightChild;
 
-         Node = RightChild;
+      Node = RightChild;
 
-         goto postorder1;
-      }
-      else
-      {
-         if( ClientEvaluate( Node->object ) )
-         {
-            break;
-         }
+      goto postorder1;
+    }
+    else
+    {
+      if(ClientEvaluate(GETCLIENT(Node) ) )
+        break;
 
-         NodePushed = Node;
+      NodePushed = Node;
 
-         Node = 0;
+      Node = 0;
 
-         goto postorder2;
-      }
-   }
+      goto postorder2;
+    }
+  }
 }
 
 // Levelorder is fully optimized
-__forceinline
-static
-void
-__fastcall
-IterativeLevelorderTreeTraverse
-(
-   binaryTree* Head,
-   BinaryTreeNode* Node,
-   binaryTreeEvaluate      ClientEvaluate
-)
+static void IterativeLevelorderTreeTraverse(binaryTree* Head, BinaryTreeNode* Node, binaryTreeEvaluate ClientEvaluate)
 {
-   // PQUEUE Queue = InitQueue( );
-   BinaryTreeNode** QueueTraverseArrayCurrentFront = Head->TraverseArrayStart;
-   BinaryTreeNode** QueueTraverseArrayCurrentBack = QueueTraverseArrayCurrentFront;
+  // PQUEUE Queue = InitQueue()
+  BinaryTreeNode** QueueTraverseArrayCurrentFront = Head->TraverseArrayStart;
+  BinaryTreeNode** QueueTraverseArrayCurrentBack = QueueTraverseArrayCurrentFront;
 
-   BinaryTreeNode* LeftChild = 0;
-   BinaryTreeNode* RightChild = 0;
+  BinaryTreeNode* LeftChild = 0;
+  BinaryTreeNode* RightChild = 0;
 
-   *QueueTraverseArrayCurrentBack++ = Node;
+  *QueueTraverseArrayCurrentBack++ = Node;
 
-   // while( Queue->Empty() != TRUE )
-   while( QueueTraverseArrayCurrentFront != QueueTraverseArrayCurrentBack )
-   {
-      // Queue->Get()
-      Node = *QueueTraverseArrayCurrentFront++;
+  // while(Queue->Empty() != TRUE)
+  while(QueueTraverseArrayCurrentFront != QueueTraverseArrayCurrentBack)
+  {
+    // Queue->Get()
+    Node = *QueueTraverseArrayCurrentFront++;
 
-      if( ClientEvaluate( Node->object ) )
-      {
-         break;
-      }
+    if(ClientEvaluate(GETCLIENT(Node) ) )
+      break;
 
-      LeftChild = Node->left;
-      RightChild = Node->right;
+    LeftChild = Node->left;
+    RightChild = Node->right;
 
-      if( LeftChild )
-      {
-         // Queue->Put( LeftChild );
-         *QueueTraverseArrayCurrentBack++ = LeftChild;
-      }
+    if(LeftChild)
+    {
+      // Queue->Put(LeftChild)
+      *QueueTraverseArrayCurrentBack++ = LeftChild;
+    }
 
-      if( RightChild )
-      {
-         // Queue->Put( RightChild );
-         *QueueTraverseArrayCurrentBack++ = RightChild;
-      }
-   }
+    if(RightChild)
+    {
+      // Queue->Put(RightChild)
+      *QueueTraverseArrayCurrentBack++ = RightChild;
+    }
+  }
 }
 
-int
-__fastcall
-bintree::dump
-(
-   binaryTreeEvaluate ClientEvaluate,
-   ORDER    TraversalOrder
-)
+int bintree::dump(binaryTreeEvaluate ClientEvaluate, ORDER TraversalOrder)
 {
-   binaryTree* Head = ( binaryTree* ) this;
+  binaryTree* Head = (binaryTree*)this;
 
-   if( ( !Head ) ||
-       ( ( !ClientEvaluate ) && ( !Head->ClientEvaluate ) ) ||
-       ( TraversalOrder < PREORDER ) ||
-       ( TraversalOrder > LEVELORDER )
-     )
-   {
-      // BinTreeDump(...) bad params
-      _log( "error" );
-      return RETURN_ERROR;
-   }
+  if( !Head || TraversalOrder < PREORDER || TraversalOrder > LEVELORDER)
+  {
+    // BinTreeDump(...) bad params
+    _log("error");
+    return RETURN_ERROR;
+  }
 
-   if( ClientEvaluate )
-   {
-      Head->ClientEvaluate = ClientEvaluate;
-   }
+  if( !ClientEvaluate && !Head->ClientEvaluate)
+  {
+    // BinTreeDump(...) bad params
+    _log("error");
+    return RETURN_ERROR;
+  }
 
-   if( Head->root )
-   {
-      switch( TraversalOrder )
-      {
-         case PREORDER:   IterativePreorderTreeTraverse( Head, Head->root, Head->ClientEvaluate ); break;
-         case INORDER:    IterativeInorderTreeTraverse( Head, Head->root, Head->ClientEvaluate ); break;
-         case POSTORDER:  IterativePostorderTreeTraverse( Head, Head->root, Head->ClientEvaluate ); break;
-         case LEVELORDER: IterativeLevelorderTreeTraverse( Head, Head->root, Head->ClientEvaluate ); break;
-      }
-   }
+  if(ClientEvaluate)
+    Head->ClientEvaluate = ClientEvaluate;
 
-   return RETURN_OK;
+  if(Head->root)
+  {
+    switch(TraversalOrder)
+    {
+    case PREORDER: IterativePreorderTreeTraverse( Head, Head->root, Head->ClientEvaluate ); break;
+    case INORDER: IterativeInorderTreeTraverse( Head, Head->root, Head->ClientEvaluate ); break;
+    case POSTORDER: IterativePostorderTreeTraverse( Head, Head->root, Head->ClientEvaluate ); break;
+    case LEVELORDER: IterativeLevelorderTreeTraverse( Head, Head->root, Head->ClientEvaluate ); break;
+    }
+  }
+
+  return RETURN_OK;
 }
 
-int
-__fastcall
-bintree::isEmpty
-(
-   int* NumberOfClientObjects
-)
+int bintree::isEmpty(int* NumberOfClientObjects)
 {
-   binaryTree* Head = ( binaryTree* ) this;
+  binaryTree* Head = (binaryTree*)this;
 
-   if( !Head )
-   {
-      // BinTreeIsEmpty(...) bad params
-      _log( "error" );
-      return RETURN_ERROR;
-   }
+  if( !Head)
+  {
+    // BinTreeIsEmpty(...) bad params
+    _log("error");
+    return RETURN_ERROR;
+  }
 
-   if( NumberOfClientObjects )
-   {
-      *NumberOfClientObjects = Head->NumberOfNodes;
-   }
+  if(NumberOfClientObjects)
+    *NumberOfClientObjects = Head->NumberOfNodes;
 
-   return Head->NumberOfNodes == 0;
+  return !Head->NumberOfNodes;
 }
 
-bintree *
-__fastcall
-bintree::init
-(
-   int MaxNumberOfObjects,
-   int SizeOfEachObjectExact,
-   binaryTreeCompare    LessThan
-)
+bintree* bintree::init(int MaxNumberOfObjects, int SizeOfEachObjectExact, binaryTreeCompare LessThan)
 {
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-   binaryTree* Head;
+  binaryTree* Head = 0;
 
-   char * Memory;
+  char* Memory = 0;
 
-   int MemoryArrayPointerSize;
-   int MemoryPoolSize;
-   int MemoryTotalSize;
+  int MemoryArrayPointerSize = 0;
+  int MemoryPoolSize = 0;
+  int MemoryTotalSize = 0;
 
-   int SizeOfEachObjectAligned;
+  int SizeOfEachObjectAligned = 0;
 
-   int loop;
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-   if( MaxNumberOfObjects <= 0 || SizeOfEachObjectExact <= 0 || !LessThan )
-   {
-      // BinTreeInit(...) bad params
-      _log( "error" );
-      return 0;
-   }
+  int loop = 0;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-   // Align the client memory (4 byte alignment, also known as granularity alignment)
-   SizeOfEachObjectAligned = SizeOfEachObjectExact + SizeOfEachObjectExact % 4;
-
-   // We need the pointer pools for the traversing stack and for the memory manager stack.
-   MemoryArrayPointerSize = sizeof( char * ) * MaxNumberOfObjects;
-
-   // We need the Node pool for the memory manager, with the size of the nodes
-   // expanded to include the granularity aligned client object sizes.
-   MemoryPoolSize = ( SizeOfEachObjectAligned + sizeof( BinaryTreeNode ) ) * MaxNumberOfObjects;
+  if(MaxNumberOfObjects <= 0 || SizeOfEachObjectExact <= 0 || !LessThan)
+  {
+    // BinTreeInit(...) bad params
+    _log("error");
+    return 0;
+  }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-   // Need enough memory for the head and the sentinel node
-   MemoryTotalSize = sizeof( binaryTree ) + sizeof( BinaryTreeNode );
+  // Align the client memory (sizeof(void*) byte alignment, also known as granularity alignment)
+  SizeOfEachObjectAligned = SizeOfEachObjectExact;
 
-   // Need two pointer pools, one for the memory manager, and another pool for the traversing stack;
-   MemoryTotalSize += MemoryArrayPointerSize * 2;
+  if(SizeOfEachObjectAligned % sizeof(void*) )
+    SizeOfEachObjectAligned += sizeof(void*) - (SizeOfEachObjectAligned % sizeof(void*) );
 
-   // Add the actual node pool to the total required allocation size.
-   MemoryTotalSize += MemoryPoolSize;
+  // We need the pointer pools for the traversing stack and for the memory manager stack.
+  MemoryArrayPointerSize = sizeof(char*) * MaxNumberOfObjects;
 
-   // Make sure the memory allocation is a multiple of 8 for quicker zero-ing of the
-   // memory in the BinTreeTerm(...) function (a couple microseconds faster).
-   MemoryTotalSize += MemoryTotalSize % 8;
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-   // Actually allocate the memory we need
-   Head = ( binaryTree* ) malloc( MemoryTotalSize );
-
-   if( !Head )
-   {
-      // BinTreeInit(...) bad memory allocation
-      _log( "error" );
-      return 0;
-   }
-
-   memset( Head, 0, MemoryTotalSize );
+  // We need the Node pool for the memory manager, with the size of the nodes
+  // expanded to include the granularity aligned client object sizes.
+  MemoryPoolSize = (SizeOfEachObjectAligned + sizeof(BinaryTreeNode) ) * MaxNumberOfObjects;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-   Memory = ( char* ) Head;
+  // Need enough memory for the head
+  MemoryTotalSize = sizeof(binaryTree);
 
-   Memory += sizeof( binaryTree );
+  // Need two pointer pools, one for the memory manager, and another pool for the traversing stack;
+  MemoryTotalSize += MemoryArrayPointerSize * 2;
 
-   Head->nil = ( BinaryTreeNode* ) Memory;
+  // Add the actual node pool to the total required allocation size.
+  MemoryTotalSize += MemoryPoolSize;
 
-   Memory += sizeof( BinaryTreeNode );
-
-   Head->TraverseArrayStart = ( BinaryTreeNode** ) Memory;
-
-   Memory += MemoryArrayPointerSize;
-
-   Head->MemoryManagerArrayCurrent = ( char ** ) Memory;
-
-   Memory += MemoryArrayPointerSize;
-
-   for( loop = 0; loop < MaxNumberOfObjects; loop++ )
-   {
-      Head->MemoryManagerArrayCurrent[ loop ] = Memory;
-
-      Memory += SizeOfEachObjectAligned + sizeof( BinaryTreeNode );
-   }
+  // Make sure the memory allocation is a multiple of sizeof(void*) for quicker zero-ing of the
+  // memory in the BinTreeTerm(...) function (a couple microseconds faster).
+  if(MemoryTotalSize % sizeof(void*) )
+    MemoryTotalSize += sizeof(void*) - (MemoryTotalSize % sizeof(void*) );
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Actually allocate the memory we need
+  Head = (binaryTree*)malloc(MemoryTotalSize);
+
+  if( !Head)
+  {
+    // BinTreeInit(...) bad memory allocation
+    _log("error");
+    return 0;
+  }
+
+  memset(Head, 0, MemoryTotalSize);
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-   Head->LessThan = LessThan;
+  Memory = (char*)Head;
 
-   Head->MaxNumberOfNodes = MaxNumberOfObjects;
+  Memory += sizeof(binaryTree);
 
-   Head->SizeOfClientExact   = SizeOfEachObjectExact;
-   Head->SizeOfClientAligned = SizeOfEachObjectAligned;
+  Head->nil = (BinaryTreeNode*)Memory;
 
-   Head->MemoryTotalSize = MemoryTotalSize;
+  Memory += sizeof(BinaryTreeNode);
+
+  Head->TraverseArrayStart = (BinaryTreeNode**)Memory;
+
+  Memory += MemoryArrayPointerSize;
+
+  Head->MemoryManagerArrayCurrent = (char**)Memory;
+
+  Memory += MemoryArrayPointerSize;
+
+  for(loop = 0; loop < MaxNumberOfObjects; loop++)
+  {
+    Head->MemoryManagerArrayCurrent[loop] = Memory;
+
+    Memory += SizeOfEachObjectAligned + sizeof(BinaryTreeNode);
+  }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+  Head->LessThan = LessThan;
 
-   return ( bintree * ) Head;
+  Head->MaxNumberOfNodes = MaxNumberOfObjects;
+
+  Head->SizeOfClientExact = SizeOfEachObjectExact;
+  Head->SizeOfClientAligned = SizeOfEachObjectAligned;
+
+  Head->MemoryTotalSize = MemoryTotalSize;
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  return (bintree*)Head;
 }
 
-bintree::bintree
-(
-)
+bintree::bintree()
 {
 }
 
-bintree::bintree
-(
-   bintree &
-)
+bintree::bintree(bintree& )
 {
 }
 
-bintree &
-bintree::operator=
-(
-   bintree &
-)
+bintree& bintree::operator=(bintree& )
 {
-   return this[0];
+  return *this;
 }
 
 #ifdef __cplusplus
-   }
+  }
 #endif

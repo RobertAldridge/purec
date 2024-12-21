@@ -51,15 +51,13 @@ struct BinaryTreeNode
   BinaryTreeNode* parent;
 
   int color;
-
-  char object[];
 };
 
 struct binaryTree
 {
-  BinaryTreeNode* root;
+  BinaryTreeNode sentinelRoot;
 
-  BinaryTreeNode* nil;
+  BinaryTreeNode sentinelLeaf;
 
   binaryTreeCompare LessThan;
 
