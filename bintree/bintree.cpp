@@ -59,10 +59,14 @@ typedef int ORDER;
 
 #define GETCLIENT(node) (void*)(node + 1)
 
-#define GETACTUALROOT(tree) (tree->sentinelRoot.left)
-#define SETACTUALROOT(tree, node) (tree->sentinelRoot.left = node)
+//#define GETROOTFROMSENTINEL(sentinel) (sentinel->left)
+//#define SETROOTFROMSENTINEL(sentinel, node) (sentinel->left = node)
 
-#define GETPARENTOFACTUALROOT(tree) ( &tree->sentinelRoot)
+#define GETROOTFROMTREE(tree) (tree->sentinelRoot.left)
+
+#define SETROOTCOLORFROMTREE(tree, color) (tree->sentinelRoot.left->color = color)
+
+#define GETSENTINELFROMTREE(tree) ( &tree->sentinelRoot)
 
 #define _log(blah) {}
 
@@ -75,32 +79,6 @@ const int bintree::preorder = 0;
 const int bintree::inorder = 1;
 const int bintree::postorder = 2;
 const int bintree::levelorder = 3;
-
-static void TreeInsert(BinaryTree* tree, BinaryTreeNode* insert)
-{
-  BinaryTreeNode* root = GETACTUALROOT(tree);
-
-  // actual root's parent is sentinel
-  BinaryTreeNode* parent = GETPARENTOFACTUALROOT(tree);
-
-  binaryTreeCompare LessThan = tree->LessThan;
-
-  for(BinaryTreeNode* child = root; child; /*nop*/)
-  {
-    bool isLessThan = LessThan(GETCLIENT(insert), GETCLIENT(child) );
-
-    parent = child;
-
-    child = isLessThan ? child->left : child->right;
-  }
-
-  insert->parent = parent;
-
-  if(LessThan(GETCLIENT(insert), GETCLIENT(parent) ) )
-    parent->left = insert;
-  else
-    parent->right = insert;
-}
 
 // swap a node with its right child
 
@@ -150,6 +128,7 @@ static void TreeInsert(BinaryTree* tree, BinaryTreeNode* insert)
 //     v  /              \  v
 // x->left                x->right->left
 
+// integrated for root sentinel
 static void LeftRotate(BinaryTreeNode* x)
 {
   BinaryTreeNode* y = x->right;
@@ -266,6 +245,7 @@ static void LeftRotate(BinaryTreeNode* x)
 // x->left                x->right->left
 }
 
+// integrated for root sentinel
 static void RightRotate(BinaryTreeNode* x)
 {
   BinaryTreeNode* y = x->left;
@@ -293,6 +273,7 @@ static void RightRotate(BinaryTreeNode* x)
   x->parent = y;
 }
 
+// integrated for root sentinel
 static void LeftRightInsertRotate(BinaryTreeNode* x)
 {
   BinaryTreeNode* xP = x->parent;
@@ -334,6 +315,7 @@ static void LeftRightInsertRotate(BinaryTreeNode* x)
   xPP->parent = x;
 }
 
+// integrated for root sentinel
 static void RightLeftInsertRotate(BinaryTreeNode* x)
 {
   BinaryTreeNode* xP = x->parent;
@@ -375,6 +357,7 @@ static void RightLeftInsertRotate(BinaryTreeNode* x)
   xPP->parent = x;
 }
 
+// integrated for root sentinel
 static void LeftRightLeftRotate(BinaryTreeNode* xP)
 {
   BinaryTreeNode* xPR = xP->right;
@@ -423,6 +406,7 @@ static void LeftRightLeftRotate(BinaryTreeNode* xP)
   xPRLL->parent = xPR;
 }
 
+// integrated for root sentinel
 static void LeftLeftRotate(BinaryTreeNode* xP)
 {
   BinaryTreeNode* xPR = xP->right;
@@ -451,6 +435,7 @@ static void LeftLeftRotate(BinaryTreeNode* xP)
   xPRL->left = xP;
 }
 
+// integrated for root sentinel
 static void RightLeftDeleteRotate(BinaryTreeNode* xP)
 {
   BinaryTreeNode* xPR = xP->right;
@@ -492,6 +477,7 @@ static void RightLeftDeleteRotate(BinaryTreeNode* xP)
   xPRL->left = xP;
 }
 
+// integrated for root sentinel
 static void RightLeftRightRotate(BinaryTreeNode* xP)
 {
   BinaryTreeNode* xPL = xP->left;
@@ -540,6 +526,7 @@ static void RightLeftRightRotate(BinaryTreeNode* xP)
   xPLRR->parent = xPL;
 }
 
+// integrated for root sentinel
 static void RightRightRotate(BinaryTreeNode* xP)
 {
   BinaryTreeNode* xPL = xP->left;
@@ -568,6 +555,7 @@ static void RightRightRotate(BinaryTreeNode* xP)
   xPLR->right = xP;
 }
 
+// integrated for root sentinel
 static void LeftRightDeleteRotate(BinaryTreeNode* xP)
 {
   BinaryTreeNode* xPL = xP->left;
@@ -609,16 +597,55 @@ static void LeftRightDeleteRotate(BinaryTreeNode* xP)
   xPLR->right = xP;
 }
 
-static void BinInsert(BinaryTree* T, BinaryTreeNode* x)
+#if 0
+lessThan(lhs, rhs) return compare(lhs, rhs)
+greaterThan(lhs, rhs) return compare(rhs, lhs)
+equalTo(lhs, rhs) return !lessThan(lhs, rhs) && !greaterThan(lhs, rhs)
+lessThanOrEqualTo(lhs, rhs) return lessThan(lhs, rhs) || !greaterThan(lhs, rhs)
+greaterThanOrEqualTo(lhs, rhs) return greaterThan(lhs, rhs) || !lessThan(lhs, rhs)
+#endif
+
+#define LESSTHANWRAPPER(tree, client, node) \
+  (node == GETSENTINELFROMTREE(tree) ? 1 : tree->LessThan(client, GETCLIENT(node) ) )
+
+#define EQUALTOWRAPPER(tree, client, node) \
+  (node == GETSENTINELFROMTREE(tree) ? 0 : tree->EqualTo(client, GETCLIENT(node) ) )
+
+#define CLIENTEVALUATEWRAPPER(tree, node) \
+  (node == GETSENTINELFROMTREE(tree) ? 0 : tree->ClientEvaluate(GETCLIENT(node) ) )
+
+// integrated for root sentinel
+static void TreeInsert(BinaryTree* tree, BinaryTreeNode* insert)
+{
+  BinaryTreeNode* parent = GETSENTINELFROMTREE(tree);
+
+  for(BinaryTreeNode* child = GETROOTFROMTREE(tree); child; /*nop*/)
+  {
+    bool isLessThan = tree->LessThan(GETCLIENT(insert), GETCLIENT(child) );
+
+    parent = child;
+
+    child = isLessThan ? child->left : child->right;
+  }
+
+  insert->parent = parent;
+
+  if(LESSTHANWRAPPER(tree, GETCLIENT(insert), parent) )
+    parent->left = insert;
+  else
+    parent->right = insert;
+}
+
+// integrated for root sentinel
+static void BinInsert(BinaryTree* tree, BinaryTreeNode* x)
 {
   BinaryTreeNode* y = 0;
-  BinaryTreeNode* xP = 0;
 
-  TreeInsert(T, x);
+  TreeInsert(tree, x);
 
   x->color = RED;
 
-  while(x != T->root && (xP = x->parent)->color == RED) // todo
+  for(BinaryTreeNode* xP = x->parent; xP->color == RED; xP = x->parent)
   {
     if(xP == xP->parent->left)
     {
@@ -690,9 +717,10 @@ static void BinInsert(BinaryTree* T, BinaryTreeNode* x)
     }
   }
 
-  T->root->color = BLACK;
+  SETROOTCOLORFROMTREE(tree, BLACK);
 }
 
+// integrated for root sentinel
 int bintree::insert(void* object, binaryTreeCompare LessThan)
 {
   BinaryTree* T = (BinaryTree*)this;
@@ -737,20 +765,20 @@ int bintree::insert(void* object, binaryTreeCompare LessThan)
   return RETURN_OK;
 }
 
-static BinaryTreeNode* TreeMinimum(BinaryTreeNode* x)
+static BinaryTreeNode* TreeMinimum(BinaryTreeNode* node)
 {
-  while(x->left)
-    x = x->left;
+  for(BinaryTreeNode* left = node; left; left = left->left)
+    node = left;
 
-  return x;
+  return node;
 }
 
-static BinaryTreeNode* TreeMaximum(BinaryTreeNode* x)
+static BinaryTreeNode* TreeMaximum(BinaryTreeNode* node)
 {
-  while(x->right)
-    x = x->right;
+  for(BinaryTreeNode* right = node; right; right = right->right)
+    node = right;
 
-  return x;
+  return node;
 }
 
 //
@@ -761,11 +789,11 @@ static BinaryTreeNode* TreeMaximum(BinaryTreeNode* x)
 
 int bintree::getExtrema(int GetGreatest, void* objectReturn)
 {
-  BinaryTree* Head = (BinaryTree*)this;
+  BinaryTree* tree = (BinaryTree*)this;
 
-  BinaryTreeNode* Node = 0;
+  BinaryTreeNode* node = 0;
 
-  if( !Head || (GetGreatest != TRUE && GetGreatest != FALSE) )
+  if( !tree || (GetGreatest != TRUE && GetGreatest != FALSE) )
   {
     // BinGetExtrema(...) bad params
     _log("error");
@@ -774,23 +802,21 @@ int bintree::getExtrema(int GetGreatest, void* objectReturn)
 
   if(GetGreatest == FALSE)
   {
-    if(Head->root)
-      Node = TreeMinimum(Head->root);
+    node = TreeMinimum(GETROOTFROMTREE(tree) );
   }
   else /* GetGreatest == TRUE */
   {
-    if(Head->root)
-      Node = TreeMaximum(Head->root);
+    node = TreeMaximum(GETROOTFROMTREE(tree) );
   }
 
-  if( !Node)
+  if( !node)
   {
     // BinGetExtrema(...) empty tree
     return RETURN_ERROR;
   }
 
   if(objectReturn)
-    memcpy(objectReturn, GETCLIENT(Node), Head->SizeOfClientExact);
+    memcpy(objectReturn, GETCLIENT(node), tree->SizeOfClientExact);
 
   return RETURN_OK;
 }
@@ -802,13 +828,9 @@ static BinaryTreeNode* TreeSuccessor(BinaryTreeNode* x)
   if(x->right)
     return TreeMinimum(x->right);
 
-  y = x->parent;
-
-  while(y && x == y->right)
+  for(y = x->parent; y && x == y->right; y = y->parent)
   {
     x = y;
-
-    y = y->parent;
   }
 
   return y;
@@ -1345,7 +1367,7 @@ static BinaryTreeNode* BinDelete(BinaryTree* tree, BinaryTreeNode* z)
 // Sentinel {
   T_Nil->left = 0; // todo
   T_Nil->right = 0; // todo
-  
+
   T_Nil->parent = y;
 
   T_Nil->color = BLACK;
@@ -1464,11 +1486,11 @@ int bintree::remove(void* objectKey, binaryTreeEquivalence EqualTo, void* object
 
 int bintree::find(void* Object1, binaryTreeEquivalence EqualTo, void* ObjectReturn)
 {
-  BinaryTree* Head = (BinaryTree*)this;
+  BinaryTree* tree = (BinaryTree*)this;
 
   BinaryTreeNode* node = 0;
 
-  if( !Head || !Object1)
+  if( !tree || !Object1)
   {
     // BinTreeFind(...) bad params
     _log("error");
@@ -1476,21 +1498,21 @@ int bintree::find(void* Object1, binaryTreeEquivalence EqualTo, void* ObjectRetu
   }
 
   if(EqualTo)
-    Head->EqualTo = EqualTo;
+    tree->EqualTo = EqualTo;
 
-  if( !Head->EqualTo)
+  if( !tree->EqualTo)
   {
     // BinTreeFind(...) NIL binaryTreeEquivalence function
     _log("error");
     return RETURN_ERROR;
   }
 
-  node = TreeSearch(Head->root, Object1, Head->LessThan, Head->EqualTo);
+  node = TreeSearch(tree->root, Object1, tree->LessThan, tree->EqualTo);
 
   if(node)
   {
     if(ObjectReturn)
-      memcpy(ObjectReturn, GETCLIENT(node), Head->SizeOfClientExact);
+      memcpy(ObjectReturn, GETCLIENT(node), tree->SizeOfClientExact);
 
     return RETURN_OK;
   }
@@ -1743,7 +1765,7 @@ static void IterativeLevelorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* no
 int bintree::dump(binaryTreeEvaluate ClientEvaluate, ORDER TraversalOrder)
 {
   BinaryTree* tree = (BinaryTree*)this;
-  
+
   BinaryTreeNode* root = 0;
 
   if( !tree || TraversalOrder < PREORDER || TraversalOrder > LEVELORDER)
@@ -1762,7 +1784,7 @@ int bintree::dump(binaryTreeEvaluate ClientEvaluate, ORDER TraversalOrder)
 
   if(ClientEvaluate)
     tree->ClientEvaluate = ClientEvaluate;
-  
+
   root = GETACTUALROOT(tree);
 
   if(root)
@@ -1831,7 +1853,7 @@ bintree* bintree::init(int MaxNumberOfObjects, int SizeOfEachObjectExact, binary
   // We need the pointer pools for the traversing stack and for the memory manager stack.
   MemoryArrayPointerSize = sizeof(char*) * MaxNumberOfObjects;
 
-  // We need the Node pool for the memory manager, with the size of the nodes
+  // We need the nodel pool for the memory manager, with the size of the nodes
   // expanded to include the granularity aligned client object sizes.
   MemoryPoolSize = (SizeOfEachObjectAligned + sizeof(BinaryTreeNode) ) * MaxNumberOfObjects;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////

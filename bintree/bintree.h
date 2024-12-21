@@ -115,6 +115,20 @@ void rehash(size_type n);
 void reserve(size_type n);
 #endif
 
+#if 0
+The term strict refers to the requirement of an irreflexive relation (!comp(x, x) for all x), and the term
+weak to requirements that are not as strong as those for a total ordering, but stronger than those for a partial
+ordering. If we define equiv(a, b) as !comp(a, b) && !comp(b, a), then the requirements are that comp
+and equiv both be transitive relations:
+
+(4.1) — comp(a, b) && comp(b, c) implies comp(a, c)
+(4.2) — equiv(a, b) && equiv(b, c) implies equiv(a, c)
+[Note 1 : Under these conditions, it can be shown that
+(4.3) — equiv is an equivalence relation,
+(4.4) — comp induces a well-defined relation on the equivalence classes determined by equiv, and
+(4.5) — the induced relation is a strict total ordering.
+#endif
+
 class bintree
 {
 public:
@@ -125,8 +139,14 @@ public:
   // The role of the compare function cannot change for the same list unless it is
   // reset, otherwise the list will lose its sorted state.
   //
-  // return zero if object 1 >= object 2
-  // return non-zero if object 1 < object 2
+  // object 1 < object 2; compare(object1, object2) != 0
+  // object 2 < object 1; compare(object2, object1) != 0
+  //
+  // object 1 == object 2; compare(object1, object2) == 0 && compare(object2, object1) == 0
+  // object 1 != object 2; compare(object1, object2) != 0 || compare(object2, object1) != 0
+  //
+  // object 1 <= object 2; compare(object1, object2) != 0 || compare(object2, object1) == 0
+  // object 2 <= object 1; compare(object2, object1) != 0 || compare(object1, object2) == 0
   typedef int(*compare)(void* keyObject, void* treeObject);
 
   // This is a function pointer when traversing a tree in the dump function.
