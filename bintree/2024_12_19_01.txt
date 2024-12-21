@@ -28,13 +28,13 @@ unordered_multimap
   iterator end() x
   bool empty() x
   int size() x
-  
+
   // unique
   iterator insert(iterator, <key, value> ) { return UniqueInsert(iterator, <key, value> ); }
-  
+
   // equivalent
   iterator insert(iterator, <key, value> ) { return EquivalentInsert(iterator, <key, value> ); }
-  
+
   node extract(iterator) o
   node extract(key) o
   node extract( <key, value> )
@@ -55,25 +55,25 @@ unordered_multimap
 map
 unordered_map
   value operator[key] { return try_emplace(key).first->second; } x
-  
+
   value at(key) x
-  
+
   <iterator, bool> insert( <key, value> ) { return UniqueInsert(0/*null*/, <key, value> ); } // inserts if key is not found
-  
+
   <iterator, bool, node> insert(node) o
-  
+
   <iterator, bool> insert_or_assign( <key, value> )
   {
     iterator = Replace(0/*null*/, <key, value> );
-    
+
     if(iterator)
       insert(iterator, <key, value> );
   }
-  
+
   iterator insert_or_assign(iterator, <key, value> )
   {
     iterator = Replace(iterator, <key, value> ) )
-    
+
     if(iterator)
       insert(iterator, <key, value> );
   }

@@ -4,12 +4,12 @@
 #if !defined(BINPRIV)
 #define BINPRIV
 
-#ifdef __cplusplus
-  extern "C" {
-#endif
+//#ifdef __cplusplus
+//  extern "C" {
+//#endif
 
 struct BinaryTreeNode;
-struct binaryTree;
+struct BinaryTree;
 
 #if defined(_MSC_VER)
   #pragma warning (disable: 4200)
@@ -53,7 +53,7 @@ struct BinaryTreeNode
   int color;
 };
 
-struct binaryTree
+struct BinaryTree
 {
   BinaryTreeNode sentinelRoot;
 
@@ -96,8 +96,8 @@ struct binaryTree
   #pragma warning (default: 4200)
 #endif
 
-#ifdef __cplusplus
-  }
-#endif
+//#ifdef __cplusplus
+//  }
+//#endif
 
 #endif

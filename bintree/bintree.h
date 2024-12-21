@@ -19,9 +19,9 @@
 #if !defined(BINTREE)
 #define BINTREE
 
-#ifdef __cplusplus
-  extern "C" {
-#endif
+//#ifdef __cplusplus
+//  extern "C" {
+//#endif
 
 /*
   Sample Code:
@@ -315,8 +315,8 @@ private:
   bintree& operator=(bintree& );
 };
 
-#ifdef __cplusplus
-  }
-#endif
+//#ifdef __cplusplus
+//  }
+//#endif
 
 #endif
