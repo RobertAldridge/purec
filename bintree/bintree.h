@@ -325,6 +325,8 @@ public:
   //                       postorder
   //                       levelorder (breadth-first)
 
+  int depth();
+
 private:
   bintree();
 
