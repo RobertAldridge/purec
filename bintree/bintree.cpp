@@ -18,7 +18,7 @@
 #include <malloc.h>
 #include <memory.h>
 
-#include "ptrtrack.h"
+//#include "ptrtrack.h"
 
 #include "bintree.h"
 
@@ -39,6 +39,9 @@ typedef int ORDER;
 #if defined(_MSC_VER)
   #pragma warning (disable: 4127)
   #pragma warning (disable: 4711)
+
+  #pragma warning (disable: 6011)
+  #pragma warning (disable: 28182)
 #endif
 
 #undef TRUE
@@ -63,10 +66,20 @@ typedef int ORDER;
 //#define SETROOTFROMSENTINEL(sentinel, node) (sentinel->left = node)
 
 #define GETROOTFROMTREE(tree) (tree->sentinelRoot.left)
+#define SETROOTFROMTREE(tree, node) (tree->sentinelRoot.left = node)
 
-#define SETROOTCOLORFROMTREE(tree, color) (tree->sentinelRoot.left->color = color)
+#define SETROOTCOLORFROMTREE(tree, value) (tree->sentinelRoot.left->color = value)
 
 #define GETSENTINELFROMTREE(tree) ( &tree->sentinelRoot)
+
+#define LESSTHANWRAPPER(tree, client, node) \
+  (node == GETSENTINELFROMTREE(tree) ? 1 : tree->LessThan(client, GETCLIENT(node) ) )
+
+//#define EQUALTOWRAPPER(tree, client, node) \
+//  (node == GETSENTINELFROMTREE(tree) ? 0 : tree->EqualTo(client, GETCLIENT(node) ) )
+
+//#define CLIENTEVALUATEWRAPPER(tree, node) \
+//  (node == GETSENTINELFROMTREE(tree) ? 0 : tree->ClientEvaluate(GETCLIENT(node) ) )
 
 #define _log(blah) {}
 
@@ -82,195 +95,399 @@ const int bintree::levelorder = 3;
 
 // swap a node with its right child
 
-//                        x->parent
-//                       /  ^      \
-//                      v  /        v
-//       x; x->parent->left          ...
-//      /  ^            ^  \
-//     v  /              \  v
-// x->left                y = x->right
-//                       /  ^      ^  \
-//                      v  /        \  v
-//           x->right->left          x->right->right
+// x
+// xR = x->right
+
+// x 0 2 4 5
+// x->right 0 1 4 4 6
+// x->right->left 1 2 5
+// x->right->left->parent 2
+// x->right->parent 3
+// x->parent 3 6
+// x->parent->left 4 4
+// x->parent->right 4
+
+// 0
+// 1
+// 2 2
+// 3 3
 //
-//                                   x->parent
-//                                  /  ^      \
-//                                 v  /        v
-//                        y = x->right          ...
-//                       /  ^      ^  \
-//                      v  /        \  v
-//       x; x->parent->left          x->right->right
-//      /  ^            ^  \
-//     v  /              \  v
-// x->left                x->right->left
+// 0
+// 1
+// 2 2
+// 3 3
+
+//                                            x->parent 0
+//                                           v  P
+//                                          v  ^
+//                                         L  ^
+//        x; x->right->parent; x->parent->left 1
+//       v  P                              P  v
+//      v  ^                                ^  v
+//     L  ^                                  ^  R
+// x->left 2                                  xR = x->right; x->right->left->parent 2
+//                                           v  P                               P  v
+//                                          v  ^                                 ^  v
+//                                         L  ^                                   ^  R
+//                              x->right->left 3                                   x->right->right 3
+//
+//                                                                                 x->parent 0
+//                                                                                v  P
+//                                                                               v  ^
+//                                                                              L  ^
+//                                            xR = x->right; x->right->left->parent 1
+//                                           v  P                               P  v
+//                                          v  ^                                 ^  v
+//                                         L  ^                                   ^  R
+//        x; x->right->parent; x->parent->left 2                                   x->right->right 2
+//       v  P                              P  v
+//      v  ^                                ^  v
+//     L  ^                                  ^  R
+// x->left 3                                  x->right->left 3
 
 // or
 
-//      x->parent
-//     /      ^  \
-//    v        \  v
-// ...          x; x->parent->right
-//             /  ^             ^  \
-//            v  /               \  v
-//        x->left                 y = x->right
-//                               /  ^      ^  \
-//                              v  /        \  v
-//                   x->right->left          x->right->right
+// x->parent 0
+//       P  v
+//        ^  v
+//         ^  R
+//          x; x->right->parent; x->parent->right 1
+//         v  P                               P  v
+//        v  ^                                 ^  v
+//       L  ^                                   ^  R
+//   x->left 2                                   xR = x->right; x->right->left->parent 2
+//                                              v  P                               P  v
+//                                             v  ^                                 ^  v
+//                                            L  ^                                   ^  R
+//                                 x->right->left 3                                   x->right->right 3
 //
-//                x->parent
-//               /      ^  \
-//              v        \  v
-//           ...          y = x->right
-//                       /  ^      ^  \
-//                      v  /        \  v
-//       x; x->parent->right          x->right->right
-//      /  ^            ^  \
-//     v  /              \  v
-// x->left                x->right->left
+//                                    x->parent 0
+//                                          P  v
+//                                           ^  v
+//                                            ^  R
+//                                             xR = x->right; x->right->left->parent 1
+//                                            v  P                               P  v
+//                                           v  ^                                 ^  v
+//                                          L  ^                                   ^  R
+//        x; x->right->parent; x->parent->right 2                                   x->right->right 2
+//       v  P                               P  v
+//      v  ^                                 ^  v
+//     L  ^                                   ^  R
+// x->left 3                                   x->right->left 3
 
 // integrated for root sentinel
 static void LeftRotate(BinaryTreeNode* x)
 {
-  BinaryTreeNode* y = x->right;
+  BinaryTreeNode* xR = x->right;
 
-//                        x->parent
-//                       /  ^      \
-//                      v  /        v
-//       x; x->parent->left          ...
-//      /  ^            ^  \
-//     v  /              \  v
-// x->left                y = x->right
-//                       /  ^      ^  \
-//                      v  /        \  v
-//           x->right->left          x->right->right
+//                                            x->parent
+//                                           v  P
+//                                          v  ^
+//                                         L  ^
+//        x; x->right->parent; x->parent->left
+//       v  P                              P  v
+//      v  ^                                ^  v
+//     L  ^                                  ^  R
+// x->left                                    xR = x->right; x->right->left->parent
+//                                           v  P                               P  v
+//                                          v  ^                                 ^  v
+//                                         L  ^                                   ^  R
+//                              x->right->left                                     x->right->right
+
+// or
+
+// x->parent
+//       P  v
+//        ^  v
+//         ^  R
+//          x; x->right->parent; x->parent->right
+//         v  P                               P  v
+//        v  ^                                 ^  v
+//       L  ^                                   ^  R
+//   x->left                                     xR = x->right; x->right->left->parent
+//                                              v  P                               P  v
+//                                             v  ^                                 ^  v
+//                                            L  ^                                   ^  R
+//                                 x->right->left                                     x->right->right
 
   // 1 of 6
-  x->right = y->left;
+  x->right = xR->left;
 
-//                        x->parent
-//                       /  ^      \
-//                      v  /        v
-//       x; x->parent->left          ...
-//      /  ^       |    ^
-//     v  /        |     \
-// x->left         |      y = x->right
-//                 |     /  ^      ^  \
-//                 v    v  /        \  v
-//           x->right->left          x->right->right
+//                                            x->parent
+//                                           v  P
+//                                          v  ^
+//                                         L  ^
+//        x; x->right->parent; x->parent->left
+//       v  P                         v    P
+//      v  ^                          v     ^
+//     L  ^                           v      ^
+// x->left                            v       xR = x->right; x->right->left->parent
+//                                    v      v  P                               P  v
+//                                    v     v  ^                                 ^  v
+//                                    R    L  ^                                   ^  R
+//                              x->right->left                                     x->right->right
+
+// or
+
+// x->parent
+//       P  v
+//        ^  v
+//         ^  R
+//          x; x->right->parent; x->parent->right
+//         v  P                          v    P
+//        v  ^                           v     ^
+//       L  ^                            v      ^
+//   x->left                             v       xR = x->right; x->right->left->parent
+//                                       v      v  P                               P  v
+//                                       v     v  ^                                 ^  v
+//                                       R    L  ^                                   ^  R
+//                                 x->right->left                                     x->right->right
 
   // 2 of 6
-  if(y->left)
-    y->left->parent = x;
+  if(xR->left)
+    xR->left->parent = x;
 
-//                        x->parent
-//                       /  ^      \
-//                      v  /        v
-//       x; x->parent->left          ...
-//      /  ^    ^  |    ^
-//     v  /     |  |     \
-// x->left      |  |      y = x->right
-//              |  |     /         ^  \
-//              |  v    v           \  v
-//           x->right->left          x->right->right
+//                                            x->parent
+//                                           v  P
+//                                          v  ^
+//                                         L  ^
+//        x; x->right->parent; x->parent->left
+//       v  P                      P  v    P
+//      v  ^                       ^  v     ^
+//     L  ^                        ^  v      ^
+// x->left                         ^  v       xR = x->right; x->right->left->parent
+//                                 ^  v      v                                  P  v
+//                                 ^  v     v                                    ^  v
+//                                 ^  R    L                                      ^  R
+//                              x->right->left                                     x->right->right
+
+// or
+
+// x->parent
+//       P  v
+//        ^  v
+//         ^  R
+//          x; x->right->parent; x->parent->right
+//         v  P                       P  v    P
+//        v  ^                        ^  v     ^
+//       L  ^                         ^  v      ^
+//   x->left                          ^  v       xR = x->right; x->right->left->parent
+//                                    ^  v      v                                  P  v
+//                                    ^  v     v                                    ^  v
+//                                    ^  R    L                                      ^  R
+//                                 x->right->left                                     x->right->right
 
   // 3 of 6
-  y->parent = x->parent;
+  xR->parent = x->parent;
 
-//                        x->parent
-//                       /  ^   ^  \
-//                      v  /    |   v
-//       x; x->parent->left     |    ...
-//      /  ^    ^  |            |
-//     v  /     |  |            |
-// x->left      |  |      y = x->right
-//              |  |     /         ^  \
-//              |  v    v           \  v
-//           x->right->left          x->right->right
+//                                            x->parent
+//                                           v  P     P
+//                                          v  ^      ^
+//                                         L  ^       ^
+//        x; x->right->parent; x->parent->left        ^
+//       v  P                      P  v               ^
+//      v  ^                       ^  v               ^
+//     L  ^                        ^  v               ^
+// x->left                         ^  v       xR = x->right; x->right->left->parent
+//                                 ^  v      v                                  P  v
+//                                 ^  v     v                                    ^  v
+//                                 ^  R    L                                      ^  R
+//                              x->right->left                                     x->right->right
+
+// or
+
+//       <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//       v                                              ^
+//       P                                              ^
+// x->parent                                            ^
+//       P  v                                           ^
+//        ^  v                                          ^
+//         ^  R                                         ^
+//          x; x->right->parent; x->parent->right       ^
+//         v  P                       P  v              ^
+//        v  ^                        ^  v              ^
+//       L  ^                         ^  v              ^
+//   x->left                          ^  v       xR = x->right; x->right->left->parent
+//                                    ^  v      v                                  P  v
+//                                    ^  v     v                                    ^  v
+//                                    ^  R    L                                      ^  R
+//                                 x->right->left                                     x->right->right
 
   // 4 of 6
   if(x == x->parent->left)
-    x->parent->left = y;
-
-//                        x->parent
-//                          ^ |  ^ \
-//                         /  |  |  v
-//       x; x->parent->left   |  |   ...
-//      /  ^    ^  |          |  |
-//     v  /     |  |          v  |
-// x->left      |  |      y = x->right
-//              |  |     /         ^  \
-//              |  v    v           \  v
-//           x->right->left          x->right->right
-
+    x->parent->left = xR;
   else /* x == x->parent->right */
-    x->parent->right = y;
+    x->parent->right = xR;
+
+//                                            x->parent
+//                                              P  v  P
+//                                             ^   v  ^
+//                                            ^    v  ^
+//        x; x->right->parent; x->parent->left     v  ^
+//       v  P                      P  v            v  ^
+//      v  ^                       ^  v            v  ^
+//     L  ^                        ^  v            L  ^
+// x->left                         ^  v       xR = x->right; x->right->left->parent
+//                                 ^  v      v                                  P  v
+//                                 ^  v     v                                    ^  v
+//                                 ^  R    L                                      ^  R
+//                              x->right->left                                     x->right->right
+
+// or
+
+//       <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//       v                                              ^
+//       P                                              ^
+// x->parent >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ^
+//       P                                           v  ^
+//        ^                                          v  ^
+//         ^                                         v  ^
+//          x; x->right->parent; x->parent->right    v  ^
+//         v  P                       P  v           v  ^
+//        v  ^                        ^  v           v  ^
+//       L  ^                         ^  v           R  ^
+//   x->left                          ^  v       xR = x->right; x->right->left->parent
+//                                    ^  v      v                                  P  v
+//                                    ^  v     v                                    ^  v
+//                                    ^  R    L                                      ^  R
+//                                 x->right->left                                     x->right->right
 
   // 5 of 6
-  y->left = x;
+  xR->left = x;
 
-//                        x->parent
-//                          ^ |  ^ \
-//                         /  |  |  v
-//       x; x->parent->left   |  |   ...
-//      /  ^    ^  |      ^   |  |
-//     v  /     |  |       \  v  |
-// x->left      |  |      y = x->right
-//              |  |               ^  \
-//              |  v                \  v
-//           x->right->left          x->right->right
+//                                            x->parent
+//                                              P  v  P
+//                                             ^   v  ^
+//                                            ^    v  ^
+//        x; x->right->parent; x->parent->left     v  ^
+//       v  P                      P  v       L    v  ^
+//      v  ^                       ^  v        ^   v  ^
+//     L  ^                        ^  v         ^  L  ^
+// x->left                         ^  v       xR = x->right; x->right->left->parent
+//                                 ^  v                                         P  v
+//                                 ^  v                                          ^  v
+//                                 ^  R                                           ^  R
+//                              x->right->left                                     x->right->right
+
+// or
+
+//       <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//       v                                              ^
+//       P                                              ^
+// x->parent >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ^
+//       P                                           v  ^
+//        ^                                          v  ^
+//         ^                                         v  ^
+//          x; x->right->parent; x->parent->right    v  ^
+//         v  P                       P  v      L    v  ^
+//        v  ^                        ^  v       ^   v  ^
+//       L  ^                         ^  v        ^  R  ^
+//   x->left                          ^  v       xR = x->right; x->right->left->parent
+//                                    ^  v                                         P  v
+//                                    ^  v                                          ^  v
+//                                    ^  R                                           ^  R
+//                                 x->right->left                                     x->right->right
 
   // 6 of 6
-  x->parent = y;
+  x->parent = xR;
 
-//                        x->parent
-//                            |  ^ \
-//                            |  |  v
-//       x; x->parent->left   |  |   ...
-//      /  ^    ^  |    \ ^   |  |
-//     v  /     |  |     v \  v  |
-// x->left      |  |      y = x->right
-//              |  |               ^  \
-//              |  v                \  v
-//           x->right->left          x->right->right
+// 0
+// 1
+// 2 2
+// 3 3
 
-//                                   x->parent
-//                                  /  ^      \
-//                                 v  /        v
-//                        y = x->right          ...
-//                       /  ^      ^  \
-//                      v  /        \  v
-//       x; x->parent->left          x->right->right
-//      /  ^            ^  \
-//     v  /              \  v
-// x->left                x->right->left
+//                                            x->parent 0
+//                                                 v  P
+//                                                 v  ^
+//                                                 v  ^
+//        x; x->right->parent; x->parent->left 2   v  ^
+//       v  P                      P  v    v  L    v  ^
+//      v  ^                       ^  v     v  ^   v  ^
+//     L  ^                        ^  v      P  ^  L  ^
+// x->left 3                       ^  v       xR = x->right; x->right->left->parent 1
+//                                 ^  v                                         P  v
+//                                 ^  v                                          ^  v
+//                                 ^  R                                           ^  R
+//                              x->right->left 3                                   x->right->right 2
+//
+// to
+//
+//                                                                                 x->parent 0
+//                                                                                v  P
+//                                                                               v  ^
+//                                                                              L  ^
+//                                            xR = x->right; x->right->left->parent 1
+//                                           v  P                               P  v
+//                                          v  ^                                 ^  v
+//                                         L  ^                                   ^  R
+//        x; x->right->parent; x->parent->left 2                                   x->right->right 2
+//       v  P                              P  v
+//      v  ^                                ^  v
+//     L  ^                                  ^  R
+// x->left 3                                  x->right->left 3
+
+// or
+
+//       <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//       v                                              ^
+//       P                                              ^
+// x->parent 0 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ^
+//                                                   v  ^
+//                                                   v  ^
+//                                                   v  ^
+//          x; x->right->parent; x->parent->right 2  v  ^
+//         v  P                       P  v    v L    v  ^
+//        v  ^                        ^  v     v ^   v  ^
+//       L  ^                         ^  v      P ^  R  ^
+//   x->left 3                        ^  v       xR = x->right; x->right->left->parent 1
+//                                    ^  v                                         P  v
+//                                    ^  v                                          ^  v
+//                                    ^  R                                           ^  R
+//                                 x->right->left 3                                   x->right->right 2
+//
+// to
+//
+//                                    x->parent 0
+//                                          P  v
+//                                           ^  v
+//                                            ^  R
+//                                             xR = x->right; x->right->left->parent 1
+//                                            v  P                               P  v
+//                                           v  ^                                 ^  v
+//                                          L  ^                                   ^  R
+//        x; x->right->parent; x->parent->right 2                                   x->right->right 2
+//       v  P                               P  v
+//      v  ^                                 ^  v
+//     L  ^                                   ^  R
+// x->left 3                                   x->right->left 3
 }
 
 // integrated for root sentinel
 static void RightRotate(BinaryTreeNode* x)
 {
-  BinaryTreeNode* y = x->left;
+  BinaryTreeNode* xL = x->left;
 
   // 1 of 6
-  x->left = y->right;
+  x->left = xL->right;
 
   // 2 of 6
-  if(y->right)
-    y->right->parent = x;
+  if(xL->right)
+    xL->right->parent = x;
 
   // 3 of 6
-  y->parent = x->parent;
+  xL->parent = x->parent;
 
   // 4 of 6
   if(x == x->parent->right)
-    x->parent->right = y;
+    x->parent->right = xL;
   else /* x == x->parent->left */
-    x->parent->left = y;
+    x->parent->left = xL;
 
   // 5 of 6
-  y->right = x;
+  xL->right = x;
 
   // 6 of 6
-  x->parent = y;
+  x->parent = xL;
 }
 
 // integrated for root sentinel
@@ -357,6 +574,122 @@ static void RightLeftInsertRotate(BinaryTreeNode* x)
   xPP->parent = x;
 }
 
+// xP; x->parent
+// xPR; x->parent->right
+// xPRL; x->parent->right->left
+// xPRLL; x->parent->right->left->left
+
+// x 0
+// x->parent 0 2 7 10
+// x->parent->right 0 1 7 7 12
+// x->parent->right->left 0 4 6 11
+// x->parent->right->left->left 0 3 5 9 11
+// x->parent->right->left->left->left 1 2 10
+// x->parent->right->left->left->left->parent 2
+// x->parent->right->left->left->right 3 4 6
+// x->parent->right->left->left->right->parent 4
+// x->parent->right->left->left->parent 12
+// x->parent->right->left->parent 5
+// x->parent->right->parent 8
+// x->parent->parent 8 9
+// x->parent->parent->left 7 7
+// x->parent->parent->right 7
+
+// 0
+// 1 1
+// 2 2
+// 3
+// 4
+// 5 5
+//
+// 0
+// 1 1
+// 2
+// 3 3
+// 4 4 4
+
+//                                                                                                                                                                                                                                   x->parent->parent 0
+//                                                                                                                                                                                                                                  v  P           P  v
+//                                                                                                                                                                                                                                 v  ^             ^  v
+//                                                                                                                                                                                                                                L  ^               ^  R
+//                                                                                                                                                                  xP = x->parent; x->parent->right->parent; x->parent->parent->left 1               x->parent->parent->right 1
+//                                                                                                                                                                 v  P                                                           P  v
+//                                                                                                                                                                v  ^                                                             ^  v
+//                                                                                                                                                               L  ^                                                               ^  R
+//                                                                                                                                                   x->parent->left 2                                                               xPR = x->parent->right; x->parent->right->left->parent 2
+//                                                                                                                                                                                                                                  v  P
+//                                                                                                                                                                                                                                 v  ^
+//                                                                                                                                                                                                                                L  ^
+//                                                                                                                                                                xPRL = x->parent->right->left; x->parent->right->left->left->parent 3
+//                                                                                                                                                               v  P
+//                                                                                                                                                              v  ^
+//                                                                                                                                                             L  ^
+//                                   xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent 4
+//                                  v  P                                                                                                                       P  v
+//                                 v  ^                                                                                                                         ^  v
+//                                L  ^                                                                                                                           ^  R
+// x->parent->right->left->left->left 5                                                                                                                            x->parent->right->left->left->right 5
+//
+//                                                                                                                                                                                                                                                                    x->parent->parent 0
+//                                                                                                                                                                                                                                                                   v  P           P  v
+//                                                                                                                                                                                                                                                                  v  ^             ^  v
+//                                                                                                                                                                                                                                                                 L  ^               ^  R
+//                                                                                                                                                                                                              xPR = x->parent->right; x->parent->right->left->parent 1               x->parent->parent->right 1
+//                                                                                                                                                                                                             v  P
+//                                                                                                                                                                                                            v  ^
+//                                                                                                                                                                                                           L  ^
+//                                                                                 xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent 2
+//                                                                                v  P                                                                                                                       P  v
+//                                                                               v  ^                                                                                                                         ^  v
+//                                                                              L  ^                                                                                                                           ^  R
+//                xP = x->parent; x->parent->right->parent; x->parent->parent->left 3                                                                                                                           xPRL = x->parent->right->left; x->parent->right->left->left->parent 3
+//               v  P                                                           P  v                                                                                                                           v  P
+//              v  ^                                                             ^  v                                                                                                                         v  ^
+//             L  ^                                                               ^  R                                                                                                                       L  ^
+// x->parent->left 4                                                               x->parent->right->left->left->left 4                                                      x->parent->right->left->left->right 4
+
+// or
+
+//                                                                                                                                                x->parent->parent 0
+//                                                                                                                                               v  P           P  v
+//                                                                                                                                              v  ^             ^  v
+//                                                                                                                                             L  ^               ^  R
+//                                                                                                                         x->parent->parent->left 1               xP = x->parent; x->parent->right->parent; x->parent->parent->right 1
+//                                                                                                                                                                v  P                                                            P  v
+//                                                                                                                                                               v  ^                                                              ^  v
+//                                                                                                                                                              L  ^                                                                ^  R
+//                                                                                                                                                  x->parent->left 2                                                                xPR = x->parent->right; x->parent->right->left->parent 2
+//                                                                                                                                                                                                                                  v  P
+//                                                                                                                                                                                                                                 v  ^
+//                                                                                                                                                                                                                                L  ^
+//                                                                                                                                                                xPRL = x->parent->right->left; x->parent->right->left->left->parent 3
+//                                                                                                                                                               v  P
+//                                                                                                                                                              v  ^
+//                                                                                                                                                             L  ^
+//                                   xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent 4
+//                                  v  P                                                                                                                       P  v
+//                                 v  ^                                                                                                                         ^  v
+//                                L  ^                                                                                                                           ^  R
+// x->parent->right->left->left->left 5                                                                                                                            x->parent->right->left->left->right 5
+//
+//                                                                                                                                                                                                                                      x->parent->parent 0
+//                                                                                                                                                                                                                                     v  P           P  v
+//                                                                                                                                                                                                                                    v  ^             ^  v
+//                                                                                                                                                                                                                                   L  ^               ^  R
+//                                                                                                                                                                                                               x->parent->parent->left 1               xPR = x->parent->right; x->parent->right->left->parent 1
+//                                                                                                                                                                                                                                                      v  P
+//                                                                                                                                                                                                                                                     v  ^
+//                                                                                                                                                                                                                                                    L  ^
+//                                                                                                                          xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent 2
+//                                                                                                                         v  P                                                                                                                       P  v
+//                                                                                                                        v  ^                                                                                                                         ^  v
+//                                                                                                                       L  ^                                                                                                                           ^  R
+//                                                        xP = x->parent; x->parent->right->parent; x->parent->parent->right 3                                                                                                                           xPRL = x->parent->right->left; x->parent->right->left->left->parent 3
+//                                                       v  P                                                            P  v                                                                                                                           v  P
+//                                                      v  ^                                                              ^  v                                                                                                                         v  ^
+//                                                     L  ^                                                                ^  R                                                                                                                       L  ^
+//                                         x->parent->left 4                                                                x->parent->right->left->left->left 4                                                      x->parent->right->left->left->right 4
+
 // integrated for root sentinel
 static void LeftRightLeftRotate(BinaryTreeNode* xP)
 {
@@ -364,25 +697,392 @@ static void LeftRightLeftRotate(BinaryTreeNode* xP)
   BinaryTreeNode* xPRL = xPR->left;
   BinaryTreeNode* xPRLL = xPRL->left;
 
+//                                                                                                                                                                                                                                   x->parent->parent
+//                                                                                                                                                                                                                                  v  P           P  v
+//                                                                                                                                                                                                                                 v  ^             ^  v
+//                                                                                                                                                                                                                                L  ^               ^  R
+//                                                                                                                                                                  xP = x->parent; x->parent->right->parent; x->parent->parent->left                 x->parent->parent->right
+//                                                                                                                                                                 v  P                                                           P  v
+//                                                                                                                                                                v  ^                                                             ^  v
+//                                                                                                                                                               L  ^                                                               ^  R
+//                                                                                                                                                   x->parent->left                                                                 xPR = x->parent->right; x->parent->right->left->parent
+//                                                                                                                                                                                                                                  v  P
+//                                                                                                                                                                                                                                 v  ^
+//                                                                                                                                                                                                                                L  ^
+//                                                                                                                                                                xPRL = x->parent->right->left; x->parent->right->left->left->parent
+//                                                                                                                                                               v  P
+//                                                                                                                                                              v  ^
+//                                                                                                                                                             L  ^
+//                                   xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent
+//                                  v  P                                                                                                                       P  v
+//                                 v  ^                                                                                                                         ^  v
+//                                L  ^                                                                                                                           ^  R
+// x->parent->right->left->left->left                                                                                                                             x->parent->right->left->left->right
+
+// or
+
+//                                                                                                                                                x->parent->parent
+//                                                                                                                                               v  P           P  v
+//                                                                                                                                              v  ^             ^  v
+//                                                                                                                                             L  ^               ^  R
+//                                                                                                                         x->parent->parent->left                 xP = x->parent; x->parent->right->parent; x->parent->parent->right
+//                                                                                                                                                                v  P                                                            P  v
+//                                                                                                                                                               v  ^                                                              ^  v
+//                                                                                                                                                              L  ^                                                                ^  R
+//                                                                                                                                                  x->parent->left                                                                  xPR = x->parent->right; x->parent->right->left->parent
+//                                                                                                                                                                                                                                  v  P
+//                                                                                                                                                                                                                                 v  ^
+//                                                                                                                                                                                                                                L  ^
+//                                                                                                                                                                xPRL = x->parent->right->left; x->parent->right->left->left->parent
+//                                                                                                                                                               v  P
+//                                                                                                                                                              v  ^
+//                                                                                                                                                             L  ^
+//                                   xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent
+//                                  v  P                                                                                                                       P  v
+//                                 v  ^                                                                                                                         ^  v
+//                                L  ^                                                                                                                           ^  R
+// x->parent->right->left->left->left                                                                                                                             x->parent->right->left->left->right
+
   // 1 of 12
   xP->right = xPRLL->left;
+
+//                                                                                                                                                                                                                                   x->parent->parent
+//               <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<                                  v  P           P  v
+//               v                                                                                                                                                                               ^                                 v  ^             ^  v
+//               v                                                                                                                                                                               ^                                L  ^               ^  R
+//               v                                                                                                                                                  xP = x->parent; x->parent->right->parent; x->parent->parent->left                 x->parent->parent->right
+//               v                                                                                                                                                 v  P                                                           P
+//               v                                                                                                                                                v  ^                                                             ^
+//               v                                                                                                                                               L  ^                                                               ^
+//               v                                                                                                                                   x->parent->left                                                                 xPR = x->parent->right; x->parent->right->left->parent
+//               v                                                                                                                                                                                                                  v  P
+//               v                                                                                                                                                                                                                 v  ^
+//               v                                                                                                                                                                                                                L  ^
+//               v                                                                                                                                                xPRL = x->parent->right->left; x->parent->right->left->left->parent
+//               v                                                                                                                                               v  P
+//               v                                                                                                                                              v  ^
+//               v                                                                                                                                             L  ^
+//               v                   xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent
+//               v                  v  P                                                                                                                       P  v
+//               v                 v  ^                                                                                                                         ^  v
+//               R                L  ^                                                                                                                           ^  R
+// x->parent->right->left->left->left                                                                                                                             x->parent->right->left->left->right
+
+// or
+
+//               <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//               v                                                                                                                                                                              ^
+//               v                                                                                                                                                                              ^
+//               v                                                                                                                                                                              ^
+//               v                                                                                                                                                                              ^
+//               v                                                                                                                                x->parent->parent                             ^
+//               v                                                                                                                               v  P           P  v                            ^
+//               v                                                                                                                              v  ^             ^  v                           ^
+//               v                                                                                                                             L  ^               ^  R                          ^
+//               v                                                                                                         x->parent->parent->left                 xP = x->parent; x->parent->right->parent; x->parent->parent->right
+//               v                                                                                                                                                v  P                                                            P
+//               v                                                                                                                                               v  ^                                                              ^
+//               v                                                                                                                                              L  ^                                                                ^
+//               v                                                                                                                                  x->parent->left                                                                  xPR = x->parent->right; x->parent->right->left->parent
+//               v                                                                                                                                                                                                                  v  P
+//               v                                                                                                                                                                                                                 v  ^
+//               v                                                                                                                                                                                                                L  ^
+//               v                                                                                                                                                xPRL = x->parent->right->left; x->parent->right->left->left->parent
+//               v                                                                                                                                               v  P
+//               v                                                                                                                                              v  ^
+//               v                                                                                                                                             L  ^
+//               v                   xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent
+//               v                  v  P                                                                                                                       P  v
+//               v                 v  ^                                                                                                                         ^  v
+//               R                L  ^                                                                                                                           ^  R
+// x->parent->right->left->left->left                                                                                                                             x->parent->right->left->left->right
 
   // 2 of 12
   if(xPRLL->left)
     xPRLL->left->parent = xP;
 
+//            >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//            ^                                                                                                                                                                                     v                                x->parent->parent
+//            ^  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  v                               v  P           P  v
+//            ^  v                                                                                                                                                                               ^  v                              v  ^             ^  v
+//            ^  v                                                                                                                                                                               ^  P                             L  ^               ^  R
+//            ^  v                                                                                                                                                  xP = x->parent; x->parent->right->parent; x->parent->parent->left                 x->parent->parent->right
+//            ^  v                                                                                                                                                 v  P                                                           P
+//            ^  v                                                                                                                                                v  ^                                                             ^
+//            ^  v                                                                                                                                               L  ^                                                               ^
+//            ^  v                                                                                                                                   x->parent->left                                                                 xPR = x->parent->right; x->parent->right->left->parent
+//            ^  v                                                                                                                                                                                                                  v  P
+//            ^  v                                                                                                                                                                                                                 v  ^
+//            ^  v                                                                                                                                                                                                                L  ^
+//            ^  v                                                                                                                                                xPRL = x->parent->right->left; x->parent->right->left->left->parent
+//            ^  v                                                                                                                                               v  P
+//            ^  v                                                                                                                                              v  ^
+//            ^  v                                                                                                                                             L  ^
+//            ^  v                   xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent
+//            ^  v                  v                                                                                                                          P  v
+//            ^  v                 v                                                                                                                            ^  v
+//            ^  R                L                                                                                                                              ^  R
+// x->parent->right->left->left->left                                                                                                                             x->parent->right->left->left->right
+
+// or
+
+//            >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//            ^                                                                                                                                                                                    v
+//            ^  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                x->parent->parent                             ^  v
+//            ^  v                                                                                                                               v  P           P  v                            ^  v
+//            ^  v                                                                                                                              v  ^             ^  v                           ^  v
+//            ^  v                                                                                                                             L  ^               ^  R                          ^  P
+//            ^  v                                                                                                         x->parent->parent->left                 xP = x->parent; x->parent->right->parent; x->parent->parent->right
+//            ^  v                                                                                                                                                v  P                                                            P
+//            ^  v                                                                                                                                               v  ^                                                              ^
+//            ^  v                                                                                                                                              L  ^                                                                ^
+//            ^  v                                                                                                                                  x->parent->left                                                                  xPR = x->parent->right; x->parent->right->left->parent
+//            ^  v                                                                                                                                                                                                                  v  P
+//            ^  v                                                                                                                                                                                                                 v  ^
+//            ^  v                                                                                                                                                                                                                L  ^
+//            ^  v                                                                                                                                                xPRL = x->parent->right->left; x->parent->right->left->left->parent
+//            ^  v                                                                                                                                               v  P
+//            ^  v                                                                                                                                              v  ^
+//            ^  v                                                                                                                                             L  ^
+//            ^  v                   xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent
+//            ^  v                  v                                                                                                                          P  v
+//            ^  v                 v                                                                                                                            ^  v
+//            ^  R                L                                                                                                                              ^  R
+// x->parent->right->left->left->left                                                                                                                             x->parent->right->left->left->right
+
   // 3 of 12
   xPRL->left = xPRLL->right;
+
+//            >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//            ^                                                                                                                                                                                     v                                x->parent->parent
+//            ^  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  v                               v  P           P  v
+//            ^  v                                                                                                                                                                               ^  v                              v  ^             ^  v
+//            ^  v                                                                                                                                                                               ^  P                             L  ^               ^  R
+//            ^  v                                                                                                                                                  xP = x->parent; x->parent->right->parent; x->parent->parent->left                 x->parent->parent->right
+//            ^  v                                                                                                                                                 v  P                                                           P
+//            ^  v                                                                                                                                                v  ^                                                             ^
+//            ^  v                                                                                                                                               L  ^                                                               ^
+//            ^  v                                                                                                                                   x->parent->left                                                                 xPR = x->parent->right; x->parent->right->left->parent
+//            ^  v                                                                                                                                                                                                                  v  P
+//            ^  v                                                                                                                                                                                                                 v  ^
+//            ^  v                                                                                                                                                                                                                L  ^
+//            ^  v                                                                                                                                                xPRL = x->parent->right->left; x->parent->right->left->left->parent
+//            ^  v                                                                                                                                                  P    v
+//            ^  v                                                                                                                                                 ^     v
+//            ^  v                                                                                                                                                ^      v
+//            ^  v                   xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent       v
+//            ^  v                  v                                                                                                                          P  v      v
+//            ^  v                 v                                                                                                                            ^  v     v
+//            ^  R                L                                                                                                                              ^  R    L
+// x->parent->right->left->left->left                                                                                                                             x->parent->right->left->left->right
+
+// or
+
+//            >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//            ^                                                                                                                                                                                    v
+//            ^  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                x->parent->parent                             ^  v
+//            ^  v                                                                                                                               v  P           P  v                            ^  v
+//            ^  v                                                                                                                              v  ^             ^  v                           ^  v
+//            ^  v                                                                                                                             L  ^               ^  R                          ^  P
+//            ^  v                                                                                                         x->parent->parent->left                 xP = x->parent; x->parent->right->parent; x->parent->parent->right
+//            ^  v                                                                                                                                                v  P                                                            P
+//            ^  v                                                                                                                                               v  ^                                                              ^
+//            ^  v                                                                                                                                              L  ^                                                                ^
+//            ^  v                                                                                                                                  x->parent->left                                                                  xPR = x->parent->right; x->parent->right->left->parent
+//            ^  v                                                                                                                                                                                                                  v  P
+//            ^  v                                                                                                                                                                                                                 v  ^
+//            ^  v                                                                                                                                                                                                                L  ^
+//            ^  v                                                                                                                                                xPRL = x->parent->right->left; x->parent->right->left->left->parent
+//            ^  v                                                                                                                                                  P    v
+//            ^  v                                                                                                                                                 ^     v
+//            ^  v                                                                                                                                                ^      v
+//            ^  v                   xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent       v
+//            ^  v                  v                                                                                                                          P  v      v
+//            ^  v                 v                                                                                                                            ^  v     v
+//            ^  R                L                                                                                                                              ^  R    L
+// x->parent->right->left->left->left                                                                                                                             x->parent->right->left->left->right
 
   // 4 of 12
   if(xPRLL->right)
     xPRLL->right->parent = xPRL;
 
+//            >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//            ^                                                                                                                                                                                     v                                x->parent->parent
+//            ^  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  v                               v  P           P  v
+//            ^  v                                                                                                                                                                               ^  v                              v  ^             ^  v
+//            ^  v                                                                                                                                                                               ^  P                             L  ^               ^  R
+//            ^  v                                                                                                                                                  xP = x->parent; x->parent->right->parent; x->parent->parent->left                 x->parent->parent->right
+//            ^  v                                                                                                                                                 v  P                                                           P
+//            ^  v                                                                                                                                                v  ^                                                             ^
+//            ^  v                                                                                                                                               L  ^                                                               ^
+//            ^  v                                                                                                                                   x->parent->left                                                                 xPR = x->parent->right; x->parent->right->left->parent
+//            ^  v                                                                                                                                                                                                                  v  P
+//            ^  v                                                                                                                                                                                                                 v  ^
+//            ^  v                                                                                                                                                                                                                L  ^
+//            ^  v                                                                                                                                                xPRL = x->parent->right->left; x->parent->right->left->left->parent
+//            ^  v                                                                                                                                                  P    v  P
+//            ^  v                                                                                                                                                 ^     v  ^
+//            ^  v                                                                                                                                                ^      v  ^
+//            ^  v                   xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent       v  ^
+//            ^  v                  v                                                                                                                             v      v  ^
+//            ^  v                 v                                                                                                                               v     v  ^
+//            ^  R                L                                                                                                                                 R    L  ^
+// x->parent->right->left->left->left                                                                                                                             x->parent->right->left->left->right
+
+// or
+
+//            >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//            ^                                                                                                                                                                                    v
+//            ^  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                x->parent->parent                             ^  v
+//            ^  v                                                                                                                               v  P           P  v                            ^  v
+//            ^  v                                                                                                                              v  ^             ^  v                           ^  v
+//            ^  v                                                                                                                             L  ^               ^  R                          ^  P
+//            ^  v                                                                                                         x->parent->parent->left                 xP = x->parent; x->parent->right->parent; x->parent->parent->right
+//            ^  v                                                                                                                                                v  P                                                            P
+//            ^  v                                                                                                                                               v  ^                                                              ^
+//            ^  v                                                                                                                                              L  ^                                                                ^
+//            ^  v                                                                                                                                  x->parent->left                                                                  xPR = x->parent->right; x->parent->right->left->parent
+//            ^  v                                                                                                                                                                                                                  v  P
+//            ^  v                                                                                                                                                                                                                 v  ^
+//            ^  v                                                                                                                                                                                                                L  ^
+//            ^  v                                                                                                                                                xPRL = x->parent->right->left; x->parent->right->left->left->parent
+//            ^  v                                                                                                                                                  P    v  P
+//            ^  v                                                                                                                                                 ^     v  ^
+//            ^  v                                                                                                                                                ^      v  ^
+//            ^  v                   xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent       v  ^
+//            ^  v                  v                                                                                                                             v      v  ^
+//            ^  v                 v                                                                                                                               v     v  ^
+//            ^  R                L                                                                                                                                 R    L  ^
+// x->parent->right->left->left->left                                                                                                                             x->parent->right->left->left->right
+
   // 5 of 12
   xPRL->parent = xPRLL;
 
+//            >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//            ^                                                                                                                                                                                     v                                x->parent->parent
+//            ^  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  v                               v  P           P  v
+//            ^  v                                                                                                                                                                               ^  v                              v  ^             ^  v
+//            ^  v                                                                                                                                                                               ^  P                             L  ^               ^  R
+//            ^  v                                                                                                                                                  xP = x->parent; x->parent->right->parent; x->parent->parent->left                 x->parent->parent->right
+//            ^  v                                                                                                                                                 v  P                                                           P
+//            ^  v                                                                                                                                                v  ^                                                             ^
+//            ^  v                                                                                                                                               L  ^                                                               ^
+//            ^  v                                                                                                                                   x->parent->left                                                                 xPR = x->parent->right; x->parent->right->left->parent
+//            ^  v                                                                                                                                                                                                                  v
+//            ^  v                                                                                                                                                                                                                 v
+//            ^  v                                                                                                                                                                                                                L
+//            ^  v                                                                                                                          <<<<<<<<<<<<<<<<<<<<< xPRL = x->parent->right->left; x->parent->right->left->left->parent
+//            ^  v                                                                                                                          v                       P    v  P
+//            ^  v                                                                                                                          v                      ^     v  ^
+//            ^  v                                                                                                                          P                     ^      v  ^
+//            ^  v                   xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent       v  ^
+//            ^  v                  v                                                                                                                             v      v  ^
+//            ^  v                 v                                                                                                                               v     v  ^
+//            ^  R                L                                                                                                                                 R    L  ^
+// x->parent->right->left->left->left                                                                                                                             x->parent->right->left->left->right
+
+// or
+
+//            >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//            ^                                                                                                                                                                                    v
+//            ^  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                x->parent->parent                             ^  v
+//            ^  v                                                                                                                               v  P           P  v                            ^  v
+//            ^  v                                                                                                                              v  ^             ^  v                           ^  v
+//            ^  v                                                                                                                             L  ^               ^  R                          ^  P
+//            ^  v                                                                                                         x->parent->parent->left                 xP = x->parent; x->parent->right->parent; x->parent->parent->right
+//            ^  v                                                                                                                                                v  P                                                            P
+//            ^  v                                                                                                                                               v  ^                                                              ^
+//            ^  v                                                                                                                                              L  ^                                                                ^
+//            ^  v                                                                                                                                  x->parent->left                                                                  xPR = x->parent->right; x->parent->right->left->parent
+//            ^  v                                                                                                                                                                                                                  v
+//            ^  v                                                                                                                                                                                                                 v
+//            ^  v                                                                                                                                                                                                                L
+//            ^  v                                                                                                                          <<<<<<<<<<<<<<<<<<<<< xPRL = x->parent->right->left; x->parent->right->left->left->parent
+//            ^  v                                                                                                                          v                       P    v  P
+//            ^  v                                                                                                                          v                      ^     v  ^
+//            ^  v                                                                                                                          P                     ^      v  ^
+//            ^  v                   xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent       v  ^
+//            ^  v                  v                                                                                                                             v      v  ^
+//            ^  v                 v                                                                                                                               v     v  ^
+//            ^  R                L                                                                                                                                 R    L  ^
+// x->parent->right->left->left->left                                                                                                                             x->parent->right->left->left->right
+
   // 6 of 12
   xPRLL->right = xPRL;
+
+//            >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//            ^                                                                                                                                                                                     v                                x->parent->parent
+//            ^  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  v                               v  P           P  v
+//            ^  v                                                                                                                                                                               ^  v                              v  ^             ^  v
+//            ^  v                                                                                                                                                                               ^  P                             L  ^               ^  R
+//            ^  v                                                                                                                                                  xP = x->parent; x->parent->right->parent; x->parent->parent->left                 x->parent->parent->right
+//            ^  v                                                                                                                                                 v  P                                                           P
+//            ^  v                                                                                                                                                v  ^                                                             ^
+//            ^  v                                                                                                                                               L  ^                                                               ^
+//            ^  v                                                                                                                                   x->parent->left                                                                 xPR = x->parent->right; x->parent->right->left->parent
+//            ^  v                                                                                                                                                                                                                  v
+//            ^  v                                                                                                                                                                                                                 v
+//            ^  v                                                                                                                                                                                                                L
+//            ^  v                                                                                                                          <<<<<<<<<<<<<<<<<<<<< xPRL = x->parent->right->left; x->parent->right->left->left->parent
+//            ^  v                                                                                                                          v                    R  P    v  P
+//            ^  v                                                                                                                          v                   ^  ^     v  ^
+//            ^  v                                                                                                                          P                  ^  ^      v  ^
+//            ^  v                   xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent       v  ^
+//            ^  v                  v                                                                                                                                    v  ^
+//            ^  v                 v                                                                                                                                     v  ^
+//            ^  R                L                                                                                                                                      L  ^
+// x->parent->right->left->left->left                                                                                                                             x->parent->right->left->left->right
+
+// or
+
+//            >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//            ^                                                                                                                                                                                    v
+//            ^  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                x->parent->parent                             ^  v
+//            ^  v                                                                                                                               v  P           P  v                            ^  v
+//            ^  v                                                                                                                              v  ^             ^  v                           ^  v
+//            ^  v                                                                                                                             L  ^               ^  R                          ^  P
+//            ^  v                                                                                                         x->parent->parent->left                 xP = x->parent; x->parent->right->parent; x->parent->parent->right
+//            ^  v                                                                                                                                                v  P                                                            P
+//            ^  v                                                                                                                                               v  ^                                                              ^
+//            ^  v                                                                                                                                              L  ^                                                                ^
+//            ^  v                                                                                                                                  x->parent->left                                                                  xPR = x->parent->right; x->parent->right->left->parent
+//            ^  v                                                                                                                                                                                                                  v
+//            ^  v                                                                                                                                                                                                                 v
+//            ^  v                                                                                                                                                                                                                L
+//            ^  v                                                                                                                          <<<<<<<<<<<<<<<<<<<<< xPRL = x->parent->right->left; x->parent->right->left->left->parent
+//            ^  v                                                                                                                          v                    R  P    v  P
+//            ^  v                                                                                                                          v                   ^  ^     v  ^
+//            ^  v                                                                                                                          P                  ^  ^      v  ^
+//            ^  v                   xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent       v  ^
+//            ^  v                  v                                                                                                                                    v  ^
+//            ^  v                 v                                                                                                                                     v  ^
+//            ^  R                L                                                                                                                                      L  ^
+// x->parent->right->left->left->left                                                                                                                             x->parent->right->left->left->right
 
   // 7 of 12
   if(xP == xP->parent->left)
@@ -390,20 +1090,402 @@ static void LeftRightLeftRotate(BinaryTreeNode* xP)
   else /* xP == xP->parent->right */
     xP->parent->right = xPR;
 
+//            >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//            ^                                                                                                                                                                                     v                                x->parent->parent
+//            ^  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  v                                  P    v      P  v
+//            ^  v                                                                                                                                                                               ^  v                                 ^     v       ^  v
+//            ^  v                                                                                                                                                                               ^  P                                ^      v        ^  R
+//            ^  v                                                                                                                                                  xP = x->parent; x->parent->right->parent; x->parent->parent->left       v         x->parent->parent->right
+//            ^  v                                                                                                                                                 v  P                                                           P         v
+//            ^  v                                                                                                                                                v  ^                                                             ^        v
+//            ^  v                                                                                                                                               L  ^                                                               ^       L
+//            ^  v                                                                                                                                   x->parent->left                                                                 xPR = x->parent->right; x->parent->right->left->parent
+//            ^  v                                                                                                                                                                                                                  v
+//            ^  v                                                                                                                                                                                                                 v
+//            ^  v                                                                                                                                                                                                                L
+//            ^  v                                                                                                                          <<<<<<<<<<<<<<<<<<<<< xPRL = x->parent->right->left; x->parent->right->left->left->parent
+//            ^  v                                                                                                                          v                    R  P    v  P
+//            ^  v                                                                                                                          v                   ^  ^     v  ^
+//            ^  v                                                                                                                          P                  ^  ^      v  ^
+//            ^  v                   xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent       v  ^
+//            ^  v                  v                                                                                                                                    v  ^
+//            ^  v                 v                                                                                                                                     v  ^
+//            ^  R                L                                                                                                                                      L  ^
+// x->parent->right->left->left->left                                                                                                                             x->parent->right->left->left->right
+
+// or
+
+//            >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//            ^                                                                                                                                                                                    v
+//            ^  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                x->parent->parent >>>>>>>>>>>>>>>>>>>>>>>>>>> ^  v >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//            ^  v                                                                                                                               v  P           P                               ^  v                                             v
+//            ^  v                                                                                                                              v  ^             ^                              ^  v                                             v
+//            ^  v                                                                                                                             L  ^               ^                             ^  P                                             v
+//            ^  v                                                                                                         x->parent->parent->left                 xP = x->parent; x->parent->right->parent; x->parent->parent->right            v
+//            ^  v                                                                                                                                                v  P                                                            P              v
+//            ^  v                                                                                                                                               v  ^                                                              ^             v
+//            ^  v                                                                                                                                              L  ^                                                                ^            R
+//            ^  v                                                                                                                                  x->parent->left                                                                  xPR = x->parent->right; x->parent->right->left->parent
+//            ^  v                                                                                                                                                                                                                  v
+//            ^  v                                                                                                                                                                                                                 v
+//            ^  v                                                                                                                                                                                                                L
+//            ^  v                                                                                                                          <<<<<<<<<<<<<<<<<<<<< xPRL = x->parent->right->left; x->parent->right->left->left->parent
+//            ^  v                                                                                                                          v                    R  P    v  P
+//            ^  v                                                                                                                          v                   ^  ^     v  ^
+//            ^  v                                                                                                                          P                  ^  ^      v  ^
+//            ^  v                   xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent       v  ^
+//            ^  v                  v                                                                                                                                    v  ^
+//            ^  v                 v                                                                                                                                     v  ^
+//            ^  R                L                                                                                                                                      L  ^
+// x->parent->right->left->left->left                                                                                                                             x->parent->right->left->left->right
+
   // 8 of 12
   xPR->parent = xP->parent;
+
+//            >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//            ^                                                                                                                                                                                     v                                x->parent->parent
+//            ^  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  v                                  P    v  P   P  v
+//            ^  v                                                                                                                                                                               ^  v                                 ^     v  ^    ^  v
+//            ^  v                                                                                                                                                                               ^  P                                ^      v  ^     ^  R
+//            ^  v                                                                                                                                                  xP = x->parent; x->parent->right->parent; x->parent->parent->left       v  ^      x->parent->parent->right
+//            ^  v                                                                                                                                                 v  P                                                                     v  ^
+//            ^  v                                                                                                                                                v  ^                                                                      v  ^
+//            ^  v                                                                                                                                               L  ^                                                                       L  ^
+//            ^  v                                                                                                                                   x->parent->left                                                                 xPR = x->parent->right; x->parent->right->left->parent
+//            ^  v                                                                                                                                                                                                                  v
+//            ^  v                                                                                                                                                                                                                 v
+//            ^  v                                                                                                                                                                                                                L
+//            ^  v                                                                                                                          <<<<<<<<<<<<<<<<<<<<< xPRL = x->parent->right->left; x->parent->right->left->left->parent
+//            ^  v                                                                                                                          v                    R  P    v  P
+//            ^  v                                                                                                                          v                   ^  ^     v  ^
+//            ^  v                                                                                                                          P                  ^  ^      v  ^
+//            ^  v                   xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent       v  ^
+//            ^  v                  v                                                                                                                                    v  ^
+//            ^  v                 v                                                                                                                                     v  ^
+//            ^  R                L                                                                                                                                      L  ^
+// x->parent->right->left->left->left                                                                                                                             x->parent->right->left->left->right
+
+// or
+
+//            >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//            ^                                                                                                                                                                                    v
+//            ^  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                           <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ^  v <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//            ^  v                                                                                                                                           v                                  ^  v                                                ^
+//            ^  v                                                                                                                                           P                                  ^  v                                                ^
+//            ^  v                                                                                                                                x->parent->parent >>>>>>>>>>>>>>>>>>>>>>>>>>> ^  v >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ^
+//            ^  v                                                                                                                               v  P           P                               ^  v                                             v  ^
+//            ^  v                                                                                                                              v  ^             ^                              ^  v                                             v  ^
+//            ^  v                                                                                                                             L  ^               ^                             ^  P                                             v  ^
+//            ^  v                                                                                                         x->parent->parent->left                 xP = x->parent; x->parent->right->parent; x->parent->parent->right            v  ^
+//            ^  v                                                                                                                                                v  P                                                                           v  ^
+//            ^  v                                                                                                                                               v  ^                                                                            v  ^
+//            ^  v                                                                                                                                              L  ^                                                                             R  ^
+//            ^  v                                                                                                                                  x->parent->left                                                                  xPR = x->parent->right; x->parent->right->left->parent
+//            ^  v                                                                                                                                                                                                                  v
+//            ^  v                                                                                                                                                                                                                 v
+//            ^  v                                                                                                                                                                                                                L
+//            ^  v                                                                                                                          <<<<<<<<<<<<<<<<<<<<< xPRL = x->parent->right->left; x->parent->right->left->left->parent
+//            ^  v                                                                                                                          v                    R  P    v  P
+//            ^  v                                                                                                                          v                   ^  ^     v  ^
+//            ^  v                                                                                                                          P                  ^  ^      v  ^
+//            ^  v                   xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent       v  ^
+//            ^  v                  v                                                                                                                                    v  ^
+//            ^  v                 v                                                                                                                                     v  ^
+//            ^  R                L                                                                                                                                      L  ^
+// x->parent->right->left->left->left                                                                                                                             x->parent->right->left->left->right
 
   // 9 of 12
   xP->parent = xPRLL;
 
+//            >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//            ^                                                                                                                                                                                     v                                x->parent->parent
+//            ^  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  v                                       v  P   P  v
+//            ^  v                                                                                                                                                                               ^  v                                       v  ^    ^  v
+//            ^  v                                                                                                                                                                               ^  P                                       v  ^     ^  R
+//            ^  v                                                                                                  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< xP = x->parent; x->parent->right->parent; x->parent->parent->left       v  ^      x->parent->parent->right
+//            ^  v                                                                                                  v                                              v  P                                                                     v  ^
+//            ^  v                                                                                                  v                                             v  ^                                                                      v  ^
+//            ^  v                                                                                                  v                                            L  ^                                                                       L  ^
+//            ^  v                                                                                                  v                                x->parent->left                                                                 xPR = x->parent->right; x->parent->right->left->parent
+//            ^  v                                                                                                  v                                                                                                               v
+//            ^  v                                                                                                  v                                                                                                              v
+//            ^  v                                                                                                  v                                                                                                             L
+//            ^  v                                                                                                  v                       <<<<<<<<<<<<<<<<<<<<< xPRL = x->parent->right->left; x->parent->right->left->left->parent
+//            ^  v                                                                                                  v                       v                    R  P    v  P
+//            ^  v                                                                                                  v                       v                   ^  ^     v  ^
+//            ^  v                                                                                                  P                       P                  ^  ^      v  ^
+//            ^  v                   xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent       v  ^
+//            ^  v                  v                                                                                                                                    v  ^
+//            ^  v                 v                                                                                                                                     v  ^
+//            ^  R                L                                                                                                                                      L  ^
+// x->parent->right->left->left->left                                                                                                                             x->parent->right->left->left->right
+
+// or
+
+//            >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//            ^                                                                                                                                                                                    v
+//            ^  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                           <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ^  v <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//            ^  v                                                                                                                                           v                                  ^  v                                                ^
+//            ^  v                                                                                                                                           P                                  ^  v                                                ^
+//            ^  v                                                                                                                                x->parent->parent >>>>>>>>>>>>>>>>>>>>>>>>>>> ^  v >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ^
+//            ^  v                                                                                                                               v  P                                           ^  v                                             v  ^
+//            ^  v                                                                                                                              v  ^                                            ^  v                                             v  ^
+//            ^  v                                                                                                                             L  ^                                             ^  P                                             v  ^
+//            ^  v                                                                                                         x->parent->parent->left       <<<<<<<<< xP = x->parent; x->parent->right->parent; x->parent->parent->right            v  ^
+//            ^  v                                                                                                                                       v        v  P                                                                           v  ^
+//            ^  v                                                                                                  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<       v  ^                                                                            v  ^
+//            ^  v                                                                                                  v                                           L  ^                                                                             R  ^
+//            ^  v                                                                                                  v                               x->parent->left                                                                  xPR = x->parent->right; x->parent->right->left->parent
+//            ^  v                                                                                                  v                                                                                                               v
+//            ^  v                                                                                                  v                                                                                                              v
+//            ^  v                                                                                                  v                                                                                                             L
+//            ^  v                                                                                                  v                       <<<<<<<<<<<<<<<<<<<<< xPRL = x->parent->right->left; x->parent->right->left->left->parent
+//            ^  v                                                                                                  v                       v                    R  P    v  P
+//            ^  v                                                                                                  v                       v                   ^  ^     v  ^
+//            ^  v                                                                                                  P                       P                  ^  ^      v  ^
+//            ^  v                   xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent       v  ^
+//            ^  v                  v                                                                                                                                    v  ^
+//            ^  v                 v                                                                                                                                     v  ^
+//            ^  R                L                                                                                                                                      L  ^
+// x->parent->right->left->left->left                                                                                                                             x->parent->right->left->left->right
+
   // 10 of 12
   xPRLL->left = xP;
+
+//            >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//            ^                                                                                                                                                                                     v                                x->parent->parent
+//            ^  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  v                                       v  P   P  v
+//            ^  v                                                                                                                                                                               ^  v                                       v  ^    ^  v
+//            ^  v                                                                                                                                                                               ^  P                                       v  ^     ^  R
+//            ^  v                                                                                                  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< xP = x->parent; x->parent->right->parent; x->parent->parent->left       v  ^      x->parent->parent->right
+//            ^  v                                                                                                  v                                              v  P      L                                                              v  ^
+//            ^  v                                                                                                  v                                             v  ^       ^                                                              v  ^
+//            ^  v                                                                                                  v                                            L  ^        ^                                                              L  ^
+//            ^  v                                                                                                  v                                x->parent->left         ^                                                       xPR = x->parent->right; x->parent->right->left->parent
+//            ^  v                                                                                                  v                                                        ^                                                      v
+//            ^  v                                                                                                  v          >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>                                                     v
+//            ^  v                                                                                                  v          ^                                                                                                  L
+//            ^  v                                                                                                  v          ^            <<<<<<<<<<<<<<<<<<<<< xPRL = x->parent->right->left; x->parent->right->left->left->parent
+//            ^  v                                                                                                  v          ^            v                    R  P    v  P
+//            ^  v                                                                                                  v          ^            v                   ^  ^     v  ^
+//            ^  v                                                                                                  P          ^            P                  ^  ^      v  ^
+//            ^  v                   xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent       v  ^
+//            ^  v                                                                                                                                                       v  ^
+//            ^  v                                                                                                                                                       v  ^
+//            ^  R                                                                                                                                                       L  ^
+// x->parent->right->left->left->left                                                                                                                             x->parent->right->left->left->right
+
+// or
+
+//            >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//            ^                                                                                                                                                                                    v
+//            ^  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                           <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ^  v <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//            ^  v                                                                                                                                           v                                  ^  v                                                ^
+//            ^  v                                                                                                                                           P                                  ^  v                                                ^
+//            ^  v                                                                                                                                x->parent->parent >>>>>>>>>>>>>>>>>>>>>>>>>>> ^  v >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ^
+//            ^  v                                                                                                                               v  P                                           ^  v                                             v  ^
+//            ^  v                                                                                                                              v  ^                                            ^  v                                             v  ^
+//            ^  v                                                                                                                             L  ^                                             ^  P                                             v  ^
+//            ^  v                                                                                                         x->parent->parent->left       <<<<<<<<< xP = x->parent; x->parent->right->parent; x->parent->parent->right            v  ^
+//            ^  v                                                                                                                                       v        v  P      L                                                                    v  ^
+//            ^  v                                                                                                  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<       v  ^       ^                                                                    v  ^
+//            ^  v                                                                                                  v                                           L  ^        ^                                                                    R  ^
+//            ^  v                                                                                                  v                               x->parent->left         ^                                                        xPR = x->parent->right; x->parent->right->left->parent
+//            ^  v                                                                                                  v                                                       ^                                                       v
+//            ^  v                                                                                                  v          >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>                                                      v
+//            ^  v                                                                                                  v          ^                                                                                                  L
+//            ^  v                                                                                                  v          ^            <<<<<<<<<<<<<<<<<<<<< xPRL = x->parent->right->left; x->parent->right->left->left->parent
+//            ^  v                                                                                                  v          ^            v                    R  P    v  P
+//            ^  v                                                                                                  v          ^            v                   ^  ^     v  ^
+//            ^  v                                                                                                  P          ^            P                  ^  ^      v  ^
+//            ^  v                   xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent       v  ^
+//            ^  v                                                                                                                                                       v  ^
+//            ^  v                                                                                                                                                       v  ^
+//            ^  R                                                                                                                                                       L  ^
+// x->parent->right->left->left->left                                                                                                                             x->parent->right->left->left->right
 
   // 11 of 12
   xPR->left = xPRLL;
 
+//            >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//            ^                                                                                                                                                                                     v                                x->parent->parent
+//            ^  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  v                                       v  P   P  v
+//            ^  v                                                                                                                                                                               ^  v                                       v  ^    ^  v
+//            ^  v                                                                                                                                                                               ^  P                                       v  ^     ^  R
+//            ^  v                                                                                                  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< xP = x->parent; x->parent->right->parent; x->parent->parent->left       v  ^      x->parent->parent->right
+//            ^  v                                                                                                  v                                              v  P      L                                                              v  ^
+//            ^  v                                                                                                  v                                             v  ^       ^                                                              v  ^
+//            ^  v                                                                                                  v                                            L  ^        ^                                                              L  ^
+//            ^  v                                                                                                  v                                x->parent->left         ^                                                       xPR = x->parent->right; x->parent->right->left->parent
+//            ^  v                                                                                                  v                                                        ^                                                                v
+//            ^  v                                                                                                  v          >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>                                                                v
+//            ^  v                                                                                                  v          ^                                                                                                              v
+//            ^  v                                                                                                  v          ^            <<<<<<<<<<<<<<<<<<<<< xPRL = x->parent->right->left; x->parent->right->left->left->parent         v
+//            ^  v                                                                                                  v          ^            v                    R  P    v  P                                                                 v
+//            ^  v                                                                                                  v          ^            v                   ^  ^     v  ^                                                                 v
+//            ^  v                                                                                                  P          ^            P                  ^  ^      v  ^                                                                 v
+//            ^  v                   xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent       v  ^                                                                 v
+//            ^  v                                                                                                                    L                                  v  ^                                                                 v
+//            ^  v                                                                                                                    ^                                  v  ^                                                                 v
+//            ^  R                                                                                                                    ^                                  L  ^                                                                 v
+// x->parent->right->left->left->left                                                                                                 ^                           x->parent->right->left->left->right                                         v
+//                                                                                                                                    ^                                                                                                       v
+//                                                                                                                                    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+// or
+
+//            >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//            ^                                                                                                                                                                                    v
+//            ^  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                           <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ^  v <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//            ^  v                                                                                                                                           v                                  ^  v                                                ^
+//            ^  v                                                                                                                                           P                                  ^  v                                                ^
+//            ^  v                                                                                                                                x->parent->parent >>>>>>>>>>>>>>>>>>>>>>>>>>> ^  v >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ^
+//            ^  v                                                                                                                               v  P                                           ^  v                                             v  ^
+//            ^  v                                                                                                                              v  ^                                            ^  v                                             v  ^
+//            ^  v                                                                                                                             L  ^                                             ^  P                                             v  ^
+//            ^  v                                                                                                         x->parent->parent->left       <<<<<<<<< xP = x->parent; x->parent->right->parent; x->parent->parent->right            v  ^
+//            ^  v                                                                                                                                       v        v  P      L                                                                    v  ^
+//            ^  v                                                                                                  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<       v  ^       ^                                                                    v  ^
+//            ^  v                                                                                                  v                                           L  ^        ^                                                                    R  ^
+//            ^  v                                                                                                  v                               x->parent->left         ^                                                        xPR = x->parent->right; x->parent->right->left->parent
+//            ^  v                                                                                                  v                                                       ^                                                                 v
+//            ^  v                                                                                                  v          >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>                                                                 v
+//            ^  v                                                                                                  v          ^                                                                                                              v
+//            ^  v                                                                                                  v          ^            <<<<<<<<<<<<<<<<<<<<< xPRL = x->parent->right->left; x->parent->right->left->left->parent         v
+//            ^  v                                                                                                  v          ^            v                    R  P    v  P                                                                 v
+//            ^  v                                                                                                  v          ^            v                   ^  ^     v  ^                                                                 v
+//            ^  v                                                                                                  P          ^            P                  ^  ^      v  ^                                                                 v
+//            ^  v                   xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent       v  ^                                                                 v
+//            ^  v                                                                                                                    L                                  v  ^                                                                 v
+//            ^  v                                                                                                                    ^                                  v  ^                                                                 v
+//            ^  R                                                                                                                    ^                                  L  ^                                                                 v
+// x->parent->right->left->left->left                                                                                                 ^                           x->parent->right->left->left->right                                         v
+//                                                                                                                                    ^                                                                                                       v
+//                                                                                                                                    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
   // 12 of 12
   xPRLL->parent = xPR;
+
+// 0
+// 1 1
+// 2
+// 3 3
+// 4 4 4
+
+//            >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//            ^                                                                                                                                                                                     v                                x->parent->parent 0
+//            ^  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  v                                       v  P   P  v
+//            ^  v                                                                                                                                                                               ^  v                                       v  ^    ^  v
+//            ^  v                                                                                                                                                                               ^  P                                       v  ^     ^  R
+//            ^  v                                                                                                  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< xP = x->parent; x->parent->right->parent; x->parent->parent->left 3     v  ^      x->parent->parent->right 1
+//            ^  v                                                                                                  v                                              v  P      L                                                              v  ^
+//            ^  v                                                                                                  v                                             v  ^       ^                                                              v  ^
+//            ^  v                                                                                                  v                                            L  ^        ^                                                              L  ^
+//            ^  v                                                                                                  v                                x->parent->left 4       ^                                                       xPR = x->parent->right; x->parent->right->left->parent 1
+//            ^  v                                                                                                  v                                                        ^                                                                v  P
+//            ^  v                                                                                                  v          >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>                                                                v  ^
+//            ^  v                                                                                                  v          ^                                                                                                              v  ^
+//            ^  v                                                                                                  v          ^            <<<<<<<<<<<<<<<<<<<<< xPRL = x->parent->right->left; x->parent->right->left->left->parent 3       v  ^
+//            ^  v                                                                                                  v          ^            v                    R       v  P                                                                 v  ^
+//            ^  v                                                                                                  v          ^            v                   ^        v  ^                                                                 v  ^
+//            ^  v                                                                                                  P          ^            P                  ^         v  ^                                                                 v  ^
+//            ^  v                   xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent 2     v  ^                                                                 v  ^
+//            ^  v                                                                                                        v           L                                  v  ^                                                                 v  ^
+//            ^  v                                                                                                        v           ^                                  v  ^                                                                 v  ^
+//            ^  R                                                                                                        v           ^                                  L  ^                                                                 v  ^
+// x->parent->right->left->left->left 4                                                                                   v           ^                           x->parent->right->left->left->right 4                                       v  ^
+//                                                                                                                        v           ^                                                                                                       v  ^
+//                                                                                                                        v           <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  ^
+//                                                                                                                        v                                                                                                                      ^
+//                                                                                                                        >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//
+// to
+//
+//                                                                                                                                                                                                                                                                    x->parent->parent 0
+//                                                                                                                                                                                                                                                                   v  P           P  v
+//                                                                                                                                                                                                                                                                  v  ^             ^  v
+//                                                                                                                                                                                                                                                                 L  ^               ^  R
+//                                                                                                                                                                                                              xPR = x->parent->right; x->parent->right->left->parent 1               x->parent->parent->right 1
+//                                                                                                                                                                                                             v  P
+//                                                                                                                                                                                                            v  ^
+//                                                                                                                                                                                                           L  ^
+//                                                                                 xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent 2
+//                                                                                v  P                                                                                                                       P  v
+//                                                                               v  ^                                                                                                                         ^  v
+//                                                                              L  ^                                                                                                                           ^  R
+//                xP = x->parent; x->parent->right->parent; x->parent->parent->left 3                                                                                                                           xPRL = x->parent->right->left; x->parent->right->left->left->parent 3
+//               v  P                                                           P  v                                                                                                                           v  P
+//              v  ^                                                             ^  v                                                                                                                         v  ^
+//             L  ^                                                               ^  R                                                                                                                       L  ^
+// x->parent->left 4                                                               x->parent->right->left->left->left 4                                                      x->parent->right->left->left->right 4
+
+// or
+
+//            >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//            ^                                                                                                                                                                                    v
+//            ^  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  v
+//            ^  v                                                                                                                                                                              ^  v
+//            ^  v                                                                                                                                           <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ^  v <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//            ^  v                                                                                                                                           v                                  ^  v                                                ^
+//            ^  v                                                                                                                                           P                                  ^  v                                                ^
+//            ^  v                                                                                                                                x->parent->parent 0 >>>>>>>>>>>>>>>>>>>>>>>>> ^  v >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ^
+//            ^  v                                                                                                                               v  P                                           ^  v                                             v  ^
+//            ^  v                                                                                                                              v  ^                                            ^  v                                             v  ^
+//            ^  v                                                                                                                             L  ^                                             ^  P                                             v  ^
+//            ^  v                                                                                                         x->parent->parent->left 1     <<<<<<<<< xP = x->parent; x->parent->right->parent; x->parent->parent->right 3          v  ^
+//            ^  v                                                                                                                                       v        v  P      L                                                                    v  ^
+//            ^  v                                                                                                  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<       v  ^       ^                                                                    v  ^
+//            ^  v                                                                                                  v                                           L  ^        ^                                                                    R  ^
+//            ^  v                                                                                                  v                               x->parent->left 4       ^                                                        xPR = x->parent->right; x->parent->right->left->parent 1
+//            ^  v                                                                                                  v                                                       ^                                                                 v  P
+//            ^  v                                                                                                  v          >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>                                                                 v  ^
+//            ^  v                                                                                                  v          ^                                                                                                              v  ^
+//            ^  v                                                                                                  v          ^            <<<<<<<<<<<<<<<<<<<<< xPRL = x->parent->right->left; x->parent->right->left->left->parent 3       v  ^
+//            ^  v                                                                                                  v          ^            v                    R       v  P                                                                 v  ^
+//            ^  v                                                                                                  v          ^            v                   ^        v  ^                                                                 v  ^
+//            ^  v                                                                                                  P          ^            P                  ^         v  ^                                                                 v  ^
+//            ^  v                   xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent 2     v  ^                                                                 v  ^
+//            ^  v                                                                                                        v           L                                  v  ^                                                                 v  ^
+//            ^  v                                                                                                        v           ^                                  v  ^                                                                 v  ^
+//            ^  R                                                                                                        v           ^                                  L  ^                                                                 v  ^
+// x->parent->right->left->left->left 4                                                                                   v           ^                           x->parent->right->left->left->right 4                                       v  ^
+//                                                                                                                        v           ^                                                                                                       v  ^
+//                                                                                                                        v           <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  ^
+//                                                                                                                        v                                                                                                                      ^
+//                                                                                                                        >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//
+// to
+//
+//                                                                                                                                                                                                                                      x->parent->parent 0
+//                                                                                                                                                                                                                                     v  P           P  v
+//                                                                                                                                                                                                                                    v  ^             ^  v
+//                                                                                                                                                                                                                                   L  ^               ^  R
+//                                                                                                                                                                                                               x->parent->parent->left 1               xPR = x->parent->right; x->parent->right->left->parent 1
+//                                                                                                                                                                                                                                                      v  P
+//                                                                                                                                                                                                                                                     v  ^
+//                                                                                                                                                                                                                                                    L  ^
+//                                                                                                                          xPRLL = x->parent->right->left->left; x->parent->right->left->left->left->parent; x->parent->right->left->left->right->parent 2
+//                                                                                                                         v  P                                                                                                                       P  v
+//                                                                                                                        v  ^                                                                                                                         ^  v
+//                                                                                                                       L  ^                                                                                                                           ^  R
+//                                                        xP = x->parent; x->parent->right->parent; x->parent->parent->right 3                                                                                                                           xPRL = x->parent->right->left; x->parent->right->left->left->parent 3
+//                                                       v  P                                                            P  v                                                                                                                           v  P
+//                                                      v  ^                                                              ^  v                                                                                                                         v  ^
+//                                                     L  ^                                                                ^  R                                                                                                                       L  ^
+//                                         x->parent->left 4                                                                x->parent->right->left->left->left 4                                                      x->parent->right->left->left->right 4
 }
 
 // integrated for root sentinel
@@ -605,15 +1687,6 @@ lessThanOrEqualTo(lhs, rhs) return lessThan(lhs, rhs) || !greaterThan(lhs, rhs)
 greaterThanOrEqualTo(lhs, rhs) return greaterThan(lhs, rhs) || !lessThan(lhs, rhs)
 #endif
 
-#define LESSTHANWRAPPER(tree, client, node) \
-  (node == GETSENTINELFROMTREE(tree) ? 1 : tree->LessThan(client, GETCLIENT(node) ) )
-
-#define EQUALTOWRAPPER(tree, client, node) \
-  (node == GETSENTINELFROMTREE(tree) ? 0 : tree->EqualTo(client, GETCLIENT(node) ) )
-
-#define CLIENTEVALUATEWRAPPER(tree, node) \
-  (node == GETSENTINELFROMTREE(tree) ? 0 : tree->ClientEvaluate(GETCLIENT(node) ) )
-
 // integrated for root sentinel
 static void TreeInsert(BinaryTree* tree, BinaryTreeNode* insert)
 {
@@ -636,6 +1709,97 @@ static void TreeInsert(BinaryTree* tree, BinaryTreeNode* insert)
     parent->right = insert;
 }
 
+#if 0
+// case 1
+// 1A
+// 1B
+// 1C
+// 1D
+
+// case 2
+// 2A
+// 2B
+
+// case 3
+// 3A
+// 3B
+// 3C
+void rb-insert(BinaryTree* tree, BinaryTreeNode* x)
+{
+  tree-insert(tree, x)
+
+  x->color = red
+
+  while x != tree->root && x->parent->color == red
+  {
+    if x->parent == x->parent->parent->left
+    {
+      BinaryTreeNode* y = x->parent->parent->right;
+
+      // case 1
+      if y->color == red
+      {
+        x->parent->color = black // 1A
+        y->color = black // 1B
+        x->parent->parent->color = red // 1C
+        x = x->parent->parent // 1D
+      }
+      else
+      {
+        // case 2
+        if x == x->parent->right
+        {
+          x = x->parent // 2A
+          left-rotate(tree, x) // 2B
+        }
+
+        // case 3
+        x->parent->color = black // 3A
+        x->parent->parent->color = red // 3B
+        right-rotate(tree, x->parent->parent) // 3C
+      }
+    }
+    else /*if x->parent == x->parent->parent->right*/
+    {
+      BinaryTreeNode* y = x->parent->parent->left;
+
+      // case 1
+      if y->color == red
+      {
+        x->parent->color = black // 1A
+        y->color = black // 1B
+        x->parent->parent->color = red // 1C
+        x = x->parent->parent // 1D
+      }
+      else
+      {
+        // case 2
+        if x == x->parent->left
+        {
+          x = x->parent // 2A
+          right-rotate(tree, x) // 2B
+        }
+
+        // case 3
+        x->parent->color = black // 3A
+        x->parent->parent->color = red // 3B
+        left-rotate(tree, x->parent->parent) // 3C
+      }
+    }
+  }
+}
+
+left (delete) 2
+left (insert) 1
+left-right (delete) 1
+left-right (insert) 1
+
+right (delete) 2
+right (insert) 1
+right-left (delete) 1
+right-left (insert) 1
+#endif
+
 // integrated for root sentinel
 static void BinInsert(BinaryTree* tree, BinaryTreeNode* x)
 {
@@ -651,68 +1815,104 @@ static void BinInsert(BinaryTree* tree, BinaryTreeNode* x)
     {
       y = xP->parent->right;
 
+      // case 1
       if(y && y->color == RED)
       {
-        xP->color = BLACK;
+        // 1A x->parent->color = black
+        // 1B y->color = black
+        // 1C x->parent->parent->color = red
+        // 1D x = x->parent->parent
 
-        y->color = BLACK;
+        xP->color = BLACK; // 1A
 
-        xP->parent->color = RED;
+        y->color = BLACK; // 1B
 
-        x = xP->parent;
+        xP->parent->color = RED; // 1C
+
+        x = xP->parent; // 1D
       }
+      // case 2 + 3
+      else if(x == xP->right)
+      {
+        // 2A x = x->parent
+        // 2B left-rotate(tree, x)
+
+        // 3A x->parent->color = black
+        // 3B x->parent->parent->color = red
+        // 3C right-rotate(tree, x->parent->parent)
+
+        x->color = BLACK; // x->parent->color = black transformed, out of order 3A
+
+        xP->parent->color = RED; // out of order 3B
+
+        LeftRightInsertRotate(x); // left-rotate(tree, x) -> right-rotate(tree, x->parent->parent) transformed 2B -> 3C
+
+        x = x->left; // x = x->parent transformed, out of order 2A
+      }
+      // case 3
       else
       {
+        // 3A x->parent->color = black
+        // 3B x->parent->parent->color = red
+        // 3C right-rotate(tree, x->parent->parent)
+
         xP->parent->color = RED;
 
-        if(x == xP->right)
-        {
-          x->color = BLACK;
+        xP->color = BLACK;
 
-          LeftRightInsertRotate(x);
-
-          x = x->left;
-        }
-        else
-        {
-          xP->color = BLACK;
-
-          RightRotate(xP->parent);
-        }
+        RightRotate(xP->parent);
       }
     }
-    else
+    else/* if(xP == xP->parent->right)*/
     {
       y = xP->parent->left;
 
+      // case 1
       if(y && y->color == RED)
       {
-        xP->color = BLACK;
+        // 1A x->parent->color = black
+        // 1B y->color = black
+        // 1C x->parent->parent->color = red
+        // 1D x = x->parent->parent
 
-        y->color = BLACK;
+        xP->color = BLACK; // 1A
 
-        xP->parent->color = RED;
+        y->color = BLACK; // 1B
 
-        x = xP->parent;
+        xP->parent->color = RED; // 1C
+
+        x = xP->parent; // 1D
       }
+      // case 2 + 3
+      else if(x == xP->left)
+      {
+        // 2A x = x->parent
+        // 2B right-rotate(tree, x)
+
+        // 3A x->parent->color = black
+        // 3B x->parent->parent->color = red
+        // 3C left-rotate(tree, x->parent->parent)
+
+        x->color = BLACK; // x->parent->color = black transformed, out of order 3A
+
+        xP->parent->color = RED; // out of order 3B
+
+        RightLeftInsertRotate(x); // right-rotate(tree, x) -> left-rotate(tree, x->parent->parent) transformed 2B -> 3C
+
+        x = x->right; // x = x->parent transformed, out of order 2A
+      }
+      // case 3
       else
       {
-        xP->parent->color = RED;
+        // 3A x->parent->color = black
+        // 3B x->parent->parent->color = red
+        // 3C left-rotate(tree, x->parent->parent)
 
-        if(x == xP->left)
-        {
-          x->color = BLACK;
+        xP->color = BLACK; // 3A
 
-          RightLeftInsertRotate(x);
+        xP->parent->color = RED; // 3B
 
-          x = x->right;
-        }
-        else
-        {
-          xP->color = BLACK;
-
-          LeftRotate(xP->parent);
-        }
+        LeftRotate(xP->parent); // 3C
       }
     }
   }
@@ -765,6 +1965,7 @@ int bintree::insert(void* object, binaryTreeCompare LessThan)
   return RETURN_OK;
 }
 
+// integrated for root sentinel
 static BinaryTreeNode* TreeMinimum(BinaryTreeNode* node)
 {
   for(BinaryTreeNode* left = node; left; left = left->left)
@@ -773,6 +1974,7 @@ static BinaryTreeNode* TreeMinimum(BinaryTreeNode* node)
   return node;
 }
 
+// integrated for root sentinel
 static BinaryTreeNode* TreeMaximum(BinaryTreeNode* node)
 {
   for(BinaryTreeNode* right = node; right; right = right->right)
@@ -787,6 +1989,7 @@ static BinaryTreeNode* TreeMaximum(BinaryTreeNode* node)
 //               value to be returned.
 //
 
+// integrated for root sentinel
 int bintree::getExtrema(int GetGreatest, void* objectReturn)
 {
   BinaryTree* tree = (BinaryTree*)this;
@@ -837,111 +2040,137 @@ static BinaryTreeNode* TreeSuccessor(BinaryTreeNode* x)
 }
 
 #if 0
-rb-delete-fixup
+// case 1
+// 1A
+// 1B
+// 1C
+// 1D
+
+// case 2
+// 2A
+// 2B
+
+// case 3
+// 3A
+// 3B
+// 3C
+// 3D
+
+// case 4
+// 4A
+// 4B
+// 4C
+// 4D
+// 4E
+void rb-delete-fixup(BinaryTree* tree, BinaryTreeNode* x)
 {
   while x != tree->root && x->color == black
   {
     if x == x->parent->left
     {
-      w = x->parent->right
+      BinaryTreeNode* w = x->parent->right
 
       // case 1
       if w->color == red
       {
-        w->color = black
-        x->parent->color = red
-        left-rotate(tree, x->parent)
-        w = x->parent->right
+        w->color = black // 1A
+        x->parent->color = red // 1B
+        left-rotate(tree, x->parent) // 1C
+        w = x->parent->right // 1D
       }
 
       // case 2
       if w->left->color == black && w->right->color == black
       {
-        w->color = red
-        x = x->parent
+        w->color = red // 2A
+        x = x->parent // 2B
       }
 
-      // case 3
       else
       {
+        // case 3
         if w->right->color == black
         {
-          w->left->color = black
-          w->color = red
-          right-rotate(tree, w)
-          w = x->parent->right
+          w->left->color = black // 3A
+          w->color = red // 3B
+          right-rotate(tree, w) // 3C
+          w = x->parent->right // 3D
         }
 
         // case 4
-        w->color = x->parent->color
-        x->parent->color = black
-        w->right->color = black
-        left-rotate(tree, x->parent)
-        x = tree->root
+        w->color = x->parent->color // 4A
+        x->parent->color = black // 4B
+        w->right->color = black // 4C
+        left-rotate(tree, x->parent) // 4D
+        x = tree->root // 4E
       }
     }
     else(same with "right" and "left" exchanged) // if x == x->parent->right
     {
-      w = x->parent->left
+      BinaryTreeNode* w = x->parent->left
 
       // case 1
       if w->color == red
       {
-        w->color = black
-        x->parent->color = red
-        right-rotate(tree, x->parent)
-        w = x->parent->left
+        w->color = black // 1A
+        x->parent->color = red // 1B
+        right-rotate(tree, x->parent) // 1C
+        w = x->parent->left // 1D
       }
 
       // case 2
       if w->right->color == black && w->left->color == black
       {
-        w->color = red
-        x = x->parent
+        w->color = red // 2A
+        x = x->parent // 2B
       }
 
-      // case 3
       else
       {
+        // case 3
         if w->left->color == black
         {
-          w->right->color = black
-          w->color = red
-          left-rotate(tree, w)
-          w = x->parent->left
+          w->right->color = black // 3A
+          w->color = red // 3B
+          left-rotate(tree, w) // 3C
+          w = x->parent->left // 3D
         }
 
         // case 4
-        w->color = x->parent->color
-        x->parent->color = black
-        w->left->color = black
-        right-rotate(tree, x->parent)
-        x = tree->root
+        w->color = x->parent->color // 4A
+        x->parent->color = black // 4B
+        w->left->color = black // 4C
+        right-rotate(tree, x->parent) // 4D
+        x = tree->root // 4E
       }
     }
   }
 }
 
-left
-left
-left-left
-left-right
-left-right-left
+left (delete) 2
+left (insert) 1
+left-left (delete) 1
+left-right (delete) 1
+left-right (insert) 1
+left-right-left (delete) 1
 
-right
-right
-right-right
-right-left
-right-left-right
+right (delete) 2
+right (insert) 1
+right-right (delete) 1
+right-left (delete) 1
+right-left (insert) 1
+right-left-right (delete) 1
 #endif
 
 // fully optimized
-static void BinDeleteFixup(BinaryTreeNode* root, BinaryTreeNode* x)
+//
+// integrated for root sentinel
+static void BinDeleteFixup(BinaryTree* tree, BinaryTreeNode* x)
 {
   BinaryTreeNode* w = 0;
   BinaryTreeNode* xP = 0;
 
-  while(x != root && x->color == BLACK)
+  while(x != GETROOTFROMTREE(tree) && x->color == BLACK)
   {
     xP = x->parent;
 
@@ -954,6 +2183,7 @@ static void BinDeleteFixup(BinaryTreeNode* root, BinaryTreeNode* x)
         // prestep
         w = w->left;
 
+        // case 1 + 2
         if( ( !w->left || w->left->color == BLACK) && ( !w->right || w->right->color == BLACK) )
         {
           // prestep
@@ -981,6 +2211,7 @@ static void BinDeleteFixup(BinaryTreeNode* root, BinaryTreeNode* x)
 
           x = xP; // 2B
         }
+        // case 1 + 3 + 4
         else if( !w->right || w->right->color == BLACK)
         {
           // prestep
@@ -1008,12 +2239,12 @@ static void BinDeleteFixup(BinaryTreeNode* root, BinaryTreeNode* x)
           xP->color = RED; // 1B
 
           // case 1 -> 3 -> 4
-          LeftRightLeftRotate(xP); // 1C 3C 4D
+          LeftRightLeftRotate(xP); // left-rotate(tree, x->parent) -> right-rotate(tree, w) -> left-rotate(tree, x->parent) transformed 1C -> 3C -> 4D
 
-          // w = x->parent->right 1D
+          // w = x->parent->right missing 1D
 
-          // w->left->color = black 3A
-          // w->color = red 3B
+          // w->left->color = black missing 3A
+          // w->color = red missing 3B
 
           // case 3
           w = xP->parent; // w = x->parent->right transformed 3D
@@ -1025,8 +2256,9 @@ static void BinDeleteFixup(BinaryTreeNode* root, BinaryTreeNode* x)
 
           w->right->color = BLACK; // 4C
 
-          x = root; // 4E
+          x = GETROOTFROMTREE(tree); // 4E
         }
+        // case 1 + 4
         else
         {
           // prestep
@@ -1049,7 +2281,7 @@ static void BinDeleteFixup(BinaryTreeNode* root, BinaryTreeNode* x)
           xP->color = RED; // 1B
 
           // case 1 -> 4
-          LeftLeftRotate(xP); // 1C 4D
+          LeftLeftRotate(xP); // left-rotate(tree, x->parent) -> left-rotate(tree, x->parent) transformed 1C -> 4D
 
           w = xP->parent; // w = x->parent->right transformed 1D
 
@@ -1060,11 +2292,12 @@ static void BinDeleteFixup(BinaryTreeNode* root, BinaryTreeNode* x)
 
           w->right->color = BLACK; // 4C
 
-          x = root; // 4E
+          x = GETROOTFROMTREE(tree); // 4E
         }
       }
       else /* w->color == BLACK */
       {
+        // case 2
         if( ( !w->left || w->left->color == BLACK) && ( !w->right || w->right->color == BLACK) )
         {
           // 2A w->color = red
@@ -1075,6 +2308,7 @@ static void BinDeleteFixup(BinaryTreeNode* root, BinaryTreeNode* x)
 
           x = xP; // 2B
         }
+        // case 3 + 4
         else if( !w->right || w->right->color == BLACK)
         {
           // 3A w->left->color = black
@@ -1094,7 +2328,7 @@ static void BinDeleteFixup(BinaryTreeNode* root, BinaryTreeNode* x)
           w->color = RED; // 3B
 
           // case 3 -> 4
-          RightLeftDeleteRotate(xP); // 3C 4D
+          RightLeftDeleteRotate(xP); // right-rotate(tree, w) -> left-rotate(tree, x->parent) transformed 3C -> 4D
 
           w = xP->parent; // w = x->parent->right transformed 3D
 
@@ -1105,8 +2339,9 @@ static void BinDeleteFixup(BinaryTreeNode* root, BinaryTreeNode* x)
 
           w->right->color = BLACK; // 4C
 
-          x = root; // 4E
+          x = GETROOTFROMTREE(tree); // 4E
         }
+        // case 4
         else
         {
           // 4A w->color = x->parent->color
@@ -1124,7 +2359,7 @@ static void BinDeleteFixup(BinaryTreeNode* root, BinaryTreeNode* x)
 
           LeftRotate(xP); // 4D
 
-          x = root; // 4E
+          x = GETROOTFROMTREE(tree); // 4E
         }
       }
     }
@@ -1137,6 +2372,7 @@ static void BinDeleteFixup(BinaryTreeNode* root, BinaryTreeNode* x)
         // prestep
         w = w->right;
 
+        // case 1 + 2
         if( ( !w->right || w->right->color == BLACK) && ( !w->left || w->left->color == BLACK) )
         {
           // prestep
@@ -1164,6 +2400,7 @@ static void BinDeleteFixup(BinaryTreeNode* root, BinaryTreeNode* x)
 
           x = xP; // 2B
         }
+        // case 1 + 3 + 4
         else if( !w->left || w->left->color == BLACK)
         {
           // prestep
@@ -1191,12 +2428,12 @@ static void BinDeleteFixup(BinaryTreeNode* root, BinaryTreeNode* x)
           xP->color = RED; // 1B
 
           // case 1 -> 3 -> 4
-          RightLeftRightRotate(xP); // 1C 3C 4D
+          RightLeftRightRotate(xP); // right-rotate(tree, x->parent) -> left-rotate(tree, w) -> right-rotate(tree, x->parent) transformed 1C -> 3C -> 4D
 
-          // w = x->parent->left 1D
+          // w = x->parent->left missing 1D
 
-          // w->right->color = black 3A
-          // w->color = red 3B
+          // w->right->color = black missing 3A
+          // w->color = red missing 3B
 
           // case 3
           w = xP->parent; // w = x->parent->left transformed 3D
@@ -1208,8 +2445,9 @@ static void BinDeleteFixup(BinaryTreeNode* root, BinaryTreeNode* x)
 
           w->left->color = BLACK; // 4C
 
-          x = root; // 4E
+          x = GETROOTFROMTREE(tree); // 4E
         }
+        // case 1 + 4
         else
         {
           // prestep
@@ -1232,7 +2470,7 @@ static void BinDeleteFixup(BinaryTreeNode* root, BinaryTreeNode* x)
           xP->color = RED; // 1B
 
           // case 1 -> 4
-          RightRightRotate(xP); // 1C 4D
+          RightRightRotate(xP); // right-rotate(tree, x->parent) -> right-rotate(tree, x->parent) transformed 1C -> 4D
 
           w = xP->parent; // w = x->parent-left transformed 1D
 
@@ -1243,11 +2481,12 @@ static void BinDeleteFixup(BinaryTreeNode* root, BinaryTreeNode* x)
 
           w->left->color = BLACK; // 4C
 
-          x = root; // 4E
+          x = GETROOTFROMTREE(tree); // 4E
         }
       }
       else /* w->color == BLACK */
       {
+        // case 2
         if( ( !w->right || w->right->color == BLACK) && ( !w->left || w->left->color == BLACK) )
         {
           // 2A w->color = red
@@ -1258,6 +2497,7 @@ static void BinDeleteFixup(BinaryTreeNode* root, BinaryTreeNode* x)
 
           x = xP; // 2B
         }
+        // case 3 + 4
         else if( !w->left || w->left->color == BLACK)
         {
           // 3A w->right->color = black
@@ -1277,7 +2517,7 @@ static void BinDeleteFixup(BinaryTreeNode* root, BinaryTreeNode* x)
           w->color = RED; // 3B
 
           // case 3 -> 4
-          LeftRightDeleteRotate(xP); // 3C 4D
+          LeftRightDeleteRotate(xP); // left-rotate(tree, w) -> right-rotate(tree, x->parent) transformed 3C -> 4D
 
           w = xP->parent; // w = x->parent->left transformed 3D
 
@@ -1288,8 +2528,9 @@ static void BinDeleteFixup(BinaryTreeNode* root, BinaryTreeNode* x)
 
           w->left->color = BLACK; // 4C
 
-          x = root; // 4E
+          x = GETROOTFROMTREE(tree); // 4E
         }
+        // case 4
         else
         {
           // 4A w->color = x->parent->color
@@ -1307,7 +2548,7 @@ static void BinDeleteFixup(BinaryTreeNode* root, BinaryTreeNode* x)
 
           RightRotate(xP); // 4D
 
-          x = root; // 4E
+          x = GETROOTFROMTREE(tree); // 4E
         }
       }
     }
@@ -1317,22 +2558,25 @@ static void BinDeleteFixup(BinaryTreeNode* root, BinaryTreeNode* x)
 }
 
 #if 0
-rb-delete(tree, z)
+BinaryTreeNode* rb-delete(BinaryTree* tree, BinaryTreeNode* z)
 {
-  if z->left == nil || z->right == nil
+  BinaryTreeNode* x = 0;
+  BinaryTreeNode* y = 0;
+
+  if z->left == tree->nil || z->right == tree->nil
     y = z
   else
     y = tree-successor(z)
 
-  if y->left != nil
+  if y->left != tree->nil
     x = y->left
   else
     x = y->right
 
   x->parent = y->parent
 
-  if y->parent == nil
-    root = x
+  if y->parent == tree->nil
+    tree->root = x
   else if y == y->parent->left
     y->parent->left = x
   else
@@ -1348,6 +2592,7 @@ rb-delete(tree, z)
 }
 #endif
 
+// integrated for root sentinel as long as y is never sentinelRoot
 static BinaryTreeNode* BinDelete(BinaryTree* tree, BinaryTreeNode* z)
 {
   int Color = 0;
@@ -1363,6 +2608,8 @@ static BinaryTreeNode* BinDelete(BinaryTree* tree, BinaryTreeNode* z)
     y = z;
   else
     y = TreeSuccessor(z);
+
+// check if y is ever sentinelRoot
 
 // Sentinel {
   T_Nil->left = 0; // todo
@@ -1402,7 +2649,7 @@ static BinaryTreeNode* BinDelete(BinaryTree* tree, BinaryTreeNode* z)
   }
 
   if(Color == BLACK)
-    BinDeleteFixup(GETACTUALROOT(tree), x);
+    BinDeleteFixup(tree, x);
 
 // Sentinel {
   if(T_Nil->parent->left == T_Nil)
@@ -1414,9 +2661,12 @@ static BinaryTreeNode* BinDelete(BinaryTree* tree, BinaryTreeNode* z)
   T_Nil->right = 0; // todo
 // Sentinel }
 
+// check if y is ever sentinelRoot
+
   return y;
 }
 
+// integrated for root sentinel
 static BinaryTreeNode* TreeSearch(BinaryTreeNode* x, void* objectKey, binaryTreeCompare LessThan, binaryTreeEquivalence EqualTo)
 {
   while(x && !EqualTo(objectKey, GETCLIENT(x) ) )
@@ -1430,14 +2680,15 @@ static BinaryTreeNode* TreeSearch(BinaryTreeNode* x, void* objectKey, binaryTree
   return x;
 }
 
+// integrated for root sentinel
 int bintree::remove(void* objectKey, binaryTreeEquivalence EqualTo, void* objectResult)
 {
-  BinaryTree* T = (BinaryTree*)this;
+  BinaryTree* tree = (BinaryTree*)this;
 
   BinaryTreeNode* t = 0;
   BinaryTreeNode* z = 0;
 
-  if( !T || !objectKey || T->NumberOfNodes <= 0)
+  if( !tree || !objectKey || tree->NumberOfNodes <= 0)
   {
     // BinTreeRemove(...) bad params
     _log("error");
@@ -1445,16 +2696,16 @@ int bintree::remove(void* objectKey, binaryTreeEquivalence EqualTo, void* object
   }
 
   if(EqualTo)
-    T->EqualTo = EqualTo;
+    tree->EqualTo = EqualTo;
 
-  if( !T->EqualTo)
+  if( !tree->EqualTo)
   {
     // BinTreeRemove(...) NIL binaryTreeEquivalence function
     _log("error");
     return RETURN_ERROR;
   }
 
-  z = TreeSearch(T->root, objectKey, T->LessThan, T->EqualTo);
+  z = TreeSearch(GETROOTFROMTREE(tree), objectKey, tree->LessThan, tree->EqualTo);
 
   if( !z)
   {
@@ -1464,9 +2715,9 @@ int bintree::remove(void* objectKey, binaryTreeEquivalence EqualTo, void* object
   }
 
   if(objectResult)
-    memcpy(objectResult, GETCLIENT(z), T->SizeOfClientExact);
+    memcpy(objectResult, GETCLIENT(z), tree->SizeOfClientExact);
 
-  t = BinDelete(T, z);
+  t = BinDelete(tree, z);
 
   z = t;
 
@@ -1477,13 +2728,14 @@ int bintree::remove(void* objectKey, binaryTreeEquivalence EqualTo, void* object
     return RETURN_ERROR;
   }
 
-  *( --T->MemoryManagerArrayCurrent) = (char*)z;
+  *( --tree->MemoryManagerArrayCurrent) = (char*)z;
 
-  T->NumberOfNodes--;
+  tree->NumberOfNodes--;
 
   return RETURN_OK;
 }
 
+// integrated for root sentinel
 int bintree::find(void* Object1, binaryTreeEquivalence EqualTo, void* ObjectReturn)
 {
   BinaryTree* tree = (BinaryTree*)this;
@@ -1507,7 +2759,7 @@ int bintree::find(void* Object1, binaryTreeEquivalence EqualTo, void* ObjectRetu
     return RETURN_ERROR;
   }
 
-  node = TreeSearch(tree->root, Object1, tree->LessThan, tree->EqualTo);
+  node = TreeSearch(GETROOTFROMTREE(tree), Object1, tree->LessThan, tree->EqualTo);
 
   if(node)
   {
@@ -1520,6 +2772,7 @@ int bintree::find(void* Object1, binaryTreeEquivalence EqualTo, void* ObjectRetu
   return RETURN_ERROR;
 }
 
+// integrated for root sentinel
 int bintree::reset()
 {
   BinaryTree* tree = (BinaryTree*)this;
@@ -1547,7 +2800,7 @@ int bintree::reset()
       Memory += tree->SizeOfClientAligned + sizeof(BinaryTreeNode);
     }
 
-    SETACTUALROOT(tree, 0);
+    SETROOTFROMTREE(tree, 0);
 
     return RETURN_OK;
   }
@@ -1557,6 +2810,7 @@ int bintree::reset()
   return RETURN_ERROR;
 }
 
+// integrated for root sentinel
 int bintree::term()
 {
   BinaryTree* tree = (BinaryTree*)this;
@@ -1576,6 +2830,8 @@ int bintree::term()
 }
 
 // Preorder is fully optimized
+//
+// integrated for root sentinel
 static void IterativePreorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binaryTreeEvaluate ClientEvaluate)
 {
   // PSTACK Stack = InitStack()
@@ -1633,6 +2889,8 @@ static void IterativePreorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node
 // When the left nodes are pushed on the stack,
 // a left node is immediately popped off of the stack
 // after you break out of the inner loop.
+//
+// integrated for root sentinel
 static void IterativeInorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binaryTreeEvaluate ClientEvaluate)
 {
   // PSTACK Stack = InitStack()
@@ -1666,6 +2924,8 @@ static void IterativeInorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node,
 // ! I have no idea if Postorder is fully optimized or not!
 // I optimized it alot, but I am still not sure if it is fully optimized.
 // Function courtesy of Bruce Mcquistan ( brucemc@digipen.edu )
+//
+// integrated for root sentinel
 static void IterativePostorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binaryTreeEvaluate ClientEvaluate)
 {
   // PSTACK Stack = InitStack()
@@ -1725,6 +2985,8 @@ postorder2:
 }
 
 // Levelorder is fully optimized
+//
+// integrated for root sentinel
 static void IterativeLevelorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binaryTreeEvaluate ClientEvaluate)
 {
   // PQUEUE Queue = InitQueue()
@@ -1762,6 +3024,7 @@ static void IterativeLevelorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* no
   }
 }
 
+// integrated for root sentinel
 int bintree::dump(binaryTreeEvaluate ClientEvaluate, ORDER TraversalOrder)
 {
   BinaryTree* tree = (BinaryTree*)this;
@@ -1785,22 +3048,23 @@ int bintree::dump(binaryTreeEvaluate ClientEvaluate, ORDER TraversalOrder)
   if(ClientEvaluate)
     tree->ClientEvaluate = ClientEvaluate;
 
-  root = GETACTUALROOT(tree);
+  root = GETROOTFROMTREE(tree);
 
   if(root)
   {
     switch(TraversalOrder)
     {
-    case PREORDER: IterativePreorderTreeTraverse( tree, root, tree->ClientEvaluate ); break;
-    case INORDER: IterativeInorderTreeTraverse( tree, root, tree->ClientEvaluate ); break;
-    case POSTORDER: IterativePostorderTreeTraverse( tree, root, tree->ClientEvaluate ); break;
-    case LEVELORDER: IterativeLevelorderTreeTraverse( tree, root, tree->ClientEvaluate ); break;
+    case PREORDER: IterativePreorderTreeTraverse(tree, root, tree->ClientEvaluate); break;
+    case INORDER: IterativeInorderTreeTraverse(tree, root, tree->ClientEvaluate); break;
+    case POSTORDER: IterativePostorderTreeTraverse(tree, root, tree->ClientEvaluate); break;
+    case LEVELORDER: IterativeLevelorderTreeTraverse(tree, root, tree->ClientEvaluate); break;
     }
   }
 
   return RETURN_OK;
 }
 
+// integrated for root sentinel
 int bintree::isEmpty(int* NumberOfClientObjects)
 {
   BinaryTree* tree = (BinaryTree*)this;
@@ -1815,9 +3079,10 @@ int bintree::isEmpty(int* NumberOfClientObjects)
   if(NumberOfClientObjects)
     *NumberOfClientObjects = tree->NumberOfNodes;
 
-  return !tree->NumberOfNodes;
+  return tree->NumberOfNodes;
 }
 
+// integrated for root sentinel
 bintree* bintree::init(int MaxNumberOfObjects, int SizeOfEachObjectExact, binaryTreeCompare LessThan)
 {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
