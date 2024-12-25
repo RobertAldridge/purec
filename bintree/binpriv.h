@@ -87,10 +87,11 @@ struct BinaryTree
   int maxQueue;
   ////////////////////////////////////
 
-  ////////////////////////////////////
-  char** MemoryManagerArrayCurrent;
+  ssmm* nodeAllocator;
 
-  char MemoryManagerNodePoolArrayStart[];
+  ////////////////////////////////////
+//char** MemoryManagerArrayCurrent;
+//char MemoryManagerNodePoolArrayStart[];
   ////////////////////////////////////
 };
 

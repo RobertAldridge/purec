@@ -6,8 +6,8 @@
 // p is total number of pools
 
 // memory overhead O(lg(n) ) when resize is -1 otherwise O(p)
+struct ssmm;
 
-#if 0
 // memory overhead is per chuck when debug is enabled; O(n)
 enum class ssmm_debug
 {
@@ -18,7 +18,6 @@ enum class ssmm_debug
 };
 
 using enum ssmm_debug;
-#endif
 
 // O(malloc)
 // sizeOf >= sizeof(void*)

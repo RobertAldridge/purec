@@ -6,15 +6,7 @@
   #pragma warning (disable: 4711)
 #endif
 
-enum class ssmm_debug
-{
-  off = 0,
-  constant = 1, // O(1)
-  logarithmic = 2, // O(lg(n) )
-  linear = 2 // O(n)
-};
-
-using enum ssmm_debug;
+#include "ssmm.h"
 
 // dereferencing node <> client reference
 struct SsmmNode
@@ -55,10 +47,6 @@ struct ssmm
   ssmm_debug debug;
 };
 
-#include "ssmm.h"
-
-//using enum ssmm_debug;
-
 #include <cstddef> // ptrdiff_t, size_t
 #include <cstdint> // INTPTR_MAX
 #include <cstdlib> // malloc, free
@@ -74,6 +62,8 @@ using std::size_t;
 //using std::INTPTR_MAX;
 
 // ~9,000,000 terabytes is limit for addressing via int64_t
+
+#define SSMM_GET_SIZEOF(_this) (size_t)_this->sizeOf
 
 #define SSMM_IS_DEBUG_RANGE(debug, beginInclusive, endInclusive) ( (int)debug >= (int)beginInclusive && (int)debug <= (int)endInclusive)
 
@@ -101,9 +91,9 @@ static size_t MALLOCSIZEPADDED(size_t size);
 // alignment is typically sizeof(void*)
 // assumes the parameter passed to malloc is sufficiently padded
 // ptr is of type char*
-// 'address' is of type int64_t, assigned to the value (char*)ptr - (char*)0
+// 'address' is of type ptrdiff_t, assigned to the value (char*)ptr - (char*)0
 // pass return value of malloc to MALLOCRETURNALIGN (pass stored value not the literal malloc call)
-static char* MALLOCRETURNALIGN(char* unaligned, int64_t address);
+static char* MALLOCRETURNALIGN(char* unaligned, ptrdiff_t address);
 
 static SsmmNode* SSMM_CHUNK_CLIENT_TO_NODE(SsmmNode* client, ssmm_debug debug);
 static SsmmNode* SSMM_CHUNK_NODE_TO_CLIENT(SsmmNode* node, ssmm_debug debug);
@@ -121,7 +111,7 @@ static void ChunkMemset(ssmm* _this, SsmmNode* chunk);
 static void PoolMemset(ssmm* _this, SsmmPool* pool, size_t num, bool header);
 
 static SsmmPool* PoolListWalk(ssmm* _this, SsmmPool* tail, bool doFree, bool skipLast);
-static bool SsmmFirstPool(ssmm* _this, int64_t initialCapacity);
+static bool SsmmFirstPool(ssmm* _this, size_t initialCapacity);
 
 // initial capacity must be larger than zero
 //
@@ -135,7 +125,7 @@ static bool SsmmSsmm(ssmm* _this, size_t sizeOf, size_t initialCapacity, bool is
 // int SsmmNum(ssmm* _this)
 // bool SsmmSetResize(ssmm* _this, int resize)
 
-static int64_t SsmmResetOrClear(ssmm* _this, bool freeAppendedPools);
+static int SsmmResetOrClear(ssmm* _this, bool freeAppendedPools);
 
 // int SsmmReset(ssmm* _this)
 // int SsmmClear(ssmm* _this)
@@ -157,13 +147,13 @@ bool SsmmIsDebugLogarithmic(ssmm* _this) { return SSMM_IS_DEBUG_LOGARITHMIC(_thi
 bool SsmmIsDebugLinear(ssmm* _this) { return SSMM_IS_DEBUG_LINEAR(_this->debug); }
 
 void PoolSetUnaligned(SsmmPool* pool, void* unaligned) { pool->unaligned = (int)( (char*)unaligned - (char*)pool); }
-void* PoolGetUnaligned(SsmmPool* pool) { return (char*)pool + (int64_t)pool->unaligned; }
+void* PoolGetUnaligned(SsmmPool* pool) { return (char*)pool + (ptrdiff_t)pool->unaligned; }
 
 size_t ALIGNEDOFVALUE(size_t size) { return (size % sizeof(void*) ) ? size + (sizeof(void*) - size % sizeof(void*) ) : size; }
 
 size_t MALLOCSIZEPADDED(size_t size) { return size + (sizeof(void*) - 1); }
 
-char* MALLOCRETURNALIGN(char* unaligned, int64_t address) { return (address % sizeof(void*) ) ? unaligned + (sizeof(void*) - address % sizeof(void*) ) : unaligned; }
+char* MALLOCRETURNALIGN(char* unaligned, ptrdiff_t address) { return (address % sizeof(void*) ) ? unaligned + (sizeof(void*) - address % sizeof(void*) ) : unaligned; }
 
 SsmmNode* SSMM_CHUNK_CLIENT_TO_NODE(SsmmNode* client, ssmm_debug debug) { return (SsmmNode*)( (char*)client - SsmmGetSizeOfNode(debug) ); }
 
@@ -171,7 +161,7 @@ SsmmNode* SSMM_CHUNK_NODE_TO_CLIENT(SsmmNode* node, ssmm_debug debug) { return (
 
 SsmmNode* SSMM_CHUNK_POOL_TO_FIRSTNODE(SsmmPool* pool) { return (SsmmNode*)( (char*)pool + SsmmGetSizeOfPool() ); }
 
-SsmmNode* SSMM_CHUNK_NODE_TO_NODE_SEQUENTIAL(ssmm* _this, SsmmNode* node) { return (SsmmNode*)( (char*)node + _this->sizeOf); }
+SsmmNode* SSMM_CHUNK_NODE_TO_NODE_SEQUENTIAL(ssmm* _this, SsmmNode* node) { return (SsmmNode*)( (char*)node + SSMM_GET_SIZEOF(_this) ); }
 
 // when you're forced to use a compiler/runtime that claims to conform yet doesn't implement aligned_alloc (*cough* microsoft)
 //   void* aligned_alloc(size_t alignment, size_t size)
@@ -182,7 +172,7 @@ void* cstandard_aligned_alloc(size_t size, void** unalignedRef/*unaligned;ptr*/)
   char* aligned = 0;
   char* unaligned = 0;
 
-  int64_t address = 0;
+  ptrdiff_t address = 0;
 
   if( !size || !unalignedRef)
     goto labelReturn;
@@ -245,7 +235,7 @@ void SsmmMemset(ssmm* _this)
 
 void ChunkMemset(ssmm* _this, SsmmNode* chunk)
 {
-  memset(chunk, 0, (size_t)_this->sizeOf);
+  memset(chunk, 0, SSMM_GET_SIZEOF(_this) );
 }
 
 // if header is true then will memset pool header and client pool
@@ -253,7 +243,7 @@ void ChunkMemset(ssmm* _this, SsmmNode* chunk)
 // if header is false then will memset client pool
 void PoolMemset(ssmm* _this, SsmmPool* pool, size_t num, bool header)
 {
-  size_t size = num * (size_t)_this->sizeOf;
+  size_t size = num * SSMM_GET_SIZEOF(_this);
 
   if(header)
     size += SsmmGetSizeOfPool();
@@ -308,7 +298,7 @@ SsmmPool* PoolListWalk(ssmm* _this, SsmmPool* tail, bool doFree, bool skipLast)
   return next;
 }
 
-bool SsmmFirstPool(ssmm* _this, int64_t initialCapacity)
+bool SsmmFirstPool(ssmm* _this, size_t initialCapacity)
 {
   bool result = false;
 
@@ -357,7 +347,7 @@ bool SsmmSsmm(ssmm* _this, size_t sizeOf, size_t initialCapacity, bool isTentati
   {
     _this->resize = -(int)initialCapacity - 1;
   }
-  else if( !SsmmFirstPool(_this, (int64_t)initialCapacity) )
+  else if( !SsmmFirstPool(_this, initialCapacity) )
   {
     goto error;
   }
@@ -402,8 +392,8 @@ ssmm* SsmmConstruct(int sizeOf, int initialCapacity, bool isTentative, ssmm_debu
 // returns the number of nodes previously held by client or -1 on error
 int SsmmDestruct(ssmm** _thisRef)
 {
-  int64_t result = -1;
-  int64_t numRef = 0;
+  int result = -1;
+  int numRef = 0;
 
   ssmm* _this = 0;
   void* unaligned = 0;
@@ -429,12 +419,12 @@ int SsmmDestruct(ssmm** _thisRef)
   result = numRef;
 
 error:
-  return (int)result;
+  return result;
 }
 
 int SsmmNum(ssmm* _this)
 {
-  int64_t result = -1;
+  int result = -1;
 
   if( !_this)
     goto error;
@@ -461,10 +451,10 @@ error:
 }
 
 // returns the number of nodes previously held by client or -1 on error
-int64_t SsmmResetOrClear(ssmm* _this, bool freeAppendedPools)
+int SsmmResetOrClear(ssmm* _this, bool freeAppendedPools)
 {
-  int64_t result = -1;
-  int64_t numRef = 0;
+  int result = -1;
+  int numRef = 0;
 
   SsmmPool* pool = 0;
 
@@ -506,13 +496,13 @@ error:
 // returns the number of nodes previously held by client or -1 on error
 int SsmmReset(ssmm* _this)
 {
-  return (int)SsmmResetOrClear(_this, false);
+  return SsmmResetOrClear(_this, false);
 }
 
 // returns the number of nodes previously held by client or -1 on error
 int SsmmClear(ssmm* _this)
 {
-  return (int)SsmmResetOrClear(_this, true);
+  return SsmmResetOrClear(_this, true);
 }
 
 bool SsmmResize(ssmm* _this)
@@ -533,12 +523,12 @@ bool SsmmResize(ssmm* _this)
   }
   else
   {
-    size_t maxDiff = 0;
+    int maxDiff = 0;
 
     if(_this->resize == -1  && _this->max >= 0)
-      maxDiff = (size_t)_this->max;
+      maxDiff = _this->max;
     else if(_this->resize >= 0)
-      maxDiff = (size_t)_this->resize;
+      maxDiff = _this->resize;
     else
       goto error;
 
@@ -551,11 +541,11 @@ bool SsmmResize(ssmm* _this)
     // in this case call SsmmSetResize with an intended initial capacity > 0,
     // call SsmmAlloc once to actualize the initial capacity,
     // then call SsmmSetResize(-1) to return to default behavior
-    if(maxDiff == 0)
+    if( !maxDiff)
       goto error;
 
     // already aligned
-    size_t size = SsmmGetSizeOfPool() + maxDiff * (size_t)_this->sizeOf;
+    size_t size = SsmmGetSizeOfPool() + (size_t)maxDiff * SSMM_GET_SIZEOF(_this);
 
     void* unaligned = 0;
     SsmmPool* pool = (SsmmPool*)cstandard_aligned_alloc(size, &unaligned);
@@ -565,16 +555,16 @@ bool SsmmResize(ssmm* _this)
 
     if(SsmmIsDebug(_this) )
     {
-      PoolMemset(_this, pool, maxDiff, true);
+      PoolMemset(_this, pool, (size_t)maxDiff, true);
     }
 
     PoolSetUnaligned(pool, unaligned);
 
-    _this->max += (int)maxDiff;
+    _this->max += maxDiff;
 
     _this->freeChunks = SSMM_CHUNK_POOL_TO_FIRSTNODE(pool);
 
-    pool->num = (int)maxDiff;
+    pool->num = maxDiff;
 
     pool->previous = _this->poolTail;
 
@@ -606,7 +596,7 @@ void* SsmmAlloc(ssmm* _this)
       if( !SsmmResize(_this) )
         goto error;
     }
-    else if( !SsmmFirstPool(_this, -(int64_t)_this->resize - 1) )
+    else if( !SsmmFirstPool(_this, (size_t)(-_this->resize - 1) ) )
     {
       goto error;
     }
@@ -731,14 +721,14 @@ bool SsmmFreeDebugCheckLogarithmic(ssmm* _this, SsmmNode* chunk)
 
     // the address one byte after the last byte of the last chunk, of this
     // particular collection of chunks (equivalent to container.end() )
-    char* nodesEnd = (char*)nodes + pool->num * _this->sizeOf;
+    char* nodesEnd = (char*)nodes + pool->num * SSMM_GET_SIZEOF(_this);
 
     // nodesDiff is similar to sizeof(type) * distance(container<type>.begin(), container<type>.end() )
-    int64_t nodesDiff = nodesEnd - nodesBegin;
+    ptrdiff_t nodesDiff = nodesEnd - nodesBegin;
 
     // given chunk as container<type>::iterator somewhere between container<type>.begin() and container<type>.end()
     // chunkDiff is similar to sizeof(type) * distance(container<type>.begin(), chunk)
-    int64_t chunkDiff = (char*)chunk - nodesBegin;
+    ptrdiff_t chunkDiff = (char*)chunk - nodesBegin;
 
     // check if chunk in the current pool
     //
@@ -752,7 +742,7 @@ bool SsmmFreeDebugCheckLogarithmic(ssmm* _this, SsmmNode* chunk)
 
     // check if the chunk is properly aligned.  if it's not then something is
     // wrong
-    if(chunkDiff % _this->sizeOf || nodesDiff % _this->sizeOf)
+    if(chunkDiff % (ptrdiff_t)_this->sizeOf || nodesDiff % (ptrdiff_t)_this->sizeOf)
       goto error;
 
     // just because the chunk being freed is in one of our owned pools,
@@ -783,15 +773,20 @@ bool SsmmFreeDebugCheckLogarithmic(ssmm* _this, SsmmNode* chunk)
 
       // free
       // (max - pool->num) + (chunk - nodes) >= most
-      int64_t base = _this->max - pool->num;
-      int64_t differential = ( (char*)chunk - (char*)nodes) / (int64_t)_this->sizeOf;
+      ptrdiff_t base = (ptrdiff_t)_this->max - (ptrdiff_t)pool->num;
 
+      ptrdiff_t differential = ( (char*)chunk - (char*)nodes) / (ptrdiff_t)_this->sizeOf;
+
+      // if the chunk being freed is within the unused portion of the pool
       if(base + differential >= _this->most)
         goto error;
     }
 
     // everything passed, so set the flag and get outta there
+    //
+    // the check is not 100%, for that it requires the linear debug check
     result = true;
+
     break;
   }
 

@@ -679,7 +679,12 @@ int bintree::remove(void* objectKey, binaryTreeEquivalence EqualTo, void* object
     return RETURN_ERROR;
   }
 
-  *( --tree->MemoryManagerArrayCurrent) = (char*)z;
+  //*( --tree->MemoryManagerArrayCurrent) = (char*)z;
+  if( !SsmmFree(tree->nodeAllocator, (void**)&z) )
+  {
+    _log("error");
+    return RETURN_ERROR;
+  }
 
   tree->NumberOfNodes--;
 

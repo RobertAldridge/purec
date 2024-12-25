@@ -30,6 +30,8 @@ using std::ptrdiff_t;
 
 //#include "ptrtrack.h"
 
+#include "ssmm.h"
+
 #include "bintree.h"
 
 typedef int ORDER;
@@ -91,7 +93,8 @@ typedef int ORDER;
 //#define CLIENTEVALUATEWRAPPER(tree, node) \
 //  (node == GETSENTINELFROMTREE(tree) ? 0 : tree->ClientEvaluate(GETCLIENT(node) ) )
 
-#define _log(blah) {}
+//#define _log(blah) {}
+#define _log(blah) printf("%s\n", blah)
 
 const int bintree::ok = 0;
 const int bintree::error = -1;
@@ -341,13 +344,13 @@ int bintree::reset()
 
     Memory += MemoryArrayPointerSize;
 
-    tree->MemoryManagerArrayCurrent = (char**)Memory;
+//tree->MemoryManagerArrayCurrent = (char**)Memory;
 
     Memory += MemoryArrayPointerSize;
 
     for(loop = 0; loop < tree->MaxNumberOfNodes; loop++)
     {
-      tree->MemoryManagerArrayCurrent[loop] = Memory;
+//tree->MemoryManagerArrayCurrent[loop] = Memory;
 
       Memory += tree->SizeOfClientAligned + sizeof(BinaryTreeNode);
     }
@@ -444,6 +447,8 @@ int bintree::term()
 
   if(tree)
   {
+    SsmmDestruct(&tree->nodeAllocator);
+
     memset(tree, 0, tree->MemoryTotalSize);
 
     free(tree);
@@ -536,13 +541,13 @@ bintree* bintree::init(int MaxNumberOfObjects, int SizeOfEachObjectExact, binary
 
   Memory += MemoryArrayPointerSize;
 
-  tree->MemoryManagerArrayCurrent = (char**)Memory;
+  //tree->MemoryManagerArrayCurrent = (char**)Memory;
 
   Memory += MemoryArrayPointerSize;
 
   for(loop = 0; loop < MaxNumberOfObjects; loop++)
   {
-    tree->MemoryManagerArrayCurrent[loop] = Memory;
+    //tree->MemoryManagerArrayCurrent[loop] = Memory;
 
     Memory += SizeOfEachObjectAligned + sizeof(BinaryTreeNode);
   }
@@ -558,6 +563,13 @@ bintree* bintree::init(int MaxNumberOfObjects, int SizeOfEachObjectExact, binary
 
   tree->MemoryTotalSize = MemoryTotalSize;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  tree->nodeAllocator = SsmmConstruct(SizeOfEachObjectAligned + sizeof(BinaryTreeNode), MaxNumberOfObjects / 2, false, ssmm_debug::off);
+  if( !tree->nodeAllocator)
+  {
+    _log("error");
+    return 0;
+  }
 
   return (bintree*)tree;
 }

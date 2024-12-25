@@ -269,10 +269,8 @@ int bintree::insert(void* object, binaryTreeCompare LessThan)
     return RETURN_ERROR;
   }
 
-  x = (BinaryTreeNode*)(*T->MemoryManagerArrayCurrent++);
-
-  x->left = 0;
-  x->right = 0;
+  //x = (BinaryTreeNode*)(*T->MemoryManagerArrayCurrent++);
+  x = (BinaryTreeNode*)SsmmAlloc(T->nodeAllocator);
 
   if( !x)
   {
@@ -280,6 +278,9 @@ int bintree::insert(void* object, binaryTreeCompare LessThan)
     _log("error");
     return RETURN_ERROR;
   }
+
+  x->left = 0;
+  x->right = 0;
 
   memcpy(GETCLIENT(x), object, T->SizeOfClientExact);
 
