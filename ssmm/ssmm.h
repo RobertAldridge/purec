@@ -7,10 +7,9 @@
 
 // memory overhead O(lg(n) ) when resize is -1 otherwise O(p)
 
-struct ssmm;
-
+#if 0
 // memory overhead is per chuck when debug is enabled; O(n)
-class enum ssmm_debug
+enum class ssmm_debug
 {
   off = 0,
   constant = 1, // O(1)
@@ -18,11 +17,20 @@ class enum ssmm_debug
   linear = 2 // O(n)
 };
 
+using enum ssmm_debug;
+#endif
+
 // O(malloc)
 // sizeOf >= sizeof(void*)
 //
 // returns null on failure, otherwise returns non-null
-ssmm* SsmmConstruct(int sizeOf, int initialCapacity, bool isTentative, ssmmDebug debug);
+//
+// initial capacity must be larger than zero
+//
+// you can delay the overhead of creating a pool by setting isTentative to true.  in that case, the first pool will be
+// created upon first call to SsmmAlloc.  note that in this case calls to SsmmSetResize will fail until after the first
+// call to SsmmAlloc
+ssmm* SsmmConstruct(int sizeOf, int initialCapacity, bool isTentative, ssmm_debug debug);
 
 // O(free) * O(lg(n) ) when resize is -1 otherwise O(free) * O(p)
 // client reference to ssmm instance will be cleared
