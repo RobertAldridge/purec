@@ -44,7 +44,7 @@ struct ssmm
   SsmmPool* freePools;
 
   SsmmPool* poolTail;
-  
+
   // have to keep track of my own unaligned pointer because
   // no aligned_alloc in vc runtime
   void* unaligned;
@@ -235,7 +235,7 @@ SsmmPool* PoolListWalk(ssmm* _this, SsmmPool* tail, bool doFree, bool skipLast)
   while(current)
   {
     Pool* previous = current->previous;
-    
+
     // we aren't actually reversing the list, and not even walking it backwards
     //
     // we are just doing a regular forward walk and returning the last non-null node
@@ -243,7 +243,7 @@ SsmmPool* PoolListWalk(ssmm* _this, SsmmPool* tail, bool doFree, bool skipLast)
     //current->previous = previous;
 
     next = current;
-    
+
     bool clear = SsmmIsDebug(_this);
 
     if(previous || !skipLast)
@@ -286,7 +286,7 @@ static bool SsmmFirstPool(ssmm* _this, size_t initialCapacity)
 
   // _this->max = max
   _this->resize = -1;
-  
+
   result = true;
 
 error:
@@ -316,7 +316,7 @@ bool SsmmSsmm(ssmm* _this, size_t sizeOf, size_t initialCapacity, bool isTentati
   _this->freePools = 0;
 
   _this->max = 0;
-  
+
   if(isTentative)
   {
     _this->resize = -initialCapacity - 1;
@@ -325,7 +325,7 @@ bool SsmmSsmm(ssmm* _this, size_t sizeOf, size_t initialCapacity, bool isTentati
   {
     goto error;
   }
-  
+
   result = true;
 
 error:
@@ -432,9 +432,9 @@ int SsmmResetOrClear(ssmm* _this, bool freeAppendedPools)
 
   if( !_this)
     goto error;
-  
+
   numRef = _this->num;
-  
+
   _this->num = 0;
   _this->most = 0;
 
@@ -452,11 +452,11 @@ int SsmmResetOrClear(ssmm* _this, bool freeAppendedPools)
   }
 
   pool = _this->poolTail;
-  
+
   _this->max = pool->num;
-  
+
   _this->freeChunks = SSMM_CHUNK_POOL_TO_FIRSTNODE(pool);
-  
+
   _this->freePools = pool->next; // will end up being null for freeAppendedPools == true, as desired
 
   result = numRef;
@@ -560,7 +560,7 @@ void* SsmmAlloc(ssmm* _this)
   {
     if( !_this->resize)
       goto error;
-    
+
     if(this->resize >= -1)
     {
       if( !SsmmResize(_this) )
@@ -631,7 +631,7 @@ bool SsmmFree(ssmm* _this, void** memory/*chunk*/)
     // (the header)
     chunk = SSMM_CHUNK_CLIENT_TO_NODE(chunk, _this->debug);
   }
-  
+
   if( !SsmmFreeDebugCheckLogarithmic(_this, chunk) )
     goto error;
 
@@ -662,16 +662,16 @@ error:
 bool SsmmFreeDebugCheckConstant(ssmm* _this, SsmmNode* chunk)
 {
   bool result = false;
-  
+
   if(SsmmIsDebug(_this) )
   {
     // use next as magic
     if(chunk->next != (SsmmNode*)INTPTR_MAX)
       goto error;
   }
-  
+
   result = true;
-  
+
 error:
 
   return result;
@@ -757,9 +757,9 @@ bool SsmmFreeDebugCheckLogarithmic(ssmm* _this, SsmmNode* chunk)
     contained = true;
     break;
   }
-  
+
   result = true;
-  
+
 error:
 
   return result;
@@ -768,17 +768,17 @@ error:
 bool SsmmFreeDebugCheckLinear(ssmm* _this, SsmmNode* chunk)
 {
   bool result = false;
-  
+
   // make sure chunk being freed is not already in free list
   for(SsmmNode* freeChunk = _this->freeChunks; (_this->debug >= 3) && freeChunk; freeChunk = freeChunk->next)
   {
     if(chunk == freeChunk)
       goto error;
   }
-  
+
   result = true;
-  
+
 error:
-  
+
   return result;
 }
