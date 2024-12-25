@@ -170,7 +170,7 @@ void BinInsert(BinaryTree* tree, BinaryTreeNode* x)
 
         xP->parent->color = RED; // out of order 3B
 
-        LeftRightInsertRotate(x); // left-rotate(tree, x) -> right-rotate(tree, x->parent->parent) transformed 2B -> 3C
+        LeftRightRotateInsert(x); // left-rotate(tree, x) -> right-rotate(tree, x->parent->parent) transformed 2B -> 3C
 
         x = x->left; // x = x->parent transformed, out of order 2A
       }
@@ -185,7 +185,7 @@ void BinInsert(BinaryTree* tree, BinaryTreeNode* x)
 
         xP->color = BLACK;
 
-        RightRotate(xP->parent);
+        RightRotateInsert(xP->parent);
       }
     }
     else/* if(xP == xP->parent->right)*/
@@ -222,7 +222,7 @@ void BinInsert(BinaryTree* tree, BinaryTreeNode* x)
 
         xP->parent->color = RED; // out of order 3B
 
-        RightLeftInsertRotate(x); // right-rotate(tree, x) -> left-rotate(tree, x->parent->parent) transformed 2B -> 3C
+        RightLeftRotateInsert(x); // right-rotate(tree, x) -> left-rotate(tree, x->parent->parent) transformed 2B -> 3C
 
         x = x->right; // x = x->parent transformed, out of order 2A
       }
@@ -237,7 +237,7 @@ void BinInsert(BinaryTree* tree, BinaryTreeNode* x)
 
         xP->parent->color = RED; // 3B
 
-        LeftRotate(xP->parent); // 3C
+        LeftRotateInsert(xP->parent); // 3C
       }
     }
   }

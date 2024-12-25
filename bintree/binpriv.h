@@ -1,8 +1,8 @@
 
 // File Name: binpriv.h
 
-#if !defined(BINPRIV)
-#define BINPRIV
+//#if !defined(BINPRIV)
+//#define BINPRIV
 
 //#ifdef __cplusplus
 //  extern "C" {
@@ -13,7 +13,7 @@ struct BinaryTree;
 
 #if defined(_MSC_VER)
   #pragma warning (disable: 4200)
-  #pragma warning (disable: 4201)
+//  #pragma warning (disable: 4201)
 #endif
 
 // This is a function pointer used to compare the keys of two objects.
@@ -82,6 +82,9 @@ struct BinaryTree
   //
   // used as either stack or queue based on the order of traversal
   BinaryTreeNode** TraverseArrayStart;
+
+  int maxStack;
+  int maxQueue;
   ////////////////////////////////////
 
   ////////////////////////////////////
@@ -92,7 +95,7 @@ struct BinaryTree
 };
 
 #if defined(_MSC_VER)
-  #pragma warning (default: 4201)
+//  #pragma warning (default: 4201)
   #pragma warning (default: 4200)
 #endif
 
@@ -100,4 +103,4 @@ struct BinaryTree
 //  }
 //#endif
 
-#endif
+//#endif

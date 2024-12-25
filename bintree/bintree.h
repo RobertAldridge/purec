@@ -16,8 +16,8 @@
 // Special thanks to Charlie Burns for his initial ideas for the internal memory management,
 // and for his continued support while we were working on the efficiency of our implementations.
 
-#if !defined(BINTREE)
-#define BINTREE
+//#if !defined(BINTREE)
+//#define BINTREE
 
 //#ifdef __cplusplus
 //  extern "C" {
@@ -325,7 +325,11 @@ public:
   //                       postorder
   //                       levelorder (breadth-first)
 
-  int depth();
+  int depthTree();
+
+  int depthStack();
+
+  int depthQueue();
 
 private:
   bintree();
@@ -341,4 +345,4 @@ private:
 //  }
 //#endif
 
-#endif
+//#endif

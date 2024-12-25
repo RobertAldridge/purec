@@ -7,21 +7,76 @@
 #if 0
 // LeftRotate(xP)
 // LeftRotate(xPP)
-static void LeftRotate(BinaryTreeNode* x);
+static void LeftRotateDelete1(BinaryTreeNode* xP);
+static void LeftRotateDelete2(BinaryTreeNode* xP);
+static void LeftRotateInsert(BinaryTreeNode* xPP);
 
 // LeftLeftRotate(xP)
 static void LeftLeftRotate(BinaryTreeNode* xP);
 
-// LeftRightInsertRotate(x)
-static void LeftRightInsertRotate(BinaryTreeNode* x);
-
-// LeftRightDeleteRotate(xP)
-static void LeftRightDeleteRotate(BinaryTreeNode* xP);
+// LeftRightRotate(x)
+// LeftRightRotate(xP)
+static void LeftRightRotateInsert(BinaryTreeNode* x);
+static void LeftRightRotateDelete(BinaryTreeNode* xP);
 
 // LeftRightLeftRotate(xP)
 static void LeftRightLeftRotate(BinaryTreeNode* xP);
 #endif
 
+// integrated for root sentinel
+void LeftRightLeftRotate(BinaryTreeNode* xP)
+{
+  BinaryTreeNode* xPR = xP->right;
+  BinaryTreeNode* xPRL = xPR->left;
+  BinaryTreeNode* xPRLL = xPRL->left;
+
+  // 1 of 12
+  xP->right = xPRLL->left;
+
+  // 2 of 12
+  if(xPRLL->left)
+    xPRLL->left->parent = xP, gDebugRotate[16]++;
+  else
+    gDebugRotate[17]++;
+
+  // 3 of 12
+  xPRL->left = xPRLL->right;
+
+  // 4 of 12
+  if(xPRLL->right)
+    xPRLL->right->parent = xPRL, gDebugRotate[18]++;
+  else
+    gDebugRotate[19]++;
+
+  // 5 of 12
+  xPRL->parent = xPRLL;
+
+  // 6 of 12
+  xPRLL->right = xPRL;
+
+  // 7 of 12
+  if(xP == xP->parent->left)
+    xP->parent->left = xPR, gDebugRotate[52]++;
+  else /* xP == xP->parent->right */
+    xP->parent->right = xPR, gDebugRotate[53]++;
+
+  // 8 of 12
+  xPR->parent = xP->parent;
+
+  // 9 of 12
+  xP->parent = xPRLL;
+
+  // 10 of 12
+  xPRLL->left = xP;
+
+  // 11 of 12
+  xPR->left = xPRLL;
+
+  // 12 of 12
+  xPRLL->parent = xPR;
+}
+
+#if 0
 // xP; x->parent
 // xPR; x->parent->right
 // xPRL; x->parent->right->left
@@ -935,3 +990,4 @@ void LeftRightLeftRotate(BinaryTreeNode* xP)
 //             L  ^                                                                ^  R                                                                                                                       L  ^
 // x->parent->left 4                                                                x->parent->right->left->left->left 4                                                      x->parent->right->left->left->right 4
 }
+#endif

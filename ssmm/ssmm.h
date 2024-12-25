@@ -9,11 +9,20 @@
 
 struct ssmm;
 
+// memory overhead is per chuck when debug is enabled; O(n)
+class enum ssmm_debug
+{
+  off = 0,
+  constant = 1, // O(1)
+  logarithmic = 2, // O(lg(n) )
+  linear = 2 // O(n)
+};
+
 // O(malloc)
 // sizeOf >= sizeof(void*)
 //
 // returns null on failure, otherwise returns non-null
-ssmm* SsmmConstruct(int sizeOf, int initialCapacity, bool debug);
+ssmm* SsmmConstruct(int sizeOf, int initialCapacity, bool isTentative, ssmmDebug debug);
 
 // O(free) * O(lg(n) ) when resize is -1 otherwise O(free) * O(p)
 // client reference to ssmm instance will be cleared

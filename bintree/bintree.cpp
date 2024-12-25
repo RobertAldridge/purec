@@ -15,8 +15,18 @@
 #undef NDEBUG
 #define NDEBUG
 
-#include <malloc.h>
-#include <memory.h>
+#include <cstddef>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+using std::free;
+using std::malloc;
+using std::memset;
+using std::printf;
+using std::ptrdiff_t;
+
+//#include <malloc.h>
+//#include <memory.h>
 
 //#include "ptrtrack.h"
 
@@ -117,18 +127,21 @@ right-left (insert) 1
 right-left-right (delete) 1
 #endif
 
+int gDebugRotate[69] = {0};
+
 // LeftRotate(xP)
 // LeftRotate(xPP)
-static void LeftRotate(BinaryTreeNode* x);
+static void LeftRotateDelete1(BinaryTreeNode* xP);
+static void LeftRotateDelete2(BinaryTreeNode* xP);
+static void LeftRotateInsert(BinaryTreeNode* xPP);
 
 // LeftLeftRotate(xP)
 static void LeftLeftRotate(BinaryTreeNode* xP);
 
-// LeftRightInsertRotate(x)
-static void LeftRightInsertRotate(BinaryTreeNode* x);
-
-// LeftRightDeleteRotate(xP)
-static void LeftRightDeleteRotate(BinaryTreeNode* xP);
+// LeftRightRotate(x)
+// LeftRightRotate(xP)
+static void LeftRightRotateInsert(BinaryTreeNode* x);
+static void LeftRightRotateDelete(BinaryTreeNode* xP);
 
 // LeftRightLeftRotate(xP)
 static void LeftRightLeftRotate(BinaryTreeNode* xP);
@@ -140,16 +153,17 @@ static void LeftRightLeftRotate(BinaryTreeNode* xP);
 
 // RightRotate(xP)
 // RightRotate(xPP)
-static void RightRotate(BinaryTreeNode* x);
+static void RightRotateDelete1(BinaryTreeNode* xP);
+static void RightRotateDelete2(BinaryTreeNode* xP);
+static void RightRotateInsert(BinaryTreeNode* xPP);
 
 // RightRightRotate(xP)
 static void RightRightRotate(BinaryTreeNode* xP);
 
-// RightLeftInsertRotate(x)
-static void RightLeftInsertRotate(BinaryTreeNode* x);
-
-// RightLeftDeleteRotate(xP)
-static void RightLeftDeleteRotate(BinaryTreeNode* xP);
+// RightLeftRotate(x)
+// RightLeftRotate(xP)
+static void RightLeftRotateInsert(BinaryTreeNode* x);
+static void RightLeftRotateDelete(BinaryTreeNode* xP);
 
 // RightLeftRightRotate(xP)
 static void RightLeftRightRotate(BinaryTreeNode* xP);
@@ -381,18 +395,46 @@ static int depthMax(BinaryTreeNode* node)
     return right + 1;
 }
 
-int bintree::depth()
+int bintree::depthTree()
 {
   BinaryTree* tree = (BinaryTree*)this;
 
   if( !tree)
   {
-    // BinTreeIsEmpty(...) bad params
+    // bintree::depthTree(...) bad params
     _log("error");
     return RETURN_ERROR;
   }
 
   return depthMax(GETROOTFROMTREE(tree) );
+}
+
+int bintree::depthStack()
+{
+  BinaryTree* tree = (BinaryTree*)this;
+
+  if( !tree)
+  {
+    // bintree::depthStack(...) bad params
+    _log("error");
+    return RETURN_ERROR;
+  }
+
+  return tree->maxStack;
+}
+
+int bintree::depthQueue()
+{
+  BinaryTree* tree = (BinaryTree*)this;
+
+  if( !tree)
+  {
+    // bintree::depthQueue(...) bad params
+    _log("error");
+    return RETURN_ERROR;
+  }
+
+  return tree->maxQueue;
 }
 
 // integrated for root sentinel

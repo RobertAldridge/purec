@@ -7,57 +7,108 @@
 #if 0
 // RightRotate(xP)
 // RightRotate(xPP)
-static void RightRotate(BinaryTreeNode* x);
+static void RightRotateDelete1(BinaryTreeNode* xP);
+static void RightRotateDelete2(BinaryTreeNode* xP);
+static void RightRotateInsert(BinaryTreeNode* xPP);
 
 // RightRightRotate(xP)
 static void RightRightRotate(BinaryTreeNode* xP);
 
-// RightLeftInsertRotate(x)
-static void RightLeftInsertRotate(BinaryTreeNode* x);
-
-// RightLeftDeleteRotate(xP)
-static void RightLeftDeleteRotate(BinaryTreeNode* xP);
+// RightLeftRotate(x)
+// RightLeftRotate(xP)
+static void RightLeftRotateInsert(BinaryTreeNode* x);
+static void RightLeftRotateDelete(BinaryTreeNode* xP);
 
 // RightLeftRightRotate(xP)
 static void RightLeftRightRotate(BinaryTreeNode* xP);
 #endif
 
-// x
-// xL = x->left
-
-// x 0 2 4 5
-// x->left xL 0 1 4 4 6
-// x->left->right 1 2 5
-// x->left->right->parent 2
-// x->left->parent 3
-// x->parent 3 6
-// x->parent->left 4
-// x->parent->right 4 4
-// 
 // integrated for root sentinel
-void RightRotate(BinaryTreeNode* x)
+void RightRotateDelete1(BinaryTreeNode* xP)
 {
-  BinaryTreeNode* xL = x->left;
+  BinaryTreeNode* xPL = xP->left;
 
   // 1 of 6
-  x->left = xL->right;
+  xP->left = xPL->right;
 
   // 2 of 6
-  if(xL->right)
-    xL->right->parent = x;
+  if(xPL->right)
+    xPL->right->parent = xP, gDebugRotate[20]++;
+  else
+    gDebugRotate[21]++; // never reached through empirical testing
 
   // 3 of 6
-  xL->parent = x->parent;
+  xPL->parent = xP->parent;
 
   // 4 of 6
-  if(x == x->parent->right)
-    x->parent->right = xL;
-  else /* x == x->parent->left */
-    x->parent->left = xL;
+  if(xP == xP->parent->right)
+    xP->parent->right = xPL, gDebugRotate[54]++;
+  else /* xP == xP->parent->left */
+    xP->parent->left = xPL, gDebugRotate[55]++;
 
   // 5 of 6
-  xL->right = x;
+  xPL->right = xP;
 
   // 6 of 6
-  x->parent = xL;
+  xP->parent = xPL;
+}
+
+// integrated for root sentinel
+void RightRotateDelete2(BinaryTreeNode* xP)
+{
+  BinaryTreeNode* xPL = xP->left;
+
+  // 1 of 6
+  xP->left = xPL->right;
+
+  // 2 of 6
+  if(xPL->right)
+    xPL->right->parent = xP, gDebugRotate[22]++;
+  else
+    gDebugRotate[23]++;
+
+  // 3 of 6
+  xPL->parent = xP->parent;
+
+  // 4 of 6
+  if(xP == xP->parent->right)
+    xP->parent->right = xPL, gDebugRotate[56]++;
+  else /* xP == xP->parent->left */
+    xP->parent->left = xPL, gDebugRotate[57]++;
+
+  // 5 of 6
+  xPL->right = xP;
+
+  // 6 of 6
+  xP->parent = xPL;
+}
+
+// integrated for root sentinel
+void RightRotateInsert(BinaryTreeNode* xPP)
+{
+  BinaryTreeNode* xPPL = xPP->left;
+
+  // 1 of 6
+  xPP->left = xPPL->right;
+
+  // 2 of 6
+  if(xPPL->right)
+    xPPL->right->parent = xPP, gDebugRotate[24]++;
+  else
+    gDebugRotate[25]++;
+
+  // 3 of 6
+  xPPL->parent = xPP->parent;
+
+  // 4 of 6
+  if(xPP == xPP->parent->right)
+    xPP->parent->right = xPPL, gDebugRotate[58]++;
+  else /* xPP == xPP->parent->left */
+    xPP->parent->left = xPPL, gDebugRotate[59]++;
+
+  // 5 of 6
+  xPPL->right = xPP;
+
+  // 6 of 6
+  xPP->parent = xPPL;
 }

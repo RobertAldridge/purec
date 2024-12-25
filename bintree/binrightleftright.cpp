@@ -7,16 +7,17 @@
 #if 0
 // RightRotate(xP)
 // RightRotate(xPP)
-static void RightRotate(BinaryTreeNode* x);
+static void RightRotateDelete1(BinaryTreeNode* xP);
+static void RightRotateDelete2(BinaryTreeNode* xP);
+static void RightRotateInsert(BinaryTreeNode* xPP);
 
 // RightRightRotate(xP)
 static void RightRightRotate(BinaryTreeNode* xP);
 
-// RightLeftInsertRotate(x)
-static void RightLeftInsertRotate(BinaryTreeNode* x);
-
-// RightLeftDeleteRotate(xP)
-static void RightLeftDeleteRotate(BinaryTreeNode* xP);
+// RightLeftRotate(x)
+// RightLeftRotate(xP)
+static void RightLeftRotateInsert(BinaryTreeNode* x);
+static void RightLeftRotateDelete(BinaryTreeNode* xP);
 
 // RightLeftRightRotate(xP)
 static void RightLeftRightRotate(BinaryTreeNode* xP);
@@ -34,14 +35,18 @@ void RightLeftRightRotate(BinaryTreeNode* xP)
 
   // 2 of 12
   if(xPLRR->right)
-    xPLRR->right->parent = xP;
+    xPLRR->right->parent = xP, gDebugRotate[36]++;
+  else
+    gDebugRotate[37]++;
 
   // 3 of 12
   xPLR->right = xPLRR->left;
 
   // 4 of 12
   if(xPLRR->left)
-    xPLRR->left->parent = xPLR;
+    xPLRR->left->parent = xPLR, gDebugRotate[38]++;
+  else
+    gDebugRotate[39]++;
 
   // 5 of 12
   xPLR->parent = xPLRR;
@@ -51,9 +56,9 @@ void RightLeftRightRotate(BinaryTreeNode* xP)
 
   // 7 of 12
   if(xP == xP->parent->right)
-    xP->parent->right = xPL;
+    xP->parent->right = xPL, gDebugRotate[66]++;
   else /* xP == xP->parent->left */
-    xP->parent->left = xPL;
+    xP->parent->left = xPL, gDebugRotate[67]++;
 
   // 8 of 12
   xPL->parent = xP->parent;

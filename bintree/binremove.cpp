@@ -167,7 +167,7 @@ void BinDeleteFixup(BinaryTree* tree, BinaryTreeNode* x)
 
           xP->color = RED; // 1B
 
-          LeftRotate(xP); // 1C
+          LeftRotateDelete1(xP); // 1C
 
           w = xP->right; // 1D
 
@@ -293,7 +293,7 @@ void BinDeleteFixup(BinaryTree* tree, BinaryTreeNode* x)
           w->color = RED; // 3B
 
           // case 3 -> 4
-          RightLeftDeleteRotate(xP); // right-rotate(tree, w) -> left-rotate(tree, x->parent) transformed 3C -> 4D
+          RightLeftRotateDelete(xP); // right-rotate(tree, w) -> left-rotate(tree, x->parent) transformed 3C -> 4D
 
           w = xP->parent; // w = x->parent->right transformed 3D
 
@@ -322,7 +322,7 @@ void BinDeleteFixup(BinaryTree* tree, BinaryTreeNode* x)
 
           w->right->color = BLACK; // 4C
 
-          LeftRotate(xP); // 4D
+          LeftRotateDelete2(xP); // 4D
 
           x = GETROOTFROMTREE(tree); // 4E
         }
@@ -356,7 +356,7 @@ void BinDeleteFixup(BinaryTree* tree, BinaryTreeNode* x)
 
           xP->color = RED; // 1B
 
-          RightRotate(xP); // 1C
+          RightRotateDelete1(xP); // 1C
 
           w = xP->left; // 1D
 
@@ -482,7 +482,7 @@ void BinDeleteFixup(BinaryTree* tree, BinaryTreeNode* x)
           w->color = RED; // 3B
 
           // case 3 -> 4
-          LeftRightDeleteRotate(xP); // left-rotate(tree, w) -> right-rotate(tree, x->parent) transformed 3C -> 4D
+          LeftRightRotateDelete(xP); // left-rotate(tree, w) -> right-rotate(tree, x->parent) transformed 3C -> 4D
 
           w = xP->parent; // w = x->parent->left transformed 3D
 
@@ -511,7 +511,7 @@ void BinDeleteFixup(BinaryTree* tree, BinaryTreeNode* x)
 
           w->left->color = BLACK; // 4C
 
-          RightRotate(xP); // 4D
+          RightRotateDelete2(xP); // 4D
 
           x = GETROOTFROMTREE(tree); // 4E
         }
