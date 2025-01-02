@@ -87,7 +87,9 @@ struct BinaryTree
   int maxQueue;
   ////////////////////////////////////
 
-  ssmm* nodeAllocator;
+  ssmm* nodeAllocator; // main allocator for bintree nodes
+
+  ssmm* stackAllocator; // pointer stack for interative pre-order, in-order, post-order traversal
 
   ////////////////////////////////////
 //char** MemoryManagerArrayCurrent;

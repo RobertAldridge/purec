@@ -447,6 +447,8 @@ int bintree::term()
 
   if(tree)
   {
+    SsmmDestruct(&tree->stackAllocator);
+
     SsmmDestruct(&tree->nodeAllocator);
 
     memset(tree, 0, tree->MemoryTotalSize);
@@ -459,6 +461,20 @@ int bintree::term()
   // BinTreeTerminate(...) bad params
   _log("error");
   return RETURN_ERROR;
+}
+
+static int calculateLogBase2(int number)
+{
+  int result = 0;
+
+  while(number)
+  {
+    result++;
+
+    number /= 2;
+  }
+
+  return result;
 }
 
 // integrated for root sentinel
@@ -477,6 +493,8 @@ bintree* bintree::init(int MaxNumberOfObjects, int SizeOfEachObjectExact, binary
 
   int loop = 0;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  int stackSize = 0;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
   if(MaxNumberOfObjects <= 0 || SizeOfEachObjectExact <= 0 || !LessThan)
@@ -564,8 +582,17 @@ bintree* bintree::init(int MaxNumberOfObjects, int SizeOfEachObjectExact, binary
   tree->MemoryTotalSize = MemoryTotalSize;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  tree->nodeAllocator = SsmmConstruct(SizeOfEachObjectAligned + sizeof(BinaryTreeNode), MaxNumberOfObjects / 2, false, ssmm_debug::off);
+  tree->nodeAllocator = SsmmConstruct(SizeOfEachObjectAligned + sizeof(BinaryTreeNode), MaxNumberOfObjects, false);
   if( !tree->nodeAllocator)
+  {
+    _log("error");
+    return 0;
+  }
+
+  stackSize = 2 * calculateLogBase2(MaxNumberOfObjects + 1);
+
+  tree->stackAllocator = SsmmConstruct(sizeof(BinaryTreeNode*), stackSize, false);
+  if( !tree->stackAllocator)
   {
     _log("error");
     return 0;

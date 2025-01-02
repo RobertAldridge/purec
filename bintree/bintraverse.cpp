@@ -51,8 +51,8 @@
 void IterativePreorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binaryTreeEvaluate ClientEvaluate)
 {
   // PSTACK Stack = InitStack()
-  BinaryTreeNode** StackTraverseArrayStart = tree->TraverseArrayStart;
-  BinaryTreeNode** StackTraverseArrayCurrentTop = StackTraverseArrayStart;
+  //BinaryTreeNode** StackTraverseArrayStart = tree->TraverseArrayStart;
+  //BinaryTreeNode** StackTraverseArrayCurrentTop = StackTraverseArrayStart;
 
   BinaryTreeNode* LeftChild = 0;
   BinaryTreeNode* RightChild = 0;
@@ -70,10 +70,13 @@ void IterativePreorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binar
       if(LeftChild)
       {
         // Stack->Push(RightChild)
-        *StackTraverseArrayCurrentTop++ = RightChild;
+        //*StackTraverseArrayCurrentTop++ = RightChild;
+        if( !SsmmStackPush(tree->stackAllocator, RightChild) )
+          break;
         
-        ptrdiff_t stackSize = StackTraverseArrayCurrentTop - StackTraverseArrayStart;
-        if(stackSize > tree->maxStack)
+        //ptrdiff_t stackSize = StackTraverseArrayCurrentTop - StackTraverseArrayStart;
+        ptrdiff_t stackSize = SsmmNum(tree->stackAllocator);
+        if(stackSize >= 0 && stackSize > tree->maxStack)
           tree->maxStack = (int)stackSize;
 
         // Stack->Push(LeftChild)
@@ -96,12 +99,22 @@ void IterativePreorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binar
     else
     {
       // if(Stack->Empty() == TRUE)
-      if(StackTraverseArrayCurrentTop == StackTraverseArrayStart)
+      //if(StackTraverseArrayCurrentTop == StackTraverseArrayStart)
+      if(SsmmNum(tree->stackAllocator) <= 0)
         break;
 
       // node = Stack->Pop()
-      node = *( --StackTraverseArrayCurrentTop);
+      //node = *( --StackTraverseArrayCurrentTop);
+      node = (BinaryTreeNode*)SsmmStackPop(tree->stackAllocator);
+      if( !node)
+        break;
     }
+  }
+
+  while(SsmmNum(tree->stackAllocator) > 0)
+  {
+    if( !SsmmStackPop(tree->stackAllocator) )
+      break;
   }
 }
 
@@ -129,8 +142,8 @@ void IterativePreorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binar
 void IterativeInorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binaryTreeEvaluate ClientEvaluate)
 {
   // PSTACK Stack = InitStack()
-  BinaryTreeNode** StackTraverseArrayStart = tree->TraverseArrayStart;
-  BinaryTreeNode** StackTraverseArrayCurrentTop = StackTraverseArrayStart;
+  //BinaryTreeNode** StackTraverseArrayStart = tree->TraverseArrayStart;
+  //BinaryTreeNode** StackTraverseArrayCurrentTop = StackTraverseArrayStart;
 
   while(1)
   {
@@ -139,26 +152,39 @@ void IterativeInorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binary
     while(node)
     {
       // Stack->Push(node)
-      *StackTraverseArrayCurrentTop++ = node;
+      //*StackTraverseArrayCurrentTop++ = node;
+      if( !SsmmStackPush(tree->stackAllocator, node) )
+        break;
 
       node = node->left;
     }
     
-    ptrdiff_t stackSize = StackTraverseArrayCurrentTop - StackTraverseArrayStart;
-    if(stackSize > tree->maxStack)
+    //ptrdiff_t stackSize = StackTraverseArrayCurrentTop - StackTraverseArrayStart;
+    ptrdiff_t stackSize = SsmmNum(tree->stackAllocator);
+    if(stackSize >= 0 && stackSize > tree->maxStack)
       tree->maxStack = (int)stackSize;
 
     // if(Stack->Empty() == TRUE)
-    if(StackTraverseArrayCurrentTop == StackTraverseArrayStart)
+    //if(StackTraverseArrayCurrentTop == StackTraverseArrayStart)
+    if(SsmmNum(tree->stackAllocator) <= 0)
       break;
 
     // node = Stack->Pop()
-    node = *( --StackTraverseArrayCurrentTop);
+    //node = *( --StackTraverseArrayCurrentTop);
+    node = (BinaryTreeNode*)SsmmStackPop(tree->stackAllocator);
+    if( !node)
+      break;
 
     if(ClientEvaluate(GETCLIENT(node) ) )
       break;
 
     node = node->right;
+  }
+
+  while(SsmmNum(tree->stackAllocator) > 0)
+  {
+    if( !SsmmStackPop(tree->stackAllocator) )
+      break;
   }
 }
 
@@ -188,8 +214,8 @@ void IterativeInorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binary
 void IterativePostorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binaryTreeEvaluate ClientEvaluate)
 {
   // PSTACK Stack = InitStack()
-  BinaryTreeNode** StackTraverseArrayStart = tree->TraverseArrayStart;
-  BinaryTreeNode** StackTraverseArrayCurrentTop = StackTraverseArrayStart;
+  //BinaryTreeNode** StackTraverseArrayStart = tree->TraverseArrayStart;
+  //BinaryTreeNode** StackTraverseArrayCurrentTop = StackTraverseArrayStart;
 
   BinaryTreeNode* NodePushed = 0;
   BinaryTreeNode* RightChild = 0;
@@ -201,7 +227,9 @@ void IterativePostorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, bina
     do
     {
       // Stack->Push(node)
-      *StackTraverseArrayCurrentTop++ = node;
+      //*StackTraverseArrayCurrentTop++ = node;
+      if( !SsmmStackPush(tree->stackAllocator, node) )
+        break;
 
       node = node->left;
 
@@ -209,23 +237,30 @@ void IterativePostorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, bina
 
 popOneOffStack:
 
-    ptrdiff_t stackSize = StackTraverseArrayCurrentTop - StackTraverseArrayStart;
-    if(stackSize > tree->maxStack)
+    //ptrdiff_t stackSize = StackTraverseArrayCurrentTop - StackTraverseArrayStart;
+    ptrdiff_t stackSize = SsmmNum(tree->stackAllocator);
+    if(stackSize >= 0 && stackSize > tree->maxStack)
       tree->maxStack = (int)stackSize;
 
     // if(Stack->Empty() == TRUE)
-    if(StackTraverseArrayCurrentTop == StackTraverseArrayStart)
+    //if(StackTraverseArrayCurrentTop == StackTraverseArrayStart)
+    if(SsmmNum(tree->stackAllocator) <= 0)
       break;
 
     // node = Stack->Pop()
-    node = *( --StackTraverseArrayCurrentTop);
+    //node = *( --StackTraverseArrayCurrentTop);
+    node = (BinaryTreeNode*)SsmmStackPop(tree->stackAllocator);
+    if( !node)
+      break;
 
     RightChild = node->right;
 
     if(RightChild && RightChild != NodePushed)
     {
       // Stack->Push(node)
-      *StackTraverseArrayCurrentTop++ = node;
+      //*StackTraverseArrayCurrentTop++ = node;
+      if( !SsmmStackPush(tree->stackAllocator, node) )
+        break;
 
       NodePushed = RightChild;
 
@@ -244,6 +279,12 @@ popOneOffStack:
 
       goto popOneOffStack;
     }
+  }
+
+  while(SsmmNum(tree->stackAllocator) > 0)
+  {
+    if( !SsmmStackPop(tree->stackAllocator) )
+      break;
   }
 }
 
