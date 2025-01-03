@@ -28,7 +28,7 @@ struct ssStack
   int numChunks;
   int index;
   int max;
-  
+
   int counter;
 
   int resize;
@@ -36,7 +36,7 @@ struct ssStack
 
   int sizeOfRef;
   int sizeOf;
-  
+
   int padding;
 };
 #endif

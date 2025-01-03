@@ -1,5 +1,5 @@
 
-// ssStack.cpp
+// ssQueue.cpp
 // Robert Aldridge, code
 // Robert Aldridge and Charlie Burns, design
 
@@ -7,15 +7,30 @@
   #pragma warning (disable: 4711)
 #endif
 
-#include "ssStack.h"
+#include "ssQueue.h"
 
 #include <cstdio>
 using std::printf;
 
-struct SsStackPool
+struct SsQueueNode
 {
-  SsStackPool* previous;
-  SsStackPool* next;
+  SsQueueNode* previous;
+  SsQueueNode* next;
+
+  uint8_t* chunk;
+
+  int num;
+
+  int padding;
+};
+
+struct SsQueuePool
+{
+  SsQueueNode front;
+  SsQueueNode back;
+
+  SsQueuePool* previous;
+  SsQueuePool* next;
 
   //uint8_t* alloc;
   int unaligned;
@@ -25,17 +40,24 @@ struct SsStackPool
   // uint8_t chunk[]
 };
 
-struct ssStack
+struct ssQueue
 {
-  SsStackPool* current;
+  // if node list is circular then only need back and front
+  SsQueueNode* back;
+  SsQueueNode* front;
 
-  SsStackPool* head;
-  SsStackPool* tail;
+  // if node list is circular then don't need nodeHead or nodeTail
+  //SsQueueNode* nodeHead;
+  //SsQueueNode* nodeTail;
+
+  SsQueuePool* head;
+  SsQueuePool* tail;
 
   int numPools;
 
   int numChunks;
-  int index;
+  int indexBack;
+  int indexFront;
   int max;
 
   int counter;
@@ -45,8 +67,6 @@ struct ssStack
 
   int sizeOfRef;
   int sizeOf;
-
-  int padding;
 };
 
 #include <cstddef> // ptrdiff_t, size_t
@@ -71,19 +91,19 @@ using std::uint8_t;
 static size_t ALIGNEDOFVALUE(size_t size);
 
 // only for node header
-static size_t SsStackGetSizeOfNode();
+static size_t SsQueueGetSizeOfNode();
 
 // only for pool header
-static size_t SsStackGetSizeOfPool();
+static size_t SsQueueGetSizeOfPool();
 
-// only for ssStack header
-static size_t SsStackGetSizeOfSsStack();
+// only for ssQueue header
+static size_t SsQueueGetSizeOfSsQueue();
 
 // returns entire chunk size (node header + client data)
-static size_t SsStackGetSizeOfChunk(size_t sizeOf);
+static size_t SsQueueGetSizeOfChunk(size_t sizeOf);
 
-static void PoolSetUnaligned(SsStackPool* pool, uint8_t* unaligned);
-static uint8_t* PoolGetUnaligned(SsStackPool* pool);
+static void PoolSetUnaligned(SsQueuePool* pool, uint8_t* unaligned);
+static uint8_t* PoolGetUnaligned(SsQueuePool* pool);
 
 // alignment is typically sizeof(void*)
 // assumes size is already a multiple of alignment
@@ -97,12 +117,12 @@ static size_t MALLOCSIZEPADDED(size_t size);
 // pass return value of malloc to MALLOCRETURNALIGN (pass stored value not the literal malloc call)
 static uint8_t* MALLOCRETURNALIGN(uint8_t* unaligned, ptrdiff_t address);
 
-static size_t SSSTACK_GET_POOL_SIZEOF(ssStack* _this, size_t nmemb);
+static size_t SSQUEUE_GET_POOL_SIZEOF(ssQueue* _this, size_t nmemb);
 
-static uint8_t* SSSTACK_POOL_TO_CHUNK_OPERATOR_INDEX(ssStack* _this, SsStackPool* pool, size_t index);
+static uint8_t* SSQUEUE_POOL_TO_CHUNK_OPERATOR_INDEX(ssQueue* _this, SsQueuePool* pool, size_t index);
 
 // specifically when one side is passed by the client, in which case we have to use the unpadded sizeof
-static void SSSTACK_MEMCPY_CHUNK(ssStack* _this, void* destination, void* source);
+static void SSQUEUE_MEMCPY_CHUNK(ssQueue* _this, void* destination, void* source);
 
 // when you're forced to use a compiler/runtime that claims to conform yet
 // doesn't implement aligned_alloc (*cough* microsoft)
@@ -111,59 +131,59 @@ static void SSSTACK_MEMCPY_CHUNK(ssStack* _this, void* destination, void* source
 // in this case assume alignment is sizeof(void*)
 static uint8_t* cstandard_aligned_alloc(size_t size, uint8_t** unalignedRef/*unaligned;ptr*/);
 
-static void PoolListWalk(SsStackPool* head, bool doFree);
-static void PoolListReverseAndFree(SsStackPool* head);
+static void PoolListWalk(SsQueuePool* head, bool doFree);
+static void PoolListReverseAndFree(SsQueuePool* head);
 
-// ssStack* SsStackConstruct(int sizeOf, int minimumCapacity, int maximumCapacity, int resize);
+// ssQueue* SsQueueConstruct(int sizeOf, int minimumCapacity, int maximumCapacity, int resize);
 
-// returns the number of elements previously in the stack or -1 on error
-// int SsStackDestruct(ssStack** reference/*_this*/);
+// returns the number of elements previously in the queue or -1 on error
+// int SsQueueDestruct(ssQueue** reference/*_this*/);
 
-// int SsStackNum(ssStack* _this);
+// int SsQueueNum(ssQueue* _this);
 
 // returns the number of nodes previously held by client or -1 on error
-// int SsStackReset(ssStack* _this);
+// int SsQueueReset(ssQueue* _this);
 
-static bool SsStackResize(ssStack* _this, size_t minimumCapacity);
+static bool SsQueueResize(ssQueue* _this, size_t minimumCapacity);
 
-// bool SsStackPush(ssStack* _this, void* memory/*chunk*/);
+// bool SsQueuePush(ssQueue* _this, void* memory/*chunk*/);
 
-/*bool SsStackGet(ssStack* _this, void* chunk) todo*/
+/*bool SsQueueGet(ssQueue* _this, void* chunk) todo*/
 
-// bool SsStackPop(ssStack* _this, void* memory/*chunk*/);
+// bool SsQueuePop(ssQueue* _this, void* memory/*chunk*/);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //#define INTEGER_MAX(lhs, rhs) (lhs >= rhs ? lhs : rhs)
 
-//#define SSSTACK_GET_CHUNK_PADDED_SIZEOF(_this) \
+//#define SSQUEUE_GET_CHUNK_PADDED_SIZEOF(_this) \
 //  (size_t)_this->sizeOf
 
-//#define SSSTACK_GET_CHUNK_UNPADDED_SIZEOF(_this) \
+//#define SSQUEUE_GET_CHUNK_UNPADDED_SIZEOF(_this) \
 //  (size_t)_this->sizeOfRef
 
 size_t ALIGNEDOFVALUE(size_t size)
   { return (size % sizeof(void*) ) ? size + (sizeof(void*) - size % sizeof(void*) ) : size; }
 
 // only for node header
-size_t SsStackGetSizeOfNode()
+size_t SsQueueGetSizeOfNode()
   { return 0; }
 
 // only for pool header
-size_t SsStackGetSizeOfPool()
-  { return ALIGNEDOFVALUE(sizeof(SsStackPool) ); }
+size_t SsQueueGetSizeOfPool()
+  { return ALIGNEDOFVALUE(sizeof(SsQueuePool) ); }
 
-// only for ssStack header
-size_t SsStackGetSizeOfSsStack()
-  { return ALIGNEDOFVALUE(sizeof(ssStack) ); }
+// only for ssQueue header
+size_t SsQueueGetSizeOfSsQueue()
+  { return ALIGNEDOFVALUE(sizeof(ssQueue) ); }
 
 // returns entire chunk size (node header + client data)
-size_t SsStackGetSizeOfChunk(size_t sizeOf)
-  { return ALIGNEDOFVALUE(sizeOf) + SsStackGetSizeOfNode(); }
+size_t SsQueueGetSizeOfChunk(size_t sizeOf)
+  { return ALIGNEDOFVALUE(sizeOf) + SsQueueGetSizeOfNode(); }
 
-void PoolSetUnaligned(SsStackPool* pool, uint8_t* unaligned)
+void PoolSetUnaligned(SsQueuePool* pool, uint8_t* unaligned)
   { pool->unaligned = (int)( (uint8_t*)unaligned - (uint8_t*)pool); }
 
-uint8_t* PoolGetUnaligned(SsStackPool* pool)
+uint8_t* PoolGetUnaligned(SsQueuePool* pool)
   { return (uint8_t*)pool + (ptrdiff_t)pool->unaligned; }
 
 size_t MALLOCSIZEPADDED(size_t size)
@@ -172,14 +192,14 @@ size_t MALLOCSIZEPADDED(size_t size)
 uint8_t* MALLOCRETURNALIGN(uint8_t* unaligned, ptrdiff_t address)
   { return (address % sizeof(void*) ) ? unaligned + (sizeof(void*) - address % sizeof(void*) ) : unaligned; }
 
-size_t SSSTACK_GET_POOL_SIZEOF(ssStack* _this, size_t nmemb)
-  { return SsStackGetSizeOfPool() + nmemb * (size_t)_this->sizeOf; }
+size_t SSQUEUE_GET_POOL_SIZEOF(ssQueue* _this, size_t nmemb)
+  { return SsQueueGetSizeOfPool() + nmemb * (size_t)_this->sizeOf; }
 
-uint8_t* SSSTACK_POOL_TO_CHUNK_OPERATOR_INDEX(ssStack* _this, SsStackPool* pool, size_t index)
-  { return (uint8_t*)pool + SSSTACK_GET_POOL_SIZEOF(_this, index); }
+uint8_t* SSQUEUE_POOL_TO_CHUNK_OPERATOR_INDEX(ssQueue* _this, SsQueuePool* pool, size_t index)
+  { return (uint8_t*)pool + SSQUEUE_GET_POOL_SIZEOF(_this, index); }
 
 // specifically when one side is passed by the client, in which case we have to use the unpadded sizeof
-void SSSTACK_MEMCPY_CHUNK(ssStack* _this, void* destination, void* source)
+void SSQUEUE_MEMCPY_CHUNK(ssQueue* _this, void* destination, void* source)
   { memcpy(destination, source, (size_t)_this->sizeOfRef; }
 
 // when you're forced to use a compiler/runtime that claims to conform yet
@@ -218,11 +238,11 @@ labelReturn:
   return aligned;
 }
 
-void PoolListWalk(SsStackPool* head, bool doFree)
+void PoolListWalk(SsQueuePool* head, bool doFree)
 {
-  SsStackPool* next = 0;
+  SsQueuePool* next = 0;
 
-  for(SsStackPool* curr = head; curr; curr = next)
+  for(SsQueuePool* curr = head; curr; curr = next)
   {
     next = curr->next;
 
@@ -231,15 +251,15 @@ void PoolListWalk(SsStackPool* head, bool doFree)
   }
 }
 
-void PoolListReverseAndFree(SsStackPool* head)
+void PoolListReverseAndFree(SsQueuePool* head)
 {
   // we want to free pools in opposite order of their allocation
 
   // reverse list
-  SsStackPool* prev = 0;
-  SsStackPool* next = 0;
+  SsQueuePool* prev = 0;
+  SsQueuePool* next = 0;
 
-  for(SsStackPool* curr = head; curr; curr = next)
+  for(SsQueuePool* curr = head; curr; curr = next)
   {
     next = curr->next;
     curr->next = prev;
@@ -251,11 +271,11 @@ void PoolListReverseAndFree(SsStackPool* head)
   PoolListWalk(prev, true);
 }
 
-ssStack* SsStackConstruct(int sizeOf, int minimumCapacity, int maximumCapacity, int resize)
+ssQueue* SsQueueConstruct(int sizeOf, int minimumCapacity, int maximumCapacity, int resize)
 {
   uint8_t* result = 0;
 
-  ssStack _this = {0};
+  ssQueue _this = {0};
 
   if(sizeOf <= 0 || minimumCapacity <= 0 || minimumCapacity > maximumCapacity || !resize)
     goto error;
@@ -277,15 +297,15 @@ ssStack* SsStackConstruct(int sizeOf, int minimumCapacity, int maximumCapacity, 
   _this.capacity = maximumCapacity;
 
   _this.sizeOfRef = sizeOf;
-  _this.sizeOf = (int)SsStackGetSizeOfChunk( (size_t)sizeOf);
+  _this.sizeOf = (int)SsQueueGetSizeOfChunk( (size_t)sizeOf);
 
   try
   {
-    if( !SsStackResize( &_this, (size_t)minimumCapacity) || !_this.head)
+    if( !SsQueueResize( &_this, (size_t)minimumCapacity) || !_this.head)
       goto error;
 
     // extract 'this' pointer which prefixes the first pool
-    result = (uint8_t*)_this.head - (ptrdiff_t)SsStackGetSizeOfSsStack();
+    result = (uint8_t*)_this.head - (ptrdiff_t)SsQueueGetSizeOfSsQueue();
   }
   catch(bad_alloc& )
   {
@@ -295,19 +315,19 @@ ssStack* SsStackConstruct(int sizeOf, int minimumCapacity, int maximumCapacity, 
     goto error;
 
   // use unpadded sizeof in copy
-  memcpy(result, &_this, sizeof(ssStack) );
+  memcpy(result, &_this, sizeof(ssQueue) );
 
 error:
-  return (ssStack*)result;
+  return (ssQueue*)result;
 }
 
-// returns the number of elements previously in the stack or -1 on error
-int SsStackDestruct(ssStack** reference)
+// returns the number of elements previously in the queue or -1 on error
+int SsQueueDestruct(ssQueue** reference)
 {
   int result = -1;
   int numChunks = 0;
 
-  ssStack* _this = 0;
+  ssQueue* _this = 0;
 
   if( !reference)
     goto error;
@@ -317,7 +337,7 @@ int SsStackDestruct(ssStack** reference)
   if( !_this)
     goto error;
 
-  numChunks = SsStackNum(_this);
+  numChunks = SsQueueNum(_this);
   if(numChunks < 0)
     goto error;
 
@@ -332,7 +352,7 @@ error:
   return result;
 }
 
-int SsStackNum(ssStack* _this)
+int SsQueueNum(ssQueue* _this)
 {
   int result = -1;
 
@@ -346,12 +366,12 @@ error:
 }
 
 // returns the number of nodes previously held by client or -1 on error
-int SsStackReset(ssStack* _this)
+int SsQueueReset(ssQueue* _this) // todo
 {
   int result = -1;
   int numChunksRef = 0;
 
-  SsStackPool* pool = 0;
+  SsQueuePool* pool = 0;
 
   if( !_this || _this->numPools <= 0)
     goto error;
@@ -383,7 +403,7 @@ error:
   return result;
 }
 
-bool SsStackResize(ssStack* _this, size_t minimumCapacity)
+bool SsQueueResize(ssQueue* _this, size_t minimumCapacity) // todo
 {
   bool result = false;
 
@@ -402,7 +422,7 @@ bool SsStackResize(ssStack* _this, size_t minimumCapacity)
 
   if(_this->current != _this->tail)
   {
-    SsStackPool* pool = _this->current->next;
+    SsQueuePool* pool = _this->current->next;
 
     _this->current = pool;
 
@@ -478,7 +498,7 @@ bool SsStackResize(ssStack* _this, size_t minimumCapacity)
 
     // resize cannot be zero.  to disable grow() set minimumCapacity and maximumCapacity to same value
     //
-    // resize != 0 is verified during construction of ssStack instance
+    // resize != 0 is verified during construction of ssQueue instance
 
     // non-first grow() behavior, if resize > 0
     //
@@ -507,18 +527,18 @@ bool SsStackResize(ssStack* _this, size_t minimumCapacity)
       goto error;
 
     // already aligned
-    size_t size = SSSTACK_GET_POOL_SIZEOF(_this, (size_t)diff);
+    size_t size = SSQUEUE_GET_POOL_SIZEOF(_this, (size_t)diff);
 
     if(minimumCapacity > 0)
-      size += SsStackGetSizeOfSsStack();
+      size += SsQueueGetSizeOfSsQueue();
 
     uint8_t* unaligned = 0;
     uint8_t* aligned = cstandard_aligned_alloc(size, &unaligned);
 
     if(minimumCapacity > 0)
-      aligned += SsStackGetSizeOfSsStack();
+      aligned += SsQueueGetSizeOfSsQueue();
 
-    SsStackPool* pool = (SsStackPool*)aligned;
+    SsQueuePool* pool = (SsQueuePool*)aligned;
 
     if( !pool)
       goto error;
@@ -561,7 +581,7 @@ error:
   return result;
 }
 
-bool SsStackPush(ssStack* _this, void* memory/*chunk*/) // todo
+bool SsQueuePushBack(ssQueue* _this, void* memory/*chunk*/) // todo
 {
   bool result = false;
 
@@ -572,59 +592,61 @@ bool SsStackPush(ssStack* _this, void* memory/*chunk*/) // todo
 
   if(_this->numChunks == _this->max)
   {
-    if( !_this->resize)
-      goto error;
-
-    if( !SsStackResize(_this, 0) )
+    if( !SsQueueResize(_this, 0) )
       goto error;
   }
+  
+  if(_this->numChunks == _this->max)
+    goto error;
 
   // what is expected to occassionally change upon call
-  // _this->current
+  // _this->back
 
   // what is expected to change every call
   // _this->numChunks
-  // _this->index
+  // _this->indexBack
 
-  if(_this->index < 0 || _this->index >= _this->current->num)
+  if(_this->indexBack < 0 || _this->indexBack >= _this->back->num)
     goto error;
 
-  // _this->index >= 0 && _this->index < _this->current->num
+  // _this->indexBack >= 0 && _this->indexBack < _this->back->num
 
-  chunk = SSSTACK_POOL_TO_CHUNK_OPERATOR_INDEX(_this, _this->current, _this->index);
+  chunk = SSQUEUE_POOL_TO_CHUNK_OPERATOR_INDEX(_this, _this->back, _this->indexBack);
 
   // move to next chunk
-  _this->index++;
+  _this->indexBack++;
 
-  // if(_this->index < _this->current->num)
+  // if(_this->indexBack < _this->back->num)
   //   move to next chunk
-  // else if(_this->index >= _this->current->num)
+  // else if(_this->indexBack >= _this->back->num)
   //   move to next pool
 
   // after grabbing chunk
-  if(_this->index >= _this->current->num)
+  if(_this->indexBack >= _this->back->num)
   {
     // move to next pool (should never be at tail since if out of space it would
-    // have called resize earlier in SsStackPush call)
+    // have called resize earlier in SsQueuePush call)
 
-    if(_this->current == _this->tail)
+    if(_this->back == _this->tail)
       goto error;
 
-    _this->current = _this->current->next;
+    _this->back = _this->back->next;
 
-    _this->index = 0;
+    _this->indexBack = 0;
   }
 
-  // _this->index >= 0 && _this->index < _this->current->num
+  // _this->indexBack >= 0 && _this->indexBack < _this->back->num
 
   _this->numChunks++;
 
-  SSSTACK_MEMCPY_CHUNK(_this, chunk, memory);
+  SSQUEUE_MEMCPY_CHUNK(_this, chunk, memory);
 
   // no change
+  // _this->front
   // _this->head
   // _this->tail
   // _this->numPools
+  // _this->indexFront
   // _this->max
   // _this->counter
   // _this->resize
@@ -638,63 +660,216 @@ error:
   return result;
 }
 
-/*bool SsStackGet(ssStack* _this, void* chunk) todo*/
-
-bool SsStackPop(ssStack* _this, void* memory/*chunk*/) // todo
+bool SsQueuePushFront(ssQueue* _this, void* memory/*chunk*/) // todo
 {
   bool result = false;
 
-  SsStackNode* chunk = 0;
+  SsQueueNode* chunk = 0;
+
+  if( !_this || !memory || _this->numChunks > _this->max)
+    goto error;
+
+  if(_this->numChunks == _this->max)
+  {
+    if( !SsQueueResize(_this, 0) )
+      goto error;
+  }
+  
+  if(_this->numChunks == _this->max)
+    goto error;
+
+  // what is expected to occassionally change upon call
+  // _this->front
+
+  // what is expected to change every call
+  // _this->numChunks
+  // _this->indexFront
+
+  if(_this->indexFront < 0 || _this->indexFront >= _this->front->num)
+    goto error;
+
+  // _this->indexFront >= 0 && _this->indexFront < _this->front->num
+
+  // move to previous chunk
+  _this->indexFront--;
+
+  // if(_this->indexFront < 0)
+  //   move to next pool
+  // else if(_this->indexFront >= 0)
+  //   move to next chunk
+
+  // before grabbing chunk
+  if(_this->indexFront < 0)
+  {
+    // move to previous pool (should never be at head since in that case
+    // _this->numChunks would be zero)
+
+    if(_this->front == _this->head)
+      goto error;
+
+    _this->front = _this->front->previous;
+
+    _this->indexFront = _this->front->num - 1;
+  }
+
+  // _this->indexFront >= 0 && _this->indexFront < _this->front->num
+
+  chunk = SSQUEUE_POOL_TO_CHUNK_OPERATOR_INDEX(_this, _this->front, _this->indexFront);
+
+  _this->numChunks++;
+
+  SSQUEUE_MEMCPY_CHUNK(_this, memory, chunk);
+
+  // no change
+  // _this->back
+  // _this->head
+  // _this->tail
+  // _this->numPools
+  // _this->indexBack
+  // _this->max
+  // _this->counter
+  // _this->resize
+  // _this->capacity
+  // _this->sizeOfRef
+  // _this->sizeOf
+
+  result = true;
+
+error:
+  return result;
+}
+
+/*bool SsQueueGetBack(ssQueue* _this, void* chunk) todo*/
+
+bool SsQueuePopBack(ssQueue* _this, void* memory/*chunk*/) // todo
+{
+  bool result = false;
+
+  SsQueueNode* chunk = 0;
 
   if( !_this || !memory || _this->numChunks <= 0)
     goto error;
 
   // what is expected to occassionally change upon call
-  // _this->current
+  // _this->back
 
   // what is expected to change every call
   // _this->numChunks
-  // _this->index
+  // _this->indexBack
 
-  if(_this->index < 0 || _this->index >= _this->current->num)
+  if(_this->indexBack < 0 || _this->indexBack >= _this->back->num)
     goto error;
 
-  // _this->index >= 0 && _this->index < _this->current->num
+  // _this->indexBack >= 0 && _this->indexBack < _this->back->num
 
   // move to previous chunk
-  _this->index--;
+  _this->indexBack--;
 
-  // if(_this->index < 0)
+  // if(_this->indexBack < 0)
   //   move to next pool
-  // else if(_this->index >= 0)
+  // else if(_this->indexBack >= 0)
   //   move to next chunk
 
   // before grabbing chunk
-  if(_this->index < 0)
+  if(_this->indexBack < 0)
   {
     // move to previous pool (should never be at head since in that case
     // _this->numChunks would be zero)
 
-    if(_this->current == _this->head)
+    if(_this->back == _this->head)
       goto error;
 
-    _this->current = _this->current->previous;
+    _this->back = _this->back->previous;
 
-    _this->index = _this->current->num - 1;
+    _this->indexBack = _this->back->num - 1;
   }
 
-  // _this->index >= 0 && _this->index < _this->current->num
+  // _this->indexBack >= 0 && _this->indexBack < _this->back->num
 
-  chunk = SSSTACK_POOL_TO_CHUNK_OPERATOR_INDEX(_this, _this->current, _this->index);
+  chunk = SSQUEUE_POOL_TO_CHUNK_OPERATOR_INDEX(_this, _this->back, _this->indexBack);
 
   _this->numChunks--;
 
-  SSSTACK_MEMCPY_CHUNK(_this, memory, chunk);
+  SSQUEUE_MEMCPY_CHUNK(_this, memory, chunk);
 
   // no change
+  // _this->front
   // _this->head
   // _this->tail
   // _this->numPools
+  // _this->indexFront
+  // _this->max
+  // _this->counter
+  // _this->resize
+  // _this->capacity
+  // _this->sizeOfRef
+  // _this->sizeOf
+
+  result = true;
+
+error:
+  return result;
+}
+
+/*bool SsQueueGetFront(ssQueue* _this, void* chunk) todo*/
+
+bool SsQueuePopFront(ssQueue* _this, void* memory/*chunk*/) // todo
+{
+  bool result = false;
+
+  uint8_t* chunk = 0;
+
+  if( !_this || !memory || _this->numChunks <= 0)
+    goto error;
+
+  // what is expected to occassionally change upon call
+  // _this->front
+
+  // what is expected to change every call
+  // _this->numChunks
+  // _this->indexFront
+
+  if(_this->indexFront < 0 || _this->indexFront >= _this->front->num)
+    goto error;
+
+  // _this->indexFront >= 0 && _this->indexFront < _this->front->num
+
+  chunk = SSQUEUE_POOL_TO_CHUNK_OPERATOR_INDEX(_this, _this->front, _this->indexFront);
+
+  // move to next chunk
+  _this->indexFront++;
+
+  // if(_this->indexFront < _this->front->num)
+  //   move to next chunk
+  // else if(_this->indexFront >= _this->front->num)
+  //   move to next pool
+
+  // after grabbing chunk
+  if(_this->indexFront >= _this->front->num)
+  {
+    // move to next pool (should never be at tail since if out of space it would
+    // have called resize earlier in SsQueuePush call)
+
+    if(_this->front == _this->tail)
+      goto error;
+
+    _this->front = _this->front->next;
+
+    _this->indexFront = 0;
+  }
+
+  // _this->indexFront >= 0 && _this->indexFront < _this->front->num
+
+  _this->numChunks--;
+
+  SSQUEUE_MEMCPY_CHUNK(_this, chunk, memory);
+
+  // no change
+  // _this->back
+  // _this->head
+  // _this->tail
+  // _this->numPools
+  // _this->indexBack
   // _this->max
   // _this->counter
   // _this->resize
