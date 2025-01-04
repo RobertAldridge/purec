@@ -346,7 +346,7 @@ error:
 }
 
 // returns the number of nodes previously held by client or -1 on error
-int SsStackReset(ssStack* _this)
+int SsStackReset(ssStack* _this) // todo
 {
   int result = -1;
   int numChunksRef = 0;
@@ -364,7 +364,6 @@ int SsStackReset(ssStack* _this)
 
   _this->numChunks = 0;
   _this->index = 0;
-  _this->max = pool->num;
 
   _this->counter++;
 
@@ -372,6 +371,7 @@ int SsStackReset(ssStack* _this)
   // _this->head
   // _this->tail
   // _this->numPools
+  // _this->max
   // _this->resize
   // _this->capacity
   // _this->sizeOfRef
@@ -383,7 +383,7 @@ error:
   return result;
 }
 
-bool SsStackResize(ssStack* _this, size_t minimumCapacity)
+bool SsStackResize(ssStack* _this, size_t minimumCapacity) // todo
 {
   bool result = false;
 
@@ -401,159 +401,139 @@ bool SsStackResize(ssStack* _this, size_t minimumCapacity)
     goto error;
 
   if(_this->current != _this->tail)
+    goto error;
+
+  int diff = 0;
+
+  // start is initial capacity
+  // must be greater than zero
+  // minimumCapacity <= maximumCapacity
+  /*int minimumCapacity;*/
+
+  // 'initial capacity * sizeof(client type)' must be a reasonable size to pass to malloc
+
+  // first pool grow() behavior
+  // 'new capacity' == minimumCapacity
+  if(minimumCapacity > 0)
   {
-    SsStackPool* pool = _this->current->next;
+    diff = (int)minimumCapacity;
+  }
 
-    _this->current = pool;
+  // non-first grow() behavior, if resize < -1
+  //
+  // 'new capacity' == 2 * 'old capacity',
+  // if 'old capacity' <= abs(resize + 1) and 2 * 'old capacity' <= maximumCapacity
+  //
+  // 'new capacity' == 'old capacity' + abs(resize),
+  // if 'old capacity' > abs(resize + 1) and 'old capacity' + abs(resize + 1) <= maximumCapacity
+  //
+  // 'new capacity' == maximumCapacity,
+  // if 'old capacity' > abs(resize + 1) and 'old capacity' + abs(resize + 1) > maximumCapacity
+  else if(_this->resize < -1)
+  {
+    int resize = -_this->resize - 1;
 
-    _this->index = 0;
-    _this->max += pool->num;
+    if(_this->max <= resize)
+      diff = _this->max;
+    else
+      diff = resize;
 
-    // no change
-    // _this->head
-    // _this->tail
-    // _this->numPools
-    // _this->numChunks
-    // _this->counter
-    // _this->resize
-    // _this->capacity
-    // _this->sizeOfRef
-    // _this->sizeOf
+    if(_this->max + diff > _this->capacity)
+      diff = _this->capacity - _this->max;
+  }
+
+  // non-first grow() behavior, if resize == -1
+  //
+  // 'new capacity' == 2 * 'old capacity',
+  // if 2 * 'old capacity' <= maximumCapacity
+  //
+  // 'new capacity' == maximumCapacity,
+  // if 2 * 'old capacity' > maximumCapacity
+  else if(_this->resize == -1)
+  {
+    diff = _this->max;
+
+    if(_this->max + diff > _this->capacity)
+      diff = _this->capacity - _this->max;
+  }
+
+  // resize cannot be zero.  to disable grow() set minimumCapacity and maximumCapacity to same value
+  //
+  // resize != 0 is verified during construction of ssStack instance
+
+  // non-first grow() behavior, if resize > 0
+  //
+  // 'new capacity' == 'old capacity' + resize,
+  // if 'old capacity' + resize <= maximumCapacity
+  //
+  // 'new capacity' == maximumCapacity,
+  // if 'old capacity' + resize > maximumCapacity
+  else if(_this->resize > 0)
+  {
+    diff = _this->resize;
+
+    if(_this->max + diff > _this->capacity)
+      diff = _this->capacity - _this->max;
   }
   else
   {
-    int diff = 0;
-
-    // start is initial capacity
-    // must be greater than zero
-    // minimumCapacity <= maximumCapacity
-    /*int minimumCapacity;*/
-
-    // 'initial capacity * sizeof(client type)' must be a reasonable size to pass to malloc
-
-    // first pool grow() behavior
-    // 'new capacity' == minimumCapacity
-    if(minimumCapacity > 0)
-    {
-      diff = (int)minimumCapacity;
-    }
-
-    // non-first grow() behavior, if resize < -1
-    //
-    // 'new capacity' == 2 * 'old capacity',
-    // if 'old capacity' <= abs(resize + 1) and 2 * 'old capacity' <= maximumCapacity
-    //
-    // 'new capacity' == 'old capacity' + abs(resize),
-    // if 'old capacity' > abs(resize + 1) and 'old capacity' + abs(resize + 1) <= maximumCapacity
-    //
-    // 'new capacity' == maximumCapacity,
-    // if 'old capacity' > abs(resize + 1) and 'old capacity' + abs(resize + 1) > maximumCapacity
-    else if(_this->resize < -1)
-    {
-      int resize = -_this->resize - 1;
-
-      if(_this->max <= resize)
-        diff = _this->max;
-      else
-        diff = resize;
-
-      if(_this->max + diff > _this->capacity)
-        diff = _this->capacity - _this->max;
-    }
-
-    // non-first grow() behavior, if resize == -1
-    //
-    // 'new capacity' == 2 * 'old capacity',
-    // if 2 * 'old capacity' <= maximumCapacity
-    //
-    // 'new capacity' == maximumCapacity,
-    // if 2 * 'old capacity' > maximumCapacity
-    else if(_this->resize == -1)
-    {
-      diff = _this->max;
-
-      if(_this->max + diff > _this->capacity)
-        diff = _this->capacity - _this->max;
-    }
-
-    // resize cannot be zero.  to disable grow() set minimumCapacity and maximumCapacity to same value
-    //
-    // resize != 0 is verified during construction of ssStack instance
-
-    // non-first grow() behavior, if resize > 0
-    //
-    // 'new capacity' == 'old capacity' + resize,
-    // if 'old capacity' + resize <= maximumCapacity
-    //
-    // 'new capacity' == maximumCapacity,
-    // if 'old capacity' + resize > maximumCapacity
-    else if(_this->resize > 0)
-    {
-      diff = _this->resize;
-
-      if(_this->max + diff > _this->capacity)
-        diff = _this->capacity - _this->max;
-    }
-    else
-    {
-      goto error;
-    }
-
-    /*int resize;*/
-
-    /*int capacity;*/
-
-    if( !diff)
-      goto error;
-
-    // already aligned
-    size_t size = SSSTACK_GET_POOL_SIZEOF(_this, (size_t)diff);
-
-    if(minimumCapacity > 0)
-      size += SsStackGetSizeOfSsStack();
-
-    uint8_t* unaligned = 0;
-    uint8_t* aligned = cstandard_aligned_alloc(size, &unaligned);
-
-    if(minimumCapacity > 0)
-      aligned += SsStackGetSizeOfSsStack();
-
-    SsStackPool* pool = (SsStackPool*)aligned;
-
-    if( !pool)
-      goto error;
-
-    pool->next = 0;
-    PoolSetUnaligned(pool, unaligned);
-    pool->num = diff;
-
-    _this->current = pool;
-
-    if( !_this->head)
-    {
-      _this->head = pool;
-    }
-    else// if(_this->head)
-    {
-      _this->tail->next = pool;
-      pool->previous = _this->tail;
-    }
-
-    _this->tail = pool;
-
-    _this->numPools++;
-
-    _this->index = 0;
-    _this->max += diff;
-
-    // no change
-    // _this->numChunks
-    // _this->counter
-    // _this->resize
-    // _this->capacity
-    // _this->sizeOfRef
-    // _this->sizeOf
+    goto error;
   }
+
+  /*int resize;*/
+
+  /*int capacity;*/
+
+  if( !diff)
+    goto error;
+
+  // already aligned
+  size_t size = SSSTACK_GET_POOL_SIZEOF(_this, (size_t)diff);
+
+  if(minimumCapacity > 0)
+    size += SsStackGetSizeOfSsStack();
+
+  uint8_t* unaligned = 0;
+  uint8_t* aligned = cstandard_aligned_alloc(size, &unaligned);
+
+  if(minimumCapacity > 0)
+    aligned += SsStackGetSizeOfSsStack();
+
+  SsStackPool* pool = (SsStackPool*)aligned;
+
+  if( !pool)
+    goto error;
+
+  pool->next = 0;
+  PoolSetUnaligned(pool, unaligned);
+  pool->num = diff;
+
+  _this->current = pool;
+
+  if( !_this->head)
+  {
+    _this->head = pool;
+  }
+  else// if(_this->head)
+  {
+    _this->tail->next = pool;
+    pool->previous = _this->tail;
+  }
+
+  _this->tail = pool;
+
+  _this->numPools++;
+
+  _this->index = 0;
+  _this->max += diff;
+
+  // no change
+  // _this->numChunks
+  // _this->counter
+  // _this->resize
+  // _this->capacity
+  // _this->sizeOfRef
+  // _this->sizeOf
 
   result = true;
 
@@ -572,12 +552,12 @@ bool SsStackPush(ssStack* _this, void* memory/*chunk*/) // todo
 
   if(_this->numChunks == _this->max)
   {
-    if( !_this->resize)
-      goto error;
-
     if( !SsStackResize(_this, 0) )
       goto error;
   }
+  
+  if(_this->numChunks == _this->max)
+    goto error;
 
   // what is expected to occassionally change upon call
   // _this->current

@@ -17,8 +17,8 @@ struct SsQueueNode
 
 struct SsQueuePool
 {
-  SsQueueNode front;
   SsQueueNode back;
+  SsQueueNode front;
 
   SsQueuePool* previous;
   SsQueuePool* next;

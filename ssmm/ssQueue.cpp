@@ -26,8 +26,8 @@ struct SsQueueNode
 
 struct SsQueuePool
 {
-  SsQueueNode front;
   SsQueueNode back;
+  SsQueueNode front;
 
   SsQueuePool* previous;
   SsQueuePool* next;
@@ -121,6 +121,8 @@ static size_t SSQUEUE_GET_POOL_SIZEOF(ssQueue* _this, size_t nmemb);
 
 static uint8_t* SSQUEUE_POOL_TO_CHUNK_OPERATOR_INDEX(ssQueue* _this, SsQueuePool* pool, size_t index);
 
+static uint8_t* SSQUEUE_NODE_TO_CHUNK_OPERATOR_INDEX(ssQueue* _this, SsQueueNode* node, size_t index);
+
 // specifically when one side is passed by the client, in which case we have to use the unpadded sizeof
 static void SSQUEUE_MEMCPY_CHUNK(ssQueue* _this, void* destination, void* source);
 
@@ -197,6 +199,9 @@ size_t SSQUEUE_GET_POOL_SIZEOF(ssQueue* _this, size_t nmemb)
 
 uint8_t* SSQUEUE_POOL_TO_CHUNK_OPERATOR_INDEX(ssQueue* _this, SsQueuePool* pool, size_t index)
   { return (uint8_t*)pool + SSQUEUE_GET_POOL_SIZEOF(_this, index); }
+
+uint8_t* SSQUEUE_NODE_TO_CHUNK_OPERATOR_INDEX(ssQueue* _this, SsQueueNode* node, size_t index)
+  { return node->chunk + index * (size_t)_this->sizeOf; }
 
 // specifically when one side is passed by the client, in which case we have to use the unpadded sizeof
 void SSQUEUE_MEMCPY_CHUNK(ssQueue* _this, void* destination, void* source)
@@ -371,20 +376,16 @@ int SsQueueReset(ssQueue* _this) // todo
   int result = -1;
   int numChunksRef = 0;
 
-  SsQueuePool* pool = 0;
-
   if( !_this || _this->numPools <= 0)
     goto error;
 
   numChunksRef = _this->numChunks;
 
-  pool = _this->head;
-
-  _this->current = pool;
+  _this->front = _this->back;
 
   _this->numChunks = 0;
-  _this->index = 0;
-  _this->max = pool->num;
+  _this->indexBack = 0;
+  _this->indexFront = 0;
 
   _this->counter++;
 
@@ -392,6 +393,7 @@ int SsQueueReset(ssQueue* _this) // todo
   // _this->head
   // _this->tail
   // _this->numPools
+  // _this->max
   // _this->resize
   // _this->capacity
   // _this->sizeOfRef
@@ -420,160 +422,281 @@ bool SsQueueResize(ssQueue* _this, size_t minimumCapacity) // todo
   if(_this->max >= _this->capacity)
     goto error;
 
-  if(_this->current != _this->tail)
+  if(_this->front != _this->back)
+    goto;
+
+  int diff = 0;
+
+  // start is initial capacity
+  // must be greater than zero
+  // minimumCapacity <= maximumCapacity
+  /*int minimumCapacity;*/
+
+  // 'initial capacity * sizeof(client type)' must be a reasonable size to pass to malloc
+
+  // first pool grow() behavior
+  // 'new capacity' == minimumCapacity
+  if(minimumCapacity > 0)
   {
-    SsQueuePool* pool = _this->current->next;
+    diff = (int)minimumCapacity;
+  }
 
-    _this->current = pool;
+  // non-first grow() behavior, if resize < -1
+  //
+  // 'new capacity' == 2 * 'old capacity',
+  // if 'old capacity' <= abs(resize + 1) and 2 * 'old capacity' <= maximumCapacity
+  //
+  // 'new capacity' == 'old capacity' + abs(resize),
+  // if 'old capacity' > abs(resize + 1) and 'old capacity' + abs(resize + 1) <= maximumCapacity
+  //
+  // 'new capacity' == maximumCapacity,
+  // if 'old capacity' > abs(resize + 1) and 'old capacity' + abs(resize + 1) > maximumCapacity
+  else if(_this->resize < -1)
+  {
+    int resize = -_this->resize - 1;
 
-    _this->index = 0;
-    _this->max += pool->num;
+    if(_this->max <= resize)
+      diff = _this->max;
+    else
+      diff = resize;
 
-    // no change
-    // _this->head
-    // _this->tail
-    // _this->numPools
-    // _this->numChunks
-    // _this->counter
-    // _this->resize
-    // _this->capacity
-    // _this->sizeOfRef
-    // _this->sizeOf
+    if(_this->max + diff > _this->capacity)
+      diff = _this->capacity - _this->max;
+  }
+
+  // non-first grow() behavior, if resize == -1
+  //
+  // 'new capacity' == 2 * 'old capacity',
+  // if 2 * 'old capacity' <= maximumCapacity
+  //
+  // 'new capacity' == maximumCapacity,
+  // if 2 * 'old capacity' > maximumCapacity
+  else if(_this->resize == -1)
+  {
+    diff = _this->max;
+
+    if(_this->max + diff > _this->capacity)
+      diff = _this->capacity - _this->max;
+  }
+
+  // resize cannot be zero.  to disable grow() set minimumCapacity and maximumCapacity to same value
+  //
+  // resize != 0 is verified during construction of ssQueue instance
+
+  // non-first grow() behavior, if resize > 0
+  //
+  // 'new capacity' == 'old capacity' + resize,
+  // if 'old capacity' + resize <= maximumCapacity
+  //
+  // 'new capacity' == maximumCapacity,
+  // if 'old capacity' + resize > maximumCapacity
+  else if(_this->resize > 0)
+  {
+    diff = _this->resize;
+
+    if(_this->max + diff > _this->capacity)
+      diff = _this->capacity - _this->max;
   }
   else
   {
-    int diff = 0;
-
-    // start is initial capacity
-    // must be greater than zero
-    // minimumCapacity <= maximumCapacity
-    /*int minimumCapacity;*/
-
-    // 'initial capacity * sizeof(client type)' must be a reasonable size to pass to malloc
-
-    // first pool grow() behavior
-    // 'new capacity' == minimumCapacity
-    if(minimumCapacity > 0)
-    {
-      diff = (int)minimumCapacity;
-    }
-
-    // non-first grow() behavior, if resize < -1
-    //
-    // 'new capacity' == 2 * 'old capacity',
-    // if 'old capacity' <= abs(resize + 1) and 2 * 'old capacity' <= maximumCapacity
-    //
-    // 'new capacity' == 'old capacity' + abs(resize),
-    // if 'old capacity' > abs(resize + 1) and 'old capacity' + abs(resize + 1) <= maximumCapacity
-    //
-    // 'new capacity' == maximumCapacity,
-    // if 'old capacity' > abs(resize + 1) and 'old capacity' + abs(resize + 1) > maximumCapacity
-    else if(_this->resize < -1)
-    {
-      int resize = -_this->resize - 1;
-
-      if(_this->max <= resize)
-        diff = _this->max;
-      else
-        diff = resize;
-
-      if(_this->max + diff > _this->capacity)
-        diff = _this->capacity - _this->max;
-    }
-
-    // non-first grow() behavior, if resize == -1
-    //
-    // 'new capacity' == 2 * 'old capacity',
-    // if 2 * 'old capacity' <= maximumCapacity
-    //
-    // 'new capacity' == maximumCapacity,
-    // if 2 * 'old capacity' > maximumCapacity
-    else if(_this->resize == -1)
-    {
-      diff = _this->max;
-
-      if(_this->max + diff > _this->capacity)
-        diff = _this->capacity - _this->max;
-    }
-
-    // resize cannot be zero.  to disable grow() set minimumCapacity and maximumCapacity to same value
-    //
-    // resize != 0 is verified during construction of ssQueue instance
-
-    // non-first grow() behavior, if resize > 0
-    //
-    // 'new capacity' == 'old capacity' + resize,
-    // if 'old capacity' + resize <= maximumCapacity
-    //
-    // 'new capacity' == maximumCapacity,
-    // if 'old capacity' + resize > maximumCapacity
-    else if(_this->resize > 0)
-    {
-      diff = _this->resize;
-
-      if(_this->max + diff > _this->capacity)
-        diff = _this->capacity - _this->max;
-    }
-    else
-    {
-      goto error;
-    }
-
-    /*int resize;*/
-
-    /*int capacity;*/
-
-    if( !diff)
-      goto error;
-
-    // already aligned
-    size_t size = SSQUEUE_GET_POOL_SIZEOF(_this, (size_t)diff);
-
-    if(minimumCapacity > 0)
-      size += SsQueueGetSizeOfSsQueue();
-
-    uint8_t* unaligned = 0;
-    uint8_t* aligned = cstandard_aligned_alloc(size, &unaligned);
-
-    if(minimumCapacity > 0)
-      aligned += SsQueueGetSizeOfSsQueue();
-
-    SsQueuePool* pool = (SsQueuePool*)aligned;
-
-    if( !pool)
-      goto error;
-
-    pool->next = 0;
-    PoolSetUnaligned(pool, unaligned);
-    pool->num = diff;
-
-    _this->current = pool;
-
-    if( !_this->head)
-    {
-      _this->head = pool;
-    }
-    else// if(_this->head)
-    {
-      _this->tail->next = pool;
-      pool->previous = _this->tail;
-    }
-
-    _this->tail = pool;
-
-    _this->numPools++;
-
-    _this->index = 0;
-    _this->max += diff;
-
-    // no change
-    // _this->numChunks
-    // _this->counter
-    // _this->resize
-    // _this->capacity
-    // _this->sizeOfRef
-    // _this->sizeOf
+    goto error;
   }
+
+  /*int resize;*/
+
+  /*int capacity;*/
+
+  if( !diff)
+    goto error;
+
+  // already aligned
+  size_t size = SSQUEUE_GET_POOL_SIZEOF(_this, (size_t)diff);
+
+  if(minimumCapacity > 0)
+    size += SsQueueGetSizeOfSsQueue();
+
+  uint8_t* unaligned = 0;
+  uint8_t* aligned = cstandard_aligned_alloc(size, &unaligned);
+
+  if(minimumCapacity > 0)
+    aligned += SsQueueGetSizeOfSsQueue();
+
+  SsQueuePool* pool = (SsQueuePool*)aligned;
+
+  if( !pool)
+    goto error;
+
+  pool->next = 0;
+  PoolSetUnaligned(pool, unaligned);
+  pool->num = diff;
+
+  if( !_this->head)
+  {
+    _this->head = pool;
+
+#if 0
+struct SsQueueNode
+{
+  SsQueueNode* previous;
+  SsQueueNode* next;
+
+  uint8_t* chunk;
+
+  int num;
+
+  int padding;
+};
+
+uint8_t* SSQUEUE_POOL_TO_CHUNK_OPERATOR_INDEX(ssQueue* _this, SsQueuePool* pool, size_t index)
+  { return (uint8_t*)pool + SSQUEUE_GET_POOL_SIZEOF(_this, index); }
+#endif
+
+    SsQueueNode* node = &pool->back; // todo
+    node->chunk = SSQUEUE_POOL_TO_CHUNK_OPERATOR_INDEX(_this, pool, 0); // todo
+    node->num = pool->num; // todo
+
+    node->previous = node; // todo
+    node->next = node; // todo
+
+    _this->back = node; // todo
+    _this->front = node; // todo
+
+    _this->indexBack = 0; // todo
+    _this->indexFront = 0; // todo
+  }
+  else// if(_this->head)
+  {
+    _this->tail->next = pool;
+    pool->previous = _this->tail;
+
+    int count_back = _this->indexBack; // todo
+
+    int count_front = _this->back->num - count_back; // todo
+
+#if 0
+back -> new pool -> front
+
+ B
+ F
+[0 1 2 3 4 5 6 7 8 9]
+ a b c d e f g h i j
+
+
+ F                        B         F
+[0 1 2 3 4 5 6 7 8 9] -> [pool] -> [0 1 2 3 4 5 6 7 8 9]
+ a b c d e f g h i j                a b c d e f g h i j
+
+
+           B
+           F
+[0 1 2 3 4 5 6 7 8 9]
+ f g h i j a b c d e
+
+
+                B         F
+[0 1 2 3 4] -> [pool] -> [5 6 7 8 9] -> [0 1 2 3 4]
+ f g h i j                a b c d e      f g h i j
+
+struct SsQueueNode
+{
+  SsQueueNode* previous;
+  SsQueueNode* next;
+  uint8_t* chunk;
+  int num;
+};
+
+struct SsQueuePool
+{
+  SsQueueNode back;
+  SsQueueNode front;
+};
+
+struct ssQueue
+{
+  SsQueueNode* back;
+  SsQueueNode* front;
+  int indexBack;
+  int indexFront;
+};
+#endif
+
+    if(count_back) // todo
+    {
+      // split
+      
+      // new pool; becomes new back
+      SsQueueNode* node = &pool->back;
+      node->chunk = SSQUEUE_POOL_TO_CHUNK_OPERATOR_INDEX(_this, pool, 0);
+      node->num = pool->num;
+      
+      // new front split; becomes new front (next from new pool)
+      //
+      // splits the old front node, starting at old front node index, to end of old front node chunk
+      SsQueueNode* newFrontSplit = &pool->front;
+      newFrontSplit->chunk = SSQUEUE_NODE_TO_CHUNK_OPERATOR_INDEX(_this, _this->front, _this->indexFront);
+      newFrontSplit->num = count_front;
+      
+      // new split (previous from new pool)
+      //
+      // splits the old back node (though it will no longer be the back node after the split)
+      //
+      // from beginning of old back node chunk, to one before old back node index (new length is old back node index)
+      SsQueueNode* oldBackSplit = _this->back;
+      //oldBackSplit->chunk = _this->back->chunk;
+      oldBackSplit->num = count_back;
+      
+      oldBackSplit->next = node;
+      node->previous = oldBackSplit;
+      
+      node->next = newFrontSplit;
+      newFrontSplit->previous = node;
+      
+      _this->back = node;
+      _this->front = newFrontSplit;
+
+      _this->indexBack = 0;
+      _this->indexFront = 0;
+    }
+    else// if( !count_back) todo
+    {
+      // no split
+
+      SsQueueNode* node = &pool->back; // todo
+      node->chunk = SSQUEUE_POOL_TO_CHUNK_OPERATOR_INDEX(_this, pool, 0); // todo
+      node->num = pool->num; // todo
+
+      SsQueueNode* previous = _this->back->previous;
+
+      SsQueueNode* next = _this->front;
+
+      previous->next = node;
+
+      node->previous = previous; // todo
+      node->next = next; // todo
+
+      next->previous = node;
+
+      _this->back = node; // todo
+      // _this->front = node; doesn't change
+
+      _this->indexBack = 0; // todo
+      _this->indexFront = 0; // todo
+    }
+  }
+
+  _this->tail = pool;
+
+  _this->numPools++;
+
+  _this->max += diff;
+
+  // no change
+  // _this->numChunks
+  // _this->counter
+  // _this->resize
+  // _this->capacity
+  // _this->sizeOfRef
+  // _this->sizeOf
 
   result = true;
 
@@ -595,7 +718,7 @@ bool SsQueuePushBack(ssQueue* _this, void* memory/*chunk*/) // todo
     if( !SsQueueResize(_this, 0) )
       goto error;
   }
-  
+
   if(_this->numChunks == _this->max)
     goto error;
 
@@ -674,7 +797,7 @@ bool SsQueuePushFront(ssQueue* _this, void* memory/*chunk*/) // todo
     if( !SsQueueResize(_this, 0) )
       goto error;
   }
-  
+
   if(_this->numChunks == _this->max)
     goto error;
 

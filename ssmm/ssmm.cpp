@@ -606,6 +606,9 @@ void* SsmmAlloc(ssmm* _this)
     if( !SsmmResize(_this, 0) )
       goto error;
   }
+  
+  if(_this->numChunks == _this->max)
+    goto error;
 
   chunk = _this->chunk;
 
