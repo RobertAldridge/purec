@@ -47,17 +47,16 @@ struct ssArray
 
 #include <cstddef> // ptrdiff_t, size_t
 #include <cstdint> // uint8_t
-#include <cstdlib> // malloc, free
+#include <cstdlib> // free
 #include <cstring> // memcpy
 
-#include <new> // bad_alloc
-using std::bad_alloc;
 using std::free;
-using std::malloc;
 using std::memcpy;
 using std::ptrdiff_t;
 using std::size_t;
 using std::uint8_t;
+
+#include "blah_aligned_alloc.h"
 
 // ~9,000,000 terabytes is limit for addressing via int64_t
 
@@ -81,31 +80,12 @@ static size_t SsArrayGetSizeOfChunk(size_t sizeOf);
 static void PoolSetUnaligned(SsArrayPool* pool, uint8_t* unaligned);
 static uint8_t* PoolGetUnaligned(SsArrayPool* pool);
 
-// alignment is typically sizeof(void*)
-// assumes size is already a multiple of alignment
-// pass result of MALLOCSIZEPADDED as size parameter to malloc to allow for post-malloc alignment
-static size_t MALLOCSIZEPADDED(size_t size);
-
-// alignment is typically sizeof(void*)
-// assumes the parameter passed to malloc is sufficiently padded
-// ptr is of type uint8_t*
-// 'address' is of type ptrdiff_t, assigned to the value (uint8_t*)ptr - (uint8_t*)0
-// pass return value of malloc to MALLOCRETURNALIGN (pass stored value not the literal malloc call)
-static uint8_t* MALLOCRETURNALIGN(uint8_t* unaligned, ptrdiff_t address);
-
 static size_t SSARRAY_GET_POOL_SIZEOF(ssArray* _this, size_t nmemb);
 
 static uint8_t* SSARRAY_POOL_TO_CHUNK_OPERATOR_INDEX(ssArray* _this, SsArrayPool* pool, size_t index);
 
 // specifically when one side is passed by the client, in which case we have to use the unpadded sizeof
 static void SSARRAY_MEMCPY_CHUNK(ssArray* _this, void* destination, void* source);
-
-// when you're forced to use a compiler/runtime that claims to conform yet
-// doesn't implement aligned_alloc (*cough* microsoft)
-//   void* aligned_alloc(size_t alignment, size_t size)
-//
-// in this case assume alignment is sizeof(void*)
-static uint8_t* cstandard_aligned_alloc(size_t size, uint8_t** unalignedRef/*unaligned;ptr*/);
 
 static void PoolListWalk(SsArrayPool* head, bool doFree);
 static void PoolListReverseAndFree(SsArrayPool* head);
@@ -162,12 +142,6 @@ void PoolSetUnaligned(SsArrayPool* pool, uint8_t* unaligned)
 uint8_t* PoolGetUnaligned(SsArrayPool* pool)
   { return (uint8_t*)pool + (ptrdiff_t)pool->unaligned; }
 
-size_t MALLOCSIZEPADDED(size_t size)
-  { return size + (sizeof(void*) - 1); }
-
-uint8_t* MALLOCRETURNALIGN(uint8_t* unaligned, ptrdiff_t address)
-  { return (address % sizeof(void*) ) ? unaligned + (sizeof(void*) - address % sizeof(void*) ) : unaligned; }
-
 size_t SSARRAY_GET_POOL_SIZEOF(ssArray* _this, size_t nmemb)
   { return SsArrayGetSizeOfPool() + nmemb * (size_t)_this->sizeOf; }
 
@@ -178,73 +152,33 @@ uint8_t* SSARRAY_POOL_TO_CHUNK_OPERATOR_INDEX(ssArray* _this, SsArrayPool* pool,
 void SSARRAY_MEMCPY_CHUNK(ssArray* _this, void* destination, void* source)
   { memcpy(destination, source, (size_t)_this->sizeOfRef; }
 
-// when you're forced to use a compiler/runtime that claims to conform yet
-// doesn't implement aligned_alloc (*cough* microsoft)
-//   void* aligned_alloc(size_t alignment, size_t size)
-//
-// in this case assume alignment is sizeof(void*)
-uint8_t* cstandard_aligned_alloc(size_t size, uint8_t** unalignedRef/*unaligned;ptr*/)
+void PoolListFree(SsArrayPool* current)
 {
-  uint8_t* aligned = 0;
-  uint8_t* unaligned = 0;
-
-  ptrdiff_t address = 0;
-
-  if( !size || !unalignedRef)
-    goto labelReturn;
-
-  // fail if size is not a multiple of alignment
-  if(size % sizeof(void*) )
-    goto labelReturn;
-
-  size = MALLOCSIZEPADDED(size);
-
-  unaligned = (uint8_t*)malloc(size);
-  if( !unaligned)
-    goto labelReturn;
-
-  *unalignedRef = unaligned;
-
-  address = (uint8_t*)unaligned - (uint8_t*)0;
-
-  aligned = MALLOCRETURNALIGN(unaligned, address);
-
-labelReturn:
-
-  return aligned;
-}
-
-void PoolListWalk(SsArrayPool* head, bool doFree)
-{
-  SsArrayPool* next = 0;
-
-  for(SsArrayPool* curr = head; curr; curr = next)
+  for(SsArrayPool* next = 0; current; current = next)
   {
-    next = curr->next;
+    next = current->next;
 
-    if(doFree)
-      free(PoolGetUnaligned(curr) );
+    free(PoolGetUnaligned(current) );
   }
 }
 
-void PoolListReverseAndFree(SsArrayPool* head)
+void PoolListReverseAndFree(SsArrayPool* current)
 {
   // we want to free pools in opposite order of their allocation
 
   // reverse list
-  SsArrayPool* prev = 0;
-  SsArrayPool* next = 0;
+  SsArrayPool* previous = 0;
 
-  for(SsArrayPool* curr = head; curr; curr = next)
+  for(SsArrayPool* next = 0; current; current = next)
   {
-    next = curr->next;
-    curr->next = prev;
+    next = current->next;
+    current->next = previous;
 
-    prev = curr;
+    previous = current;
   }
 
   // free pools
-  PoolListWalk(prev, true);
+  PoolListFree(previous);
 }
 
 ssArray* SsArrayConstruct(int sizeOf, int minimumCapacity, int maximumCapacity, int resize)
@@ -256,39 +190,17 @@ ssArray* SsArrayConstruct(int sizeOf, int minimumCapacity, int maximumCapacity, 
   if(sizeOf <= 0 || minimumCapacity <= 0 || minimumCapacity > maximumCapacity || !resize)
     goto error;
 
-  // _this.current = 0;
-
-  // _this.head = 0;
-  // _this.tail = 0;
-
-  // _this.numPools = 0;
-
-  // _this.numChunks = 0;
-  // _this.index = 0;
-  // _this.max = 0;
-
-  // _this.counter = 0;
-
   _this.resize = resize;
   _this.capacity = maximumCapacity;
 
   _this.sizeOfRef = sizeOf;
   _this.sizeOf = (int)SsArrayGetSizeOfChunk( (size_t)sizeOf);
 
-  try
-  {
-    if( !SsArrayResize( &_this, (size_t)minimumCapacity) || !_this.head)
-      goto error;
-
-    // extract 'this' pointer which prefixes the first pool
-    result = (uint8_t*)_this.head - (ptrdiff_t)SsArrayGetSizeOfSsArray();
-  }
-  catch(bad_alloc& )
-  {
-  }
-
-  if( !result)
+  if( !SsArrayResize( &_this, (size_t)minimumCapacity) || !_this.head)
     goto error;
+
+  // extract 'this' pointer which prefixes the first pool
+  result = (uint8_t*)_this.head - (ptrdiff_t)SsArrayGetSizeOfSsArray();
 
   // use unpadded sizeof in copy
   memcpy(result, &_this, sizeof(ssArray) );
@@ -356,22 +268,12 @@ int SsArrayReset(ssArray* _this) // todo
 
   pool = _this->head;
 
+  //_this->chunk = SSMM_CHUNK_POOL_TO_FIRSTNODE(pool)
   _this->current = pool;
 
   _this->numChunks = 0;
   _this->index = 0;
-
-  _this->counter++;
-
-  // no change
-  // _this->head
-  // _this->tail
-  // _this->numPools
-  // _this->max
-  // _this->resize
-  // _this->capacity
-  // _this->sizeOfRef
-  // _this->sizeOf
+  _this->max = pool->num;
 
   result = numChunksRef;
 
@@ -397,7 +299,19 @@ bool SsArrayResize(ssArray* _this, size_t minimumCapacity) // todo
     goto error;
 
   if(_this->current != _this->tail)
+  {
+    SsmmPool* pool = _this->current->next;
+
+    //_this->chunk = SSMM_CHUNK_POOL_TO_FIRSTNODE(pool)
+    _this->current = pool;
+
+    _this->index = 0;
+    _this->max += pool->num;
+    
+    result = true;
+    
     goto error;
+  }
 
   int diff = 0;
 
@@ -490,7 +404,7 @@ bool SsArrayResize(ssArray* _this, size_t minimumCapacity) // todo
     size += SsArrayGetSizeOfSsArray();
 
   uint8_t* unaligned = 0;
-  uint8_t* aligned = cstandard_aligned_alloc(size, &unaligned);
+  uint8_t* aligned = blah_aligned_alloc(size, &unaligned, false);
 
   if(minimumCapacity > 0)
     aligned += SsArrayGetSizeOfSsArray();
@@ -523,27 +437,19 @@ bool SsArrayResize(ssArray* _this, size_t minimumCapacity) // todo
   _this->index = 0;
   _this->max += diff;
 
-  // no change
-  // _this->numChunks
-  // _this->counter
-  // _this->resize
-  // _this->capacity
-  // _this->sizeOfRef
-  // _this->sizeOf
-
   result = true;
 
 error:
   return result;
 }
 
-bool SsArrayPush(ssArray* _this, void* memory/*chunk*/) // todo
+bool SsArrayPush(ssArray* _this, void* client) // todo
 {
   bool result = false;
 
   uint8_t* chunk = 0;
 
-  if( !_this || !memory || _this->numChunks > _this->max)
+  if( !_this || !client || _this->numChunks > _this->max)
     goto error;
 
   if(_this->numChunks == _this->max)
@@ -555,9 +461,6 @@ bool SsArrayPush(ssArray* _this, void* memory/*chunk*/) // todo
   if(_this->numChunks == _this->max)
     goto error;
 
-  // what is expected to occassionally change upon call
-  // _this->current
-
   // what is expected to change every call
   // _this->numChunks
   // _this->index
@@ -567,46 +470,19 @@ bool SsArrayPush(ssArray* _this, void* memory/*chunk*/) // todo
 
   // _this->index >= 0 && _this->index < _this->current->num
 
+  // or uint8_t* chunk = (uint8_t*)_this->chunk
   chunk = SSARRAY_POOL_TO_CHUNK_OPERATOR_INDEX(_this, _this->current, _this->index);
 
   // move to next chunk
+  //
+  // or _this->chunk = (uint8_t*)_this->chunk + (ptrdiff_t)_this->sizeOf
   _this->index++;
 
-  // if(_this->index < _this->current->num)
-  //   move to next chunk
-  // else if(_this->index >= _this->current->num)
-  //   move to next pool
-
-  // after grabbing chunk
-  if(_this->index >= _this->current->num)
-  {
-    // move to next pool (should never be at tail since if out of space it would
-    // have called resize earlier in SsArrayPush call)
-
-    if(_this->current == _this->tail)
-      goto error;
-
-    _this->current = _this->current->next;
-
-    _this->index = 0;
-  }
-
-  // _this->index >= 0 && _this->index < _this->current->num
+  // _this->index > 0 && _this->index <= _this->current->num
 
   _this->numChunks++;
 
   SSARRAY_MEMCPY_CHUNK(_this, chunk, memory);
-
-  // no change
-  // _this->head
-  // _this->tail
-  // _this->numPools
-  // _this->max
-  // _this->counter
-  // _this->resize
-  // _this->capacity
-  // _this->sizeOfRef
-  // _this->sizeOf
 
   result = true;
 
@@ -620,16 +496,18 @@ error:
 // walk backwards to the previous pool to get/set the element at the end of the
 // array
 
-bool SsArrayGet(ssArray* _this, void* memory/*chunk*/)
+bool SsArrayGet(ssArray* _this, void* client)
 {
   bool result = false;
 
-  if( !_this || !memory || _this->numChunks <= 0 || _this->index <= 0)
+  if( !_this || !client || _this->numChunks <= 0 || _this->index <= 0)
     goto error;
 
+  // or uint8_t* chunk = (uint8_t*)_this->chunk - (ptrdiff_t)_this->sizeOf
   uint8_t* chunk = SSARRAY_POOL_TO_CHUNK_OPERATOR_INDEX(_this, _this->current, _this->index - 1);
   
-  SSARRAY_MEMCPY_CHUNK(_this, memory, chunk);
+  // client <- chunk; copy from us to client
+  SSARRAY_MEMCPY_CHUNK(_this, client, chunk);
   
   result = true;
 
@@ -637,8 +515,23 @@ error:
   return result;
 }
 
-bool SsArraySet(ssArray* _this, void* chunk)
+bool SsArraySet(ssArray* _this, void* client)
 {
+  bool result = false;
+
+  if( !_this || !client || _this->numChunks <= 0 || _this->index <= 0)
+    goto error;
+
+  // or uint8_t* chunk = (uint8_t*)_this->chunk - (ptrdiff_t)_this->sizeOf
+  uint8_t* chunk = SSARRAY_POOL_TO_CHUNK_OPERATOR_INDEX(_this, _this->current, _this->index - 1);
+  
+  // chunk <- client; copy from client to us
+  SSARRAY_MEMCPY_CHUNK(_this, chunk, client);
+  
+  result = true;
+
+error:
+  return result;
 }
 
 // get or set element at arbitrary valid index
@@ -646,12 +539,66 @@ bool SsArraySet(ssArray* _this, void* chunk)
 // cannot append to array so index must be in the range
 // 0 <= index < SsArrayNum(...)
 
-bool SsArrayGetAt(ssArray* _this, int index, void* chunk)
+bool SsArrayGetAt(ssArray* _this, int index, void* client)
 {
+  bool result = false;
+
+  if( !_this || !client || index < 0 || index >= _this->numChunks || _this->numChunks <= 0)
+    goto error;
+  
+  SsArrayPool pool = _this->head;
+
+  for(int walk = 0; pool; pool = pool->next)
+  {
+    if(index >= walk && index < walk + pool->num)
+    {
+      // _this->chunk not used; _this->current, _this->index not used
+      uint8_t* chunk = SSARRAY_POOL_TO_CHUNK_OPERATOR_INDEX(_this, pool, index - walk);
+
+      // client <- chunk; copy from us to client
+      SSARRAY_MEMCPY_CHUNK(_this, client, chunk);
+  
+      result = true;
+      
+      break;
+    }
+    
+    walk += pool->num;
+  }
+
+error:
+  return result;
 }
 
-bool SsArraySetAt(ssArray* _this, int index, void* chunk)
+bool SsArraySetAt(ssArray* _this, int index, void* client)
 {
+  bool result = false;
+
+  if( !_this || !client || index < 0 || index >= _this->numChunks || _this->numChunks <= 0)
+    goto error;
+  
+  SsArrayPool pool = _this->head;
+
+  for(int walk = 0; pool; pool = pool->next)
+  {
+    if(index >= walk && index < walk + pool->num)
+    {
+      // _this->chunk not used; _this->current, _this->index not used
+      uint8_t* chunk = SSARRAY_POOL_TO_CHUNK_OPERATOR_INDEX(_this, pool, index - walk);
+
+      // chunk <- client; copy from client to us
+      SSARRAY_MEMCPY_CHUNK(_this, chunk, client);
+  
+      result = true;
+      
+      break;
+    }
+    
+    walk += pool->num;
+  }
+
+error:
+  return result;
 }
 
 #if defined(_MSC_VER)
