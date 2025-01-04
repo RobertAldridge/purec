@@ -32,19 +32,19 @@ static size_t malloc_size_padded(size_t size)
 // ptr is of type uint8_t*
 // 'address' is of type ptrdiff_t, assigned to the value (uint8_t*)ptr - (uint8_t*)0
 // pass return value of malloc to malloc_return_align (pass stored value not the literal malloc call)
-static uint8_t* malloc_return_align(uint8_t* unaligned, ptrdiff_t address)
+static uint8_t* malloc_return_align(uint8_t* unaligned, ptrdiff_t ptrDiff)
 {
   uint8_t* result = 0;
-  
-  if(address % sizeof(void*) )
+
+  if(ptrDiff % sizeof(void*) )
   {
-    result = unaligned + (sizeof(void*) - address % sizeof(void*) );
+    result = unaligned + (sizeof(void*) - ptrDiff % sizeof(void*) );
   }
   else
   {
     result = unaligned;
   }
-  
+
   return result;
 }
 
@@ -58,7 +58,7 @@ uint8_t* blah_aligned_alloc(size_t size, uint8_t** reference, bool clear)
   uint8_t* aligned = 0;
   uint8_t* unaligned = 0;
 
-  ptrdiff_t address = 0;
+  ptrdiff_t ptrDiff = 0;
 
   if( !size || !reference)
     goto error;
@@ -83,10 +83,10 @@ uint8_t* blah_aligned_alloc(size_t size, uint8_t** reference, bool clear)
 
   *reference = unaligned;
 
-  address = (uint8_t*)unaligned - (uint8_t*)0;
+  ptrDiff = (uint8_t*)unaligned - (uint8_t*)0;
 
-  aligned = malloc_return_align(unaligned, address);
-  
+  aligned = malloc_return_align(unaligned, ptrDiff);
+
   if(clear)
     memset(aligned, 0, size);
 

@@ -18,6 +18,8 @@ struct SsArrayPool
 
 struct ssArray
 {
+  uint8_t* chunk;
+
   SsArrayPool* current;
 
   SsArrayPool* head;
@@ -26,8 +28,9 @@ struct ssArray
   int numPools;
 
   int numChunks;
-  int index;
   int max;
+
+  int counter;
 
   int resize;
   int capacity;
@@ -41,16 +44,23 @@ struct ssArray;
 
 ssArray* SsArrayConstruct(int sizeOf, int minimumCapacity, int maximumCapacity, int resize);
 
-int SsArrayDestruct(ssArray** _this);
+// returns the number of elements previously in the array or -1 on error
+int SsArrayDestruct(ssArray** _this/*reference*/);
 
 int SsArrayNum(ssArray* _this);
 
+// returns the number of nodes previously held by client or -1 on error
 int SsArrayReset(ssArray* _this);
 
 // appends to end of array
 bool SsArrayPush(ssArray* _this, void* client);
 
 // get or set element at end of array
+//
+// there will be at least one element in the current pool, so we never have to
+// walk backwards to the previous pool to get/set the element at the end of the
+// array
+
 bool SsArrayGet(ssArray* _this, void* client);
 bool SsArraySet(ssArray* _this, void* client);
 
@@ -58,5 +68,6 @@ bool SsArraySet(ssArray* _this, void* client);
 //
 // cannot append to array so index must be in the range
 // 0 <= index < SsArrayNum(...)
+
 bool SsArrayGetAt(ssArray* _this, int index, void* client);
 bool SsArraySetAt(ssArray* _this, int index, void* client);

@@ -7,11 +7,6 @@
   #pragma warning (disable: 4711)
 #endif
 
-#include "ssArray.h"
-
-#include <cstdio>
-using std::printf;
-
 struct SsArrayPool
 {
   // only need previous if supports pop/remove
@@ -27,6 +22,8 @@ struct SsArrayPool
 
 struct ssArray
 {
+  uint8_t* chunk;
+
   SsArrayPool* current;
 
   SsArrayPool* head;
@@ -35,8 +32,9 @@ struct ssArray
   int numPools;
 
   int numChunks;
-  int index;
   int max;
+
+  int counter;
 
   int resize;
   int capacity;
@@ -56,113 +54,78 @@ using std::ptrdiff_t;
 using std::size_t;
 using std::uint8_t;
 
+#include "ssArray.h"
+
 #include "blah_aligned_alloc.h"
 
 // ~9,000,000 terabytes is limit for addressing via int64_t
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // alignment is typically sizeof(void*)
 // result is either size if already aligned, otherwise returns the minimum value larger than size that is aligned
-static size_t ALIGNEDOFVALUE(size_t size);
-
-// only for node header
-static size_t SsArrayGetSizeOfNode();
-
-// only for pool header
-static size_t SsArrayGetSizeOfPool();
-
-// only for ssArray header
-static size_t SsArrayGetSizeOfSsArray();
-
-// returns entire chunk size (node header + client data)
-static size_t SsArrayGetSizeOfChunk(size_t sizeOf);
-
-static void PoolSetUnaligned(SsArrayPool* pool, uint8_t* unaligned);
-static uint8_t* PoolGetUnaligned(SsArrayPool* pool);
-
-static size_t SSARRAY_GET_POOL_SIZEOF(ssArray* _this, size_t nmemb);
-
-static uint8_t* SSARRAY_POOL_TO_CHUNK_OPERATOR_INDEX(ssArray* _this, SsArrayPool* pool, size_t index);
-
-// specifically when one side is passed by the client, in which case we have to use the unpadded sizeof
-static void SSARRAY_MEMCPY_CHUNK(ssArray* _this, void* destination, void* source);
-
-static void PoolListWalk(SsArrayPool* head, bool doFree);
-static void PoolListReverseAndFree(SsArrayPool* head);
-
-// ssArray* SsArrayConstruct(int sizeOf, int minimumCapacity, int maximumCapacity, int resize);
-
-// returns the number of elements previously in the array or -1 on error
-// int SsArrayDestruct(ssArray** reference/*_this*/);
-
-// int SsArrayNum(ssArray* _this);
-
-// returns the number of nodes previously held by client or -1 on error
-// int SsArrayReset(ssArray* _this);
-
-static bool SsArrayResize(ssArray* _this, size_t minimumCapacity);
-
-// bool SsArrayPush(ssArray* _this, void* memory/*chunk*/);
-
-/*bool SsArrayGet(ssArray* _this, void* chunk) todo*/
-
-// bool SsArrayPop(ssArray* _this, void* memory/*chunk*/);
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//#define INTEGER_MAX(lhs, rhs) (lhs >= rhs ? lhs : rhs)
-
-//#define SSARRAY_GET_CHUNK_PADDED_SIZEOF(_this) \
-//  (size_t)_this->sizeOf
-
-//#define SSARRAY_GET_CHUNK_UNPADDED_SIZEOF(_this) \
-//  (size_t)_this->sizeOfRef
-
-size_t ALIGNEDOFVALUE(size_t size)
+static size_t SsArrayAlignedOfValue(size_t size)
   { return (size % sizeof(void*) ) ? size + (sizeof(void*) - size % sizeof(void*) ) : size; }
 
-// only for node header
-size_t SsArrayGetSizeOfNode()
-  { return 0; }
-
 // only for pool header
-size_t SsArrayGetSizeOfPool()
-  { return ALIGNEDOFVALUE(sizeof(SsArrayPool) ); }
+static size_t SsArrayGetSizeOfPoolHeader()
+  { return SsArrayAlignedOfValue(sizeof(SsArrayPool) ); }
 
 // only for ssArray header
-size_t SsArrayGetSizeOfSsArray()
-  { return ALIGNEDOFVALUE(sizeof(ssArray) ); }
+static size_t SsArrayGetSizeOfSsArrayHeader()
+  { return SsArrayAlignedOfValue(sizeof(ssArray) ); }
 
 // returns entire chunk size (node header + client data)
-size_t SsArrayGetSizeOfChunk(size_t sizeOf)
-  { return ALIGNEDOFVALUE(sizeOf) + SsArrayGetSizeOfNode(); }
+//
+// except if debug portion of code is stripped from file, in which case the
+// entire chunk size is only the size of the client data after padding the size
+// for alignment purposes
+static size_t SsArrayGetSizeOfChunk(size_t sizeOf)
+  { return SsArrayAlignedOfValue(sizeOf); }
 
-void PoolSetUnaligned(SsArrayPool* pool, uint8_t* unaligned)
+// unaligned <= pool; pool->unaligned <= 0
+//
+// ptrDiff is either zero or negative
+// ptrdiff_t ptrDiff = (uint8_t*)unaligned - (uint8_t*)pool
+// pool->unaligned = (int)ptrDiff
+static void SsArrayPoolSetUnaligned(SsArrayPool* pool, uint8_t* unaligned)
   { pool->unaligned = (int)( (uint8_t*)unaligned - (uint8_t*)pool); }
 
-uint8_t* PoolGetUnaligned(SsArrayPool* pool)
+static uint8_t* SsArrayPoolGetUnaligned(SsArrayPool* pool)
   { return (uint8_t*)pool + (ptrdiff_t)pool->unaligned; }
 
-size_t SSARRAY_GET_POOL_SIZEOF(ssArray* _this, size_t nmemb)
-  { return SsArrayGetSizeOfPool() + nmemb * (size_t)_this->sizeOf; }
+static size_t SsArrayGetPoolSizeOf(ssArray* _this, size_t nmemb)
+  { return SsArrayGetSizeOfPoolHeader() + nmemb * (size_t)_this->sizeOf; }
 
-uint8_t* SSARRAY_POOL_TO_CHUNK_OPERATOR_INDEX(ssArray* _this, SsArrayPool* pool, size_t index)
-  { return (uint8_t*)pool + SSARRAY_GET_POOL_SIZEOF(_this, index); }
+static uint8_t* SsArrayPoolToChunkOperatorIndex(ssArray* _this, SsArrayPool* pool, size_t index)
+  { return (uint8_t*)pool + SsArrayGetSizeOfPoolHeader() + index * (size_t)_this->sizeOf; }
+
+static uint8_t* SsArrayPoolToFirstChunk(SsArrayPool* pool)
+  { return (uint8_t*)pool + SsArrayGetSizeOfPoolHeader(); }
+
+static uint8_t* SsArrayChunkToChunkPrevious(ssArray* _this, uint8_t* chunk)
+  {return chunk - (ptrdiff_t)_this->sizeOf; }
+
+static uint8_t* SsArrayChunkToChunkNext(ssArray* _this, uint8_t* chunk)
+  { return chunk + (size_t)_this->sizeOf; }
+
+// specifically when one side is on the stack, in which case we have to use the unpadded sizeof
+static void SsArrayMemcpySsArray(uint8_t* destination, ssArray* source)
+  { memcpy(destination, source, sizeof(ssArray) ); }
 
 // specifically when one side is passed by the client, in which case we have to use the unpadded sizeof
-void SSARRAY_MEMCPY_CHUNK(ssArray* _this, void* destination, void* source)
+static void SsArrayMemcpyChunk(ssArray* _this, void* destination, void* source)
   { memcpy(destination, source, (size_t)_this->sizeOfRef; }
 
-void PoolListFree(SsArrayPool* current)
+static void SsArrayPoolListFree(SsArrayPool* current)
 {
   for(SsArrayPool* next = 0; current; current = next)
   {
     next = current->next;
 
-    free(PoolGetUnaligned(current) );
+    free(SsArrayPoolGetUnaligned(current) );
   }
 }
 
-void PoolListReverseAndFree(SsArrayPool* current)
+static void SsArrayPoolListReverseAndFree(SsArrayPool* current)
 {
   // we want to free pools in opposite order of their allocation
 
@@ -178,110 +141,10 @@ void PoolListReverseAndFree(SsArrayPool* current)
   }
 
   // free pools
-  PoolListFree(previous);
+  SsArrayPoolListFree(previous);
 }
 
-ssArray* SsArrayConstruct(int sizeOf, int minimumCapacity, int maximumCapacity, int resize)
-{
-  uint8_t* result = 0;
-
-  ssArray _this = {0};
-
-  if(sizeOf <= 0 || minimumCapacity <= 0 || minimumCapacity > maximumCapacity || !resize)
-    goto error;
-
-  _this.resize = resize;
-  _this.capacity = maximumCapacity;
-
-  _this.sizeOfRef = sizeOf;
-  _this.sizeOf = (int)SsArrayGetSizeOfChunk( (size_t)sizeOf);
-
-  if( !SsArrayResize( &_this, (size_t)minimumCapacity) || !_this.head)
-    goto error;
-
-  // extract 'this' pointer which prefixes the first pool
-  result = (uint8_t*)_this.head - (ptrdiff_t)SsArrayGetSizeOfSsArray();
-
-  // use unpadded sizeof in copy
-  memcpy(result, &_this, sizeof(ssArray) );
-
-error:
-  return (ssArray*)result;
-}
-
-// returns the number of elements previously in the array or -1 on error
-int SsArrayDestruct(ssArray** reference)
-{
-  int result = -1;
-  int numChunks = 0;
-
-  ssArray* _this = 0;
-
-  if( !reference)
-    goto error;
-
-  _this = reference[0];
-
-  if( !_this)
-    goto error;
-
-  numChunks = SsArrayNum(_this);
-  if(numChunks < 0)
-    goto error;
-
-  // free all pools
-  PoolListReverseAndFree(_this->head);
-
-  reference[0] = 0;
-
-  result = numChunks;
-
-error:
-  return result;
-}
-
-int SsArrayNum(ssArray* _this)
-{
-  int result = -1;
-
-  if( !_this)
-    goto error;
-
-  result = _this->numChunks;
-
-error:
-  return result;
-}
-
-// returns the number of nodes previously held by client or -1 on error
-int SsArrayReset(ssArray* _this) // todo
-{
-  int result = -1;
-  int numChunksRef = 0;
-
-  SsArrayPool* pool = 0;
-
-  if( !_this || _this->numPools <= 0)
-    goto error;
-
-  numChunksRef = _this->numChunks;
-
-  pool = _this->head;
-
-  //_this->chunk = SSMM_CHUNK_POOL_TO_FIRSTNODE(pool)
-  _this->current = pool;
-
-  _this->numChunks = 0;
-  _this->index = 0;
-  _this->max = pool->num;
-
-  result = numChunksRef;
-
-error:
-  return result;
-}
-
-bool SsArrayResize(ssArray* _this, size_t minimumCapacity) // todo
+static bool SsArrayResize(ssArray* _this, size_t minimumCapacity)
 {
   bool result = false;
 
@@ -302,15 +165,29 @@ bool SsArrayResize(ssArray* _this, size_t minimumCapacity) // todo
   {
     SsmmPool* pool = _this->current->next;
 
-    //_this->chunk = SSMM_CHUNK_POOL_TO_FIRSTNODE(pool)
+    _this->chunk = SsArrayPoolToFirstChunk(pool);
+
     _this->current = pool;
 
-    _this->index = 0;
     _this->max += pool->num;
-    
-    result = true;
-    
-    goto error;
+
+    // changed
+    // _this->chunk
+    // _this->current
+    // _this->max
+
+    // no change
+    // _this->head
+    // _this->tail
+    // _this->numPools
+    // _this->numChunks
+    // _this->counter
+    // _this->resize
+    // _this->capacity
+    // _this->sizeOfRef
+    // _this->sizeOf
+
+    goto success;
   }
 
   int diff = 0;
@@ -398,16 +275,16 @@ bool SsArrayResize(ssArray* _this, size_t minimumCapacity) // todo
     goto error;
 
   // already aligned
-  size_t size = SSARRAY_GET_POOL_SIZEOF(_this, (size_t)diff);
+  size_t size = SsArrayGetPoolSizeOf(_this, (size_t)diff);
 
   if(minimumCapacity > 0)
-    size += SsArrayGetSizeOfSsArray();
+    size += SsArrayGetSizeOfSsArrayHeader();
 
   uint8_t* unaligned = 0;
   uint8_t* aligned = blah_aligned_alloc(size, &unaligned, false);
 
   if(minimumCapacity > 0)
-    aligned += SsArrayGetSizeOfSsArray();
+    aligned += SsArrayGetSizeOfSsArrayHeader();
 
   SsArrayPool* pool = (SsArrayPool*)aligned;
 
@@ -415,8 +292,10 @@ bool SsArrayResize(ssArray* _this, size_t minimumCapacity) // todo
     goto error;
 
   pool->next = 0;
-  PoolSetUnaligned(pool, unaligned);
+  SsArrayPoolSetUnaligned(pool, unaligned);
   pool->num = diff;
+
+  _this->chunk = SsArrayPoolToFirstChunk(pool);
 
   _this->current = pool;
 
@@ -434,16 +313,174 @@ bool SsArrayResize(ssArray* _this, size_t minimumCapacity) // todo
 
   _this->numPools++;
 
-  _this->index = 0;
   _this->max += diff;
 
+  // changed
+  // _this->chunk
+  // _this->current
+  // _this->head
+  // _this->tail
+  // _this->numPools
+  // _this->max
+
+  // no change
+  // _this->numChunks
+  // _this->counter
+  // _this->resize
+  // _this->capacity
+  // _this->sizeOfRef
+  // _this->sizeOf
+
+  goto success;
+
+success:
   result = true;
 
 error:
   return result;
 }
 
-bool SsArrayPush(ssArray* _this, void* client) // todo
+ssArray* SsArrayConstruct(int sizeOf, int minimumCapacity, int maximumCapacity, int resize)
+{
+  uint8_t* result = 0;
+
+  ssArray _this = {0};
+
+  if(sizeOf <= 0 || minimumCapacity <= 0 || minimumCapacity > maximumCapacity || !resize)
+    goto error;
+
+  _this.resize = resize;
+  _this.capacity = maximumCapacity;
+
+  _this.sizeOfRef = sizeOf;
+  _this.sizeOf = (int)SsArrayGetSizeOfChunk( (size_t)sizeOf);
+
+  if( !SsArrayResize( &_this, (size_t)minimumCapacity) || !_this.head)
+    goto error;
+
+  // changed
+  // _this.resize
+  // _this.capacity
+  // _this.sizeOfRef
+  // _this.sizeOf
+
+  // no change
+  // _this.chunk; set in SsArrayResize
+  // _this.current; set in SsArrayResize
+  // _this.head; set in SsArrayResize
+  // _this.tail; set in SsArrayResize
+  // _this.numPools; set in SsArrayResize
+  // _this.numChunks; stays at default of zero
+  // _this.max; set in SsArrayResize
+  // _this.counter; stays at default of zero
+
+  // extract 'this' pointer which prefixes the first pool
+  result = (uint8_t*)_this.head - (ptrdiff_t)SsArrayGetSizeOfSsArrayHeader();
+
+  // use unpadded sizeof in copy
+  SsArrayMemcpySsArray(result, &_this);
+
+error:
+  return (ssArray*)result;
+}
+
+// returns the number of elements previously in the array or -1 on error
+int SsArrayDestruct(ssArray** reference/*_this*/)
+{
+  int result = -1;
+  int numChunks = 0;
+
+  ssArray* _this = 0;
+
+  if( !reference)
+    goto error;
+
+  _this = reference[0];
+
+  if( !_this)
+    goto error;
+
+  numChunks = SsArrayNum(_this);
+  if(numChunks < 0)
+    goto error;
+
+  // free all pools
+  //
+  // last pool freed also frees SsArray header
+  SsArrayPoolListReverseAndFree(_this->head);
+
+  reference[0] = 0;
+
+  // all data freed
+
+  result = numChunks;
+
+error:
+  return result;
+}
+
+int SsArrayNum(ssArray* _this)
+{
+  int result = -1;
+
+  if( !_this)
+    goto error;
+
+  // no change for anything in _this
+
+  result = _this->numChunks;
+
+error:
+  return result;
+}
+
+// returns the number of nodes previously held by client or -1 on error
+int SsArrayReset(ssArray* _this)
+{
+  int result = -1;
+  int numChunksRef = 0;
+
+  SsArrayPool* pool = 0;
+
+  if( !_this || _this->numPools <= 0)
+    goto error;
+
+  numChunksRef = _this->numChunks;
+
+  pool = _this->head;
+
+  _this->chunk = SsArrayPoolToFirstChunk(pool);
+
+  _this->current = pool;
+
+  _this->numChunks = 0;
+  _this->max = pool->num;
+
+  _this->counter++;
+
+  // changed
+  // _this->chunk
+  // _this->current
+  // _this->numChunks
+  // _this->max
+  // _this->counter
+
+  // no change
+  // _this->head
+  // _this->tail
+  // _this->numPools
+  // _this->resize
+  // _this->capacity
+  // _this->sizeOfRef
+  // _this->sizeOf
+
+  result = numChunksRef;
+
+error:
+  return result;
+}
+
+bool SsArrayPush(ssArray* _this, void* client)
 {
   bool result = false;
 
@@ -462,27 +499,43 @@ bool SsArrayPush(ssArray* _this, void* client) // todo
     goto error;
 
   // what is expected to change every call
+  // _this->chunk
   // _this->numChunks
-  // _this->index
 
   if(_this->index < 0 || _this->index >= _this->current->num)
     goto error;
 
   // _this->index >= 0 && _this->index < _this->current->num
 
-  // or uint8_t* chunk = (uint8_t*)_this->chunk
-  chunk = SSARRAY_POOL_TO_CHUNK_OPERATOR_INDEX(_this, _this->current, _this->index);
+  //chunk = SsArrayPoolToChunkOperatorIndex(_this, _this->current, _this->index)
+  chunk = _this->chunk;
 
   // move to next chunk
   //
-  // or _this->chunk = (uint8_t*)_this->chunk + (ptrdiff_t)_this->sizeOf
-  _this->index++;
+  //_this->index++;
+  _this->chunk = SsArrayChunkToChunkNext(_this, _this->chunk);
 
   // _this->index > 0 && _this->index <= _this->current->num
 
   _this->numChunks++;
 
-  SSARRAY_MEMCPY_CHUNK(_this, chunk, memory);
+  SsArrayMemcpyChunk(_this, chunk, memory);
+
+  // changed
+  // _this->chunk
+  // _this->numChunks
+
+  // no change
+  // _this->current
+  // _this->head
+  // _this->tail
+  // _this->numPools
+  // _this->max
+  // _this->counter
+  // _this->resize
+  // _this->capacity
+  // _this->sizeOfRef
+  // _this->sizeOf
 
   result = true;
 
@@ -500,15 +553,17 @@ bool SsArrayGet(ssArray* _this, void* client)
 {
   bool result = false;
 
-  if( !_this || !client || _this->numChunks <= 0 || _this->index <= 0)
+  if( !_this || !client || _this->numChunks <= 0)
     goto error;
 
-  // or uint8_t* chunk = (uint8_t*)_this->chunk - (ptrdiff_t)_this->sizeOf
-  uint8_t* chunk = SSARRAY_POOL_TO_CHUNK_OPERATOR_INDEX(_this, _this->current, _this->index - 1);
-  
+  //uint8_t* chunk = SsArrayPoolToChunkOperatorIndex(_this, _this->current, _this->index - 1)
+  uint8_t* chunk = SsArrayChunkToChunkPrevious(_this, _this->chunk);
+
   // client <- chunk; copy from us to client
-  SSARRAY_MEMCPY_CHUNK(_this, client, chunk);
-  
+  SsArrayMemcpyChunk(_this, client, chunk);
+
+  // no change for anything in _this
+
   result = true;
 
 error:
@@ -519,15 +574,17 @@ bool SsArraySet(ssArray* _this, void* client)
 {
   bool result = false;
 
-  if( !_this || !client || _this->numChunks <= 0 || _this->index <= 0)
+  if( !_this || !client || _this->numChunks <= 0)
     goto error;
 
-  // or uint8_t* chunk = (uint8_t*)_this->chunk - (ptrdiff_t)_this->sizeOf
-  uint8_t* chunk = SSARRAY_POOL_TO_CHUNK_OPERATOR_INDEX(_this, _this->current, _this->index - 1);
-  
+  //uint8_t* chunk = SsArrayPoolToChunkOperatorIndex(_this, _this->current, _this->index - 1)
+  uint8_t* chunk = SsArrayChunkToChunkPrevious(_this, _this->chunk);
+
   // chunk <- client; copy from client to us
-  SSARRAY_MEMCPY_CHUNK(_this, chunk, client);
-  
+  SsArrayMemcpyChunk(_this, chunk, client);
+
+  // no change for anything in _this
+
   result = true;
 
 error:
@@ -545,7 +602,7 @@ bool SsArrayGetAt(ssArray* _this, int index, void* client)
 
   if( !_this || !client || index < 0 || index >= _this->numChunks || _this->numChunks <= 0)
     goto error;
-  
+
   SsArrayPool pool = _this->head;
 
   for(int walk = 0; pool; pool = pool->next)
@@ -553,18 +610,23 @@ bool SsArrayGetAt(ssArray* _this, int index, void* client)
     if(index >= walk && index < walk + pool->num)
     {
       // _this->chunk not used; _this->current, _this->index not used
-      uint8_t* chunk = SSARRAY_POOL_TO_CHUNK_OPERATOR_INDEX(_this, pool, index - walk);
+      uint8_t* chunk = SsArrayPoolToChunkOperatorIndex(_this, pool, index - walk);
 
       // client <- chunk; copy from us to client
-      SSARRAY_MEMCPY_CHUNK(_this, client, chunk);
-  
-      result = true;
-      
-      break;
+      SsArrayMemcpyChunk(_this, client, chunk);
+
+      goto success;
     }
-    
+
     walk += pool->num;
   }
+
+  // no change for anything in _this
+
+  goto error;
+
+success:
+  result = true;
 
 error:
   return result;
@@ -576,7 +638,7 @@ bool SsArraySetAt(ssArray* _this, int index, void* client)
 
   if( !_this || !client || index < 0 || index >= _this->numChunks || _this->numChunks <= 0)
     goto error;
-  
+
   SsArrayPool pool = _this->head;
 
   for(int walk = 0; pool; pool = pool->next)
@@ -584,18 +646,23 @@ bool SsArraySetAt(ssArray* _this, int index, void* client)
     if(index >= walk && index < walk + pool->num)
     {
       // _this->chunk not used; _this->current, _this->index not used
-      uint8_t* chunk = SSARRAY_POOL_TO_CHUNK_OPERATOR_INDEX(_this, pool, index - walk);
+      uint8_t* chunk = SsArrayPoolToChunkOperatorIndex(_this, pool, index - walk);
 
       // chunk <- client; copy from client to us
-      SSARRAY_MEMCPY_CHUNK(_this, chunk, client);
-  
-      result = true;
-      
-      break;
+      SsArrayMemcpyChunk(_this, chunk, client);
+
+      goto success;
     }
-    
+
     walk += pool->num;
   }
+
+  // no change for anything in _this
+
+  goto error;
+
+success:
+  result = true;
 
 error:
   return result;
