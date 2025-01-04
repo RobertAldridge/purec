@@ -51,6 +51,32 @@ struct BinaryTreeNode
   BinaryTreeNode* parent;
 
   int color;
+  int padding;
+
+  // minimum client size
+  // uint8_t client[8];
+  //
+  // minimum node size for 8 byte pointer and 4 byte int
+  // 40 bytes
+  //
+  // number of minimum size nodes to fit into 1 gigabyte of memory
+  // not counting head, traversal stack, traversal queue, or client-side copy of client objects
+  // 26,843,545
+  //
+  // number of minimum size nodes to fit into 4 gigabytes of memory
+  // not counting head, traversal stack, traversal queue, or client-side copy of client objects
+  // 107,374,182
+  //
+  // rough memory requirement for traversal stack, traversal queue, and client-side copy of client objects
+  // when number of client objects is 107,374,182
+  //
+  // traversal stack 216 bytes
+  // traversal queue 343,597,383 bytes
+  // client-side copy of client objects 858,993,456 bytes
+  //
+  // total 1,202,591,055 bytes == ~1.13 gigabytes
+  //
+  // total with tree nodes == ~5.13 gigabytes
 };
 
 struct BinaryTree
