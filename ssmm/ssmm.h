@@ -28,9 +28,9 @@ struct ssmm
 
   uint8_t* alloc;
   //int unaligned;
-  
+
   int numPools;
-  
+
   int numChunks;
   int most;
   int max;

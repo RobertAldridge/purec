@@ -255,9 +255,9 @@ bool SsmmSsmm(ssmm* _this, size_t sizeOf, size_t minimumCapacity, size_t maximum
   _this->tail = 0;
 
   _this->max = 0;
-  
+
   _this->resize = resize;
-  
+
   _this->capacity = (int)maximumCapacity;
 
   if( !SsmmResize(_this, (int)minimumCapacity) )
@@ -558,7 +558,7 @@ bool SsmmResize(ssmm* _this, int minimumCapacity)
     _this->chunk = SSMM_CHUNK_POOL_TO_FIRSTNODE(pool);
 
     _this->current = pool;
-    
+
     if( !_this->head)
       _this->head = pool;
     else// if(_this->head)
@@ -602,7 +602,7 @@ void* SsmmAlloc(ssmm* _this)
     if( !SsmmResize(_this, 0) )
       goto error;
   }
-  
+
   if(_this->numChunks == _this->max)
     goto error;
 
