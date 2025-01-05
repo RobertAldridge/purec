@@ -48,7 +48,7 @@ struct ssArray
   int padding;
 };
 
-#include "ssArray.h"
+#include "ssArray_nocomments.h"
 
 #include "blah_aligned_alloc.h"
 
@@ -124,7 +124,7 @@ static uint8_t* SsArrayGetPreviousChunk(ssArray* _this)
   SsArrayPool* pool = _this->current;
 
   int index = _this->index - 1;
-  
+
   if(index >= 0)
     chunk = SsArrayPoolToChunkOperatorIndex(_this, pool, (size_t)index);
   else if(index == -1 && pool != _this->head)
@@ -144,19 +144,19 @@ error:
 static bool SsArrayStateChangeProcessRolloverPreviousIfApplicable(ssArray* _this)
 {
   bool result = false;
-  
+
   if(_this->index < 0)
   {
     if(_this->index < -1 || _this->current == _this->head)
       goto error;
 
     _this->current = _this->current->previous;
-      
+
     _this->index = _this->current->num - 1;
   }
-  
+
   result = true;
-  
+
 error:
   return result;
 }
@@ -165,7 +165,7 @@ error:
 static bool SsArrayStateChangeProcessRolloverNextIfApplicable(ssArray* _this)
 {
   bool result = false;
-  
+
   if(_this->index >= _this->current->num)
   {
     if(_this->index > _this->current->num || _this->current == _this->tail)
@@ -175,9 +175,9 @@ static bool SsArrayStateChangeProcessRolloverNextIfApplicable(ssArray* _this)
 
     _this->index = 0;
   }
-  
+
   result = true;
-  
+
 error:
   return result;
 }
