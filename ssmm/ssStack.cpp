@@ -3,10 +3,6 @@
 // Robert Aldridge, code
 // Robert Aldridge and Charlie Burns, design
 
-#if defined(_MSC_VER)
-  #pragma warning (disable: 4711)
-#endif
-
 #include "ssStack.h"
 
 #include <cstdio>
@@ -687,7 +683,3 @@ bool SsStackPop(ssStack* _this, void* memory/*chunk*/) // todo
 error:
   return result;
 }
-
-#if defined(_MSC_VER)
-  #pragma warning (default: 4711)
-#endif

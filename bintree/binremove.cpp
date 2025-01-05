@@ -610,7 +610,7 @@ BinaryTreeNode* BinDelete(BinaryTree* tree, BinaryTreeNode* z)
   if(y != z)
   {
     // copy all fields besides left right parent color
-    memcpy(GETCLIENT(z), GETCLIENT(y), tree->SizeOfClientAligned);
+    memcpy(GETCLIENT(z), GETCLIENT(y), tree->SizeOfClientAligned); // todo - 2nd copy in delete
   }
 
   if(Color == BLACK)
@@ -626,7 +626,7 @@ BinaryTreeNode* BinDelete(BinaryTree* tree, BinaryTreeNode* z)
   T_Nil->right = 0; // todo
 // Sentinel }
 
-// check if y is ever sentinelRoot
+// check if y is ever sentinelRoot todo
 
   return y;
 }

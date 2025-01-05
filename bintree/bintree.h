@@ -16,17 +16,10 @@
 // Special thanks to Charlie Burns for his initial ideas for the internal memory management,
 // and for his continued support while we were working on the efficiency of our implementations.
 
-//#if !defined(BINTREE)
-//#define BINTREE
-
-//#ifdef __cplusplus
-//  extern "C" {
-//#endif
-
 /*
   Sample Code:
 
-  // #include < stdio.h >
+  // #include <stdio.h>
   #include "bintree.h"
 
   static const int myFatalError = -1;
@@ -340,9 +333,3 @@ private:
 
   bintree& operator=(bintree& );
 };
-
-//#ifdef __cplusplus
-//  }
-//#endif
-
-//#endif

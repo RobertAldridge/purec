@@ -3,9 +3,16 @@
 // Robert Aldridge, code
 // Robert Aldridge and Charlie Burns, design
 
-#if defined(_MSC_VER)
-  #pragma warning (disable: 4711)
-#endif
+#include <cstddef> // ptrdiff_t, size_t
+#include <cstdint> // uint8_t
+#include <cstdlib> // free
+#include <cstring> // memcpy
+
+using std::free;
+using std::memcpy;
+using std::ptrdiff_t;
+using std::size_t;
+using std::uint8_t;
 
 struct SsArrayPool
 {
@@ -42,17 +49,6 @@ struct ssArray
   int sizeOfRef;
   int sizeOf;
 };
-
-#include <cstddef> // ptrdiff_t, size_t
-#include <cstdint> // uint8_t
-#include <cstdlib> // free
-#include <cstring> // memcpy
-
-using std::free;
-using std::memcpy;
-using std::ptrdiff_t;
-using std::size_t;
-using std::uint8_t;
 
 #include "ssArray.h"
 
@@ -113,7 +109,7 @@ static void SsArrayMemcpySsArray(uint8_t* destination, ssArray* source)
 
 // specifically when one side is passed by the client, in which case we have to use the unpadded sizeof
 static void SsArrayMemcpyChunk(ssArray* _this, void* destination, void* source)
-  { memcpy(destination, source, (size_t)_this->sizeOfRef; }
+  { memcpy(destination, source, (size_t)_this->sizeOfRef); }
 
 static void SsArrayPoolListFree(SsArrayPool* current)
 {
@@ -148,7 +144,7 @@ static bool SsArrayResize(ssArray* _this, size_t minimumCapacity)
 {
   bool result = false;
 
-  if( !_this || _this->numChunks != _this->max || minimumCapacity > _this->capacity)
+  if( !_this || _this->numChunks != _this->max || minimumCapacity > (size_t)_this->capacity)
     goto error;
 
   if(minimumCapacity > 0 && _this->numPools > 0)
@@ -163,7 +159,7 @@ static bool SsArrayResize(ssArray* _this, size_t minimumCapacity)
 
   if(_this->current != _this->tail)
   {
-    SsmmPool* pool = _this->current->next;
+    SsArrayPool* pool = _this->current->next;
 
     _this->chunk = SsArrayPoolToFirstChunk(pool);
 
@@ -186,154 +182,156 @@ static bool SsArrayResize(ssArray* _this, size_t minimumCapacity)
     // _this->capacity
     // _this->sizeOfRef
     // _this->sizeOf
-
-    goto success;
-  }
-
-  int diff = 0;
-
-  // start is initial capacity
-  // must be greater than zero
-  // minimumCapacity <= maximumCapacity
-  /*int minimumCapacity;*/
-
-  // 'initial capacity * sizeof(client type)' must be a reasonable size to pass to malloc
-
-  // first pool grow() behavior
-  // 'new capacity' == minimumCapacity
-  if(minimumCapacity > 0)
-  {
-    diff = (int)minimumCapacity;
-  }
-
-  // non-first grow() behavior, if resize < -1
-  //
-  // 'new capacity' == 2 * 'old capacity',
-  // if 'old capacity' <= abs(resize + 1) and 2 * 'old capacity' <= maximumCapacity
-  //
-  // 'new capacity' == 'old capacity' + abs(resize),
-  // if 'old capacity' > abs(resize + 1) and 'old capacity' + abs(resize + 1) <= maximumCapacity
-  //
-  // 'new capacity' == maximumCapacity,
-  // if 'old capacity' > abs(resize + 1) and 'old capacity' + abs(resize + 1) > maximumCapacity
-  else if(_this->resize < -1)
-  {
-    int resize = -_this->resize - 1;
-
-    if(_this->max <= resize)
-      diff = _this->max;
-    else
-      diff = resize;
-
-    if(_this->max + diff > _this->capacity)
-      diff = _this->capacity - _this->max;
-  }
-
-  // non-first grow() behavior, if resize == -1
-  //
-  // 'new capacity' == 2 * 'old capacity',
-  // if 2 * 'old capacity' <= maximumCapacity
-  //
-  // 'new capacity' == maximumCapacity,
-  // if 2 * 'old capacity' > maximumCapacity
-  else if(_this->resize == -1)
-  {
-    diff = _this->max;
-
-    if(_this->max + diff > _this->capacity)
-      diff = _this->capacity - _this->max;
-  }
-
-  // resize cannot be zero.  to disable grow() set minimumCapacity and maximumCapacity to same value
-  //
-  // resize != 0 is verified during construction of ssArray instance
-
-  // non-first grow() behavior, if resize > 0
-  //
-  // 'new capacity' == 'old capacity' + resize,
-  // if 'old capacity' + resize <= maximumCapacity
-  //
-  // 'new capacity' == maximumCapacity,
-  // if 'old capacity' + resize > maximumCapacity
-  else if(_this->resize > 0)
-  {
-    diff = _this->resize;
-
-    if(_this->max + diff > _this->capacity)
-      diff = _this->capacity - _this->max;
   }
   else
   {
-    goto error;
+    int diff = 0;
+
+    size_t size = 0;
+
+    uint8_t* unaligned = 0;
+    uint8_t* aligned = 0;
+
+    SsArrayPool* pool = 0;
+
+    // start is initial capacity
+    // must be greater than zero
+    // minimumCapacity <= maximumCapacity
+    /*int minimumCapacity;*/
+
+    // 'initial capacity * sizeof(client type)' must be a reasonable size to pass to malloc
+
+    // first pool grow() behavior
+    // 'new capacity' == minimumCapacity
+    if(minimumCapacity > 0)
+    {
+      diff = (int)minimumCapacity;
+    }
+
+    // non-first grow() behavior, if resize < -1
+    //
+    // 'new capacity' == 2 * 'old capacity',
+    // if 'old capacity' <= abs(resize + 1) and 2 * 'old capacity' <= maximumCapacity
+    //
+    // 'new capacity' == 'old capacity' + abs(resize),
+    // if 'old capacity' > abs(resize + 1) and 'old capacity' + abs(resize + 1) <= maximumCapacity
+    //
+    // 'new capacity' == maximumCapacity,
+    // if 'old capacity' > abs(resize + 1) and 'old capacity' + abs(resize + 1) > maximumCapacity
+    else if(_this->resize < -1)
+    {
+      int resize = -_this->resize - 1;
+
+      if(_this->max <= resize)
+        diff = _this->max;
+      else
+        diff = resize;
+
+      if(_this->max + diff > _this->capacity)
+        diff = _this->capacity - _this->max;
+    }
+
+    // non-first grow() behavior, if resize == -1
+    //
+    // 'new capacity' == 2 * 'old capacity',
+    // if 2 * 'old capacity' <= maximumCapacity
+    //
+    // 'new capacity' == maximumCapacity,
+    // if 2 * 'old capacity' > maximumCapacity
+    else if(_this->resize == -1)
+    {
+      diff = _this->max;
+
+      if(_this->max + diff > _this->capacity)
+        diff = _this->capacity - _this->max;
+    }
+
+    // resize cannot be zero.  to disable grow() set minimumCapacity and maximumCapacity to same value
+    //
+    // resize != 0 is verified during construction of ssArray instance
+
+    // non-first grow() behavior, if resize > 0
+    //
+    // 'new capacity' == 'old capacity' + resize,
+    // if 'old capacity' + resize <= maximumCapacity
+    //
+    // 'new capacity' == maximumCapacity,
+    // if 'old capacity' + resize > maximumCapacity
+    else if(_this->resize > 0)
+    {
+      diff = _this->resize;
+
+      if(_this->max + diff > _this->capacity)
+        diff = _this->capacity - _this->max;
+    }
+    else
+    {
+      goto error;
+    }
+
+    /*int resize;*/
+
+    /*int capacity;*/
+
+    if( !diff)
+      goto error;
+
+    // already aligned
+    size = SsArrayGetPoolSizeOf(_this, (size_t)diff);
+
+    if(minimumCapacity > 0)
+      size += SsArrayGetSizeOfSsArrayHeader();
+
+    aligned = blah_aligned_alloc(size, &unaligned, false);
+
+    if(minimumCapacity > 0)
+      aligned += SsArrayGetSizeOfSsArrayHeader();
+
+    pool = (SsArrayPool*)aligned;
+
+    if( !pool)
+      goto error;
+
+    pool->next = 0;
+    SsArrayPoolSetUnaligned(pool, unaligned);
+    pool->num = diff;
+
+    _this->chunk = SsArrayPoolToFirstChunk(pool);
+
+    _this->current = pool;
+
+    if( !_this->head)
+    {
+      _this->head = pool;
+    }
+    else// if(_this->head)
+    {
+      _this->tail->next = pool;
+    }
+
+    _this->tail = pool;
+
+    _this->numPools++;
+
+    _this->max += diff;
+
+    // changed
+    // _this->chunk
+    // _this->current
+    // _this->head
+    // _this->tail
+    // _this->numPools
+    // _this->max
+
+    // no change
+    // _this->numChunks
+    // _this->counter
+    // _this->resize
+    // _this->capacity
+    // _this->sizeOfRef
+    // _this->sizeOf
   }
 
-  /*int resize;*/
-
-  /*int capacity;*/
-
-  if( !diff)
-    goto error;
-
-  // already aligned
-  size_t size = SsArrayGetPoolSizeOf(_this, (size_t)diff);
-
-  if(minimumCapacity > 0)
-    size += SsArrayGetSizeOfSsArrayHeader();
-
-  uint8_t* unaligned = 0;
-  uint8_t* aligned = blah_aligned_alloc(size, &unaligned, false);
-
-  if(minimumCapacity > 0)
-    aligned += SsArrayGetSizeOfSsArrayHeader();
-
-  SsArrayPool* pool = (SsArrayPool*)aligned;
-
-  if( !pool)
-    goto error;
-
-  pool->next = 0;
-  SsArrayPoolSetUnaligned(pool, unaligned);
-  pool->num = diff;
-
-  _this->chunk = SsArrayPoolToFirstChunk(pool);
-
-  _this->current = pool;
-
-  if( !_this->head)
-  {
-    _this->head = pool;
-  }
-  else// if(_this->head)
-  {
-    _this->tail->next = pool;
-    pool->previous = _this->tail;
-  }
-
-  _this->tail = pool;
-
-  _this->numPools++;
-
-  _this->max += diff;
-
-  // changed
-  // _this->chunk
-  // _this->current
-  // _this->head
-  // _this->tail
-  // _this->numPools
-  // _this->max
-
-  // no change
-  // _this->numChunks
-  // _this->counter
-  // _this->resize
-  // _this->capacity
-  // _this->sizeOfRef
-  // _this->sizeOf
-
-  goto success;
-
-success:
   result = true;
 
 error:
@@ -502,8 +500,8 @@ bool SsArrayPush(ssArray* _this, void* client)
   // _this->chunk
   // _this->numChunks
 
-  if(_this->index < 0 || _this->index >= _this->current->num)
-    goto error;
+  //if(_this->index < 0 || _this->index >= _this->current->num)
+  //  goto error;
 
   // _this->index >= 0 && _this->index < _this->current->num
 
@@ -519,7 +517,8 @@ bool SsArrayPush(ssArray* _this, void* client)
 
   _this->numChunks++;
 
-  SsArrayMemcpyChunk(_this, chunk, memory);
+  // chunk <- client; copy from client side towards our side
+  SsArrayMemcpyChunk(_this, chunk, client);
 
   // changed
   // _this->chunk
@@ -553,13 +552,15 @@ bool SsArrayGet(ssArray* _this, void* client)
 {
   bool result = false;
 
+  uint8_t* chunk = 0;
+
   if( !_this || !client || _this->numChunks <= 0)
     goto error;
 
   //uint8_t* chunk = SsArrayPoolToChunkOperatorIndex(_this, _this->current, _this->index - 1)
-  uint8_t* chunk = SsArrayChunkToChunkPrevious(_this, _this->chunk);
+  chunk = SsArrayChunkToChunkPrevious(_this, _this->chunk);
 
-  // client <- chunk; copy from us to client
+  // client <- chunk; copy from our side towards client side
   SsArrayMemcpyChunk(_this, client, chunk);
 
   // no change for anything in _this
@@ -574,13 +575,15 @@ bool SsArraySet(ssArray* _this, void* client)
 {
   bool result = false;
 
+  uint8_t* chunk = 0;
+
   if( !_this || !client || _this->numChunks <= 0)
     goto error;
 
   //uint8_t* chunk = SsArrayPoolToChunkOperatorIndex(_this, _this->current, _this->index - 1)
-  uint8_t* chunk = SsArrayChunkToChunkPrevious(_this, _this->chunk);
+  chunk = SsArrayChunkToChunkPrevious(_this, _this->chunk);
 
-  // chunk <- client; copy from client to us
+  // chunk <- client; copy from client side towards our side
   SsArrayMemcpyChunk(_this, chunk, client);
 
   // no change for anything in _this
@@ -600,33 +603,32 @@ bool SsArrayGetAt(ssArray* _this, int index, void* client)
 {
   bool result = false;
 
+  SsArrayPool* pool = 0;
+
   if( !_this || !client || index < 0 || index >= _this->numChunks || _this->numChunks <= 0)
     goto error;
 
-  SsArrayPool pool = _this->head;
+  pool = _this->head;
 
   for(int walk = 0; pool; pool = pool->next)
   {
     if(index >= walk && index < walk + pool->num)
     {
       // _this->chunk not used; _this->current, _this->index not used
-      uint8_t* chunk = SsArrayPoolToChunkOperatorIndex(_this, pool, index - walk);
+      uint8_t* chunk = SsArrayPoolToChunkOperatorIndex(_this, pool, (size_t)(index - walk) );
 
-      // client <- chunk; copy from us to client
+      // client <- chunk; copy from our side towards client side
       SsArrayMemcpyChunk(_this, client, chunk);
 
-      goto success;
+      result = true;
+      
+      break;
     }
 
     walk += pool->num;
   }
 
   // no change for anything in _this
-
-  goto error;
-
-success:
-  result = true;
 
 error:
   return result;
@@ -636,22 +638,26 @@ bool SsArraySetAt(ssArray* _this, int index, void* client)
 {
   bool result = false;
 
-  if( !_this || !client || index < 0 || index >= _this->numChunks || _this->numChunks <= 0)
+  SsArrayPool* pool = 0;
+
+  if( !_this || !client || index < 0 || index >= _this->numChunks)
     goto error;
 
-  SsArrayPool pool = _this->head;
+  pool = _this->head;
 
   for(int walk = 0; pool; pool = pool->next)
   {
     if(index >= walk && index < walk + pool->num)
     {
       // _this->chunk not used; _this->current, _this->index not used
-      uint8_t* chunk = SsArrayPoolToChunkOperatorIndex(_this, pool, index - walk);
+      uint8_t* chunk = SsArrayPoolToChunkOperatorIndex(_this, pool, (size_t)(index - walk) );
 
-      // chunk <- client; copy from client to us
+      // chunk <- client; copy from client side towards our side
       SsArrayMemcpyChunk(_this, chunk, client);
 
-      goto success;
+      result = true;
+      
+      break;
     }
 
     walk += pool->num;
@@ -659,20 +665,9 @@ bool SsArraySetAt(ssArray* _this, int index, void* client)
 
   // no change for anything in _this
 
-  goto error;
-
-success:
-  result = true;
-
 error:
   return result;
 }
-
-#if defined(_MSC_VER)
-  #pragma warning (default: 4711)
-#endif
-
-
 
 
 

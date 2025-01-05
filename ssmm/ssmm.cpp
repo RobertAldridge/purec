@@ -3,10 +3,6 @@
 // Robert Aldridge, code
 // Robert Aldridge and Charlie Burns, design
 
-#if defined(_MSC_VER)
-  #pragma warning (disable: 4711)
-#endif
-
 #include "ssmm.h"
 
 #include <cstdio>
@@ -654,7 +650,3 @@ bool SsmmFree(ssmm* _this, void** memory/*chunk*/)
 error:
   return result;
 }
-
-#if defined(_MSC_VER)
-  #pragma warning (default: 4711)
-#endif

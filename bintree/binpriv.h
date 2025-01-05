@@ -1,20 +1,8 @@
 
 // File Name: binpriv.h
 
-//#if !defined(BINPRIV)
-//#define BINPRIV
-
-//#ifdef __cplusplus
-//  extern "C" {
-//#endif
-
 struct BinaryTreeNode;
 struct BinaryTree;
-
-#if defined(_MSC_VER)
-  #pragma warning (disable: 4200)
-//  #pragma warning (disable: 4201)
-#endif
 
 // This is a function pointer used to compare the keys of two objects.
 // If you call a function and pass a compare function and an object to
@@ -122,14 +110,3 @@ struct BinaryTree
 //char MemoryManagerNodePoolArrayStart[];
   ////////////////////////////////////
 };
-
-#if defined(_MSC_VER)
-//  #pragma warning (default: 4201)
-  #pragma warning (default: 4200)
-#endif
-
-//#ifdef __cplusplus
-//  }
-//#endif
-
-//#endif

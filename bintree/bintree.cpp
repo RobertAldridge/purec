@@ -6,10 +6,6 @@
 
 //#include "../../general.h"
 
-#if defined(_MSC_VER)
-  #pragma warning (push, 4)
-#endif
-
 #undef DEBUG
 #undef _DEBUG
 #undef NDEBUG
@@ -44,15 +40,14 @@ typedef int ORDER;
 #include "binpriv.h"
 //#include "../debugutils/log.h"
 
-//#ifdef __cplusplus
-//  extern "C" {
-//#endif
-
 #if defined(_MSC_VER)
+  // conditional expression is constant
   #pragma warning (disable: 4127)
-  #pragma warning (disable: 4711)
 
+  // code dereferences a potentially null pointer
   #pragma warning (disable: 6011)
+
+  // the code analysis tool isn't smart enough to figure out the pointer must be valid
   #pragma warning (disable: 28182)
 #endif
 
@@ -67,10 +62,6 @@ typedef int ORDER;
 
 #define RETURN_OK 0
 #define RETURN_ERROR -1
-
-#if !defined(_MSC_VER)
-  #define __forceinline inline
-#endif
 
 #define GETCLIENT(node) (void*)(node + 1)
 
