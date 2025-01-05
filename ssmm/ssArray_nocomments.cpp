@@ -16,6 +16,7 @@ using std::uint8_t;
 
 struct SsArrayPool
 {
+  //SsArrayPool* previous;
   SsArrayPool* next;
 
   int unaligned;
@@ -35,6 +36,7 @@ struct ssArray
   int numPools;
 
   int numChunks;
+  //int index;
   int max;
 
   int counter;
@@ -44,6 +46,8 @@ struct ssArray
 
   int sizeOfRef;
   int sizeOf;
+
+  //int padding;
 };
 
 #include "ssArray.h"
@@ -74,6 +78,7 @@ static size_t SsArrayGetPoolSizeOf(ssArray* _this, size_t nmemb)
 static uint8_t* SsArrayPoolToChunkOperatorIndex(ssArray* _this, SsArrayPool* pool, size_t index)
   { return (uint8_t*)pool + SsArrayGetSizeOfPoolHeader() + index * (size_t)_this->sizeOf; }
 
+#if 1
 static uint8_t* SsArrayPoolToFirstChunk(SsArrayPool* pool)
   { return (uint8_t*)pool + SsArrayGetSizeOfPoolHeader(); }
 
@@ -85,6 +90,7 @@ static uint8_t* SsArrayChunkToChunkNext(ssArray* _this, uint8_t* chunk)
 
 static void SsArrayMemcpySsArray(uint8_t* destination, ssArray* source)
   { memcpy(destination, source, sizeof(ssArray) ); }
+#endif
 
 static void SsArrayMemcpyChunk(ssArray* _this, void* destination, void* source)
   { memcpy(destination, source, (size_t)_this->sizeOfRef); }
@@ -118,6 +124,7 @@ static bool SsArrayResizeExistingPool(ssArray* _this)
 {
   bool result = false;
 
+#if 1
   SsArrayPool* pool = _this->current->next;
 
   _this->chunk = SsArrayPoolToFirstChunk(pool);
@@ -127,6 +134,9 @@ static bool SsArrayResizeExistingPool(ssArray* _this)
   _this->max += pool->num;
 
   result = true;
+
+  goto error;
+#endif
 
 error:
   return result;
@@ -203,14 +213,20 @@ static bool SsArrayResizeNewPool(ssArray* _this, size_t minimumCapacity)
   _this->current = pool;
 
   if( !_this->head)
+  {
     _this->head = pool;
+  }
   else// if(_this->head)
+  {
     _this->tail->next = pool;
+    //pool->previous = _this->tail;
+  }
 
   _this->tail = pool;
 
   _this->numPools++;
 
+  //_this->index = 0;
   _this->max += diff;
 
   result = true;
@@ -320,6 +336,7 @@ int SsArrayReset(ssArray* _this)
   _this->current = pool;
 
   _this->numChunks = 0;
+  //_this->index = 0;
   _this->max = pool->num;
 
   _this->counter++;
@@ -348,9 +365,26 @@ bool SsArrayPush(ssArray* _this, void* client)
   if(_this->numChunks >= _this->max)
     goto error;
 
+  //if(_this->index < 0 || _this->index >= _this->current->num)
+  //  goto error;
+
   chunk = _this->chunk;
 
   _this->chunk = SsArrayChunkToChunkNext(_this, _this->chunk);
+
+#if 0
+  _this->index++;
+
+  if(_this->index >= _this->current->num)
+  {
+    if(_this->current == _this->tail)
+      goto error;
+
+    _this->current = _this->current->next;
+
+    _this->index = 0;
+  }
+#endif
 
   _this->numChunks++;
 
@@ -361,6 +395,44 @@ bool SsArrayPush(ssArray* _this, void* client)
 error:
   return result;
 }
+
+#if 0
+bool SsArrayPop(ssArray* _this, void* client)
+{
+  bool result = false;
+
+  SsArrayNode* chunk = 0;
+
+  if( !_this || !client || _this->numChunks <= 0)
+    goto error;
+
+  if(_this->index < 0 || _this->index >= _this->current->num)
+    goto error;
+
+  _this->index--;
+
+  if(_this->index < 0)
+  {
+    if(_this->current == _this->head)
+      goto error;
+
+    _this->current = _this->current->previous;
+
+    _this->index = _this->current->num - 1;
+  }
+
+  chunk = SsArrayPoolToChunkOperatorIndex(_this, _this->current, _this->index);
+
+  _this->numChunks--;
+
+  SsArrayMemcpyChunk(_this, client, chunk);
+
+  result = true;
+
+error:
+  return result;
+}
+#endif
 
 bool SsArrayGet(ssArray* _this, void* client)
 {
