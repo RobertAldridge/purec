@@ -14,27 +14,11 @@ using std::ptrdiff_t;
 using std::size_t;
 using std::uint8_t;
 
-#if 0
-struct SsStackNode
-{
-  SsStackNode* previous;
-  SsStackNode* next;
-
-  uint8_t* chunk;
-
-  int num;
-
-  int padding;
-};
-#endif
+#include <cstdio>
+using std::printf;
 
 struct SsStackPool
 {
-#if 0
-  SsStackNode back;
-  SsStackNode front;
-#endif
-
   SsStackPool* previous;
   SsStackPool* next;
 
@@ -45,12 +29,7 @@ struct SsStackPool
 
 struct ssStack
 {
-#if 0
-  SsStackNode* back;
-  SsStackNode* front;
-#else
   SsStackPool* current;
-#endif
 
   SsStackPool* head;
   SsStackPool* tail;
@@ -59,12 +38,7 @@ struct ssStack
 
   int numChunks;
 
-#if 0
-  int indexBack;
-  int indexFront;
-#else
   int index;
-#endif
 
   int max;
 
@@ -116,15 +90,13 @@ static uint8_t* SsStackChunkToChunkPrevious(ssStack* _this, uint8_t* chunk)
 static uint8_t* SsStackChunkToChunkNext(ssStack* _this, uint8_t* chunk)
   { return chunk + (size_t)_this->sizeOf; }
 
-//static uint8_t* SsStackNodeToChunkOperatorIndex(ssStack* _this, SsStackNode* node, size_t index)
-//  { return node->chunk + index * (size_t)_this->sizeOf; }
-
 static void SsStackMemcpySsStack(uint8_t* destination, ssStack* source)
   { memcpy(destination, source, sizeof(ssStack) ); }
 
 static void SsStackMemcpyChunk(ssStack* _this, void* destination, void* source)
   { memcpy(destination, source, (size_t)_this->sizeOfRef); }
 
+// free in reverse order by walking previous from tail
 static void SsStackPoolListFree(SsStackPool* current)
 {
   for(SsStackPool* previous = 0; current; current = previous)
@@ -135,151 +107,118 @@ static void SsStackPoolListFree(SsStackPool* current)
   }
 }
 
-#if 0
-static uint8_t* SsStackGetPreviousBackChunk(ssStack* _this)
+static void SsStackDebug(ssStack* _this)
 {
-  uint8_t* chunk = 0;
-
-  SsStackNode* node = _this->back;
-  int index = _this->indexBack - 1;
-
-  if(index < 0)
   {
-    if(index < -1)
-      goto error;
-
-    node = node->previous;
-
-    index = node->num - 1;
+    int64_t blah = 0;
+    SsStackGet(_this, &blah);
+    printf(" front %i", (int)blah);
   }
+  printf("\n");
 
-  chunk = SsStackNodeToChunkOperatorIndex(_this, node, (size_t)index);
-
-error:
-  return chunk;
+  printf("get at");
+  for(int index = 0; index < _this->numChunks; index++)
+  {
+    int64_t blah = 0;
+    SsStackGetAt(_this, index, &blah);
+    printf(" %i", (int)blah);
+  }
+  printf("\n");
 }
-#endif
+
+static void SsStackDeepDebug1(ssStack* _this)
+{
+  SsStackPool* pool = _this->head;
+
+  printf("num %i; ", SsStackNum(_this) );
+
+  printf("[");
+  for(int index = 0; index < pool->num; index++)
+  {
+    uint8_t* chunk = SsStackPoolToChunkOperatorIndex(_this, pool, (size_t)index);
+
+    printf("%i", (int)( *(int64_t*)chunk) );
+
+    if(index != pool->num - 1)
+      printf(" ");
+  }
+  printf("]");
+
+  pool = pool->next;
+
+  while(pool)
+  {
+    printf("[");
+    for(int index = 0; index < pool->num; index++)
+    {
+      uint8_t* chunk = SsStackPoolToChunkOperatorIndex(_this, pool, (size_t)index);
+
+      printf("%i", (int)( *(int64_t*)chunk) );
+
+      if(index != pool->num - 1)
+        printf(" ");
+    }
+    printf("]");
+
+    pool = pool->next;
+  }
+  printf("\n\n");
+}
 
 static uint8_t* SsStackGetPreviousChunk(ssStack* _this)
 {
   uint8_t* chunk = 0;
 
   SsStackPool* pool = _this->current;
+
   int index = _this->index - 1;
 
   if(index < 0)
   {
-    if(index < -1)
-      goto error;
-
     pool = pool->previous;
 
-    index = pool->num - 1;
+    // we specifically want the new pool's num for arithmetic
+    // _this->current->previous->num, not _this->current->num
+    index = pool->num + index;
   }
 
   chunk = SsStackPoolToChunkOperatorIndex(_this, pool, (size_t)index);
 
-error:
   return chunk;
 }
 
-#if 0
-static bool SsStackStateChangeProcessRolloverBackPrevious(ssStack* _this)
+static void SsStackStateChangeProcessRolloverPrevious(ssStack* _this)
 {
-  bool result = false;
-
-  int index = _this->indexBack;
-
-  if(index < 0)
-  {
-    SsStackNode* node = _this->back;
-
-    if(index < -1)
-      goto error;
-
-    _this->back = node->previous;
-
-    _this->indexBack = node->num - 1;
-  }
-
-  result = true;
-
-error:
-  return result;
-}
-
-static bool SsStackStateChangeProcessRolloverBackNext(ssStack* _this)
-{
-  bool result = false;
-
-  SsStackNode* node = _this->back;
-  int index = _this->indexBack;
-
-  if(index >= node->num)
-  {
-    if(index > node->num)
-      goto error;
-
-    _this->back = node->next;
-
-    _this->indexBack = 0;
-  }
-
-  result = true;
-
-error:
-  return result;
-}
-#endif
-
-static bool SsStackStateChangeProcessRolloverPrevious(ssStack* _this)
-{
-  bool result = false;
-
   int index = _this->index;
 
   if(index < 0)
   {
-    SsStackPool* pool = _this->current;
+    SsStackPool* pool = _this->current->previous;
 
-    if(index < -1)
-      goto error;
+    _this->current = pool;
 
-    _this->current = pool->previous;
-
-    _this->index = pool->num - 1;
+    // we specifically want the new pool's num for arithmetic
+    // _this->current->previous->num, not _this->current->num
+    _this->index = pool->num + index;
   }
-
-  result = true;
-
-error:
-  return result;
 }
 
-static bool SsStackStateChangeProcessRolloverNext(ssStack* _this)
+static void SsStackStateChangeProcessRolloverNext(ssStack* _this)
 {
-  bool result = false;
-
   SsStackPool* pool = _this->current;
   int index = _this->index;
 
   if(index >= pool->num)
   {
-    if(index > pool->num)
-      goto error;
-
     _this->current = pool->next;
 
-    _this->index = 0;
+    // we want to specifically subtract the previous pool's num
+    // _this->current->num, not _this->current->next->num
+    _this->index = index - pool->num;
   }
-
-  result = true;
-
-error:
-  return result;
 }
 
-static bool SsStackResizeNewPool(ssStack* _this, size_t minimumCapacity)
+static bool SsStackResizeNewPool(ssStack* _this, size_t minimumCapacity) // todo
 {
   bool result = false;
 
@@ -331,7 +270,7 @@ static bool SsStackResizeNewPool(ssStack* _this, size_t minimumCapacity)
   if(minimumCapacity > 0)
     size += SsStackGetSizeOfSsStackHeader();
 
-  aligned = blah_aligned_alloc(size, &unaligned, false);
+  aligned = blah_aligned_alloc(size, &unaligned, true);
 
   if(minimumCapacity > 0)
     aligned += SsStackGetSizeOfSsStackHeader();
@@ -341,7 +280,9 @@ static bool SsStackResizeNewPool(ssStack* _this, size_t minimumCapacity)
   if( !pool)
     goto error;
 
+  pool->previous = 0;
   pool->next = 0;
+
   SsStackPoolSetUnaligned(pool, unaligned);
   pool->num = diff;
 
@@ -370,7 +311,7 @@ error:
   return result;
 }
 
-static bool SsStackResize(ssStack* _this, size_t minimumCapacity)
+static bool SsStackResize(ssStack* _this, size_t minimumCapacity) // todo
 {
   bool result = false;
 
@@ -429,7 +370,7 @@ int SsStackDestruct(ssStack** reference/*_this*/)
 
   numChunks = _this->numChunks;
 
-  SsStackPoolListFree(_this->head);
+  SsStackPoolListFree(_this->tail);
 
   reference[0] = 0;
 
@@ -457,29 +398,16 @@ int SsStackReset(ssStack* _this)
   int result = -1;
   int numChunksRef = 0;
 
-  SsStackPool* pool = 0;
-
   if( !_this)
     goto error;
 
   numChunksRef = _this->numChunks;
 
-  pool = _this->head;
-
-#if 0
-  _this->front = node;
-#else
-  _this->current = pool;
-#endif
+  _this->current = _this->head;
 
   _this->numChunks = 0;
 
-#if 0
-  _this->indexBack = 0;
-  _this->indexFront = 0;
-#else
   _this->index = 0;
-#endif
 
   _this->counter++;
 
@@ -507,8 +435,7 @@ bool SsStackPush(ssStack* _this, void* client)
   if(_this->numChunks >= _this->max)
     goto error;
 
-  if( !SsStackStateChangeProcessRolloverNext(_this) )
-    goto error;
+  SsStackStateChangeProcessRolloverNext(_this);
 
   chunk = SsStackPoolToChunkOperatorIndex(_this, _this->current, (size_t)_this->index);
 
@@ -517,6 +444,10 @@ bool SsStackPush(ssStack* _this, void* client)
   _this->numChunks++;
 
   SsStackMemcpyChunk(_this, chunk, client);
+
+  printf("pushed %i;", (int)( *(int64_t*)client) );
+  SsStackDebug(_this);
+  SsStackDeepDebug1(_this);
 
   result = true;
 
@@ -535,8 +466,7 @@ bool SsStackPop(ssStack* _this, void* client)
 
   _this->index--;
 
-  if( !SsStackStateChangeProcessRolloverPrevious(_this) )
-    goto error;
+  SsStackStateChangeProcessRolloverPrevious(_this);
 
   chunk = SsStackPoolToChunkOperatorIndex(_this, _this->current, (size_t)_this->index);
 
@@ -544,120 +474,15 @@ bool SsStackPop(ssStack* _this, void* client)
 
   SsStackMemcpyChunk(_this, client, chunk);
 
-  result = true;
-
-error:
-  return result;
-}
-
-#if 0
-bool SsStackPushFront(ssStack* _this, void* client)
-{
-  bool result = false;
-
-  uint8_t* chunk = 0;
-
-  if( !_this || !client)
-    goto error;
-
-  if(_this->numChunks == _this->max)
-  {
-    if( !SsStackResize(_this, 0) )
-      goto error;
-  }
-
-  if(_this->numChunks >= _this->max)
-    goto error;
-
-  _this->indexFront--;
-
-  if( !SsStackStateChangeProcessRolloverFrontPrevious(_this) )
-    goto error;
-
-  chunk = SsStackNodeToChunkOperatorIndex(_this, _this->front, (size_t)_this->indexFront);
-
-  _this->numChunks++;
-
-  SsStackMemcpyChunk(_this, chunk, client);
+  printf("popped %i;", (int)( *(int64_t*)client) );
+  SsStackDebug(_this);
+  SsStackDeepDebug1(_this);
 
   result = true;
 
 error:
   return result;
 }
-
-bool SsStackPopFront(ssStack* _this, void* client)
-{
-  bool result = false;
-
-  uint8_t* chunk = 0;
-
-  if( !_this || !client || _this->numChunks <= 0)
-    goto error;
-
-  if( !SsStackStateChangeProcessRolloverFrontNext(_this) )
-    goto error;
-
-  chunk = SsStackNodeToChunkOperatorIndex(_this, _this->front, (size_t)_this->indexFront);
-
-  _this->indexFront++;
-
-  _this->numChunks--;
-
-  SsStackMemcpyChunk(_this, client, chunk);
-
-  result = true;
-
-error:
-  return result;
-}
-#endif
-
-#if 0
-bool SsStackGetBack(ssStack* _this, void* client)
-{
-  bool result = false;
-
-  uint8_t* chunk = 0;
-
-  if( !_this || !client || _this->numChunks <= 0)
-    goto error;
-
-  chunk = SsStackGetPreviousBackChunk(_this);
-
-  if( !chunk)
-    goto error;
-
-  SsStackMemcpyChunk(_this, client, chunk);
-
-  result = true;
-
-error:
-  return result;
-}
-
-bool SsStackSetBack(ssStack* _this, void* client)
-{
-  bool result = false;
-
-  uint8_t* chunk = 0;
-
-  if( !_this || !client || _this->numChunks <= 0)
-    goto error;
-
-  chunk = SsStackGetPreviousBackChunk(_this);
-
-  if( !chunk)
-    goto error;
-
-  SsStackMemcpyChunk(_this, chunk, client);
-
-  result = true;
-
-error:
-  return result;
-}
-#endif
 
 bool SsStackGet(ssStack* _this, void* client)
 {
@@ -707,18 +532,14 @@ bool SsStackGetAt(ssStack* _this, int index, void* client)
 {
   bool result = false;
 
-  SsStackPool* pool = 0;
-
   if( !_this || !client || index < 0 || index >= _this->numChunks)
     goto error;
 
-  pool = _this->head;
-
-  for(int walk = 0; pool; pool = pool->next)
+  for(SsStackPool* pool = _this->head; index >= 0; pool = pool->next)
   {
-    if(index >= walk && index < walk + pool->num)
+    if(index < pool->num)
     {
-      uint8_t* chunk = SsStackPoolToChunkOperatorIndex(_this, pool, (size_t)(index - walk) );
+      uint8_t* chunk = SsStackPoolToChunkOperatorIndex(_this, pool, (size_t)index);
 
       SsStackMemcpyChunk(_this, client, chunk);
 
@@ -727,7 +548,7 @@ bool SsStackGetAt(ssStack* _this, int index, void* client)
       break;
     }
 
-    walk += pool->num;
+    index -= pool->num;
   }
 
 error:
@@ -738,18 +559,14 @@ bool SsStackSetAt(ssStack* _this, int index, void* client)
 {
   bool result = false;
 
-  SsStackPool* pool = 0;
-
   if( !_this || !client || index < 0 || index >= _this->numChunks)
     goto error;
 
-  pool = _this->head;
-
-  for(int walk = 0; pool; pool = pool->next)
+  for(SsStackPool* pool = _this->head; index >= 0; pool = pool->next)
   {
-    if(index >= walk && index < walk + pool->num)
+    if(index < pool->num)
     {
-      uint8_t* chunk = SsStackPoolToChunkOperatorIndex(_this, pool, (size_t)(index - walk) );
+      uint8_t* chunk = SsStackPoolToChunkOperatorIndex(_this, pool, (size_t)index);
 
       SsStackMemcpyChunk(_this, chunk, client);
 
@@ -758,7 +575,7 @@ bool SsStackSetAt(ssStack* _this, int index, void* client)
       break;
     }
 
-    walk += pool->num;
+    index -= pool->num;
   }
 
 error:
