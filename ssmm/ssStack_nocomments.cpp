@@ -22,9 +22,9 @@ struct SsStackPool
   SsStackPool* previous;
   SsStackPool* next;
 
-  int unaligned;
+  int32_t unaligned;
 
-  int num;
+  int32_t num;
 };
 
 struct ssStack
@@ -34,23 +34,22 @@ struct ssStack
   SsStackPool* head;
   SsStackPool* tail;
 
-  int numPools;
+  int32_t numPools;
+  int32_t numChunks;
 
-  int numChunks;
+  int32_t index;
 
-  int index;
+  int32_t max;
 
-  int max;
+  int32_t counter;
 
-  int counter;
+  int32_t resize;
+  int32_t capacity;
 
-  int resize;
-  int capacity;
+  int32_t sizeOfRef;
+  int32_t sizeOf;
 
-  int sizeOfRef;
-  int sizeOf;
-
-  int padding;
+  int32_t padding;
 };
 
 #include "ssStack_nocomments.h"
@@ -80,15 +79,6 @@ static size_t SsStackGetPoolSizeOf(ssStack* _this, size_t nmemb)
 
 static uint8_t* SsStackPoolToChunkOperatorIndex(ssStack* _this, SsStackPool* pool, size_t index)
   { return (uint8_t*)pool + SsStackGetSizeOfPoolHeader() + index * (size_t)_this->sizeOf; }
-
-static uint8_t* SsStackPoolToFirstChunk(SsStackPool* pool)
-  { return (uint8_t*)pool + SsStackGetSizeOfPoolHeader(); }
-
-static uint8_t* SsStackChunkToChunkPrevious(ssStack* _this, uint8_t* chunk)
-  {return chunk - (ptrdiff_t)_this->sizeOf; }
-
-static uint8_t* SsStackChunkToChunkNext(ssStack* _this, uint8_t* chunk)
-  { return chunk + (size_t)_this->sizeOf; }
 
 static void SsStackMemcpySsStack(uint8_t* destination, ssStack* source)
   { memcpy(destination, source, sizeof(ssStack) ); }
@@ -435,10 +425,12 @@ bool SsStackPush(ssStack* _this, void* client)
   if(_this->numChunks >= _this->max)
     goto error;
 
+  // for this type of data structure, this call must be before _this->index++
   SsStackStateChangeProcessRolloverNext(_this);
 
   chunk = SsStackPoolToChunkOperatorIndex(_this, _this->current, (size_t)_this->index);
 
+  // call SsStackStateChangeProcessRolloverNext(...) before _this->index++
   _this->index++;
 
   _this->numChunks++;

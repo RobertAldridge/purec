@@ -9,6 +9,7 @@
 #include <cstring> // memcpy
 
 using std::free;
+using std::int32_t;
 using std::memcpy;
 using std::ptrdiff_t;
 using std::size_t;
@@ -24,9 +25,9 @@ struct SsQueueNode
 
   uint8_t* chunk;
 
-  int num;
+  int32_t num;
 
-  int padding;
+  int32_t padding;
 };
 
 struct SsQueuePool
@@ -37,9 +38,9 @@ struct SsQueuePool
   SsQueuePool* previous;
   SsQueuePool* next;
 
-  int unaligned;
+  int32_t unaligned;
 
-  int num;
+  int32_t num;
 };
 
 struct ssQueue
@@ -50,24 +51,24 @@ struct ssQueue
   SsQueuePool* head;
   SsQueuePool* tail;
 
-  int numPools;
+  int32_t numNodes;
+  int32_t numPools;
+  int32_t numChunks;
 
-  int numChunks;
+  int32_t indexBack;
+  int32_t indexFront;
 
-  int indexBack;
-  int indexFront;
+  int32_t max;
 
-  int max;
+  int32_t counter;
 
-  int counter;
+  int32_t resize;
+  int32_t capacity;
 
-  int resize;
-  int capacity;
+  int32_t sizeOfRef;
+  int32_t sizeOf;
 
-  int sizeOfRef;
-  int sizeOf;
-
-  //int padding;
+  int32_t padding;
 };
 
 #include "ssQueue_nocomments.h"
@@ -97,15 +98,6 @@ static size_t SsQueueGetPoolSizeOf(ssQueue* _this, size_t nmemb)
 
 static uint8_t* SsQueuePoolToChunkOperatorIndex(ssQueue* _this, SsQueuePool* pool, size_t index)
   { return (uint8_t*)pool + SsQueueGetSizeOfPoolHeader() + index * (size_t)_this->sizeOf; }
-
-//static uint8_t* SsQueuePoolToFirstChunk(SsQueuePool* pool)
-//  { return (uint8_t*)pool + SsQueueGetSizeOfPoolHeader(); }
-
-//static uint8_t* SsQueueChunkToChunkPrevious(ssQueue* _this, uint8_t* chunk)
-//  {return chunk - (ptrdiff_t)_this->sizeOf; }
-
-//static uint8_t* SsQueueChunkToChunkNext(ssQueue* _this, uint8_t* chunk)
-//  { return chunk + (size_t)_this->sizeOf; }
 
 static uint8_t* SsQueueNodeToChunkOperatorIndex(ssQueue* _this, SsQueueNode* node, size_t index)
   { return node->chunk + index * (size_t)_this->sizeOf; }
@@ -200,143 +192,77 @@ static uint8_t* SsQueueGetPreviousBackChunk(ssQueue* _this)
 
   if(index < 0)
   {
-    if(index < -1)
-      goto error;
-
     node = node->previous;
 
-    index = node->num - 1;
+    // use new node in arithmetic
+    index = node->num + index;
   }
 
   chunk = SsQueueNodeToChunkOperatorIndex(_this, node, (size_t)index);
 
-error:
   return chunk;
 }
 
-static uint8_t* SsQueueGetPreviousFrontChunk(ssQueue* _this)
+static void SsQueueStateChangeProcessRolloverBackPrevious(ssQueue* _this)
 {
-  uint8_t* chunk = 0;
-
-  SsQueueNode* node = _this->front;
-  int index = _this->indexFront - 1;
-
-  if(index < 0)
-  {
-    if(index < -1)
-      goto error;
-
-    node = node->previous;
-
-    index = node->num - 1;
-  }
-
-  chunk = SsQueueNodeToChunkOperatorIndex(_this, node, (size_t)index);
-
-error:
-  return chunk;
-}
-
-static bool SsQueueStateChangeProcessRolloverBackPrevious(ssQueue* _this)
-{
-  bool result = false;
-
   int index = _this->indexBack;
 
   if(index < 0)
   {
     SsQueueNode* node = _this->back;
 
-    if(index < -1)
-      goto error;
-
     node = node->previous;
 
     _this->back = node;
 
-    _this->indexBack = node->num - 1;
+    // use new node in arithmetic
+    _this->indexBack = node->num + index;
   }
-
-  result = true;
-
-error:
-  return result;
 }
 
-static bool SsQueueStateChangeProcessRolloverBackNext(ssQueue* _this)
+static void SsQueueStateChangeProcessRolloverBackNext(ssQueue* _this)
 {
-  bool result = false;
-
   SsQueueNode* node = _this->back;
   int index = _this->indexBack;
 
   if(index >= node->num)
   {
-    if(index > node->num)
-      goto error;
+    _this->back = node->next;
 
-    node = node->next;
-
-    _this->back = node;
-
-    _this->indexBack = 0;
+    // use old node in arithmetic
+    _this->indexBack = index - node->num;
   }
-
-  result = true;
-
-error:
-  return result;
 }
 
-static bool SsQueueStateChangeProcessRolloverFrontPrevious(ssQueue* _this)
+static void SsQueueStateChangeProcessRolloverFrontPrevious(ssQueue* _this)
 {
-  bool result = false;
-
   int index = _this->indexFront;
 
   if(index < 0)
   {
     SsQueueNode* node = _this->front;
 
-    if(index < -1)
-      goto error;
-
     node = node->previous;
 
     _this->front = node;
 
-    _this->indexFront = node->num - 1;
+    // use new node in arithmetic
+    _this->indexFront = node->num + index;
   }
-
-  result = true;
-
-error:
-  return result;
 }
 
-static bool SsQueueStateChangeProcessRolloverFrontNext(ssQueue* _this)
+static void SsQueueStateChangeProcessRolloverFrontNext(ssQueue* _this)
 {
-  bool result = false;
-
   SsQueueNode* node = _this->front;
   int index = _this->indexFront;
 
   if(index >= node->num)
   {
-    if(index > node->num)
-      goto error;
+    _this->front = node->next;
 
-    node = node->next;
-
-    _this->front = node;
-
-    _this->indexFront = 0;
+    // use old node in arithmetic
+    _this->indexFront = index - node->num;
   }
-
-  result = true;
-
-error:
-  return result;
 }
 
 static bool SsQueueResizeNewPool(ssQueue* _this, size_t minimumCapacity)
@@ -420,6 +346,8 @@ static bool SsQueueResizeNewPool(ssQueue* _this, size_t minimumCapacity)
     _this->back = node;
     _this->front = node;
 
+    _this->numNodes++;
+
     _this->indexBack = 0;
     _this->indexFront = 0;
   }
@@ -471,6 +399,8 @@ static bool SsQueueResizeNewPool(ssQueue* _this, size_t minimumCapacity)
       _this->back = middle;
       _this->front = splitRhs;
 
+      _this->numNodes += 2;
+
       _this->indexBack = 0;
       _this->indexFront = 0;
     }
@@ -498,6 +428,8 @@ static bool SsQueueResizeNewPool(ssQueue* _this, size_t minimumCapacity)
 
       //_this->front; doesn't change
       _this->back = splitLhs;
+
+      _this->numNodes++;
 
       _this->indexBack = 0;
       _this->indexFront = 0;
@@ -552,7 +484,7 @@ ssQueue* SsQueueConstruct(int sizeOf, int minimumCapacity, int maximumCapacity, 
 
   result = (uint8_t*)_this.head - (ptrdiff_t)SsQueueGetSizeOfSsQueueHeader();
 
-  memcpy(result, &_this, sizeof(ssQueue) );
+  SsQueueMemcpySsQueue(result, &_this);
 
 error:
   return (ssQueue*)result;
@@ -603,16 +535,12 @@ int SsQueueReset(ssQueue* _this)
   int result = -1;
   int numChunksRef = 0;
 
-  SsQueueNode* node = 0;
-
   if( !_this)
     goto error;
 
   numChunksRef = _this->numChunks;
 
-  node = _this->back;
-
-  _this->front = node;
+  _this->front = _this->back;
 
   _this->numChunks = 0;
 
@@ -649,8 +577,8 @@ bool SsQueuePushBack(ssQueue* _this, void* client)
 
   _this->indexBack++;
 
-  if( !SsQueueStateChangeProcessRolloverBackNext(_this) )
-    goto error;
+  // putting this call after _this->indexBack++ instead of before only works because we are a rotating queue
+  SsQueueStateChangeProcessRolloverBackNext(_this);
 
   _this->numChunks++;
 
@@ -677,8 +605,7 @@ bool SsQueuePopBack(ssQueue* _this, void* client)
 
   _this->indexBack--;
 
-  if( !SsQueueStateChangeProcessRolloverBackPrevious(_this) )
-    goto error;
+  SsQueueStateChangeProcessRolloverBackPrevious(_this);
 
   chunk = SsQueueNodeToChunkOperatorIndex(_this, _this->back, (size_t)_this->indexBack);
 
@@ -712,8 +639,7 @@ bool SsQueuePushFront(ssQueue* _this, void* client)
 
   _this->indexFront--;
 
-  if( !SsQueueStateChangeProcessRolloverFrontPrevious(_this) )
-    goto error;
+  SsQueueStateChangeProcessRolloverFrontPrevious(_this);
 
   chunk = SsQueueNodeToChunkOperatorIndex(_this, _this->front, (size_t)_this->indexFront);
 
@@ -744,8 +670,8 @@ bool SsQueuePopFront(ssQueue* _this, void* client)
 
   _this->indexFront++;
 
-  if( !SsQueueStateChangeProcessRolloverFrontNext(_this) )
-    goto error;
+  // putting this call after _this->indexFront++ instead of before only works because we are a rotating queue
+  SsQueueStateChangeProcessRolloverFrontNext(_this);
 
   _this->numChunks--;
 
