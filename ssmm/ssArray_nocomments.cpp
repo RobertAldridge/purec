@@ -45,8 +45,6 @@ struct ssArray
 
   int32_t sizeOfRef;
   int32_t sizeOf;
-
-  //int32_t padding;
 };
 
 #include "ssArray_nocomments.h"
@@ -81,7 +79,7 @@ static uint8_t* SsArrayPoolToFirstChunk(SsArrayPool* pool)
   { return (uint8_t*)pool + SsArrayGetSizeOfPoolHeader(); }
 
 static uint8_t* SsArrayChunkToChunkPrevious(ssArray* _this, uint8_t* chunk)
-  {return chunk - (ptrdiff_t)_this->sizeOf; }
+  { return chunk - (ptrdiff_t)_this->sizeOf; }
 
 static uint8_t* SsArrayChunkToChunkNext(ssArray* _this, uint8_t* chunk)
   { return chunk + (size_t)_this->sizeOf; }

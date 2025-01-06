@@ -4,19 +4,14 @@
 // Robert B. Aldridge III
 // Charlie H. Burns III
 
-#undef DEBUG
-#undef _DEBUG
-#undef NDEBUG
-#define NDEBUG
-
 #include <cstddef>
 #include <cstdint> // int32_t, uint8_t
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+
 using std::free;
 using std::int32_t;
-using std::malloc;
 using std::memset;
 using std::printf;
 using std::ptrdiff_t;
@@ -37,17 +32,6 @@ typedef int ORDER;
 #define LEVELORDER levelorder
 
 #include "binpriv_nocomments.h"
-
-#if defined(_MSC_VER)
-  // conditional expression is constant
-  #pragma warning (disable: 4127)
-
-  // code dereferences a potentially null pointer
-  #pragma warning (disable: 6011)
-
-  // the code analysis tool isn't smart enough to figure out the pointer must be valid
-  #pragma warning (disable: 28182)
-#endif
 
 #undef TRUE
 #define TRUE 1
@@ -441,10 +425,13 @@ int bintree::term()
     uint8_t* unaligned = tree->unaligned;
 
     SsQueueDestruct( &tree->queue);
+    tree->queue = 0;
 
     SsStackDestruct( &tree->stack);
+    tree->stack = 0;
 
     SsmmDestruct( &tree->allocator);
+    tree->allocator = 0;
 
     memset(tree, 0, sizeof(BinaryTree) );
 
@@ -460,7 +447,6 @@ int bintree::term()
     _log("error");
   }
 
-error:
   return result;
 }
 

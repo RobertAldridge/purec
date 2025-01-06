@@ -15,8 +15,12 @@ using std::ptrdiff_t;
 using std::size_t;
 using std::uint8_t;
 
+#define BLAH_DEBUG 0
+
+#if BLAH_DEBUG
 #include <cstdio>
 using std::printf;
+#endif
 
 struct SsmmNode
 {

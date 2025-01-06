@@ -307,6 +307,8 @@ BinaryTreeNode* BinDelete(BinaryTree* tree, BinaryTreeNode* z)
 int bintree::remove(void* objectKey, binaryTreeEquivalence equalTo, void* objectResult)
 {
   BinaryTree* tree = (BinaryTree*)this;
+  
+  int result = RETURN_ERROR;
 
   BinaryTreeNode* t = 0;
   BinaryTreeNode* z = 0;
@@ -314,7 +316,7 @@ int bintree::remove(void* objectKey, binaryTreeEquivalence equalTo, void* object
   if( !tree || !objectKey || tree->numberOfNodes <= 0)
   {
     _log("error");
-    return RETURN_ERROR;
+    goto error;
   }
 
   if(equalTo)
@@ -323,7 +325,7 @@ int bintree::remove(void* objectKey, binaryTreeEquivalence equalTo, void* object
   if( !tree->equalTo)
   {
     _log("error");
-    return RETURN_ERROR;
+    goto error;
   }
 
   z = TreeSearch(GETROOTFROMTREE(tree), objectKey, tree->lessThan, tree->equalTo);
@@ -331,7 +333,7 @@ int bintree::remove(void* objectKey, binaryTreeEquivalence equalTo, void* object
   if( !z)
   {
     _log("error");
-    return RETURN_ERROR;
+    goto error;
   }
 
   if(objectResult)
@@ -344,17 +346,20 @@ int bintree::remove(void* objectKey, binaryTreeEquivalence equalTo, void* object
   if( !z)
   {
     _log("error");
-    return RETURN_ERROR;
+    goto error;
   }
 
   //*( --tree->MemoryManagerArrayCurrent) = (char*)z;
   if( !SsmmFree(tree->allocator, (void**)&z) )
   {
     _log("error");
-    return RETURN_ERROR;
+    goto error;
   }
 
   tree->numberOfNodes--;
+  
+  result = RETURN_OK;
 
-  return RETURN_OK;
+error:
+  return result;
 }

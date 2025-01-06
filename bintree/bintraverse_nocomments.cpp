@@ -24,28 +24,28 @@ void IterativePreorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binar
     {
       if(LeftChild)
       {
-        // Stack->Push(RightChild)
-        if( !SsStackPush(tree->stack, RightChild) )
+        // Stack->Push( &RightChild)
+        if( !SsStackPush(tree->stack, &RightChild) )
           break;
 
         ptrdiff_t stackSize = SsStackNum(tree->stack);
         if(stackSize >= 0 && stackSize > tree->maxStack)
           tree->maxStack = (int)stackSize;
 
-        // Stack->Push(LeftChild)
+        // Stack->Push( &LeftChild)
         // node = Stack->Pop()
         node = LeftChild;
       }
       else /* !node->left */
       {
-        // Stack->Push(RightChild)
+        // Stack->Push( &RightChild)
         // node = Stack->Pop()
         node = RightChild;
       }
     }
     else if(LeftChild)
     {
-      // Stack->Push(LeftChild)
+      // Stack->Push( &LeftChild)
       // node = Stack->Pop()
       node = LeftChild;
     }
@@ -75,8 +75,8 @@ void IterativeInorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binary
 
     while(node)
     {
-      // Stack->Push(node)
-      if( !SsStackPush(tree->stack, node) )
+      // Stack->Push( &node)
+      if( !SsStackPush(tree->stack, &node) )
         break;
 
       node = node->left;
@@ -86,7 +86,7 @@ void IterativeInorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binary
     if(stackSize >= 0 && stackSize > tree->maxStack)
       tree->maxStack = (int)stackSize;
 
-    // if(Stack->Empty() == TRUE)
+    // if(Stack->Empty() )
     if(SsStackNum(tree->stack) <= 0)
       break;
 
@@ -117,8 +117,8 @@ void IterativePostorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, bina
 
     do
     {
-      // Stack->Push(node)
-      if( !SsStackPush(tree->stack, node) )
+      // Stack->Push( &node)
+      if( !SsStackPush(tree->stack, &node) )
         break;
 
       node = node->left;
@@ -131,7 +131,7 @@ popOneOffStack:
     if(stackSize >= 0 && stackSize > tree->maxStack)
       tree->maxStack = (int)stackSize;
 
-    // if(Stack->Empty() == TRUE)
+    // if(Stack->Empty() )
     if(SsStackNum(tree->stack) <= 0)
       break;
 
@@ -143,8 +143,8 @@ popOneOffStack:
 
     if(RightChild && RightChild != NodePushed)
     {
-      // Stack->Push(node)
-      if( !SsStackPush(tree->stack, node) )
+      // Stack->Push( &node)
+      if( !SsStackPush(tree->stack, &node) )
         break;
 
       NodePushed = RightChild;
@@ -177,11 +177,11 @@ void IterativeLevelorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, bin
   BinaryTreeNode* LeftChild = 0;
   BinaryTreeNode* RightChild = 0;
 
-  // Queue->Put(node)
+  // Queue->Put( &node)
   if( !SsQueuePushBack(tree->queue, &node) )
     goto error;
 
-  // while(Queue->Empty() != TRUE)
+  // while( !Queue->Empty() )
   while(SsQueueNum(tree->queue) > 0)
   {
     ptrdiff_t queueSize = SsQueueNum(tree->queue);
@@ -200,14 +200,14 @@ void IterativeLevelorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, bin
 
     if(LeftChild)
     {
-      // Queue->Put(LeftChild)
+      // Queue->Put( &LeftChild)
       if( !SsQueuePushBack(tree->queue, &LeftChild) )
         break;
     }
 
     if(RightChild)
     {
-      // Queue->Put(RightChild)
+      // Queue->Put( &RightChild)
       if( !SsQueuePushBack(tree->queue, &RightChild) )
         break;
     }
@@ -221,19 +221,21 @@ error:
 int bintree::dump(binaryTreeEvaluate clientEvaluate, ORDER TraversalOrder)
 {
   BinaryTree* tree = (BinaryTree*)this;
+  
+  int result = RETURN_ERROR;
 
   BinaryTreeNode* root = 0;
 
   if( !tree || TraversalOrder < PREORDER || TraversalOrder > LEVELORDER)
   {
     _log("error");
-    return RETURN_ERROR;
+    goto error;
   }
 
   if( !clientEvaluate && !tree->clientEvaluate)
   {
     _log("error");
-    return RETURN_ERROR;
+    goto error;
   }
 
   if(clientEvaluate)
@@ -252,5 +254,8 @@ int bintree::dump(binaryTreeEvaluate clientEvaluate, ORDER TraversalOrder)
     }
   }
 
-  return RETURN_OK;
+  result = RETURN_OK;
+
+error:
+  return result;
 }

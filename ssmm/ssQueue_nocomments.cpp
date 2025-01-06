@@ -15,8 +15,12 @@ using std::ptrdiff_t;
 using std::size_t;
 using std::uint8_t;
 
+#define BLAH_DEBUG 0
+
+#if BLAH_DEBUG
 #include <cstdio>
 using std::printf;
+#endif
 
 struct SsQueueNode
 {
@@ -119,6 +123,7 @@ static void SsQueuePoolListFree(SsQueuePool* current)
   }
 }
 
+#if BLAH_DEBUG
 static void SsQueueDebug(ssQueue* _this)
 {
   {
@@ -214,6 +219,7 @@ static void SsQueueDeepDebug2(ssQueue* _this)
   }
   printf("]\n\n");
 }
+#endif
 
 static uint8_t* SsQueueGetPreviousBackChunk(ssQueue* _this)
 {
@@ -394,7 +400,9 @@ static bool SsQueueResizeNewPool(ssQueue* _this, size_t minimumCapacity)
 
     if(count_lhs)
     {
+#if BLAH_DEBUG
       printf("grow count_lhs != 0\n\n");
+#endif
 
       // _this->back->previous -> _this->back -> middle -> splitRhs -> _this->back->next
       //
@@ -438,7 +446,9 @@ static bool SsQueueResizeNewPool(ssQueue* _this, size_t minimumCapacity)
     }
     else// if( !count_lhs)
     {
+#if BLAH_DEBUG
       printf("grow count_lhs == 0\n\n");
+#endif
 
       // _this->back->previous -> splitLhs -> _this->back -> _this->back->next
       //
@@ -616,10 +626,12 @@ bool SsQueuePushBack(ssQueue* _this, void* client)
 
   SsQueueMemcpyChunk(_this, chunk, client);
 
+#if BLAH_DEBUG
   printf("pushed to back %i;", (int)( *(int64_t*)client) );
   SsQueueDebug(_this);
   SsQueueDeepDebug1(_this);
   SsQueueDeepDebug2(_this);
+#endif
 
   result = true;
 
@@ -680,10 +692,12 @@ bool SsQueuePushFront(ssQueue* _this, void* client)
 
   SsQueueMemcpyChunk(_this, chunk, client);
 
+#if BLAH_DEBUG
   printf("pushed to front %i;", (int)( *(int64_t*)client) );
   SsQueueDebug(_this);
   SsQueueDeepDebug1(_this);
   SsQueueDeepDebug2(_this);
+#endif
 
   result = true;
 
@@ -711,10 +725,12 @@ bool SsQueuePopFront(ssQueue* _this, void* client)
 
   SsQueueMemcpyChunk(_this, client, chunk);
 
+#if BLAH_DEBUG
   printf("popped from front %i;", (int)( *(int64_t*)client) );
   SsQueueDebug(_this);
   SsQueueDeepDebug1(_this);
   SsQueueDeepDebug2(_this);
+#endif
 
   result = true;
 

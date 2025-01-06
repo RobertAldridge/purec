@@ -112,13 +112,15 @@ void BinInsert(BinaryTree* tree, BinaryTreeNode* x)
 int bintree::insert(void* object, binaryTreeCompare lessThan)
 {
   BinaryTree* tree = (BinaryTree*)this;
+  
+  int result = RETURN_ERROR;
 
   BinaryTreeNode* x = 0;
 
   if( !tree || !object)
   {
     _log("error");
-    return RETURN_ERROR;
+    goto error;
   }
 
   if(lessThan)
@@ -127,7 +129,7 @@ int bintree::insert(void* object, binaryTreeCompare lessThan)
   if( !tree->lessThan)
   {
     _log("error");
-    return RETURN_ERROR;
+    goto error;
   }
 
   //x = (BinaryTreeNode*)(*tree->MemoryManagerArrayCurrent++);
@@ -136,7 +138,7 @@ int bintree::insert(void* object, binaryTreeCompare lessThan)
   if( !x)
   {
     _log("error");
-    return RETURN_ERROR;
+    goto error;
   }
 
   x->left = 0;
@@ -147,6 +149,9 @@ int bintree::insert(void* object, binaryTreeCompare lessThan)
   BinInsert(tree, x);
 
   tree->numberOfNodes++;
+  
+  result = RETURN_OK;
 
-  return RETURN_OK;
+error:
+  return result;
 }

@@ -14,8 +14,12 @@ using std::ptrdiff_t;
 using std::size_t;
 using std::uint8_t;
 
+#define BLAH_DEBUG 0
+
+#if BLAH_DEBUG
 #include <cstdio>
 using std::printf;
+#endif
 
 struct SsStackPool
 {
@@ -97,6 +101,7 @@ static void SsStackPoolListFree(SsStackPool* current)
   }
 }
 
+#if BLAH_DEBUG
 static void SsStackDebug(ssStack* _this)
 {
   {
@@ -154,6 +159,7 @@ static void SsStackDeepDebug1(ssStack* _this)
   }
   printf("\n\n");
 }
+#endif
 
 static uint8_t* SsStackGetPreviousChunk(ssStack* _this)
 {
@@ -437,9 +443,11 @@ bool SsStackPush(ssStack* _this, void* client)
 
   SsStackMemcpyChunk(_this, chunk, client);
 
+#if BLAH_DEBUG
   printf("pushed %i;", (int)( *(int64_t*)client) );
   SsStackDebug(_this);
   SsStackDeepDebug1(_this);
+#endif
 
   result = true;
 
@@ -466,9 +474,11 @@ bool SsStackPop(ssStack* _this, void* client)
 
   SsStackMemcpyChunk(_this, client, chunk);
 
+#if BLAH_DEBUG
   printf("popped %i;", (int)( *(int64_t*)client) );
   SsStackDebug(_this);
   SsStackDeepDebug1(_this);
+#endif
 
   result = true;
 
