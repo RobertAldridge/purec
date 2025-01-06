@@ -180,7 +180,39 @@ static void SsQueueDeepDebug1(ssQueue* _this)
 
     node = node->next;
   }
-  printf("\n\n");
+  printf("\n");
+}
+
+static void SsQueueDeepDebug2(ssQueue* _this)
+{
+  int index = _this->indexFront;
+  SsQueueNode* node = _this->front;
+  
+  printf("[");
+  for(int count = 0; count < _this->numChunks; count++)
+  {
+    if(index >= node->num)
+    {
+      index -= node->num;
+      node = node->next;
+      
+      printf("][");
+    }
+
+    uint8_t* chunk = SsQueueNodeToChunkOperatorIndex(_this, node, (size_t)index);
+
+    uint64_t client = 0;
+    SsQueueMemcpyChunk(_this, &client, chunk);
+      
+    printf("%i", (int)client);
+
+    if(index != (node->num - 1) && count != (_this->numChunks - 1) )
+      printf(" ");
+
+    index++;
+    
+  }
+  printf("]\n\n");
 }
 
 static uint8_t* SsQueueGetPreviousBackChunk(ssQueue* _this)
@@ -587,6 +619,7 @@ bool SsQueuePushBack(ssQueue* _this, void* client)
   printf("pushed to back %i;", (int)( *(int64_t*)client) );
   SsQueueDebug(_this);
   SsQueueDeepDebug1(_this);
+  SsQueueDeepDebug2(_this);
 
   result = true;
 
@@ -650,6 +683,7 @@ bool SsQueuePushFront(ssQueue* _this, void* client)
   printf("pushed to front %i;", (int)( *(int64_t*)client) );
   SsQueueDebug(_this);
   SsQueueDeepDebug1(_this);
+  SsQueueDeepDebug2(_this);
 
   result = true;
 
@@ -680,6 +714,7 @@ bool SsQueuePopFront(ssQueue* _this, void* client)
   printf("popped from front %i;", (int)( *(int64_t*)client) );
   SsQueueDebug(_this);
   SsQueueDeepDebug1(_this);
+  SsQueueDeepDebug2(_this);
 
   result = true;
 
