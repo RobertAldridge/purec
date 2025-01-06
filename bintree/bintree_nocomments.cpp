@@ -10,14 +10,18 @@
 #define NDEBUG
 
 #include <cstddef>
+#include <cstdint> // int32_t, uint8_t
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 using std::free;
+using std::int32_t;
 using std::malloc;
 using std::memset;
 using std::printf;
 using std::ptrdiff_t;
+
+#include "blah_aligned_alloc.h"
 
 #include "ssmm_nocomments.h"
 #include "ssStack_nocomments.h"
@@ -70,13 +74,13 @@ typedef int ORDER;
 #define GETSENTINELFROMTREE(tree) ( &tree->sentinelRoot)
 
 #define LESSTHANWRAPPER(tree, client, node) \
-  (node == GETSENTINELFROMTREE(tree) ? 1 : tree->LessThan(client, GETCLIENT(node) ) )
+  (node == GETSENTINELFROMTREE(tree) ? 1 : tree->lessThan(client, GETCLIENT(node) ) )
 
 //#define EQUALTOWRAPPER(tree, client, node) \
-//  (node == GETSENTINELFROMTREE(tree) ? 0 : tree->EqualTo(client, GETCLIENT(node) ) )
+//  (node == GETSENTINELFROMTREE(tree) ? 0 : tree->equalTo(client, GETCLIENT(node) ) )
 
 //#define CLIENTEVALUATEWRAPPER(tree, node) \
-//  (node == GETSENTINELFROMTREE(tree) ? 0 : tree->ClientEvaluate(GETCLIENT(node) ) )
+//  (node == GETSENTINELFROMTREE(tree) ? 0 : tree->clientEvaluate(GETCLIENT(node) ) )
 
 //#define _log(blah) {}
 #define _log(blah) printf("%s\n", blah)
@@ -91,69 +95,112 @@ const int bintree::inorder = 1;
 const int bintree::postorder = 2;
 const int bintree::levelorder = 3;
 
+// bintree.cpp
+static int DepthMax(BinaryTreeNode* node);
+static int CalculateLogBase2(int number);
 static BinaryTreeNode* TreeMinimum(BinaryTreeNode* node);
-
 static BinaryTreeNode* TreeMaximum(BinaryTreeNode* node);
-
 static BinaryTreeNode* TreeSuccessor(BinaryTreeNode* x);
-
 static BinaryTreeNode* TreeSearch(BinaryTreeNode* x, void* objectKey, binaryTreeCompare LessThan, binaryTreeEquivalence EqualTo);
 
 int gDebugRotate[69] = {0};
 
+// binleft.cpp
 static void LeftRotateDelete1(BinaryTreeNode* xP);
 static void LeftRotateDelete2(BinaryTreeNode* xP);
 static void LeftRotateInsert(BinaryTreeNode* xPP);
 
+// binleftleft.cpp
 static void LeftLeftRotate(BinaryTreeNode* xP);
 
+// binleftright.cpp
 static void LeftRightRotateInsert(BinaryTreeNode* x);
 static void LeftRightRotateDelete(BinaryTreeNode* xP);
 
+// binleftrightleft.cpp
 static void LeftRightLeftRotate(BinaryTreeNode* xP);
 
-#include "binleft.cpp"
-#include "binleftleft.cpp"
-#include "binleftright.cpp"
-#include "binleftrightleft.cpp"
+#include "binleft_nocomments.cpp"
+#include "binleftleft_nocomments.cpp"
+#include "binleftright_nocomments.cpp"
+#include "binleftrightleft_nocomments.cpp"
 
+// binright.cpp
 static void RightRotateDelete1(BinaryTreeNode* xP);
 static void RightRotateDelete2(BinaryTreeNode* xP);
 static void RightRotateInsert(BinaryTreeNode* xPP);
 
+// binrightright.cpp
 static void RightRightRotate(BinaryTreeNode* xP);
 
+// binrightleft.cpp
 static void RightLeftRotateInsert(BinaryTreeNode* x);
 static void RightLeftRotateDelete(BinaryTreeNode* xP);
 
+// binrightleftright.cpp
 static void RightLeftRightRotate(BinaryTreeNode* xP);
 
-#include "binright.cpp"
-#include "binrightright.cpp"
-#include "binrightleft.cpp"
-#include "binrightleftright.cpp"
+#include "binright_nocomments.cpp"
+#include "binrightright_nocomments.cpp"
+#include "binrightleft_nocomments.cpp"
+#include "binrightleftright_nocomments.cpp"
 
+// bininsert.cpp
 static void TreeInsert(BinaryTree* tree, BinaryTreeNode* insert);
-
 static void BinInsert(BinaryTree* tree, BinaryTreeNode* x);
 
-#include "bininsert.cpp"
+#include "bininsert_nocomments.cpp"
 
+// binremove.cpp
 static void BinDeleteFixup(BinaryTree* tree, BinaryTreeNode* x);
-
 static BinaryTreeNode* BinDelete(BinaryTree* tree, BinaryTreeNode* z);
 
-#include "binremove.cpp"
+#include "binremove_nocomments.cpp"
 
+// bintraverse.cpp
 static void IterativePreorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binaryTreeEvaluate ClientEvaluate);
-
 static void IterativeInorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binaryTreeEvaluate ClientEvaluate);
-
 static void IterativePostorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binaryTreeEvaluate ClientEvaluate);
-
 static void IterativeLevelorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binaryTreeEvaluate ClientEvaluate);
 
-#include "bintraverse.cpp"
+#include "bintraverse_nocomments.cpp"
+
+int DepthMax(BinaryTreeNode* node)
+{
+  int result = 0;
+
+  int left = 0;
+  int right = 0;
+
+  if( !node)
+    goto error;
+
+  left = DepthMax(node->left);
+
+  right = DepthMax(node->right);
+
+  if(left >= right)
+    result = left + 1;
+  else
+    result = right + 1;
+
+error:
+  return result;
+}
+
+int CalculateLogBase2(int number)
+{
+  int result = 0;
+
+  while(number)
+  {
+    result++;
+
+    number /= 2;
+  }
+
+  return result;
+}
 
 // integrated for root sentinel
 BinaryTreeNode* TreeMinimum(BinaryTreeNode* node)
@@ -178,20 +225,24 @@ BinaryTreeNode* TreeSuccessor(BinaryTreeNode* x)
   BinaryTreeNode* y = 0;
 
   if(x->right)
-    return TreeMinimum(x->right);
-
-  for(y = x->parent; y && x == y->right; y = y->parent)
-    x = y;
+  {
+    y = TreeMinimum(x->right);
+  }
+  else
+  {
+    for(y = x->parent; y && x == y->right; y = y->parent)
+      x = y;
+  }
 
   return y;
 }
 
 // integrated for root sentinel
-BinaryTreeNode* TreeSearch(BinaryTreeNode* x, void* objectKey, binaryTreeCompare LessThan, binaryTreeEquivalence EqualTo)
+BinaryTreeNode* TreeSearch(BinaryTreeNode* x, void* objectKey, binaryTreeCompare lessThan, binaryTreeEquivalence equalTo)
 {
-  while(x && !EqualTo(objectKey, GETCLIENT(x) ) )
+  while(x && !equalTo(objectKey, GETCLIENT(x) ) )
   {
-    if(LessThan(objectKey, GETCLIENT(x) ) )
+    if(lessThan(objectKey, GETCLIENT(x) ) )
       x = x->left;
     else
       x = x->right;
@@ -201,69 +252,77 @@ BinaryTreeNode* TreeSearch(BinaryTreeNode* x, void* objectKey, binaryTreeCompare
 }
 
 // integrated for root sentinel
-int bintree::getExtrema(int GetGreatest, void* objectReturn)
+int bintree::getExtrema(int getGreatest, void* objectReturn)
 {
   BinaryTree* tree = (BinaryTree*)this;
 
+  int result = RETURN_ERROR;
+
   BinaryTreeNode* node = 0;
 
-  if( !tree || (GetGreatest != TRUE && GetGreatest != FALSE) )
+  if( !tree || (getGreatest != TRUE && getGreatest != FALSE) )
   {
     _log("error");
-    return RETURN_ERROR;
+    goto error;
   }
 
-  if(GetGreatest == FALSE)
+  if(getGreatest == FALSE)
     node = TreeMinimum(GETROOTFROMTREE(tree) );
   else
     node = TreeMaximum(GETROOTFROMTREE(tree) );
 
   if( !node)
-    return RETURN_ERROR;
+    goto error;
 
   if(objectReturn)
-    memcpy(objectReturn, GETCLIENT(node), tree->SizeOfClientExact);
+    memcpy(objectReturn, GETCLIENT(node), (size_t)tree->sizeOfClient);
 
-  return RETURN_OK;
+  result = RETURN_OK;
+
+error:
+  return result;
 }
 
 // integrated for root sentinel
-int bintree::find(void* Object1, binaryTreeEquivalence EqualTo, void* ObjectReturn)
+int bintree::find(void* object1, binaryTreeEquivalence equalTo, void* objectReturn)
 {
   BinaryTree* tree = (BinaryTree*)this;
 
+  int result = RETURN_ERROR;
+
   BinaryTreeNode* node = 0;
 
-  if( !tree || !Object1)
+  if( !tree || !object1)
   {
     _log("error");
-    return RETURN_ERROR;
+    goto error;
   }
 
-  if(EqualTo)
-    tree->EqualTo = EqualTo;
+  if(equalTo)
+    tree->equalTo = equalTo;
 
-  if( !tree->EqualTo)
+  if( !tree->equalTo)
   {
     _log("error");
-    return RETURN_ERROR;
+    goto error;
   }
 
-  node = TreeSearch(GETROOTFROMTREE(tree), Object1, tree->LessThan, tree->EqualTo);
+  node = TreeSearch(GETROOTFROMTREE(tree), object1, tree->lessThan, tree->equalTo);
 
   if(node)
   {
-    if(ObjectReturn)
-      memcpy(ObjectReturn, GETCLIENT(node), tree->SizeOfClientExact);
+    if(objectReturn)
+      memcpy(objectReturn, GETCLIENT(node), (size_t)tree->sizeOfClient);
 
-    return RETURN_OK;
+    result = RETURN_OK;
   }
   else
   {
-    return bintree::empty;
+    result = bintree::empty;
   }
 
-  return RETURN_ERROR;
+error:
+  return result;
 }
 
 // integrated for root sentinel
@@ -271,92 +330,103 @@ int bintree::reset()
 {
   BinaryTree* tree = (BinaryTree*)this;
 
+  int result = RETURN_ERROR;
+
   if(tree)
   {
-    tree->NumberOfNodes = 0;
+    tree->numberOfNodes = 0;
 
     SETROOTFROMTREE(tree, 0);
-    
-    SsQueueReset(ssQueue);
-    SsStackReset(ssStack);
-    SsmmReset(ssmm);
 
-    return RETURN_OK;
+    SsQueueReset(tree->queue);
+    SsStackReset(tree->stack);
+    SsmmReset(tree->allocator);
+
+    result = RETURN_OK;
   }
 
-  _log("error");
-  return RETURN_ERROR;
+  if(result != RETURN_OK)
+  {
+    _log("error");
+  }
+
+  return result;
 }
 
 // integrated for root sentinel
-int bintree::isEmpty(int* NumberOfClientObjects)
+int bintree::isEmpty(int* numberOfClientObjects)
 {
   BinaryTree* tree = (BinaryTree*)this;
+
+  int result = RETURN_ERROR;
 
   if( !tree)
   {
     _log("error");
-    return RETURN_ERROR;
+    goto error;
   }
 
-  if(NumberOfClientObjects)
-    *NumberOfClientObjects = tree->NumberOfNodes;
+  if(numberOfClientObjects)
+    *numberOfClientObjects = tree->numberOfNodes;
 
-  return !tree->NumberOfNodes ? bintree::empty : RETURN_OK;
-}
+  result = ( !tree->numberOfNodes ? bintree::empty : RETURN_OK);
 
-static int depthMax(BinaryTreeNode* node)
-{
-  if( !node)
-    return 0;
-
-  int left = depthMax(node->left);
-
-  int right = depthMax(node->right);
-
-  if(left >= right)
-    return left + 1;
-  else
-    return right + 1;
+error:
+  return result;
 }
 
 int bintree::depthTree()
 {
   BinaryTree* tree = (BinaryTree*)this;
 
+  int result = RETURN_ERROR;
+
   if( !tree)
   {
     _log("error");
-    return RETURN_ERROR;
+    goto error;
   }
 
-  return depthMax(GETROOTFROMTREE(tree) );
+  result = DepthMax(GETROOTFROMTREE(tree) );
+
+error:
+  return result;
 }
 
 int bintree::depthStack()
 {
   BinaryTree* tree = (BinaryTree*)this;
 
+  int result = RETURN_ERROR;
+
   if( !tree)
   {
     _log("error");
-    return RETURN_ERROR;
+    goto error;
   }
 
-  return tree->maxStack;
+  result = tree->maxStack;
+
+error:
+  return result;
 }
 
 int bintree::depthQueue()
 {
   BinaryTree* tree = (BinaryTree*)this;
 
+  int result = RETURN_ERROR;
+
   if( !tree)
   {
     _log("error");
-    return RETURN_ERROR;
+    goto error;
   }
 
-  return tree->maxQueue;
+  result = tree->maxQueue;
+
+error:
+  return result;
 }
 
 // integrated for root sentinel
@@ -364,99 +434,93 @@ int bintree::term()
 {
   BinaryTree* tree = (BinaryTree*)this;
 
+  int result = RETURN_ERROR;
+
   if(tree)
   {
+    uint8_t* unaligned = tree->unaligned;
+
     SsQueueDestruct( &tree->queue);
-    
+
     SsStackDestruct( &tree->stack);
 
     SsmmDestruct( &tree->allocator);
 
     memset(tree, 0, sizeof(BinaryTree) );
 
-    free(tree);
+    free(unaligned);
+    unaligned = 0;
+    tree = 0;
 
-    return RETURN_OK;
+    result = RETURN_OK;
   }
 
-  _log("error");
-  return RETURN_ERROR;
-}
-
-static int calculateLogBase2(int number)
-{
-  int result = 0;
-
-  while(number)
+  if(result != RETURN_OK)
   {
-    result++;
-
-    number /= 2;
+    _log("error");
   }
 
+error:
   return result;
 }
 
 // integrated for root sentinel
-bintree* bintree::init(int initialCapacity, int SizeOfEachObjectExact, binaryTreeCompare LessThan)
+bintree* bintree::init(int initialCapacity, int sizeOfClient, binaryTreeCompare lessThan)
 {
   BinaryTree* tree = 0;
 
-  int SizeOfEachObjectAligned = 0;
-
-  int loop = 0;
+  void* result = 0;
 
   int stackSize = 0;
 
-  if(initialCapacity <= 0 || SizeOfEachObjectExact <= 0 || !LessThan)
+  uint8_t* unaligned = 0;
+
+  if(initialCapacity <= 0 || sizeOfClient <= 0 || !lessThan)
   {
     _log("error");
-    return 0;
+    goto error;
   }
 
-  tree = (BinaryTree*)malloc(sizeof(BinaryTree) );
-
+  tree = (BinaryTree*)blah_aligned_alloc(sizeof(BinaryTree), &unaligned, true);
   if( !tree)
   {
     _log("error");
-    return 0;
+    goto error;
   }
 
-  memset(tree, 0, sizeof(BinaryTree) );
+  tree->unaligned = unaligned;
 
-  tree->LessThan = LessThan;
+  tree->lessThan = lessThan;
 
-  tree->SizeOfClientExact = SizeOfEachObjectExact;
+  tree->sizeOfClient = sizeOfClient;
 
-  //tree->SizeOfClientAligned = SizeOfEachObjectAligned;
-  tree->SizeOfClientAligned = SizeOfEachObjectExact;
-
-  //SsConstruct(int sizeOf, int minimumCapacity, int maximumCapacity, int resize)
-
-  tree->allocator = SsmmConstruct(SizeOfEachObjectAligned + sizeof(BinaryTreeNode), initialCapacity, 200000000, -1000000);
+  tree->allocator = SsmmConstruct( (int)(sizeof(BinaryTreeNode) + sizeOfClient), initialCapacity, 200000000, -1000000);
   if( !tree->allocator)
   {
     _log("error");
-    return 0;
+    goto error;
   }
 
-  stackSize = 2 * calculateLogBase2(initialCapacity + 1);
+  stackSize = 2 * CalculateLogBase2(initialCapacity + 1);
 
   tree->stack = SsStackConstruct(sizeof(BinaryTreeNode*), stackSize, 200000000, -1000000);
   if( !tree->stack)
   {
     _log("error");
-    return 0;
+    goto error;
   }
 
   tree->queue = SsQueueConstruct(sizeof(BinaryTreeNode*), initialCapacity / 4, 200000000, -1000000);
   if( !tree->queue)
   {
     _log("error");
-    return 0;
+    goto error;
   }
 
-  return (bintree*)tree;
+  result = tree;
+
+error:
+  return (bintree*)result;
 }
 
 bintree::bintree()

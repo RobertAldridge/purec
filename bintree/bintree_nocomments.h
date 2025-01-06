@@ -22,27 +22,26 @@ public:
   static const int levelorder; // levelorder == 3; levelorder == breadth-first
 
   static bintree* init(int initialCapacity, int sizeOfEachObject, compare lessThan);
-  
+
   int isEmpty(int numberOfClientObjects[1] );
-  
+
   int insert(void* object, compare lessThan);
-  
+
   int remove(void* keyObject, equivalence equalTo, void* objectReturn);
-  
+
   int getExtrema(int getGreatest, void* objectReturn);
-  
+
   int find(void* keyObject, equivalence equalTo, void* objectReturn);
-  
+
   int reset();
 
   int term();
 
   int dump(evaluate clientEvaluate, int traversalOrder);
 
+  // for debugging not production use
   int depthTree();
-
   int depthStack();
-
   int depthQueue();
 
 private:

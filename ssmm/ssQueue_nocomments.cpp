@@ -187,7 +187,7 @@ static void SsQueueDeepDebug2(ssQueue* _this)
 {
   int index = _this->indexFront;
   SsQueueNode* node = _this->front;
-  
+
   printf("[");
   for(int count = 0; count < _this->numChunks; count++)
   {
@@ -195,7 +195,7 @@ static void SsQueueDeepDebug2(ssQueue* _this)
     {
       index -= node->num;
       node = node->next;
-      
+
       printf("][");
     }
 
@@ -203,14 +203,14 @@ static void SsQueueDeepDebug2(ssQueue* _this)
 
     uint64_t client = 0;
     SsQueueMemcpyChunk(_this, &client, chunk);
-      
+
     printf("%i", (int)client);
 
     if(index != (node->num - 1) && count != (_this->numChunks - 1) )
       printf(" ");
 
     index++;
-    
+
   }
   printf("]\n\n");
 }

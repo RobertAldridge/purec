@@ -26,12 +26,14 @@ struct BinaryTree
 
   BinaryTreeNode sentinelLeaf;
 
-  binaryTreeCompare LessThan;
+  binaryTreeCompare lessThan;
 
-  binaryTreeEquivalence EqualTo;
+  binaryTreeEquivalence equalTo;
 
-  binaryTreeEvaluate ClientEvaluate;
-  
+  binaryTreeEvaluate clientEvaluate;
+
+  uint8_t* unaligned;
+
   // main allocator for BinaryTree nodes
   ssmm* allocator;
 
@@ -39,11 +41,10 @@ struct BinaryTree
   ssStack* stack;
   ssQueue* queue;
 
-  int32_t NumberOfNodes;
+  int32_t maxStack;
+  int32_t maxQueue;
 
-  int32_t SizeOfClientAligned;
+  int32_t numberOfNodes;
 
-  int32_t SizeOfClientExact;
-
-  int32_t padding;
+  int32_t sizeOfClient;
 };

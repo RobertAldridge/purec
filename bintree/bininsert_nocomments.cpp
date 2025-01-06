@@ -4,14 +4,6 @@
 // Robert B. Aldridge III
 // Charlie H. Burns III
 
-#if 0
-lessThan(lhs, rhs) return compare(lhs, rhs)
-greaterThan(lhs, rhs) return compare(rhs, lhs)
-equalTo(lhs, rhs) return !lessThan(lhs, rhs) && !greaterThan(lhs, rhs)
-lessThanOrEqualTo(lhs, rhs) return lessThan(lhs, rhs) || !greaterThan(lhs, rhs)
-greaterThanOrEqualTo(lhs, rhs) return greaterThan(lhs, rhs) || !lessThan(lhs, rhs)
-#endif
-
 // integrated for root sentinel
 void TreeInsert(BinaryTree* tree, BinaryTreeNode* insert)
 {
@@ -19,7 +11,7 @@ void TreeInsert(BinaryTree* tree, BinaryTreeNode* insert)
 
   for(BinaryTreeNode* child = GETROOTFROMTREE(tree); child; /*nop*/)
   {
-    bool isLessThan = tree->LessThan(GETCLIENT(insert), GETCLIENT(child) );
+    bool isLessThan = (bool)tree->lessThan(GETCLIENT(insert), GETCLIENT(child) );
 
     parent = child;
 
@@ -33,97 +25,6 @@ void TreeInsert(BinaryTree* tree, BinaryTreeNode* insert)
   else
     parent->right = insert;
 }
-
-#if 0
-// case 1
-// 1A
-// 1B
-// 1C
-// 1D
-
-// case 2
-// 2A
-// 2B
-
-// case 3
-// 3A
-// 3B
-// 3C
-void rb-insert(BinaryTree* tree, BinaryTreeNode* x)
-{
-  tree-insert(tree, x)
-
-  x->color = red
-
-  while x != tree->root && x->parent->color == red
-  {
-    if x->parent == x->parent->parent->left
-    {
-      BinaryTreeNode* y = x->parent->parent->right;
-
-      // case 1
-      if y->color == red
-      {
-        x->parent->color = black // 1A
-        y->color = black // 1B
-        x->parent->parent->color = red // 1C
-        x = x->parent->parent // 1D
-      }
-      else
-      {
-        // case 2
-        if x == x->parent->right
-        {
-          x = x->parent // 2A
-          left-rotate(tree, x) // 2B
-        }
-
-        // case 3
-        x->parent->color = black // 3A
-        x->parent->parent->color = red // 3B
-        right-rotate(tree, x->parent->parent) // 3C
-      }
-    }
-    else /*if x->parent == x->parent->parent->right*/
-    {
-      BinaryTreeNode* y = x->parent->parent->left;
-
-      // case 1
-      if y->color == red
-      {
-        x->parent->color = black // 1A
-        y->color = black // 1B
-        x->parent->parent->color = red // 1C
-        x = x->parent->parent // 1D
-      }
-      else
-      {
-        // case 2
-        if x == x->parent->left
-        {
-          x = x->parent // 2A
-          right-rotate(tree, x) // 2B
-        }
-
-        // case 3
-        x->parent->color = black // 3A
-        x->parent->parent->color = red // 3B
-        left-rotate(tree, x->parent->parent) // 3C
-      }
-    }
-  }
-}
-
-left (delete) 2
-left (insert) 1
-left-right (delete) 1
-left-right (insert) 1
-
-right (delete) 2
-right (insert) 1
-right-left (delete) 1
-right-left (insert) 1
-#endif
 
 // integrated for root sentinel
 void BinInsert(BinaryTree* tree, BinaryTreeNode* x)
@@ -140,47 +41,28 @@ void BinInsert(BinaryTree* tree, BinaryTreeNode* x)
     {
       y = xP->parent->right;
 
-      // case 1
       if(y && y->color == RED)
       {
-        // 1A x->parent->color = black
-        // 1B y->color = black
-        // 1C x->parent->parent->color = red
-        // 1D x = x->parent->parent
+        xP->color = BLACK;
 
-        xP->color = BLACK; // 1A
+        y->color = BLACK;
 
-        y->color = BLACK; // 1B
+        xP->parent->color = RED;
 
-        xP->parent->color = RED; // 1C
-
-        x = xP->parent; // 1D
+        x = xP->parent;
       }
-      // case 2 + 3
       else if(x == xP->right)
       {
-        // 2A x = x->parent
-        // 2B left-rotate(tree, x)
+        x->color = BLACK;
 
-        // 3A x->parent->color = black
-        // 3B x->parent->parent->color = red
-        // 3C right-rotate(tree, x->parent->parent)
+        xP->parent->color = RED;
 
-        x->color = BLACK; // x->parent->color = black transformed, out of order 3A
+        LeftRightRotateInsert(x);
 
-        xP->parent->color = RED; // out of order 3B
-
-        LeftRightRotateInsert(x); // left-rotate(tree, x) -> right-rotate(tree, x->parent->parent) transformed 2B -> 3C
-
-        x = x->left; // x = x->parent transformed, out of order 2A
+        x = x->left;
       }
-      // case 3
       else
       {
-        // 3A x->parent->color = black
-        // 3B x->parent->parent->color = red
-        // 3C right-rotate(tree, x->parent->parent)
-
         xP->parent->color = RED;
 
         xP->color = BLACK;
@@ -188,56 +70,37 @@ void BinInsert(BinaryTree* tree, BinaryTreeNode* x)
         RightRotateInsert(xP->parent);
       }
     }
-    else/* if(xP == xP->parent->right)*/
+    else
     {
       y = xP->parent->left;
 
-      // case 1
       if(y && y->color == RED)
       {
-        // 1A x->parent->color = black
-        // 1B y->color = black
-        // 1C x->parent->parent->color = red
-        // 1D x = x->parent->parent
+        xP->color = BLACK;
 
-        xP->color = BLACK; // 1A
+        y->color = BLACK;
 
-        y->color = BLACK; // 1B
+        xP->parent->color = RED;
 
-        xP->parent->color = RED; // 1C
-
-        x = xP->parent; // 1D
+        x = xP->parent;
       }
-      // case 2 + 3
       else if(x == xP->left)
       {
-        // 2A x = x->parent
-        // 2B right-rotate(tree, x)
+        x->color = BLACK;
 
-        // 3A x->parent->color = black
-        // 3B x->parent->parent->color = red
-        // 3C left-rotate(tree, x->parent->parent)
+        xP->parent->color = RED;
 
-        x->color = BLACK; // x->parent->color = black transformed, out of order 3A
+        RightLeftRotateInsert(x);
 
-        xP->parent->color = RED; // out of order 3B
-
-        RightLeftRotateInsert(x); // right-rotate(tree, x) -> left-rotate(tree, x->parent->parent) transformed 2B -> 3C
-
-        x = x->right; // x = x->parent transformed, out of order 2A
+        x = x->right;
       }
-      // case 3
       else
       {
-        // 3A x->parent->color = black
-        // 3B x->parent->parent->color = red
-        // 3C left-rotate(tree, x->parent->parent)
+        xP->color = BLACK;
 
-        xP->color = BLACK; // 3A
+        xP->parent->color = RED;
 
-        xP->parent->color = RED; // 3B
-
-        LeftRotateInsert(xP->parent); // 3C
+        LeftRotateInsert(xP->parent);
       }
     }
   }
@@ -246,35 +109,32 @@ void BinInsert(BinaryTree* tree, BinaryTreeNode* x)
 }
 
 // integrated for root sentinel
-int bintree::insert(void* object, binaryTreeCompare LessThan)
+int bintree::insert(void* object, binaryTreeCompare lessThan)
 {
-  BinaryTree* T = (BinaryTree*)this;
+  BinaryTree* tree = (BinaryTree*)this;
 
   BinaryTreeNode* x = 0;
 
-  if( !T || !object || T->NumberOfNodes >= T->MaxNumberOfNodes)
+  if( !tree || !object)
   {
-    // BinTreeInsert(...) bad params
     _log("error");
     return RETURN_ERROR;
   }
 
-  if(LessThan)
-    T->LessThan = LessThan;
+  if(lessThan)
+    tree->lessThan = lessThan;
 
-  if( !T->LessThan)
+  if( !tree->lessThan)
   {
-    // BinTreeInsert(...) NIL binaryTreeCompare function
     _log("error");
     return RETURN_ERROR;
   }
 
-  //x = (BinaryTreeNode*)(*T->MemoryManagerArrayCurrent++);
-  x = (BinaryTreeNode*)SsmmAlloc(T->nodeAllocator);
+  //x = (BinaryTreeNode*)(*tree->MemoryManagerArrayCurrent++);
+  x = (BinaryTreeNode*)SsmmAlloc(tree->allocator);
 
   if( !x)
   {
-    // BinTreeInsert(...) bad memory allocation
     _log("error");
     return RETURN_ERROR;
   }
@@ -282,11 +142,11 @@ int bintree::insert(void* object, binaryTreeCompare LessThan)
   x->left = 0;
   x->right = 0;
 
-  memcpy(GETCLIENT(x), object, T->SizeOfClientExact);
+  memcpy(GETCLIENT(x), object, (size_t)tree->sizeOfClient);
 
-  BinInsert(T, x);
+  BinInsert(tree, x);
 
-  T->NumberOfNodes++;
+  tree->numberOfNodes++;
 
   return RETURN_OK;
 }

@@ -4,55 +4,10 @@
 // Robert B. Aldridge III
 // Charlie H. Burns III
 
-// 24.2.7.1
-
-// 175
-// The insert, insert_range, and emplace members shall not affect the validity of iterators and references to
-// the container, and the erase members shall invalidate only iterators and references to the erased elements.
-
-// 176
-// The extract members invalidate only iterators to the removed element; pointers and references to the
-// removed element remain valid. However, accessing the element through such pointers and references while
-// the element is owned by a node_type is undefined behavior. References and pointers to an element obtained
-// while it is owned by a node_type are invalidated if the element is successfully inserted.
-
-// 177
-// The fundamental property of iterators of associative containers is that they iterate through the containers
-// in the non-descending order of keys where non-descending is defined by the comparison that was used to
-// construct them. For any two dereferenceable iterators i and j such that distance from i to j is positive, the
-// following condition holds:
-//
-//   value_comp(*j, *i) == false
-
-// 178
-// For associative containers with unique keys the stronger condition holds:
-//
-//   value_comp(*i, *j) != false
-
-// pre order
-//
-// stack
-
-// in order
-//
-// stack
-
-// post order
-//
-// stack
-
-// level order
-//
-// queue
-
-// Preorder is fully optimized
-//
 // integrated for root sentinel
 void IterativePreorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binaryTreeEvaluate ClientEvaluate)
 {
   // PSTACK Stack = InitStack()
-  //BinaryTreeNode** StackTraverseArrayStart = tree->TraverseArrayStart;
-  //BinaryTreeNode** StackTraverseArrayCurrentTop = StackTraverseArrayStart;
 
   BinaryTreeNode* LeftChild = 0;
   BinaryTreeNode* RightChild = 0;
@@ -70,12 +25,10 @@ void IterativePreorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binar
       if(LeftChild)
       {
         // Stack->Push(RightChild)
-        //*StackTraverseArrayCurrentTop++ = RightChild;
-        if( !SsmmStackPush(tree->stackAllocator, RightChild) )
+        if( !SsStackPush(tree->stack, RightChild) )
           break;
-        
-        //ptrdiff_t stackSize = StackTraverseArrayCurrentTop - StackTraverseArrayStart;
-        ptrdiff_t stackSize = SsmmNum(tree->stackAllocator);
+
+        ptrdiff_t stackSize = SsStackNum(tree->stack);
         if(stackSize >= 0 && stackSize > tree->maxStack)
           tree->maxStack = (int)stackSize;
 
@@ -99,51 +52,22 @@ void IterativePreorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binar
     else
     {
       // if(Stack->Empty() == TRUE)
-      //if(StackTraverseArrayCurrentTop == StackTraverseArrayStart)
-      if(SsmmNum(tree->stackAllocator) <= 0)
+      if(SsStackNum(tree->stack) <= 0)
         break;
 
       // node = Stack->Pop()
-      //node = *( --StackTraverseArrayCurrentTop);
-      node = (BinaryTreeNode*)SsmmStackPop(tree->stackAllocator);
-      if( !node)
+      if( !SsStackPop(tree->stack, &node) )
         break;
     }
   }
 
-  while(SsmmNum(tree->stackAllocator) > 0)
-  {
-    if( !SsmmStackPop(tree->stackAllocator) )
-      break;
-  }
+  SsStackReset(tree->stack);
 }
 
-// pre order
-//
-// set 'node' to root
-//
-// label pushLeftAllTheWayDown:
-//
-// start at 'node' push the lefts all the way down
-//
-// 'node' <= pop the deepest left, which we know has a null left
-//
-// evaluate 'node'
-//
-// if 'node' has a non-null right
-//   'node' <= 'node'->right and goto label pushLeftAllTheWayDown
-
-// Inorder requires one extra optimization-
-// When the left nodes are pushed on the stack,
-// a left node is immediately popped off of the stack
-// after you break out of the inner loop.
-//
 // integrated for root sentinel
 void IterativeInorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binaryTreeEvaluate ClientEvaluate)
 {
   // PSTACK Stack = InitStack()
-  //BinaryTreeNode** StackTraverseArrayStart = tree->TraverseArrayStart;
-  //BinaryTreeNode** StackTraverseArrayCurrentTop = StackTraverseArrayStart;
 
   while(1)
   {
@@ -152,27 +76,22 @@ void IterativeInorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binary
     while(node)
     {
       // Stack->Push(node)
-      //*StackTraverseArrayCurrentTop++ = node;
-      if( !SsmmStackPush(tree->stackAllocator, node) )
+      if( !SsStackPush(tree->stack, node) )
         break;
 
       node = node->left;
     }
-    
-    //ptrdiff_t stackSize = StackTraverseArrayCurrentTop - StackTraverseArrayStart;
-    ptrdiff_t stackSize = SsmmNum(tree->stackAllocator);
+
+    ptrdiff_t stackSize = SsStackNum(tree->stack);
     if(stackSize >= 0 && stackSize > tree->maxStack)
       tree->maxStack = (int)stackSize;
 
     // if(Stack->Empty() == TRUE)
-    //if(StackTraverseArrayCurrentTop == StackTraverseArrayStart)
-    if(SsmmNum(tree->stackAllocator) <= 0)
+    if(SsStackNum(tree->stack) <= 0)
       break;
 
     // node = Stack->Pop()
-    //node = *( --StackTraverseArrayCurrentTop);
-    node = (BinaryTreeNode*)SsmmStackPop(tree->stackAllocator);
-    if( !node)
+    if( !SsStackPop(tree->stack, &node) )
       break;
 
     if(ClientEvaluate(GETCLIENT(node) ) )
@@ -181,41 +100,13 @@ void IterativeInorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binary
     node = node->right;
   }
 
-  while(SsmmNum(tree->stackAllocator) > 0)
-  {
-    if( !SsmmStackPop(tree->stackAllocator) )
-      break;
-  }
+  SsStackReset(tree->stack);
 }
 
-// post order
-//
-// set 'node' to root
-//
-// label pushLeftAllTheWayDown:
-//
-// start at 'node' push the lefts all the way down
-//
-// label popOneOffStack:
-//
-// 'node' <= pop the deepest left, which we know has a null left
-//
-// if 'node' has a non-null right
-//   push 'node' back on (even though we've just popped it off)
-//   'node' <= 'node'->right and goto label pushLeftAllTheWayDown
-// else if 'node' has a null right
-//   evaluate 'node' and goto popOneOffStack
-
-// ! I have no idea if Postorder is fully optimized or not!
-// I optimized it alot, but I am still not sure if it is fully optimized.
-// Function courtesy of Bruce Mcquistan ( brucemc@digipen.edu )
-//
 // integrated for root sentinel
 void IterativePostorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binaryTreeEvaluate ClientEvaluate)
 {
   // PSTACK Stack = InitStack()
-  //BinaryTreeNode** StackTraverseArrayStart = tree->TraverseArrayStart;
-  //BinaryTreeNode** StackTraverseArrayCurrentTop = StackTraverseArrayStart;
 
   BinaryTreeNode* NodePushed = 0;
   BinaryTreeNode* RightChild = 0;
@@ -227,8 +118,7 @@ void IterativePostorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, bina
     do
     {
       // Stack->Push(node)
-      //*StackTraverseArrayCurrentTop++ = node;
-      if( !SsmmStackPush(tree->stackAllocator, node) )
+      if( !SsStackPush(tree->stack, node) )
         break;
 
       node = node->left;
@@ -237,20 +127,16 @@ void IterativePostorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, bina
 
 popOneOffStack:
 
-    //ptrdiff_t stackSize = StackTraverseArrayCurrentTop - StackTraverseArrayStart;
-    ptrdiff_t stackSize = SsmmNum(tree->stackAllocator);
+    ptrdiff_t stackSize = SsStackNum(tree->stack);
     if(stackSize >= 0 && stackSize > tree->maxStack)
       tree->maxStack = (int)stackSize;
 
     // if(Stack->Empty() == TRUE)
-    //if(StackTraverseArrayCurrentTop == StackTraverseArrayStart)
-    if(SsmmNum(tree->stackAllocator) <= 0)
+    if(SsStackNum(tree->stack) <= 0)
       break;
 
     // node = Stack->Pop()
-    //node = *( --StackTraverseArrayCurrentTop);
-    node = (BinaryTreeNode*)SsmmStackPop(tree->stackAllocator);
-    if( !node)
+    if( !SsStackPop(tree->stack, &node) )
       break;
 
     RightChild = node->right;
@@ -258,8 +144,7 @@ popOneOffStack:
     if(RightChild && RightChild != NodePushed)
     {
       // Stack->Push(node)
-      //*StackTraverseArrayCurrentTop++ = node;
-      if( !SsmmStackPush(tree->stackAllocator, node) )
+      if( !SsStackPush(tree->stack, node) )
         break;
 
       NodePushed = RightChild;
@@ -281,37 +166,31 @@ popOneOffStack:
     }
   }
 
-  while(SsmmNum(tree->stackAllocator) > 0)
-  {
-    if( !SsmmStackPop(tree->stackAllocator) )
-      break;
-  }
+  SsStackReset(tree->stack);
 }
 
-// Levelorder is fully optimized
-//
 // integrated for root sentinel
 void IterativeLevelorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binaryTreeEvaluate ClientEvaluate)
 {
   // PQUEUE Queue = InitQueue()
-  BinaryTreeNode** QueueTraverseArrayCurrentFront = tree->TraverseArrayStart;
-  BinaryTreeNode** QueueTraverseArrayCurrentBack = QueueTraverseArrayCurrentFront;
 
   BinaryTreeNode* LeftChild = 0;
   BinaryTreeNode* RightChild = 0;
 
   // Queue->Put(node)
-  *QueueTraverseArrayCurrentBack++ = node;
+  if( !SsQueuePushBack(tree->queue, &node) )
+    goto error;
 
   // while(Queue->Empty() != TRUE)
-  while(QueueTraverseArrayCurrentFront != QueueTraverseArrayCurrentBack)
+  while(SsQueueNum(tree->queue) > 0)
   {
-    ptrdiff_t queueSize = QueueTraverseArrayCurrentBack - QueueTraverseArrayCurrentFront;
+    ptrdiff_t queueSize = SsQueueNum(tree->queue);
     if(queueSize > tree->maxQueue)
       tree->maxQueue = (int)queueSize;
 
     // Queue->Get()
-    node = *QueueTraverseArrayCurrentFront++;
+    if( !SsQueuePopFront(tree->queue, &node) )
+      break;
 
     if(ClientEvaluate(GETCLIENT(node) ) )
       break;
@@ -322,19 +201,24 @@ void IterativeLevelorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, bin
     if(LeftChild)
     {
       // Queue->Put(LeftChild)
-      *QueueTraverseArrayCurrentBack++ = LeftChild;
+      if( !SsQueuePushBack(tree->queue, &LeftChild) )
+        break;
     }
 
     if(RightChild)
     {
       // Queue->Put(RightChild)
-      *QueueTraverseArrayCurrentBack++ = RightChild;
+      if( !SsQueuePushBack(tree->queue, &RightChild) )
+        break;
     }
   }
+
+error:
+  SsQueueReset(tree->queue);
 }
 
 // integrated for root sentinel
-int bintree::dump(binaryTreeEvaluate ClientEvaluate, ORDER TraversalOrder)
+int bintree::dump(binaryTreeEvaluate clientEvaluate, ORDER TraversalOrder)
 {
   BinaryTree* tree = (BinaryTree*)this;
 
@@ -342,20 +226,18 @@ int bintree::dump(binaryTreeEvaluate ClientEvaluate, ORDER TraversalOrder)
 
   if( !tree || TraversalOrder < PREORDER || TraversalOrder > LEVELORDER)
   {
-    // BinTreeDump(...) bad params
     _log("error");
     return RETURN_ERROR;
   }
 
-  if( !ClientEvaluate && !tree->ClientEvaluate)
+  if( !clientEvaluate && !tree->clientEvaluate)
   {
-    // BinTreeDump(...) bad params
     _log("error");
     return RETURN_ERROR;
   }
 
-  if(ClientEvaluate)
-    tree->ClientEvaluate = ClientEvaluate;
+  if(clientEvaluate)
+    tree->clientEvaluate = clientEvaluate;
 
   root = GETROOTFROMTREE(tree);
 
@@ -363,10 +245,10 @@ int bintree::dump(binaryTreeEvaluate ClientEvaluate, ORDER TraversalOrder)
   {
     switch(TraversalOrder)
     {
-    case PREORDER: IterativePreorderTreeTraverse(tree, root, tree->ClientEvaluate); break;
-    case INORDER: IterativeInorderTreeTraverse(tree, root, tree->ClientEvaluate); break;
-    case POSTORDER: IterativePostorderTreeTraverse(tree, root, tree->ClientEvaluate); break;
-    case LEVELORDER: IterativeLevelorderTreeTraverse(tree, root, tree->ClientEvaluate); break;
+    case PREORDER: IterativePreorderTreeTraverse(tree, root, tree->clientEvaluate); break;
+    case INORDER: IterativeInorderTreeTraverse(tree, root, tree->clientEvaluate); break;
+    case POSTORDER: IterativePostorderTreeTraverse(tree, root, tree->clientEvaluate); break;
+    case LEVELORDER: IterativeLevelorderTreeTraverse(tree, root, tree->clientEvaluate); break;
     }
   }
 
