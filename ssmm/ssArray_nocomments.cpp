@@ -96,7 +96,7 @@ static void SsArrayPoolListFree(SsArrayPool* current)
   {
     next = current->next;
 
-    free(SsArrayPoolGetUnaligned(current) );
+    blah_free_aligned_sized(SsArrayPoolGetUnaligned(current), 0, 0);
   }
 }
 

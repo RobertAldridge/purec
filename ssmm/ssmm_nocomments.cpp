@@ -103,7 +103,7 @@ void SsmmPoolListFree(SsmmPool* current)
   {
     next = current->next;
 
-    free(SsmmPoolGetUnaligned(current) );
+    blah_free_aligned_sized(SsmmPoolGetUnaligned(current), 0, 0);
   }
 }
 

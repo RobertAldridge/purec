@@ -97,7 +97,7 @@ static void SsStackPoolListFree(SsStackPool* current)
   {
     previous = current->previous;
 
-    free(SsStackPoolGetUnaligned(current) );
+    blah_free_aligned_sized(SsStackPoolGetUnaligned(current), 0, 0);
   }
 }
 

@@ -435,7 +435,7 @@ int bintree::term()
 
     memset(tree, 0, sizeof(BinaryTree) );
 
-    free(unaligned);
+    blah_free_aligned_sized(unaligned, 0, 0);
     unaligned = 0;
     tree = 0;
 
@@ -480,7 +480,7 @@ bintree* bintree::init(int initialCapacity, int sizeOfClient, binaryTreeCompare 
 
   tree->sizeOfClient = sizeOfClient;
 
-  tree->allocator = SsmmConstruct( (int)(sizeof(BinaryTreeNode) + sizeOfClient), initialCapacity, 200000000, -1000000);
+  tree->allocator = SsmmConstruct( (int)(sizeof(BinaryTreeNode) + sizeOfClient), initialCapacity, 2100000000, -10000000);
   if( !tree->allocator)
   {
     _log("error");
@@ -489,14 +489,14 @@ bintree* bintree::init(int initialCapacity, int sizeOfClient, binaryTreeCompare 
 
   stackSize = 2 * CalculateLogBase2(initialCapacity + 1);
 
-  tree->stack = SsStackConstruct(sizeof(BinaryTreeNode*), stackSize, 200000000, -1000000);
+  tree->stack = SsStackConstruct(sizeof(BinaryTreeNode*), stackSize, 2100000000, -10000000);
   if( !tree->stack)
   {
     _log("error");
     goto error;
   }
 
-  tree->queue = SsQueueConstruct(sizeof(BinaryTreeNode*), initialCapacity / 4, 200000000, -1000000);
+  tree->queue = SsQueueConstruct(sizeof(BinaryTreeNode*), initialCapacity / 2, 2100000000, -10000000);
   if( !tree->queue)
   {
     _log("error");

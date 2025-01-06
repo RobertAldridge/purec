@@ -119,7 +119,7 @@ static void SsQueuePoolListFree(SsQueuePool* current)
   {
     previous = current->previous;
 
-    free(SsQueuePoolGetUnaligned(current) );
+    blah_free_aligned_sized(SsQueuePoolGetUnaligned(current), 0, 0);
   }
 }
 

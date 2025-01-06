@@ -133,7 +133,7 @@ static Node* nodeAllocate(Node* sentinel, int count)
 
     if (count > 0)
     {
-        nodeList = (Node*)malloc(sizeof(Node) * count);
+        nodeList = (Node*)blah_aligned_alloc(sizeof(Node) * count, 0, false);
         memset(nodeList, 0, sizeof(Node) * count);
 
         for (int index = 0; index < count; index++)
@@ -170,7 +170,7 @@ static List* listInitialize(int count)
 
     if (count >= 0)
     {
-        daList = (List*)malloc(sizeof(List));
+        daList = (List*)blah_aligned_alloc(sizeof(List), 0, false);
         memset(daList, 0, sizeof(List));
 
         daList->index = 0;
@@ -192,11 +192,11 @@ static void ListTerminate(List* daList)
         if (daList->capacity > 0)
         {
             memset(daList->memory, 0, sizeof(Node) * daList->capacity);
-            free(daList->memory);
+            blah_free_aligned_sized(daList->memory, 0, 0);
         }
 
         memset(daList, 0, sizeof(List));
-        free(daList);
+        blah_free_aligned_sized(daList, 0, 0);
     }
 }
 
@@ -764,6 +764,8 @@ int main()
 
   struct timespec sleep_time = {0};
 
+  EnableLargePageSupport();
+
 //uint8_t** randomArray = 0;
 
   if( !BlahRandomConstructDefault( &random) )
@@ -778,7 +780,7 @@ int main()
 #if 0
   //printf("%llu\n", (uint64_t)time(0) );
 
-  uint64_t* randomArray = (uint64_t*)malloc(sizeof(uint64_t) * BLAH_SIZE);
+  uint64_t* randomArray = (uint64_t*)blah_aligned_alloc(sizeof(uint64_t) * BLAH_SIZE, 0, false);
   memset(randomArray, 0, sizeof(uint64_t) * BLAH_SIZE);
 #endif
 
@@ -787,7 +789,7 @@ int main()
 #if 0
   try
   {
-    randomArray = (uint8_t**)malloc(sizeof(uint8_t*) * BLAH_SIZE);
+    randomArray = (uint8_t**)blah_aligned_alloc(sizeof(uint8_t*) * BLAH_SIZE, 0, false);
   }
   catch(bad_alloc& )
   {
@@ -803,7 +805,7 @@ int main()
   {
     try
     {
-      randomArray[index] = (uint8_t*)malloc(sizeof(uint8_t) * 1024 * 1024);
+      randomArray[index] = (uint8_t*)blah_aligned_alloc(sizeof(uint8_t) * 1024 * 1024, 0, false);
     }
     catch(bad_alloc& )
     {
@@ -830,7 +832,7 @@ int main()
   {
     try
     {
-      free(randomArray[index] );
+      blah_free_aligned_sized(randomArray[index], 0, 0);
       randomArray[index] = 0;
     }
     catch(bad_alloc& )
@@ -887,7 +889,7 @@ successLabel:
   // (a + b) * (c + d) ==
   // a * c + a * d + b * c + b * d
 
-  free(randomArray);
+  blah_free_aligned_sized(randomArray, 0, 0);
   randomArray = 0;
 
   return 0;
@@ -980,26 +982,24 @@ static bool DebugAllocate(int* data[1000], int count)
 {
   bool result = false;
 
-  if(count % 1000)
+  if(count % 200)
     goto error;
 
-  if(count < 1000)
+  if(count < 200)
     goto error;
 
   gFullCount = count;
 
-  count /= 1000;
+  count /= 200;
 
   gModCount = count;
 
-  for(int index = 0; index < 1000; index++)
+  for(int index = 0; index < 200; index++)
   {
-    data[index] = (int*)malloc(sizeof(int) * count);
+    data[index] = (int*)blah_aligned_alloc(sizeof(int) * count, 0, false);
 
     if( !data[index] )
       goto error;
-
-    memset(data[index], 0, sizeof(int) * count);
   }
 
   result = true;
@@ -1020,9 +1020,9 @@ static void DebugSet(int* data[1000], int index, int value)
 
 static void DebugFree(int* data[1000] )
 {
-  for(int index = 999; index >= 0; index--)
+  for(int index = 199; index >= 0; index--)
   {
-    free(data[index] );
+    blah_free_aligned_sized(data[index], 0, 0);
     data[index] = 0;
   }
 }
@@ -1060,15 +1060,18 @@ int binTreeTest()
     // limit of memory allocation near 30,000,000
 //static const int numData = 30000000;
 
+//printf("%i\n\n", blah_get_number() );
+//2097152
+
 double queueMaximumPercentage = 0;
 
-int numData = 200000000;
+int numData = 2000000000;
 
 //for(int numData = 100; numData <= 1000; numData++)
 {
     memset(gDebugRotate, 0, sizeof(gDebugRotate) );
 
-    bintree* myTree = bintree::init(1000000, sizeof(myStruct), (bintree::compare)lessThan);
+    bintree* myTree = bintree::init(5000000, sizeof(myStruct), (bintree::compare)lessThan);
     if( !myTree)
       return -1;
 
