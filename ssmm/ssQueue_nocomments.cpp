@@ -3,19 +3,17 @@
 // Robert Aldridge, code
 // Robert Aldridge and Charlie Burns, design
 
-#include <cstddef> // ptrdiff_t, size_t
-#include <cstdint> // uint8_t
-#include <cstdlib> // free
+#include <cstddef> // ptrdiff_t
+#include <cstdint> // uint64_t, uint32_t, uint8_t
 #include <cstring> // memcpy
 
-using std::free;
-using std::int32_t;
 using std::memcpy;
 using std::ptrdiff_t;
-using std::size_t;
+using std::uint64_t;
+using std::uint32_t;
 using std::uint8_t;
 
-#define BLAH_DEBUG 0
+#define BLAH_DEBUG 1
 
 #if BLAH_DEBUG
 #include <cstdio>
@@ -29,9 +27,9 @@ struct SsQueueNode
 
   uint8_t* chunk;
 
-  int32_t num;
+  uint32_t num;
 
-  int32_t padding;
+  uint32_t padding;
 };
 
 struct SsQueuePool
@@ -42,9 +40,9 @@ struct SsQueuePool
   SsQueuePool* previous;
   SsQueuePool* next;
 
-  int32_t unaligned;
+  uint32_t num;
 
-  int32_t num;
+  uint32_t padding;
 };
 
 struct ssQueue
@@ -55,71 +53,66 @@ struct ssQueue
   SsQueuePool* head;
   SsQueuePool* tail;
 
-  int32_t numNodes;
-  int32_t numPools;
-  int32_t numChunks;
+  uint32_t numNodes;
+  uint32_t numPools;
+  uint32_t numChunks;
 
-  int32_t indexBack;
-  int32_t indexFront;
+  uint32_t indexBack;
+  uint32_t indexFront;
 
-  int32_t max;
+  uint32_t max;
 
-  int32_t counter;
+  uint32_t counter;
 
-  int32_t resize;
-  int32_t capacity;
+  uint32_t resize;
+  uint32_t capacity;
 
-  int32_t sizeOfRef;
-  int32_t sizeOf;
+  uint32_t sizeOfRef;
+  uint32_t sizeOf;
 
-  int32_t padding;
+  uint32_t padding;
 };
 
 #include "ssQueue_nocomments.h"
 
 #include "blah_aligned_alloc.h"
 
-static size_t SsQueueAlignedOfValue(size_t size)
+static uint32_t SsQueueAlignedOfValue(uint32_t size)
   { return (size % sizeof(void*) ) ? size + (sizeof(void*) - size % sizeof(void*) ) : size; }
 
-static size_t SsQueueGetSizeOfPoolHeader()
+static uint32_t SsQueueGetSizeOfPoolHeader()
   { return SsQueueAlignedOfValue(sizeof(SsQueuePool) ); }
 
-static size_t SsQueueGetSizeOfSsQueueHeader()
+static uint32_t SsQueueGetSizeOfSsQueueHeader()
   { return SsQueueAlignedOfValue(sizeof(ssQueue) ); }
 
-static size_t SsQueueGetSizeOfChunk(size_t sizeOf)
+static uint32_t SsQueueGetSizeOfChunk(uint32_t sizeOf)
   { return SsQueueAlignedOfValue(sizeOf); }
 
-static void SsQueuePoolSetUnaligned(SsQueuePool* pool, uint8_t* unaligned)
-  { pool->unaligned = (int)( (uint8_t*)unaligned - (uint8_t*)pool); }
+static uint32_t SsQueueGetPoolSizeOf(ssQueue* _this, uint32_t nmemb)
+  { return SsQueueGetSizeOfPoolHeader() + nmemb * _this->sizeOf; }
 
-static uint8_t* SsQueuePoolGetUnaligned(SsQueuePool* pool)
-  { return (uint8_t*)pool + (ptrdiff_t)pool->unaligned; }
+static uint8_t* SsQueuePoolToChunkOperatorIndex(ssQueue* _this, SsQueuePool* pool, uint32_t index)
+  { return (uint8_t*)pool + SsQueueGetSizeOfPoolHeader() + index * _this->sizeOf; }
 
-static size_t SsQueueGetPoolSizeOf(ssQueue* _this, size_t nmemb)
-  { return SsQueueGetSizeOfPoolHeader() + nmemb * (size_t)_this->sizeOf; }
-
-static uint8_t* SsQueuePoolToChunkOperatorIndex(ssQueue* _this, SsQueuePool* pool, size_t index)
-  { return (uint8_t*)pool + SsQueueGetSizeOfPoolHeader() + index * (size_t)_this->sizeOf; }
-
-static uint8_t* SsQueueNodeToChunkOperatorIndex(ssQueue* _this, SsQueueNode* node, size_t index)
-  { return node->chunk + index * (size_t)_this->sizeOf; }
+static uint8_t* SsQueueNodeToChunkOperatorIndex(ssQueue* _this, SsQueueNode* node, uint32_t index)
+  { return node->chunk + index * _this->sizeOf; }
 
 static void SsQueueMemcpySsQueue(uint8_t* destination, ssQueue* source)
   { memcpy(destination, source, sizeof(ssQueue) ); }
 
 static void SsQueueMemcpyChunk(ssQueue* _this, void* destination, void* source)
-  { memcpy(destination, source, (size_t)_this->sizeOfRef); }
+  { memcpy(destination, source, _this->sizeOfRef); }
 
 // free in reverse order by walking previous from tail
-static void SsQueuePoolListFree(SsQueuePool* current)
+static void SsQueuePoolListFree(ssQueue* _this, SsQueuePool* current)
 {
   for(SsQueuePool* previous = 0; current; current = previous)
   {
     previous = current->previous;
 
-    blah_free_aligned_sized(SsQueuePoolGetUnaligned(current), 0, 0);
+    if(current != _this->head)
+      blah_free_aligned_sized(current);
   }
 }
 
@@ -127,24 +120,24 @@ static void SsQueuePoolListFree(SsQueuePool* current)
 static void SsQueueDebug(ssQueue* _this)
 {
   {
-    int64_t blah = 0;
+    uint64_t blah = 0;
     SsQueueGetFront(_this, &blah);
-    printf(" front %i", (int)blah);
+    printf(" front %i", (uint32_t)blah);
   }
   printf(";");
   {
-    int64_t blah = 0;
+    uint64_t blah = 0;
     SsQueueGetBack(_this, &blah);
-    printf(" back %i", (int)blah);
+    printf(" back %i", (uint32_t)blah);
   }
   printf("\n");
 
   printf("get at");
-  for(int index = 0; index < _this->numChunks; index++)
+  for(uint32_t index = 0; index < _this->numChunks; index++)
   {
-    int64_t blah = 0;
+    uint64_t blah = 0;
     SsQueueGetAt(_this, index, &blah);
-    printf(" %i", (int)blah);
+    printf(" %i", (uint32_t)blah);
   }
   printf("\n");
 }
@@ -153,14 +146,16 @@ static void SsQueueDeepDebug1(ssQueue* _this)
 {
   SsQueueNode* node = _this->front;
 
+  uint32_t queueSize = 0;
+
   printf("num %i; ", SsQueueNum(_this) );
 
   printf("[");
-  for(int index = 0; index < node->num; index++)
+  for(uint32_t index = 0; index < node->num; index++)
   {
-    uint8_t* chunk = SsQueueNodeToChunkOperatorIndex(_this, node, (size_t)index);
+    uint8_t* chunk = SsQueueNodeToChunkOperatorIndex(_this, node, index);
 
-    printf("%i", (int)( *(int64_t*)chunk) );
+    printf("%i", (uint32_t)( *(uint64_t*)chunk) );
 
     if(index != node->num - 1)
       printf(" ");
@@ -172,11 +167,11 @@ static void SsQueueDeepDebug1(ssQueue* _this)
   while(node != _this->front)
   {
     printf("[");
-    for(int index = 0; index < node->num; index++)
+    for(uint32_t index = 0; index < node->num; index++)
     {
-      uint8_t* chunk = SsQueueNodeToChunkOperatorIndex(_this, node, (size_t)index);
+      uint8_t* chunk = SsQueueNodeToChunkOperatorIndex(_this, node, index);
 
-      printf("%i", (int)( *(int64_t*)chunk) );
+      printf("%i", (uint32_t)( *(uint64_t*)chunk) );
 
       if(index != node->num - 1)
         printf(" ");
@@ -190,11 +185,11 @@ static void SsQueueDeepDebug1(ssQueue* _this)
 
 static void SsQueueDeepDebug2(ssQueue* _this)
 {
-  int index = _this->indexFront;
+  uint32_t index = _this->indexFront;
   SsQueueNode* node = _this->front;
 
   printf("[");
-  for(int count = 0; count < _this->numChunks; count++)
+  for(uint32_t count = 0; count < _this->numChunks; count++)
   {
     if(index >= node->num)
     {
@@ -204,12 +199,12 @@ static void SsQueueDeepDebug2(ssQueue* _this)
       printf("][");
     }
 
-    uint8_t* chunk = SsQueueNodeToChunkOperatorIndex(_this, node, (size_t)index);
+    uint8_t* chunk = SsQueueNodeToChunkOperatorIndex(_this, node, index);
 
     uint64_t client = 0;
     SsQueueMemcpyChunk(_this, &client, chunk);
 
-    printf("%i", (int)client);
+    printf("%i", (uint32_t)client);
 
     if(index != (node->num - 1) && count != (_this->numChunks - 1) )
       printf(" ");
@@ -226,26 +221,29 @@ static uint8_t* SsQueueGetPreviousBackChunk(ssQueue* _this)
   uint8_t* chunk = 0;
 
   SsQueueNode* node = _this->back;
-  int index = _this->indexBack - 1;
+  uint32_t index = _this->indexBack;
 
-  if(index < 0)
+  if( !index)
   {
     node = node->previous;
 
     // use new node in arithmetic
-    index = node->num + index;
+    index = node->num - 1;
+  }
+  else
+  {
+    index--;
   }
 
-  chunk = SsQueueNodeToChunkOperatorIndex(_this, node, (size_t)index);
+  chunk = SsQueueNodeToChunkOperatorIndex(_this, node, index);
 
   return chunk;
 }
 
+// _this->indexBack-- is integrated into the call as if it had occurred before the call
 static void SsQueueStateChangeProcessRolloverBackPrevious(ssQueue* _this)
 {
-  int index = _this->indexBack;
-
-  if(index < 0)
+  if( !_this->indexBack)
   {
     SsQueueNode* node = _this->back;
 
@@ -254,29 +252,30 @@ static void SsQueueStateChangeProcessRolloverBackPrevious(ssQueue* _this)
     _this->back = node;
 
     // use new node in arithmetic
-    _this->indexBack = node->num + index;
+    _this->indexBack = node->num - 1;
+  }
+  else
+  {
+    _this->indexBack--;
   }
 }
 
 static void SsQueueStateChangeProcessRolloverBackNext(ssQueue* _this)
 {
   SsQueueNode* node = _this->back;
-  int index = _this->indexBack;
 
-  if(index >= node->num)
+  if(_this->indexBack == node->num)
   {
     _this->back = node->next;
 
-    // use old node in arithmetic
-    _this->indexBack = index - node->num;
+    _this->indexBack = 0;
   }
 }
 
+// _this->indexFront-- is integrated into the call as if it had occurred before the call
 static void SsQueueStateChangeProcessRolloverFrontPrevious(ssQueue* _this)
 {
-  int index = _this->indexFront;
-
-  if(index < 0)
+  if( !_this->indexFront)
   {
     SsQueueNode* node = _this->front;
 
@@ -285,89 +284,69 @@ static void SsQueueStateChangeProcessRolloverFrontPrevious(ssQueue* _this)
     _this->front = node;
 
     // use new node in arithmetic
-    _this->indexFront = node->num + index;
+    _this->indexFront = node->num - 1;
+  }
+  else
+  {
+    _this->indexFront--;
   }
 }
 
 static void SsQueueStateChangeProcessRolloverFrontNext(ssQueue* _this)
 {
   SsQueueNode* node = _this->front;
-  int index = _this->indexFront;
 
-  if(index >= node->num)
+  if(_this->indexFront == node->num)
   {
     _this->front = node->next;
 
-    // use old node in arithmetic
-    _this->indexFront = index - node->num;
+    _this->indexFront = 0;
   }
 }
 
-static bool SsQueueResizeNewPool(ssQueue* _this, size_t minimumCapacity)
+static bool SsQueueResizeNewPool(ssQueue* _this, uint32_t minimumCapacity)
 {
   bool result = false;
 
-  int diff = 0;
+  uint32_t diff = 0;
 
-  size_t size = 0;
+  uint32_t size = 0;
 
-  uint8_t* unaligned = 0;
-  uint8_t* aligned = 0;
+  uint8_t* pointer = 0;
 
   SsQueuePool* pool = 0;
 
   if(minimumCapacity > 0)
-  {
-    diff = (int)minimumCapacity;
-  }
-  else if(_this->resize < -1)
-  {
-    int resize = -_this->resize - 1;
-
-    if(_this->max <= resize)
-      diff = _this->max;
-    else
-      diff = resize;
-
-    if(_this->max + diff > _this->capacity)
-      diff = _this->capacity - _this->max;
-  }
-  else if(_this->resize == -1)
-  {
+    diff = minimumCapacity;
+  else if(_this->max <= _this->resize)
     diff = _this->max;
-
-    if(_this->max + diff > _this->capacity)
-      diff = _this->capacity - _this->max;
-  }
-  else if(_this->resize > 0)
-  {
+  else
     diff = _this->resize;
 
-    if(_this->max + diff > _this->capacity)
-      diff = _this->capacity - _this->max;
-  }
+  if(_this->max + diff > _this->capacity)
+    diff = _this->capacity - _this->max;
 
   if( !diff)
     goto error;
 
-  size = SsQueueGetPoolSizeOf(_this, (size_t)diff);
+  size = SsQueueGetPoolSizeOf(_this, diff);
 
   if(minimumCapacity > 0)
     size += SsQueueGetSizeOfSsQueueHeader();
 
-  aligned = blah_aligned_alloc(size, &unaligned, true);
+  pointer = (uint8_t*)blah_aligned_alloc(size);
 
   if(minimumCapacity > 0)
-    aligned += SsQueueGetSizeOfSsQueueHeader();
+    pointer += SsQueueGetSizeOfSsQueueHeader();
 
-  pool = (SsQueuePool*)aligned;
+  pool = (SsQueuePool*)pointer;
 
   if( !pool)
     goto error;
 
   pool->previous = 0;
   pool->next = 0;
-  SsQueuePoolSetUnaligned(pool, unaligned);
+
   pool->num = diff;
 
   if( !_this->head)
@@ -394,9 +373,9 @@ static bool SsQueueResizeNewPool(ssQueue* _this, size_t minimumCapacity)
     _this->tail->next = pool;
     pool->previous = _this->tail;
 
-    int count_lhs = (_this->indexBack + _this->back->num) % _this->back->num;
+    uint32_t count_lhs = (_this->indexBack + _this->back->num) % _this->back->num;
 
-    int count_rhs = _this->back->num - count_lhs;
+    uint32_t count_rhs = _this->back->num - count_lhs;
 
     if(count_lhs)
     {
@@ -417,7 +396,7 @@ static bool SsQueueResizeNewPool(ssQueue* _this, size_t minimumCapacity)
       middle->num = pool->num;
 
       SsQueueNode* splitRhs = &pool->front;
-      splitRhs->chunk = SsQueueNodeToChunkOperatorIndex(_this, _this->back, (size_t)_this->indexBack);
+      splitRhs->chunk = SsQueueNodeToChunkOperatorIndex(_this, _this->back, _this->indexBack);
       splitRhs->num = count_rhs; //  count_rhs == _this->back->num - _this->indexBack
 
       // right to left
@@ -490,7 +469,7 @@ error:
   return result;
 }
 
-static bool SsQueueResize(ssQueue* _this, size_t minimumCapacity)
+static bool SsQueueResize(ssQueue* _this, uint32_t minimumCapacity)
 {
   bool result = false;
 
@@ -506,22 +485,22 @@ error:
   return result;
 }
 
-ssQueue* SsQueueConstruct(int sizeOf, int minimumCapacity, int maximumCapacity, int resize)
+ssQueue* SsQueueConstruct(uint32_t sizeOf, uint32_t minimumCapacity, uint32_t maximumCapacity, uint32_t resize)
 {
   uint8_t* result = 0;
 
   ssQueue _this = {0};
 
-  if(sizeOf <= 0 || minimumCapacity <= 0 || minimumCapacity > maximumCapacity || !resize)
+  if( !sizeOf || !minimumCapacity || minimumCapacity > maximumCapacity || !resize)
     goto error;
 
   _this.resize = resize;
   _this.capacity = maximumCapacity;
 
   _this.sizeOfRef = sizeOf;
-  _this.sizeOf = (int)SsQueueGetSizeOfChunk( (size_t)sizeOf);
+  _this.sizeOf = SsQueueGetSizeOfChunk(sizeOf);
 
-  if( !SsQueueResize( &_this, (size_t)minimumCapacity) || !_this.head)
+  if( !SsQueueResize( &_this, minimumCapacity) || !_this.head)
     goto error;
 
   result = (uint8_t*)_this.head - (ptrdiff_t)SsQueueGetSizeOfSsQueueHeader();
@@ -532,14 +511,15 @@ error:
   return (ssQueue*)result;
 }
 
-int SsQueueDestruct(ssQueue** reference/*_this*/)
+bool SsQueueDestruct(ssQueue** reference, uint32_t* num)
 {
-  int result = -1;
-  int numChunks = 0;
+  bool result = false;
+
+  uint32_t numChunks = 0;
 
   ssQueue* _this = 0;
 
-  if( !reference)
+  if( !reference || !num)
     goto error;
 
   _this = reference[0];
@@ -549,38 +529,45 @@ int SsQueueDestruct(ssQueue** reference/*_this*/)
 
   numChunks = _this->numChunks;
 
-  SsQueuePoolListFree(_this->tail);
+  SsQueuePoolListFree(_this, _this->tail);
+  
+  blah_free_aligned_sized(_this);
 
   reference[0] = 0;
 
-  result = numChunks;
+  *num = numChunks;
+  
+  result = true;
 
 error:
   return result;
 }
 
-int SsQueueNum(ssQueue* _this)
+bool SsQueueNum(ssQueue* _this, uint32_t* num)
 {
-  int result = -1;
+  bool result = false;
 
-  if( !_this)
+  if( !_this || !num)
     goto error;
 
-  result = _this->numChunks;
+  *num = _this->numChunks;
+  
+  result = true;
 
 error:
   return result;
 }
 
-int SsQueueReset(ssQueue* _this)
+bool SsQueueReset(ssQueue* _this, uint32_t* num)
 {
-  int result = -1;
-  int numChunksRef = 0;
+  bool result = false;
 
-  if( !_this)
+  uint32_t numChunks = 0;
+
+  if( !_this || !num)
     goto error;
 
-  numChunksRef = _this->numChunks;
+  numChunks = _this->numChunks;
 
   _this->front = _this->back;
 
@@ -591,7 +578,9 @@ int SsQueueReset(ssQueue* _this)
 
   _this->counter++;
 
-  result = numChunksRef;
+  *num = numChunks;
+  
+  result = true;
 
 error:
   return result;
@@ -615,7 +604,7 @@ bool SsQueuePushBack(ssQueue* _this, void* client)
   if(_this->numChunks >= _this->max)
     goto error;
 
-  chunk = SsQueueNodeToChunkOperatorIndex(_this, _this->back, (size_t)_this->indexBack);
+  chunk = SsQueueNodeToChunkOperatorIndex(_this, _this->back, _this->indexBack);
 
   _this->indexBack++;
 
@@ -627,7 +616,7 @@ bool SsQueuePushBack(ssQueue* _this, void* client)
   SsQueueMemcpyChunk(_this, chunk, client);
 
 #if BLAH_DEBUG
-  printf("pushed to back %i;", (int)( *(int64_t*)client) );
+  printf("pushed to back %i;", (uint32_t)( *(uint64_t*)client) );
   SsQueueDebug(_this);
   SsQueueDeepDebug1(_this);
   SsQueueDeepDebug2(_this);
@@ -645,14 +634,13 @@ bool SsQueuePopBack(ssQueue* _this, void* client)
 
   uint8_t* chunk = 0;
 
-  if( !_this || !client || _this->numChunks <= 0)
+  if( !_this || !client || !_this->numChunks)
     goto error;
 
-  _this->indexBack--;
-
+  // _this->indexBack-- is performed inside of SsQueueStateChangeProcessRolloverBackPrevious(...)
   SsQueueStateChangeProcessRolloverBackPrevious(_this);
 
-  chunk = SsQueueNodeToChunkOperatorIndex(_this, _this->back, (size_t)_this->indexBack);
+  chunk = SsQueueNodeToChunkOperatorIndex(_this, _this->back, _this->indexBack);
 
   _this->numChunks--;
 
@@ -682,18 +670,17 @@ bool SsQueuePushFront(ssQueue* _this, void* client)
   if(_this->numChunks >= _this->max)
     goto error;
 
-  _this->indexFront--;
-
+  // _this->indexFront-- is performed inside of SsQueueStateChangeProcessRolloverFrontPrevious(...)
   SsQueueStateChangeProcessRolloverFrontPrevious(_this);
 
-  chunk = SsQueueNodeToChunkOperatorIndex(_this, _this->front, (size_t)_this->indexFront);
+  chunk = SsQueueNodeToChunkOperatorIndex(_this, _this->front, _this->indexFront);
 
   _this->numChunks++;
 
   SsQueueMemcpyChunk(_this, chunk, client);
 
 #if BLAH_DEBUG
-  printf("pushed to front %i;", (int)( *(int64_t*)client) );
+  printf("pushed to front %i;", (uint32_t)( *(uint64_t*)client) );
   SsQueueDebug(_this);
   SsQueueDeepDebug1(_this);
   SsQueueDeepDebug2(_this);
@@ -714,7 +701,7 @@ bool SsQueuePopFront(ssQueue* _this, void* client)
   if( !_this || !client || _this->numChunks <= 0)
     goto error;
 
-  chunk = SsQueueNodeToChunkOperatorIndex(_this, _this->front, (size_t)_this->indexFront);
+  chunk = SsQueueNodeToChunkOperatorIndex(_this, _this->front, _this->indexFront);
 
   _this->indexFront++;
 
@@ -726,7 +713,7 @@ bool SsQueuePopFront(ssQueue* _this, void* client)
   SsQueueMemcpyChunk(_this, client, chunk);
 
 #if BLAH_DEBUG
-  printf("popped from front %i;", (int)( *(int64_t*)client) );
+  printf("popped from front %i;", (uint32_t)( *(uint64_t*)client) );
   SsQueueDebug(_this);
   SsQueueDeepDebug1(_this);
   SsQueueDeepDebug2(_this);
@@ -744,7 +731,7 @@ bool SsQueueGetBack(ssQueue* _this, void* client)
 
   uint8_t* chunk = 0;
 
-  if( !_this || !client || _this->numChunks <= 0)
+  if( !_this || !client || !_this->numChunks)
     goto error;
 
   chunk = SsQueueGetPreviousBackChunk(_this);
@@ -766,7 +753,7 @@ bool SsQueueSetBack(ssQueue* _this, void* client)
 
   uint8_t* chunk = 0;
 
-  if( !_this || !client || _this->numChunks <= 0)
+  if( !_this || !client || !_this->numChunks)
     goto error;
 
   chunk = SsQueueGetPreviousBackChunk(_this);
@@ -788,10 +775,10 @@ bool SsQueueGetFront(ssQueue* _this, void* client)
 
   uint8_t* chunk = 0;
 
-  if( !_this || !client || _this->numChunks <= 0)
+  if( !_this || !client || !_this->numChunks)
     goto error;
 
-  chunk = SsQueueNodeToChunkOperatorIndex(_this, _this->front, (size_t)_this->indexFront);
+  chunk = SsQueueNodeToChunkOperatorIndex(_this, _this->front, _this->indexFront);
 
   if( !chunk)
     goto error;
@@ -810,10 +797,10 @@ bool SsQueueSetFront(ssQueue* _this, void* client)
 
   uint8_t* chunk = 0;
 
-  if( !_this || !client || _this->numChunks <= 0)
+  if( !_this || !client || !_this->numChunks)
     goto error;
 
-  chunk = SsQueueNodeToChunkOperatorIndex(_this, _this->front, (size_t)_this->indexFront);
+  chunk = SsQueueNodeToChunkOperatorIndex(_this, _this->front, _this->indexFront);
 
   if( !chunk)
     goto error;
@@ -826,20 +813,20 @@ error:
   return result;
 }
 
-bool SsQueueGetAt(ssQueue* _this, int index, void* client)
+bool SsQueueGetAt(ssQueue* _this, uint32_t index, void* client)
 {
   bool result = false;
 
-  if( !_this || !client || index < 0 || index >= _this->numChunks)
+  if( !_this || !client || index >= _this->numChunks)
     goto error;
 
   index += _this->indexFront;
 
-  for(SsQueueNode* node = _this->front; index >= 0; node = node->next)
+  for(SsQueueNode* node = _this->front; node; node = node->next)
   {
     if(index < node->num)
     {
-      uint8_t* chunk = SsQueueNodeToChunkOperatorIndex(_this, node, (size_t)index);
+      uint8_t* chunk = SsQueueNodeToChunkOperatorIndex(_this, node, index);
 
       SsQueueMemcpyChunk(_this, client, chunk);
 
@@ -848,6 +835,9 @@ bool SsQueueGetAt(ssQueue* _this, int index, void* client)
       break;
     }
 
+    if(node->num > index)
+      break;
+
     index -= node->num;
   }
 
@@ -855,20 +845,20 @@ error:
   return result;
 }
 
-bool SsQueueSetAt(ssQueue* _this, int index, void* client)
+bool SsQueueSetAt(ssQueue* _this, uint32_t index, void* client)
 {
   bool result = false;
 
-  if( !_this || !client || index < 0 || index >= _this->numChunks)
+  if( !_this || !client || index >= _this->numChunks)
     goto error;
 
   index += _this->indexFront;
 
-  for(SsQueueNode* node = _this->front; index >= 0; node = node->next)
+  for(SsQueueNode* node = _this->front; node; node = node->next)
   {
     if(index < node->num)
     {
-      uint8_t* chunk = SsQueueNodeToChunkOperatorIndex(_this, node, (size_t)index);
+      uint8_t* chunk = SsQueueNodeToChunkOperatorIndex(_this, node, index);
 
       SsQueueMemcpyChunk(_this, chunk, client);
 
@@ -876,6 +866,9 @@ bool SsQueueSetAt(ssQueue* _this, int index, void* client)
 
       break;
     }
+    
+    if(node->num > index)
+      break;
 
     index -= node->num;
   }

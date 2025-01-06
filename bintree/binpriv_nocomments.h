@@ -16,8 +16,8 @@ struct BinaryTreeNode
   BinaryTreeNode* right;
   BinaryTreeNode* parent;
 
-  int32_t color;
-  int32_t padding;
+  uint32_t color;
+  uint32_t padding;
 };
 
 struct BinaryTree
@@ -32,8 +32,6 @@ struct BinaryTree
 
   binaryTreeEvaluate clientEvaluate;
 
-  uint8_t* unaligned;
-
   // main allocator for BinaryTree nodes
   ssmm* allocator;
 
@@ -41,10 +39,10 @@ struct BinaryTree
   ssStack* stack;
   ssQueue* queue;
 
-  int32_t maxStack;
-  int32_t maxQueue;
+  uint32_t maxStack;
+  uint32_t maxQueue;
 
-  int32_t numberOfNodes;
+  uint32_t numberOfNodes;
 
-  int32_t sizeOfClient;
+  uint32_t sizeOfClient;
 };

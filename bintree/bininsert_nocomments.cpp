@@ -144,7 +144,7 @@ int bintree::insert(void* object, binaryTreeCompare lessThan)
   x->left = 0;
   x->right = 0;
 
-  memcpy(GETCLIENT(x), object, (size_t)tree->sizeOfClient);
+  memcpy(GETCLIENT(x), object, tree->sizeOfClient);
 
   BinInsert(tree, x);
 

@@ -4,13 +4,13 @@
 
 struct ssmm;
 
-ssmm* SsmmConstruct(int sizeOf, int minimumCapacity, int maximumCapacity, int resize);
+ssmm* SsmmConstruct(uint32_t sizeOf, uint32_t minimumCapacity, uint32_t maximumCapacity, uint32_t resize);
 
-int SsmmDestruct(ssmm** _this/*reference*/);
+bool SsmmDestruct(ssmm** _this, uint32_t* num);
 
-int SsmmNum(ssmm* _this);
+bool SsmmNum(ssmm* _this, uint32_t* num);
 
-int SsmmReset(ssmm* _this);
+bool SsmmReset(ssmm* _this, uint32_t* num);
 
 void* SsmmAlloc(ssmm* _this);
 

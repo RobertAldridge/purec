@@ -7,7 +7,10 @@
 // integrated for root sentinel
 void IterativePreorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binaryTreeEvaluate ClientEvaluate)
 {
+  uint32_t stackSize = 0;
+
   // PSTACK Stack = InitStack()
+  SsStackReset(tree->stack, &stackSize);
 
   BinaryTreeNode* LeftChild = 0;
   BinaryTreeNode* RightChild = 0;
@@ -28,9 +31,10 @@ void IterativePreorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binar
         if( !SsStackPush(tree->stack, &RightChild) )
           break;
 
-        ptrdiff_t stackSize = SsStackNum(tree->stack);
-        if(stackSize >= 0 && stackSize > tree->maxStack)
-          tree->maxStack = (int)stackSize;
+        stackSize = 0;
+
+        if(SsStackNum(tree->stack, &stackSize) && stackSize > tree->maxStack)
+          tree->maxStack = stackSize;
 
         // Stack->Push( &LeftChild)
         // node = Stack->Pop()
@@ -51,8 +55,10 @@ void IterativePreorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binar
     }
     else
     {
+      stackSize = 0;
+
       // if(Stack->Empty() == TRUE)
-      if(SsStackNum(tree->stack) <= 0)
+      if( !SsStackNum(tree->stack, &stackSize) || !stackSize)
         break;
 
       // node = Stack->Pop()
@@ -60,14 +66,15 @@ void IterativePreorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binar
         break;
     }
   }
-
-  SsStackReset(tree->stack);
 }
 
 // integrated for root sentinel
 void IterativeInorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binaryTreeEvaluate ClientEvaluate)
 {
+  uint32_t stackSize = 0;
+
   // PSTACK Stack = InitStack()
+  SsStackReset(tree->stack, &stackSize);
 
   while(1)
   {
@@ -82,12 +89,13 @@ void IterativeInorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binary
       node = node->left;
     }
 
-    ptrdiff_t stackSize = SsStackNum(tree->stack);
-    if(stackSize >= 0 && stackSize > tree->maxStack)
-      tree->maxStack = (int)stackSize;
+    stackSize = 0;
+    
+    if(SsStackNum(tree->stack, &stackSize) && stackSize > tree->maxStack)
+      tree->maxStack = stackSize;
 
     // if(Stack->Empty() )
-    if(SsStackNum(tree->stack) <= 0)
+    if( !stackSize)
       break;
 
     // node = Stack->Pop()
@@ -99,14 +107,15 @@ void IterativeInorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binary
 
     node = node->right;
   }
-
-  SsStackReset(tree->stack);
 }
 
 // integrated for root sentinel
 void IterativePostorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binaryTreeEvaluate ClientEvaluate)
 {
+  uint32_t stackSize = 0;
+
   // PSTACK Stack = InitStack()
+  SsStackReset(tree->stack, &stackSize);
 
   BinaryTreeNode* NodePushed = 0;
   BinaryTreeNode* RightChild = 0;
@@ -127,12 +136,13 @@ void IterativePostorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, bina
 
 popOneOffStack:
 
-    ptrdiff_t stackSize = SsStackNum(tree->stack);
-    if(stackSize >= 0 && stackSize > tree->maxStack)
-      tree->maxStack = (int)stackSize;
+    stackSize = 0;
+
+    if(SsStackNum(tree->stack, &stackSize) && stackSize > tree->maxStack)
+      tree->maxStack = stackSize;
 
     // if(Stack->Empty() )
-    if(SsStackNum(tree->stack) <= 0)
+    if( !stackSize)
       break;
 
     // node = Stack->Pop()
@@ -165,14 +175,15 @@ popOneOffStack:
       goto popOneOffStack;
     }
   }
-
-  SsStackReset(tree->stack);
 }
 
 // integrated for root sentinel
 void IterativeLevelorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binaryTreeEvaluate ClientEvaluate)
 {
+  uint32_t queueSize = 0;
+
   // PQUEUE Queue = InitQueue()
+  SsQueueReset(tree->queue, &queueSize);
 
   BinaryTreeNode* LeftChild = 0;
   BinaryTreeNode* RightChild = 0;
@@ -181,12 +192,13 @@ void IterativeLevelorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, bin
   if( !SsQueuePushBack(tree->queue, &node) )
     goto error;
 
+  queueSize = 0;
+
   // while( !Queue->Empty() )
-  while(SsQueueNum(tree->queue) > 0)
+  while(SsQueueNum(tree->queue, &queueSize) && queueSize)
   {
-    ptrdiff_t queueSize = SsQueueNum(tree->queue);
     if(queueSize > tree->maxQueue)
-      tree->maxQueue = (int)queueSize;
+      tree->maxQueue = queueSize;
 
     // Queue->Get()
     if( !SsQueuePopFront(tree->queue, &node) )
@@ -211,10 +223,12 @@ void IterativeLevelorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, bin
       if( !SsQueuePushBack(tree->queue, &RightChild) )
         break;
     }
+
+    queueSize = 0;
   }
 
 error:
-  SsQueueReset(tree->queue);
+  return;
 }
 
 // integrated for root sentinel

@@ -4,13 +4,13 @@
 
 struct ssStack;
 
-ssStack* SsStackConstruct(int sizeOf, int minimumCapacity, int maximumCapacity, int resize);
+ssStack* SsStackConstruct(uint32_t sizeOf, uint32_t minimumCapacity, uint32_t maximumCapacity, uint32_t resize);
 
-int SsStackDestruct(ssStack** _this/*reference*/);
+bool SsStackDestruct(ssStack** _this, uint32_t* num);
 
-int SsStackNum(ssStack* _this);
+bool SsStackNum(ssStack* _this, uint32_t* num);
 
-int SsStackReset(ssStack* _this);
+bool SsStackReset(ssStack* _this, uint32_t* num);
 
 bool SsStackPush(ssStack* _this, void* client);
 bool SsStackPop(ssStack* _this, void* client);
@@ -18,5 +18,5 @@ bool SsStackPop(ssStack* _this, void* client);
 bool SsStackGet(ssStack* _this, void* client);
 bool SsStackSet(ssStack* _this, void* client);
 
-bool SsStackGetAt(ssStack* _this, int index, void* client);
-bool SsStackSetAt(ssStack* _this, int index, void* client);
+bool SsStackGetAt(ssStack* _this, uint32_t index, void* client);
+bool SsStackSetAt(ssStack* _this, uint32_t index, void* client);

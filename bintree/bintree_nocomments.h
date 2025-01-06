@@ -21,9 +21,9 @@ public:
   static const int postorder; // postorder == 2
   static const int levelorder; // levelorder == 3; levelorder == breadth-first
 
-  static bintree* init(int initialCapacity, int sizeOfEachObject, compare lessThan);
+  static bintree* init(uint32_t initialCapacity, uint32_t sizeOfEachObject, compare lessThan);
 
-  int isEmpty(int numberOfClientObjects[1] );
+  int isEmpty(uint32_t* numberOfClientObjects);
 
   int insert(void* object, compare lessThan);
 

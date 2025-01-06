@@ -232,7 +232,7 @@ void BinDeleteFixup(BinaryTree* tree, BinaryTreeNode* x)
 // integrated for root sentinel as long as y is never sentinelRoot
 BinaryTreeNode* BinDelete(BinaryTree* tree, BinaryTreeNode* z)
 {
-  int Color = 0;
+  uint32_t Color = 0;
 
 // Sentinel {
   BinaryTreeNode* T_Nil = &tree->sentinelLeaf;
