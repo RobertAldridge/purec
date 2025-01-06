@@ -107,6 +107,8 @@ static void SsArrayPoolListReverseAndFree(ssArray* _this, SsArrayPool* current)
   SsArrayPoolListFree(_this, previous);
 }
 
+// ZERO
+
 static bool SsArrayResizeExistingPool(ssArray* _this)
 {
   SsArrayPool* pool = _this->current->next;
@@ -246,13 +248,13 @@ bool SsArrayDestruct(ssArray** reference, uint32_t* num)
   numChunks = _this->numChunks;
 
   SsArrayPoolListReverseAndFree(_this, _this->head);
-  
+
   blah_free_aligned_sized(_this);
 
   reference[0] = 0;
 
   *num = numChunks;
-  
+
   result = true;
 
 error:
@@ -267,7 +269,7 @@ bool SsArrayNum(ssArray* _this, uint32_t* num)
     goto error;
 
   *num = _this->numChunks;
-  
+
   result = true;
 
 error:
@@ -300,7 +302,7 @@ bool SsArrayReset(ssArray* _this, uint32_t* num)
   _this->counter++;
 
   *num = numChunks;
-  
+
   result = true;
 
 error:
@@ -399,7 +401,7 @@ bool SsArrayGetAt(ssArray* _this, uint32_t index, void* client)
 
     if(pool->num > index)
       break;
-    
+
     index -= pool->num;
   }
 
@@ -426,10 +428,10 @@ bool SsArraySetAt(ssArray* _this, uint32_t index, void* client)
 
       break;
     }
-    
+
     if(pool->num > index)
       break;
-    
+
     index -= pool->num;
   }
 

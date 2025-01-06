@@ -90,7 +90,7 @@ void IterativeInorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binary
     }
 
     stackSize = 0;
-    
+
     if(SsStackNum(tree->stack, &stackSize) && stackSize > tree->maxStack)
       tree->maxStack = stackSize;
 
@@ -235,7 +235,7 @@ error:
 int bintree::dump(binaryTreeEvaluate clientEvaluate, ORDER TraversalOrder)
 {
   BinaryTree* tree = (BinaryTree*)this;
-  
+
   int result = RETURN_ERROR;
 
   BinaryTreeNode* root = 0;

@@ -12,7 +12,7 @@ using std::ptrdiff_t;
 using std::uint32_t;
 using std::uint8_t;
 
-#define BLAH_DEBUG 1
+#define BLAH_DEBUG 0
 
 #if BLAH_DEBUG
 #include <cstdio>
@@ -95,7 +95,7 @@ static void SsStackPoolListFree(ssStack* _this, SsStackPool* current)
 }
 
 #if BLAH_DEBUG
-static void SsStackDebug(ssStack* _this)
+static void SsStackDebugShallow(ssStack* _this)
 {
   {
     uint64_t blah = 0;
@@ -118,7 +118,10 @@ static void SsStackDeepDebug1(ssStack* _this)
 {
   SsStackPool* pool = _this->head;
 
-  printf("num %i; ", SsStackNum(_this) );
+  uint32_t stackSize = 0;
+  SsStackNum(_this, &stackSize);
+
+  printf("num %i; ", stackSize);
 
   printf("[");
   for(uint32_t index = 0; index < pool->num; index++)
@@ -152,8 +155,18 @@ static void SsStackDeepDebug1(ssStack* _this)
   }
   printf("\n\n");
 }
+
+static void SsStackDebug(const char* _string, ssStack* _this, void* client)
+{
+  printf("%s %i;", _string, (uint32_t)( *(uint64_t*)client) );
+  SsStackDebugShallow(_this);
+  SsStackDeepDebug1(_this);
+}
 #endif
 
+// ZERO
+
+// ONE
 static uint8_t* SsStackGetPreviousChunk(ssStack* _this)
 {
   uint8_t* chunk = 0;
@@ -179,6 +192,7 @@ static uint8_t* SsStackGetPreviousChunk(ssStack* _this)
   return chunk;
 }
 
+// TWO
 // _this->index-- is integrated into the call as if it had occurred before the call
 static void SsStackStateChangeProcessRolloverPrevious(ssStack* _this)
 {
@@ -198,6 +212,7 @@ static void SsStackStateChangeProcessRolloverPrevious(ssStack* _this)
   }
 }
 
+// THREE
 static void SsStackStateChangeProcessRolloverNext(ssStack* _this)
 {
   SsStackPool* pool = _this->current;
@@ -342,13 +357,13 @@ bool SsStackDestruct(ssStack** reference, uint32_t* num)
   numChunks = _this->numChunks;
 
   SsStackPoolListFree(_this, _this->tail);
-  
+
   blah_free_aligned_sized(_this);
 
   reference[0] = 0;
 
   *num = numChunks;
-  
+
   result = true;
 
 error:
@@ -363,7 +378,7 @@ bool SsStackNum(ssStack* _this, uint32_t* num)
     goto error;
 
   *num = _this->numChunks;
-  
+
   result = true;
 
 error:
@@ -373,7 +388,7 @@ error:
 bool SsStackReset(ssStack* _this, uint32_t* num)
 {
   bool result = false;
-  
+
   uint32_t numChunks = 0;
 
   if( !_this || !num)
@@ -390,7 +405,7 @@ bool SsStackReset(ssStack* _this, uint32_t* num)
   _this->counter++;
 
   *num = numChunks;
-  
+
   result = true;
 
 error:
@@ -428,9 +443,7 @@ bool SsStackPush(ssStack* _this, void* client)
   SsStackMemcpyChunk(_this, chunk, client);
 
 #if BLAH_DEBUG
-  printf("pushed %i;", (uint32_t)( *(uint64_t*)client) );
-  SsStackDebug(_this);
-  SsStackDeepDebug1(_this);
+  SsStackDebug("pushed", _this, client);
 #endif
 
   result = true;
@@ -458,9 +471,7 @@ bool SsStackPop(ssStack* _this, void* client)
   SsStackMemcpyChunk(_this, client, chunk);
 
 #if BLAH_DEBUG
-  printf("popped %i;", (uint32_t)( *(uint64_t*)client) );
-  SsStackDebug(_this);
-  SsStackDeepDebug1(_this);
+  SsStackDebug("popped", _this, client);
 #endif
 
   result = true;
@@ -532,7 +543,7 @@ bool SsStackGetAt(ssStack* _this, uint32_t index, void* client)
 
       break;
     }
-    
+
     if(pool->num > index)
       break;
 
@@ -565,7 +576,7 @@ bool SsStackSetAt(ssStack* _this, uint32_t index, void* client)
 
     if(pool->num > index)
       break;
-    
+
     index -= pool->num;
   }
 

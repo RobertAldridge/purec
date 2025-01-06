@@ -13,7 +13,7 @@ using std::uint64_t;
 using std::uint32_t;
 using std::uint8_t;
 
-#define BLAH_DEBUG 1
+#define BLAH_DEBUG 0
 
 #if BLAH_DEBUG
 #include <cstdio>
@@ -117,7 +117,7 @@ static void SsQueuePoolListFree(ssQueue* _this, SsQueuePool* current)
 }
 
 #if BLAH_DEBUG
-static void SsQueueDebug(ssQueue* _this)
+static void SsQueueDebugShallow(ssQueue* _this)
 {
   {
     uint64_t blah = 0;
@@ -147,8 +147,9 @@ static void SsQueueDeepDebug1(ssQueue* _this)
   SsQueueNode* node = _this->front;
 
   uint32_t queueSize = 0;
+  SsQueueNum(_this, &queueSize);
 
-  printf("num %i; ", SsQueueNum(_this) );
+  printf("num %i; ", queueSize);
 
   printf("[");
   for(uint32_t index = 0; index < node->num; index++)
@@ -214,8 +215,24 @@ static void SsQueueDeepDebug2(ssQueue* _this)
   }
   printf("]\n\n");
 }
+
+static void SsQueueDebugGrow(const char* _string, ssQueue* _this)
+{
+  printf("%s\n\n", _string);
+}
+
+static void SsQueueDebug(const char* _string, ssQueue* _this, void* client)
+{
+  printf("%s %i;", _string, (uint32_t)( *(uint64_t*)client) );
+  SsQueueDebugShallow(_this);
+  SsQueueDeepDebug1(_this);
+  SsQueueDeepDebug2(_this);
+}
 #endif
 
+// ZERO
+
+// ONE
 static uint8_t* SsQueueGetPreviousBackChunk(ssQueue* _this)
 {
   uint8_t* chunk = 0;
@@ -240,6 +257,7 @@ static uint8_t* SsQueueGetPreviousBackChunk(ssQueue* _this)
   return chunk;
 }
 
+// TWO
 // _this->indexBack-- is integrated into the call as if it had occurred before the call
 static void SsQueueStateChangeProcessRolloverBackPrevious(ssQueue* _this)
 {
@@ -260,6 +278,7 @@ static void SsQueueStateChangeProcessRolloverBackPrevious(ssQueue* _this)
   }
 }
 
+// THREE
 static void SsQueueStateChangeProcessRolloverBackNext(ssQueue* _this)
 {
   SsQueueNode* node = _this->back;
@@ -272,6 +291,7 @@ static void SsQueueStateChangeProcessRolloverBackNext(ssQueue* _this)
   }
 }
 
+// FOUR
 // _this->indexFront-- is integrated into the call as if it had occurred before the call
 static void SsQueueStateChangeProcessRolloverFrontPrevious(ssQueue* _this)
 {
@@ -292,6 +312,7 @@ static void SsQueueStateChangeProcessRolloverFrontPrevious(ssQueue* _this)
   }
 }
 
+// FIVE
 static void SsQueueStateChangeProcessRolloverFrontNext(ssQueue* _this)
 {
   SsQueueNode* node = _this->front;
@@ -377,84 +398,76 @@ static bool SsQueueResizeNewPool(ssQueue* _this, uint32_t minimumCapacity)
 
     uint32_t count_rhs = _this->back->num - count_lhs;
 
+    SsQueueNode* newBack = &pool->back;
+    newBack->chunk = SsQueuePoolToChunkOperatorIndex(_this, pool, 0);
+    newBack->num = pool->num;
+
     if(count_lhs)
     {
 #if BLAH_DEBUG
-      printf("grow count_lhs != 0\n\n");
+      SsQueueDebugGrow("grow count_lhs != 0", _this);
 #endif
 
-      // _this->back->previous -> _this->back -> middle -> splitRhs -> _this->back->next
+      // _this->back->previous -> _this->back -> newBack -> newFront -> _this->back->next
       //
-      // middle is new back; splitRhs is new front
+      // newBack is new back; newFront is new front
       //
       // splitLhs _this->back[0, _this->indexBack); count is _this->indexBack
       //
-      // splitRhs _this->back[_this->indexBack, _this->back->num); count is _this->back->num - _this->indexBack
+      // newFront _this->back[_this->indexBack, _this->back->num); count is _this->back->num - _this->indexBack
 
-      SsQueueNode* middle = &pool->back;
-      middle->chunk = SsQueuePoolToChunkOperatorIndex(_this, pool, 0);
-      middle->num = pool->num;
-
-      SsQueueNode* splitRhs = &pool->front;
-      splitRhs->chunk = SsQueueNodeToChunkOperatorIndex(_this, _this->back, _this->indexBack);
-      splitRhs->num = count_rhs; //  count_rhs == _this->back->num - _this->indexBack
+      SsQueueNode* newFront = &pool->front;
+      newFront->chunk = SsQueueNodeToChunkOperatorIndex(_this, _this->back, _this->indexBack);
+      newFront->num = count_rhs; //  count_rhs == _this->back->num - _this->indexBack
 
       // right to left
 
-      // connect splitRhs <- _this->back
-      _this->back->next->previous = splitRhs;
-      splitRhs->next = _this->back->next;
+      // connect newFront <- _this->back
+      _this->back->next->previous = newFront;
+      newFront->next = _this->back->next;
 
-      // connect middle <- splitRhs
-      splitRhs->previous = middle;
-      middle->next = splitRhs;
+      // connect newBack <- newFront
+      newFront->previous = newBack;
+      newBack->next = newFront;
 
-      // connect _this->back <- middle
-      middle->previous = _this->back;
-      _this->back->next = middle;
+      // connect _this->back <- newBack
+      newBack->previous = _this->back;
+      _this->back->next = newBack;
 
       _this->back->num = count_lhs; // count_lhs == _this->indexBack
 
-      _this->back = middle;
-      _this->front = splitRhs;
+      _this->front = newFront;
 
       _this->numNodes += 2;
-
-      _this->indexBack = 0;
-      _this->indexFront = 0;
     }
     else// if( !count_lhs)
     {
 #if BLAH_DEBUG
-      printf("grow count_lhs == 0\n\n");
+      SsQueueDebugGrow("grow count_lhs == 0", _this);
 #endif
-
-      // _this->back->previous -> splitLhs -> _this->back -> _this->back->next
+      // _this->back->previous -> newBack -> _this->back -> _this->back->next
       //
-      // splitLhs is the newly created pool; splitLhs is the new back
-
-      SsQueueNode* splitLhs = &pool->back;
-      splitLhs->chunk = SsQueuePoolToChunkOperatorIndex(_this, pool, 0);
-      splitLhs->num = pool->num;
+      // newBack is the newly created pool; newBack is the new back
 
       // left to right
 
-      // connect _this->back -> splitLhs
-      _this->back->previous->next = splitLhs;
-      splitLhs->previous = _this->back->previous;
+      // connect _this->back -> newBack
+      _this->back->previous->next = newBack;
+      newBack->previous = _this->back->previous;
 
-      // connect splitLhs -> _this->back
-      splitLhs->next = _this->back;
-      _this->back->previous = splitLhs;
+      // connect newBack -> _this->back
+      newBack->next = _this->back;
+      _this->back->previous = newBack;
 
       //_this->front; doesn't change
-      _this->back = splitLhs;
 
       _this->numNodes++;
-
-      _this->indexBack = 0;
-      _this->indexFront = 0;
     }
+
+    _this->back = newBack;
+
+    _this->indexBack = 0;
+    _this->indexFront = 0;
   }
 
   _this->tail = pool;
@@ -530,13 +543,13 @@ bool SsQueueDestruct(ssQueue** reference, uint32_t* num)
   numChunks = _this->numChunks;
 
   SsQueuePoolListFree(_this, _this->tail);
-  
+
   blah_free_aligned_sized(_this);
 
   reference[0] = 0;
 
   *num = numChunks;
-  
+
   result = true;
 
 error:
@@ -551,7 +564,7 @@ bool SsQueueNum(ssQueue* _this, uint32_t* num)
     goto error;
 
   *num = _this->numChunks;
-  
+
   result = true;
 
 error:
@@ -579,7 +592,7 @@ bool SsQueueReset(ssQueue* _this, uint32_t* num)
   _this->counter++;
 
   *num = numChunks;
-  
+
   result = true;
 
 error:
@@ -616,10 +629,7 @@ bool SsQueuePushBack(ssQueue* _this, void* client)
   SsQueueMemcpyChunk(_this, chunk, client);
 
 #if BLAH_DEBUG
-  printf("pushed to back %i;", (uint32_t)( *(uint64_t*)client) );
-  SsQueueDebug(_this);
-  SsQueueDeepDebug1(_this);
-  SsQueueDeepDebug2(_this);
+  SsQueueDebug("pushed to back", _this, client);
 #endif
 
   result = true;
@@ -645,6 +655,10 @@ bool SsQueuePopBack(ssQueue* _this, void* client)
   _this->numChunks--;
 
   SsQueueMemcpyChunk(_this, client, chunk);
+
+#if BLAH_DEBUG
+  SsQueueDebug("popped from back", _this, client);
+#endif
 
   result = true;
 
@@ -680,10 +694,7 @@ bool SsQueuePushFront(ssQueue* _this, void* client)
   SsQueueMemcpyChunk(_this, chunk, client);
 
 #if BLAH_DEBUG
-  printf("pushed to front %i;", (uint32_t)( *(uint64_t*)client) );
-  SsQueueDebug(_this);
-  SsQueueDeepDebug1(_this);
-  SsQueueDeepDebug2(_this);
+  SsQueueDebug("pushed to front", _this, client);
 #endif
 
   result = true;
@@ -713,10 +724,7 @@ bool SsQueuePopFront(ssQueue* _this, void* client)
   SsQueueMemcpyChunk(_this, client, chunk);
 
 #if BLAH_DEBUG
-  printf("popped from front %i;", (uint32_t)( *(uint64_t*)client) );
-  SsQueueDebug(_this);
-  SsQueueDeepDebug1(_this);
-  SsQueueDeepDebug2(_this);
+  SsQueueDebug("popped from front", _this, client);
 #endif
 
   result = true;
@@ -866,7 +874,7 @@ bool SsQueueSetAt(ssQueue* _this, uint32_t index, void* client)
 
       break;
     }
-    
+
     if(node->num > index)
       break;
 

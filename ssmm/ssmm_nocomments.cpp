@@ -114,6 +114,8 @@ static void SsmmPoolListReverseAndFree(ssmm* _this, SsmmPool* current)
   SsmmPoolListFree(_this, previous);
 }
 
+// ZERO
+
 static bool SsArrayResizeExistingPool(ssmm* _this)
 {
   SsmmPool* pool = _this->current->next;
@@ -252,13 +254,13 @@ bool SsmmDestruct(ssmm** reference, uint32_t* num)
   numChunks = _this->numChunks;
 
   SsmmPoolListReverseAndFree(_this, _this->head);
-  
+
   blah_free_aligned_sized(_this);
 
   reference[0] = 0;
 
   *num = numChunks;
-  
+
   result = true;
 
 error:
@@ -273,7 +275,7 @@ bool SsmmNum(ssmm* _this, uint32_t* num)
     goto error;
 
   *num = _this->numChunks;
-  
+
   result = true;
 
 error:
@@ -305,7 +307,7 @@ bool SsmmReset(ssmm* _this, uint32_t* num)
   _this->max = pool->num;
 
   *num = numChunks;
-  
+
   result = true;
 
 error:

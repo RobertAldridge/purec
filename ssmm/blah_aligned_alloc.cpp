@@ -66,7 +66,7 @@ static NTSTATUS OpenPolicy(LPWSTR ServerName, DWORD DesiredAccess, PLSA_HANDLE P
   LSA_OBJECT_ATTRIBUTES ObjectAttributes = {0};
   LSA_UNICODE_STRING ServerString = {0};
   PLSA_UNICODE_STRING Server = 0;
-  
+
   NTSTATUS result = 0;
 
   memset( &ObjectAttributes, 0, sizeof(ObjectAttributes) );
@@ -79,14 +79,14 @@ static NTSTATUS OpenPolicy(LPWSTR ServerName, DWORD DesiredAccess, PLSA_HANDLE P
   }
 
   result = LsaOpenPolicy(Server, &ObjectAttributes, DesiredAccess, PolicyHandle);
-  
+
   return result;
 }
 
 NTSTATUS SetPrivilegeOnAccount(LSA_HANDLE PolicyHandle, PSID AccountSid, LPWSTR PrivilegeName, BOOL bEnable)
 {
   LSA_UNICODE_STRING PrivilegeString = {0};
-  
+
   NTSTATUS result = 0;
 
   InitLsaString( &PrivilegeString, PrivilegeName);
@@ -196,7 +196,7 @@ bool EnableLargePageSupport()
     printf("VirtualAlloc failed, error 0x%x", (uint32_t)GetLastError() );
 
   VirtualFree(largeBuffer, 0, MEM_RELEASE);
-  
+
   result = true;
 
 error:

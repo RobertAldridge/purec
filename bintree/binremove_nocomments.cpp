@@ -282,7 +282,7 @@ BinaryTreeNode* BinDelete(BinaryTree* tree, BinaryTreeNode* z)
   if(y != z)
   {
     // copy all fields besides left right parent color
-    memcpy(GETCLIENT(z), GETCLIENT(y), (size_t)tree->sizeOfClient); // todo - 2nd copy in delete
+    memcpy(GETCLIENT(z), GETCLIENT(y), tree->sizeOfClient); // todo - 2nd copy in delete
   }
 
   if(Color == BLACK)
@@ -307,7 +307,7 @@ BinaryTreeNode* BinDelete(BinaryTree* tree, BinaryTreeNode* z)
 int bintree::remove(void* objectKey, binaryTreeEquivalence equalTo, void* objectResult)
 {
   BinaryTree* tree = (BinaryTree*)this;
-  
+
   int result = RETURN_ERROR;
 
   BinaryTreeNode* t = 0;
@@ -337,7 +337,7 @@ int bintree::remove(void* objectKey, binaryTreeEquivalence equalTo, void* object
   }
 
   if(objectResult)
-    memcpy(objectResult, GETCLIENT(z), (size_t)tree->sizeOfClient);
+    memcpy(objectResult, GETCLIENT(z), tree->sizeOfClient);
 
   t = BinDelete(tree, z);
 
@@ -357,7 +357,7 @@ int bintree::remove(void* objectKey, binaryTreeEquivalence equalTo, void* object
   }
 
   tree->numberOfNodes--;
-  
+
   result = RETURN_OK;
 
 error:

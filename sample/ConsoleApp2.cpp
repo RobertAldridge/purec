@@ -590,6 +590,8 @@ bool blahTestStack()
 {
   bool result = false;
 
+  uint32_t stackSize = 0;
+
   ssStack* blahStack = 0;
 
   blahStack = SsStackConstruct(sizeof(int64_t), 10, 1000, 10);
@@ -663,7 +665,7 @@ bool blahTestStack()
       goto error;
   }
 
-  SsStackDestruct( &blahStack);
+  SsStackDestruct( &blahStack, &stackSize);
 
   result = true;
 
@@ -674,6 +676,8 @@ error:
 bool blahTestQueue()
 {
   bool result = false;
+
+  uint32_t queueSize = 0;
 
   ssQueue* blahQueue = 0;
 
@@ -748,7 +752,7 @@ bool blahTestQueue()
       goto error;
   }
 
-  SsQueueDestruct( &blahQueue);
+  SsQueueDestruct( &blahQueue, &queueSize);
 
   result = true;
 
@@ -756,7 +760,7 @@ error:
   return result;
 }
 
-static int binTreeTest();
+static bool binTreeTest(blahRandom* random);
 
 int main()
 {
@@ -764,7 +768,8 @@ int main()
 
   struct timespec sleep_time = {0};
 
-  EnableLargePageSupport();
+  if( !EnableLargePageSupport() )
+    goto errorLabel;
 
 //uint8_t** randomArray = 0;
 
@@ -801,7 +806,7 @@ int main()
 
   memset(randomArray, 0, sizeof(uint8_t*) * BLAH_SIZE);
 
-  for(int index = 0; index < BLAH_SIZE; index++)
+  for(uint32_t index = 0; index < BLAH_SIZE; index++)
   {
     try
     {
@@ -815,7 +820,7 @@ int main()
     if( !randomArray[index] )
       goto errorLabel;
 
-    for(int indexByte = 0; indexByte < 1024 * 1024; indexByte++)
+    for(uint32_t indexByte = 0; indexByte < 1024 * 1024; indexByte++)
     {
       randomArray[index][indexByte] = (uint8_t)(random.previous & 0xFF);
 
@@ -828,12 +833,12 @@ int main()
 
   thrd_sleep( &sleep_time, 0);
 
-  for(int index = BLAH_SIZE - 1; index >= 0; index--)
+  for(uint32_t index = BLAH_SIZE; index > 0; index--)
   {
     try
     {
-      blah_free_aligned_sized(randomArray[index], 0, 0);
-      randomArray[index] = 0;
+      blah_free_aligned_sized(randomArray[index - 1], 0, 0);
+      randomArray[index - 1] = 0;
     }
     catch(bad_alloc& )
     {
@@ -842,7 +847,7 @@ int main()
   }
 #endif
 
-  if(binTreeTest() )
+  if( !binTreeTest( &random) )
     goto errorLabel;
 
   goto successLabel;
@@ -871,7 +876,7 @@ successLabel:
 
   randomArray[0] = result2;
 
-  for(int index = 1; index < BLAH_SIZE; index++)
+  for(uint32_t index = 1; index < BLAH_SIZE; index++)
   {
     randomArray[index] = randomIterate(randomArray[index - 1] );
 
@@ -881,9 +886,9 @@ successLabel:
   // void qsort(void* base, size_t nmemb, size_t size, int(*compar)(const void*, const void*) )
   qsort(randomArray, BLAH_SIZE, sizeof(uint64_t), qsortCompare);
 
-  for(int index = 0; index < BLAH_SIZE; index++)
+  for(uint32_t index = 0; index < BLAH_SIZE; index++)
   {
-    printf("%llu %u\n", randomArray[index], (int)(randomArray[index] / (UINT64_MAX / 1000) ) );
+    printf("%llu %u\n", randomArray[index], (uint32_t)(randomArray[index] / (UINT64_MAX / 1000) ) );
   }
 
   // (a + b) * (c + d) ==
@@ -901,12 +906,12 @@ successLabel:
 // #include < stdio.h >
 //#include "bintree.h"
 
-//static const int myFatalError = -1;
-static const int myFatalError = -200;
+//static const uint32_t myFatalError = -1;
+static const uint32_t myFatalError = 0xFFFFFFFFUL;
 
 struct myStruct
 {
-  int testInt;
+  uint32_t testInt;
 };
 
 static int lessThan(myStruct* keyObject, myStruct* treeObject)
@@ -946,9 +951,9 @@ static int equal(myStruct* keyObject, myStruct* treeObject)
   return 0;
 }
 
-static int calculateLogBase2(int number)
+static uint32_t calculateLogBase2(uint32_t number)
 {
-  int result = 0;
+  uint32_t result = 0;
 
   while(number)
   {
@@ -960,9 +965,9 @@ static int calculateLogBase2(int number)
   return result;
 }
 
-static void swapInt(int& lhs, int& rhs)
+static void swapInt(uint32_t& lhs, uint32_t& rhs)
 {
-  int temporary = lhs;
+  uint32_t temporary = lhs;
 
   lhs = rhs;
   rhs = temporary;
@@ -970,15 +975,15 @@ static void swapInt(int& lhs, int& rhs)
 
 #include "ssmm.h"
 
-extern ssmm* SsmmConstruct(int sizeOf, int initialCapacity, bool isTentative);
-extern bool SsmmSetResize(ssmm* _this, int resize);
+extern ssmm* SsmmConstruct(uint32_t sizeOf, uint32_t initialCapacity, bool isTentative);
+extern bool SsmmSetResize(ssmm* _this, uint32_t resize);
 
-extern int gDebugRotate[69];
+extern uint32_t gDebugRotate[69];
 
-static int gFullCount = 0;
-static int gModCount = 0;
+static uint32_t gFullCount = 0;
+static uint32_t gModCount = 0;
 
-static bool DebugAllocate(int* data[1000], int count)
+static bool DebugAllocate(uint32_t* data[1000], uint32_t count)
 {
   bool result = false;
 
@@ -994,9 +999,9 @@ static bool DebugAllocate(int* data[1000], int count)
 
   gModCount = count;
 
-  for(int index = 0; index < 200; index++)
+  for(uint32_t index = 0; index < 200; index++)
   {
-    data[index] = (int*)blah_aligned_alloc(sizeof(int) * count, 0, false);
+    data[index] = (uint32_t*)blah_aligned_alloc(sizeof(uint32_t) * count);
 
     if( !data[index] )
       goto error;
@@ -1008,36 +1013,36 @@ error:
   return result;
 }
 
-static int DebugGet(int* data[1000], int index)
+static uint32_t DebugGet(uint32_t* data[1000], uint32_t index)
 {
   return data[index / gModCount][index % gModCount];
 }
 
-static void DebugSet(int* data[1000], int index, int value)
+static void DebugSet(uint32_t* data[1000], uint32_t index, uint32_t value)
 {
   data[index / gModCount][index % gModCount] = value;
 }
 
-static void DebugFree(int* data[1000] )
+static void DebugFree(uint32_t* data[1000] )
 {
-  for(int index = 199; index >= 0; index--)
+  for(uint32_t index = 200; index > 0; index--)
   {
-    blah_free_aligned_sized(data[index], 0, 0);
-    data[index] = 0;
+    blah_free_aligned_sized(data[index - 1] );
+    data[index - 1] = 0;
   }
 }
 
-int binTreeTest()
+bool binTreeTest(blahRandom* random)
 {
   //ssmm* ssmmBlah = SsmmConstruct(sizeof(void*), 100, false);
   //SsmmSetResize(ssmmBlah, -1);
 
 #if 0
-    int cacheCapacity = 2;
+    uint32_t cacheCapacity = 2;
 
     List* cacheList = listInitialize(cacheCapacity);
 
-    unordered_map<int, Cache> cacheHashTable;
+    unordered_map<uint32_t, Cache> cacheHashTable;
 
     cachePut(cacheHashTable, cacheList, 1, 1);
     cachePut(cacheHashTable, cacheList, 2, 2);
@@ -1058,58 +1063,63 @@ int binTreeTest()
 #endif
 
     // limit of memory allocation near 30,000,000
-//static const int numData = 30000000;
+//static const uint32_t numData = 30000000;
 
 //printf("%i\n\n", blah_get_number() );
 //2097152
 
 double queueMaximumPercentage = 0;
 
-int numData = 2000000000;
+uint32_t numData = 4000000000;
 
-//for(int numData = 100; numData <= 1000; numData++)
+//for(uint32_t numData = 100; numData <= 1000; numData++)
 {
     memset(gDebugRotate, 0, sizeof(gDebugRotate) );
 
     bintree* myTree = bintree::init(5000000, sizeof(myStruct), (bintree::compare)lessThan);
     if( !myTree)
-      return -1;
+      return false;
 
     //myStruct data[numData] = { {-2}, {-1}, {0}, {1}, {2} };
-    int* datablah[1000] = {0};
+    uint32_t* datablah[1000] = {0};
     if( !DebugAllocate(datablah, numData) )
-      return -1;
+      return false;
 
-    int keyObject = myFatalError;
-    int resultObject = 0;
+    uint32_t keyObject = myFatalError;
+    uint32_t resultObject = 0;
     int findResult = 0;
 
     srand(1);
 
-    //for(int loop = 0; loop < numData; loop++)
+    //for(uint32_t loop = 0; loop < numData; loop++)
     //  myTree->insert( &data[loop], 0);
 
 // check for inserting into tree
 //   keys already sorted
 //   keys alread reverse sorted
 //   all the same key
-    for(int index = 0; index < numData; index++)
+    for(uint32_t index = 0; index < numData; index++)
     {
       DebugSet(datablah, index, index);//numData - index
     }
 
-    for(int index = 0; index < (numData - 1); index++)
+    for(uint32_t index = 0; index < (numData - 1); index++)
     {
       // if index == 0, modulus == numData - 1, indexToSwap in range [0, numData - 2], swapInt rhs index range is [1, numData - 1]
       // if index == 1, modulus == numData - 2, indexToSwap in range [0, numData - 3], swapInt rhs index range is [2, numData - 1]
       // if index == numData - 2, modulus == 1, indexToSwap in range [0, 0], swapInt rhs index range is [numData - 1, numData - 1]
 
-      int modulus = (numData - index) - 1;
+      uint32_t modulus = (numData - index) - 1;
 
-      int indexToSwap = rand() % modulus;
+      //uint64_t randomValue = 0;
+      //BlahRandomIterate(random);
+      //BlahRandomGet(random, &randomValue);
+
+      //uint32_t indexToSwap = (uint32_t)(randomValue % (uint64_t)modulus);
+      uint32_t indexToSwap = (uint32_t)rand() % modulus;
       
-      int lhs = DebugGet(datablah, index);
-      int rhs = DebugGet(datablah, (index + 1) + indexToSwap);
+      uint32_t lhs = DebugGet(datablah, index);
+      uint32_t rhs = DebugGet(datablah, (index + 1) + indexToSwap);
       
       //swapInt(data[index], data[ (index + 1) + indexToSwap] );
       DebugSet(datablah, index, rhs);
@@ -1124,7 +1134,7 @@ int numData = 2000000000;
 #if BLAH_KEEP
     printf("\ndump original list shuffled before insertion\n");
 #endif
-    for(int index = 0; index < numData; index++)
+    for(uint32_t index = 0; index < numData; index++)
     {
 #if BLAH_KEEP
       printf("%i ", data[index] );
@@ -1134,16 +1144,16 @@ int numData = 2000000000;
     printf("\n\n");
 #endif
 
-    int numberOfClientObject = 0;
+    uint32_t numberOfClientObject = 0;
 
     if(myTree->isEmpty( &numberOfClientObject) != bintree::empty)
     {
       printf("blah b\n");
     }
 
-    for(int index = 0; index < numData; index++)
+    for(uint32_t index = 0; index < numData; index++)
     {
-      int data1 = DebugGet(datablah, index);
+      uint32_t data1 = DebugGet(datablah, index);
 
       if(myTree->insert( &data1, 0) != bintree::ok)
       {
@@ -1158,7 +1168,7 @@ int numData = 2000000000;
       }
 
 #if BLAH_KEEP
-      int height = myTree->depthTree();
+      uint32_t height = myTree->depthTree();
 
       if(height <= 0 || height > 2 * calculateLogBase2(numberOfClientObject + 1) )
       {
@@ -1254,7 +1264,7 @@ int numData = 2000000000;
 
     if(1)
     {
-      int height = myTree->depthTree();
+      uint32_t height = (uint32_t)myTree->depthTree();
 
       if(height <= 0 || height > 2 * calculateLogBase2(numberOfClientObject + 1) )
       {
@@ -1273,7 +1283,7 @@ int numData = 2000000000;
       }
     }
 
-    resultObject = -1;
+    resultObject = 0;
     findResult = myTree->find( &keyObject, (bintree::equivalence)equal, &resultObject);
     if(findResult != bintree::ok && findResult != bintree::empty)
     {
@@ -1297,18 +1307,23 @@ int numData = 2000000000;
       printf("blah k\n");
     }
 
-    for(int index = 0; index < (numData - 1); index++)
+    for(uint32_t index = 0; index < (numData - 1); index++)
     {
       // if index == 0, modulus == numData - 1, indexToSwap in range [0, numData - 2], swapInt rhs index range is [1, numData - 1]
       // if index == 1, modulus == numData - 2, indexToSwap in range [0, numData - 3], swapInt rhs index range is [2, numData - 1]
       // if index == numData - 2, modulus == 1, indexToSwap in range [0, 0], swapInt rhs index range is [numData - 1, numData - 1]
 
-      int modulus = (numData - index) - 1;
+      uint32_t modulus = (numData - index) - 1;
+      
+      //uint64_t randomValue = 0;
+      //BlahRandomIterate(random);
+      //BlahRandomGet(random, &randomValue);
 
-      int indexToSwap = rand() % modulus;
+      //uint32_t indexToSwap = (uint32_t)(randomValue % (uint64_t)modulus);
+      uint32_t indexToSwap = (uint32_t)rand() % modulus;
 
-      int lhs = DebugGet(datablah, index);
-      int rhs = DebugGet(datablah, (index + 1) + indexToSwap);
+      uint32_t lhs = DebugGet(datablah, index);
+      uint32_t rhs = DebugGet(datablah, (index + 1) + indexToSwap);
 
       //swapInt(data[index], data[ (index + 1) + indexToSwap] );
       DebugSet(datablah, index, rhs);
@@ -1318,7 +1333,7 @@ int numData = 2000000000;
 #if BLAH_KEEP
     printf("dump original list reshuffled before deletion\n");
 #endif
-    for(int index = 0; index < numData; index++)
+    for(uint32_t index = 0; index < numData; index++)
     {
 #if BLAH_KEEP
       printf("%i ", data[index] );
@@ -1328,7 +1343,7 @@ int numData = 2000000000;
     printf("\n\n");
 #endif
 
-    for(int index = 0; index < numData; index++)
+    for(uint32_t index = 0; index < numData; index++)
     {
       numberOfClientObject = 0;
 
@@ -1338,7 +1353,7 @@ int numData = 2000000000;
       }
 
 #if BLAH_KEEP
-      int height = myTree->depthTree();
+      uint32_t height = myTree->depthTree();
 
       if(height <= 0 || height > 2 * calculateLogBase2(numberOfClientObject + 1) )
       {
@@ -1352,7 +1367,7 @@ int numData = 2000000000;
 
       resultObject = 0;
 
-      int data1 = DebugGet(datablah, index);
+      uint32_t data1 = DebugGet(datablah, index);
 
       int result = myTree->remove( &data1, (bintree::equivalence)equal, &resultObject);
 
@@ -1393,7 +1408,7 @@ int numData = 2000000000;
 
     if(1)
     {
-      int height = myTree->depthTree();
+      uint32_t height = (uint32_t)myTree->depthTree();
 
       if(height != 0)
       {
@@ -1414,13 +1429,13 @@ int numData = 2000000000;
     DebugFree(datablah);
 
 #if BLAH_KEEP
-    for(int index = 0; index < countof(gDebugRotate); index++)
+    for(uint32_t index = 0; index < countof(gDebugRotate); index++)
     {
 //printf("debug rotate %i %i\n", index, gDebugRotate[index] );
     }
     printf("\n");
 
-    for(int index = 0; index < (countof(gDebugRotate) - 1); index++)
+    for(uint32_t index = 0; index < (countof(gDebugRotate) - 1); index++)
     {
       if(index == 1 || index == 21)
       {
@@ -1442,7 +1457,7 @@ int numData = 2000000000;
 
     printf("\nqueue max %f\n", queueMaximumPercentage);
 
-    return 0;
+    return true;
 }
 
 #endif
