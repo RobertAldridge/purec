@@ -42,7 +42,7 @@ struct SsQueuePool
 
   uint32_t num;
 
-  uint32_t padding;
+  uint32_t sizeOf;
 };
 
 struct ssQueue
@@ -67,15 +67,12 @@ struct ssQueue
   uint32_t resize;
   uint32_t capacity;
 
-  uint32_t sizeOfRef;
   uint32_t sizeOf;
-
-  uint32_t padding;
 };
 
 #include "ssQueue_nocomments.h"
 
-#include "blah_aligned_alloc.h"
+#include "blah_alloc.h"
 
 static uint32_t SsQueueAlignedOfValue(uint32_t size)
   { return (size % sizeof(void*) ) ? size + (sizeof(void*) - size % sizeof(void*) ) : size; }
@@ -85,9 +82,6 @@ static uint32_t SsQueueGetSizeOfPoolHeader()
 
 static uint32_t SsQueueGetSizeOfSsQueueHeader()
   { return SsQueueAlignedOfValue(sizeof(ssQueue) ); }
-
-static uint32_t SsQueueGetSizeOfChunk(uint32_t sizeOf)
-  { return SsQueueAlignedOfValue(sizeOf); }
 
 static uint32_t SsQueueGetPoolSizeOf(ssQueue* _this, uint32_t nmemb)
   { return SsQueueGetSizeOfPoolHeader() + nmemb * _this->sizeOf; }
@@ -102,7 +96,7 @@ static void SsQueueMemcpySsQueue(uint8_t* destination, ssQueue* source)
   { memcpy(destination, source, sizeof(ssQueue) ); }
 
 static void SsQueueMemcpyChunk(ssQueue* _this, void* destination, void* source)
-  { memcpy(destination, source, _this->sizeOfRef); }
+  { memcpy(destination, source, _this->sizeOf); }
 
 // free in reverse order by walking previous from tail
 static void SsQueuePoolListFree(ssQueue* _this, SsQueuePool* current)
@@ -112,7 +106,7 @@ static void SsQueuePoolListFree(ssQueue* _this, SsQueuePool* current)
     previous = current->previous;
 
     if(current != _this->head)
-      blah_free_aligned_sized(current);
+      BlahFree(current, current->sizeOf, true);
   }
 }
 
@@ -331,7 +325,7 @@ static bool SsQueueResizeNewPool(ssQueue* _this, uint32_t minimumCapacity)
 
   uint32_t diff = 0;
 
-  uint32_t size = 0;
+  uint32_t sizeOf = 0;
 
   uint8_t* pointer = 0;
 
@@ -350,12 +344,12 @@ static bool SsQueueResizeNewPool(ssQueue* _this, uint32_t minimumCapacity)
   if( !diff)
     goto error;
 
-  size = SsQueueGetPoolSizeOf(_this, diff);
+  sizeOf = SsQueueGetPoolSizeOf(_this, diff);
 
   if(minimumCapacity > 0)
-    size += SsQueueGetSizeOfSsQueueHeader();
+    sizeOf += SsQueueGetSizeOfSsQueueHeader();
 
-  pointer = (uint8_t*)blah_aligned_alloc(size);
+  pointer = (uint8_t*)BlahAlloc(sizeOf, true);
 
   if(minimumCapacity > 0)
     pointer += SsQueueGetSizeOfSsQueueHeader();
@@ -364,6 +358,8 @@ static bool SsQueueResizeNewPool(ssQueue* _this, uint32_t minimumCapacity)
 
   if( !pool)
     goto error;
+
+  pool->sizeOf = sizeOf;
 
   pool->previous = 0;
   pool->next = 0;
@@ -510,8 +506,7 @@ ssQueue* SsQueueConstruct(uint32_t sizeOf, uint32_t minimumCapacity, uint32_t ma
   _this.resize = resize;
   _this.capacity = maximumCapacity;
 
-  _this.sizeOfRef = sizeOf;
-  _this.sizeOf = SsQueueGetSizeOfChunk(sizeOf);
+  _this.sizeOf = sizeOf;
 
   if( !SsQueueResize( &_this, minimumCapacity) || !_this.head)
     goto error;
@@ -544,7 +539,7 @@ bool SsQueueDestruct(ssQueue** reference, uint32_t* num)
 
   SsQueuePoolListFree(_this, _this->tail);
 
-  blah_free_aligned_sized(_this);
+  BlahFree(_this, _this->head->sizeOf, true);
 
   reference[0] = 0;
 

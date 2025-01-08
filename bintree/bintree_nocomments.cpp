@@ -16,7 +16,7 @@ using std::memset;
 using std::printf;
 using std::ptrdiff_t;
 
-#include "blah_aligned_alloc.h"
+#include "blah_alloc.h"
 
 #include "ssmm_nocomments.h"
 #include "ssStack_nocomments.h"
@@ -439,9 +439,7 @@ int bintree::term()
     SsmmDestruct( &tree->allocator, &allocatorSize);
     tree->allocator = 0;
 
-    memset(tree, 0, sizeof(BinaryTree) );
-
-    blah_free_aligned_sized(tree);
+    BlahFree(tree, sizeof(BinaryTree), true);
     tree = 0;
 
     result = RETURN_OK;
@@ -470,7 +468,7 @@ bintree* bintree::init(uint32_t initialCapacity, uint32_t sizeOfClient, binaryTr
     goto error;
   }
 
-  tree = (BinaryTree*)blah_aligned_alloc(sizeof(BinaryTree) );
+  tree = (BinaryTree*)BlahAlloc(sizeof(BinaryTree), true);
   if( !tree)
   {
     _log("error");

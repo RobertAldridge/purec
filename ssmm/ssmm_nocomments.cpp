@@ -30,7 +30,7 @@ struct SsmmPool
 
   uint32_t num;
 
-  uint32_t padding;
+  uint32_t sizeOf;
 };
 
 struct ssmm
@@ -58,7 +58,7 @@ struct ssmm
 
 #include "ssmm_nocomments.h"
 
-#include "blah_aligned_alloc.h"
+#include "blah_alloc.h"
 
 static uint32_t SsmmAlignedOfValue(uint32_t size)
   { return (size % sizeof(void*) ) ? size + (sizeof(void*) - size % sizeof(void*) ) : size; }
@@ -95,7 +95,7 @@ static void SsmmPoolListFree(ssmm* _this, SsmmPool* current)
     next = current->next;
 
     if(current != _this->head)
-      blah_free_aligned_sized(current);
+      BlahFree(current, current->sizeOf, true);
   }
 }
 
@@ -135,7 +135,7 @@ static bool SsmmResizeNewPool(ssmm* _this, uint32_t minimumCapacity)
 
   uint32_t diff = 0;
 
-  uint32_t size = 0;
+  uint32_t sizeOf = 0;
 
   uint8_t* pointer = 0;
 
@@ -154,12 +154,12 @@ static bool SsmmResizeNewPool(ssmm* _this, uint32_t minimumCapacity)
   if( !diff)
     goto error;
 
-  size = SsmmGetPoolSizeOf(_this, diff);
+  sizeOf = SsmmGetPoolSizeOf(_this, diff);
 
   if(minimumCapacity > 0)
-    size += SsmmGetSizeOfSsmmHeader();
+    sizeOf += SsmmGetSizeOfSsmmHeader();
 
-  pointer = (uint8_t*)blah_aligned_alloc(size);
+  pointer = (uint8_t*)BlahAlloc(sizeOf, true);
 
   if(minimumCapacity > 0)
     pointer += SsmmGetSizeOfSsmmHeader();
@@ -168,6 +168,8 @@ static bool SsmmResizeNewPool(ssmm* _this, uint32_t minimumCapacity)
 
   if( !pool)
     goto error;
+
+  pool->sizeOf = sizeOf;
 
   pool->next = 0;
 
@@ -255,7 +257,7 @@ bool SsmmDestruct(ssmm** reference, uint32_t* num)
 
   SsmmPoolListReverseAndFree(_this, _this->head);
 
-  blah_free_aligned_sized(_this);
+  BlahFree(_this, _this->head->sizeOf, true);
 
   reference[0] = 0;
 

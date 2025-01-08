@@ -1,17 +1,21 @@
 
-// blah_aligned_alloc.cpp
+// blah_alloc.cpp
 // Robert Aldridge
 
+#if defined(_MSC_VER)
 #include <windows.h>
 #include <ntsecapi.h>
 #include <Sddl.h>
+#endif
 
 #include <cstddef> // ptrdiff_t, size_t
 #include <cstdint> // uint32_t, uint8_t
 #include <cstdio> // printf
-#include <cstdlib> // malloc
+#include <cstdlib> // free, malloc
 #include <cstring> // memset
 
+using std::free;
+using std::malloc;
 using std::memset;
 using std::printf;
 using std::ptrdiff_t;
@@ -19,29 +23,9 @@ using std::size_t;
 using std::uint8_t;
 using std::uint32_t;
 
-#include "blah_aligned_alloc.h"
+#include "blah_alloc.h"
 
-static uint32_t BlahPointerAlignedOfValue(uint32_t size)
-  { return (size % sizeof(void*) ) ? size + (sizeof(void*) - size % sizeof(void*) ) : size; }
-
-static uint32_t BlahLargePageAlignedOfValue(uint32_t size)
-  { return (size % 2097152) ? size + (2097152 - size % 2097152) : size; }
-
-uint32_t blah_get_number()
-{
-  return (uint32_t)GetLargePageMinimum();
-}
-
-void* blah_aligned_alloc(uint32_t size)
-{
-  return VirtualAlloc(0, BlahLargePageAlignedOfValue(size), MEM_COMMIT | MEM_RESERVE | MEM_LARGE_PAGES, PAGE_READWRITE);
-}
-
-void blah_free_aligned_sized(void* ptr)
-{
-  VirtualFree(ptr, 0, MEM_RELEASE);
-}
-
+#if defined(_MSC_VER)
 static void InitLsaString(PLSA_UNICODE_STRING LsaString, LPWSTR String)
 {
   DWORD StringLength = 0;
@@ -83,7 +67,7 @@ static NTSTATUS OpenPolicy(LPWSTR ServerName, DWORD DesiredAccess, PLSA_HANDLE P
   return result;
 }
 
-NTSTATUS SetPrivilegeOnAccount(LSA_HANDLE PolicyHandle, PSID AccountSid, LPWSTR PrivilegeName, BOOL bEnable)
+static NTSTATUS SetPrivilegeOnAccount(LSA_HANDLE PolicyHandle, PSID AccountSid, LPWSTR PrivilegeName, BOOL bEnable)
 {
   LSA_UNICODE_STRING PrivilegeString = {0};
 
@@ -99,7 +83,7 @@ NTSTATUS SetPrivilegeOnAccount(LSA_HANDLE PolicyHandle, PSID AccountSid, LPWSTR 
   return result;
 }
 
-bool EnableLargePageSupport()
+static bool EnableLargePageSupport()
 {
   bool result = false;
 
@@ -201,4 +185,89 @@ bool EnableLargePageSupport()
 
 error:
   return result;
+}
+
+static bool gBlahLargePageSupportEnabled = false;
+
+static uint32_t gLargePageMinimum = 0;
+#endif
+
+static uint32_t BlahAlignedOfValue(uint32_t alignmentOf, uint32_t sizeOf)
+{
+  return (sizeOf % alignmentOf) ? sizeOf + (alignmentOf - sizeOf % alignmentOf) : sizeOf;
+}
+
+void BlahEnableAlloc()
+{
+#if defined(_MSC_VER)
+  if(gBlahLargePageSupportEnabled)
+    goto error;
+
+  gBlahLargePageSupportEnabled = EnableLargePageSupport();
+
+  if(gBlahLargePageSupportEnabled)
+    gLargePageMinimum = (uint32_t)GetLargePageMinimum();
+
+error:
+  return;
+#endif
+}
+
+void* BlahAlloc(uint32_t sizeOf, bool zero)
+{
+  void* pointer = 0;
+
+  if( !sizeOf)
+    goto error;
+
+#if defined(_MSC_VER)
+  if(gBlahLargePageSupportEnabled && sizeOf >= gLargePageMinimum)
+  {
+    sizeOf = BlahAlignedOfValue(gLargePageMinimum, sizeOf);
+    pointer = VirtualAlloc(0, sizeOf, MEM_COMMIT | MEM_RESERVE | MEM_LARGE_PAGES, PAGE_READWRITE);
+  }
+  else
+#endif
+  {
+    sizeOf = BlahAlignedOfValue(sizeof(void*), sizeOf);
+    pointer = malloc(sizeOf);
+
+    if(pointer && zero)
+      memset(pointer, 0, sizeOf);
+  }
+
+error:
+  return pointer;
+}
+
+void BlahFree(void* pointer, uint32_t sizeOf, bool zero)
+{
+  if( !pointer || !sizeOf)
+    goto error;
+
+#if defined(_MSC_VER)
+  if(gBlahLargePageSupportEnabled && sizeOf >= gLargePageMinimum)
+  {
+    if(zero)
+    {
+      sizeOf = BlahAlignedOfValue(gLargePageMinimum, sizeOf);
+      memset(pointer, 0, sizeOf);
+    }
+
+    VirtualFree(pointer, 0, MEM_RELEASE);
+  }
+  else
+#endif
+  {
+    if(zero)
+    {
+      sizeOf = BlahAlignedOfValue(sizeof(void*), sizeOf);
+      memset(pointer, 0, sizeOf);
+    }
+
+    free(pointer);
+  }
+
+error:
+  return;
 }

@@ -26,7 +26,7 @@ struct SsStackPool
 
   uint32_t num;
 
-  uint32_t padding;
+  uint32_t sizeOf;
 };
 
 struct ssStack
@@ -48,15 +48,12 @@ struct ssStack
   uint32_t resize;
   uint32_t capacity;
 
-  uint32_t sizeOfRef;
   uint32_t sizeOf;
-
-  uint32_t padding;
 };
 
 #include "ssStack_nocomments.h"
 
-#include "blah_aligned_alloc.h"
+#include "blah_alloc.h"
 
 static uint32_t SsStackAlignedOfValue(uint32_t size)
   { return (size % sizeof(void*) ) ? size + (sizeof(void*) - size % sizeof(void*) ) : size; }
@@ -66,9 +63,6 @@ static uint32_t SsStackGetSizeOfPoolHeader()
 
 static uint32_t SsStackGetSizeOfSsStackHeader()
   { return SsStackAlignedOfValue(sizeof(ssStack) ); }
-
-static uint32_t SsStackGetSizeOfChunk(uint32_t sizeOf)
-  { return SsStackAlignedOfValue(sizeOf); }
 
 static uint32_t SsStackGetPoolSizeOf(ssStack* _this, uint32_t nmemb)
   { return SsStackGetSizeOfPoolHeader() + nmemb * _this->sizeOf; }
@@ -80,7 +74,7 @@ static void SsStackMemcpySsStack(uint8_t* destination, ssStack* source)
   { memcpy(destination, source, sizeof(ssStack) ); }
 
 static void SsStackMemcpyChunk(ssStack* _this, void* destination, void* source)
-  { memcpy(destination, source, _this->sizeOfRef); }
+  { memcpy(destination, source, _this->sizeOf); }
 
 // free in reverse order by walking previous from tail
 static void SsStackPoolListFree(ssStack* _this, SsStackPool* current)
@@ -90,7 +84,7 @@ static void SsStackPoolListFree(ssStack* _this, SsStackPool* current)
     previous = current->previous;
 
     if(current != _this->head)
-      blah_free_aligned_sized(current);
+      BlahFree(current, current->sizeOf, true);
   }
 }
 
@@ -232,7 +226,7 @@ static bool SsStackResizeNewPool(ssStack* _this, uint32_t minimumCapacity)
 
   uint32_t diff = 0;
 
-  uint32_t size = 0;
+  uint32_t sizeOf = 0;
 
   uint8_t* pointer = 0;
 
@@ -251,12 +245,12 @@ static bool SsStackResizeNewPool(ssStack* _this, uint32_t minimumCapacity)
   if( !diff)
     goto error;
 
-  size = SsStackGetPoolSizeOf(_this, diff);
+  sizeOf = SsStackGetPoolSizeOf(_this, diff);
 
   if(minimumCapacity > 0)
-    size += SsStackGetSizeOfSsStackHeader();
+    sizeOf += SsStackGetSizeOfSsStackHeader();
 
-  pointer = (uint8_t*)blah_aligned_alloc(size);
+  pointer = (uint8_t*)BlahAlloc(sizeOf, true);
 
   if(minimumCapacity > 0)
     pointer += SsStackGetSizeOfSsStackHeader();
@@ -265,6 +259,8 @@ static bool SsStackResizeNewPool(ssStack* _this, uint32_t minimumCapacity)
 
   if( !pool)
     goto error;
+
+  pool->sizeOf = sizeOf;
 
   pool->previous = 0;
   pool->next = 0;
@@ -324,8 +320,7 @@ ssStack* SsStackConstruct(uint32_t sizeOf, uint32_t minimumCapacity, uint32_t ma
   _this.resize = resize;
   _this.capacity = maximumCapacity;
 
-  _this.sizeOfRef = sizeOf;
-  _this.sizeOf = SsStackGetSizeOfChunk(sizeOf);
+  _this.sizeOf = sizeOf;
 
   if( !SsStackResize( &_this, minimumCapacity) || !_this.head)
     goto error;
@@ -358,7 +353,7 @@ bool SsStackDestruct(ssStack** reference, uint32_t* num)
 
   SsStackPoolListFree(_this, _this->tail);
 
-  blah_free_aligned_sized(_this);
+  BlahFree(_this, _this->head->sizeOf, true);
 
   reference[0] = 0;
 

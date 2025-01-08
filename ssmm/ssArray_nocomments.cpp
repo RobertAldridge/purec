@@ -18,7 +18,7 @@ struct SsArrayPool
 
   uint32_t num;
 
-  uint32_t padding;
+  uint32_t sizeOf;
 };
 
 struct ssArray
@@ -40,13 +40,14 @@ struct ssArray
   uint32_t resize;
   uint32_t capacity;
 
-  uint32_t sizeOfRef;
   uint32_t sizeOf;
+
+  uint32_t padding;
 };
 
 #include "ssArray_nocomments.h"
 
-#include "blah_aligned_alloc.h"
+#include "blah_alloc.h"
 
 static uint32_t SsArrayAlignedOfValue(uint32_t size)
   { return (size % sizeof(void*) ) ? size + (sizeof(void*) - size % sizeof(void*) ) : size; }
@@ -56,9 +57,6 @@ static uint32_t SsArrayGetSizeOfPoolHeader()
 
 static uint32_t SsArrayGetSizeOfSsArrayHeader()
   { return SsArrayAlignedOfValue(sizeof(ssArray) ); }
-
-static uint32_t SsArrayGetSizeOfChunk(uint32_t sizeOf)
-  { return SsArrayAlignedOfValue(sizeOf); }
 
 static uint32_t SsArrayGetPoolSizeOf(ssArray* _this, uint32_t nmemb)
   { return SsArrayGetSizeOfPoolHeader() + nmemb * _this->sizeOf; }
@@ -79,7 +77,7 @@ static void SsArrayMemcpySsArray(uint8_t* destination, ssArray* source)
   { memcpy(destination, source, sizeof(ssArray) ); }
 
 static void SsArrayMemcpyChunk(ssArray* _this, void* destination, void* source)
-  { memcpy(destination, source, _this->sizeOfRef); }
+  { memcpy(destination, source, _this->sizeOf); }
 
 static void SsArrayPoolListFree(ssArray* _this, SsArrayPool* current)
 {
@@ -88,7 +86,7 @@ static void SsArrayPoolListFree(ssArray* _this, SsArrayPool* current)
     next = current->next;
 
     if(current != _this->head)
-      blah_free_aligned_sized(current);
+      BlahFree(current, current->sizeOf, true);
   }
 }
 
@@ -128,7 +126,7 @@ static bool SsArrayResizeNewPool(ssArray* _this, uint32_t minimumCapacity)
 
   uint32_t diff = 0;
 
-  uint32_t size = 0;
+  uint32_t sizeOf = 0;
 
   uint8_t* pointer = 0;
 
@@ -147,12 +145,12 @@ static bool SsArrayResizeNewPool(ssArray* _this, uint32_t minimumCapacity)
   if( !diff)
     goto error;
 
-  size = SsArrayGetPoolSizeOf(_this, diff);
+  sizeOf = SsArrayGetPoolSizeOf(_this, diff);
 
   if(minimumCapacity > 0)
-    size += SsArrayGetSizeOfSsArrayHeader();
+    sizeOf += SsArrayGetSizeOfSsArrayHeader();
 
-  pointer = (uint8_t*)blah_aligned_alloc(size);
+  pointer = (uint8_t*)BlahAlloc(sizeOf, true);
 
   if(minimumCapacity > 0)
     pointer += SsArrayGetSizeOfSsArrayHeader();
@@ -161,6 +159,8 @@ static bool SsArrayResizeNewPool(ssArray* _this, uint32_t minimumCapacity)
 
   if( !pool)
     goto error;
+
+  pool->sizeOf = sizeOf;
 
   pool->next = 0;
 
@@ -215,8 +215,7 @@ ssArray* SsArrayConstruct(uint32_t sizeOf, uint32_t minimumCapacity, uint32_t ma
   _this.resize = resize;
   _this.capacity = maximumCapacity;
 
-  _this.sizeOfRef = sizeOf;
-  _this.sizeOf = SsArrayGetSizeOfChunk(sizeOf);
+  _this.sizeOf = sizeOf;
 
   if( !SsArrayResize( &_this, minimumCapacity) || !_this.head)
     goto error;
@@ -249,7 +248,7 @@ bool SsArrayDestruct(ssArray** reference, uint32_t* num)
 
   SsArrayPoolListReverseAndFree(_this, _this->head);
 
-  blah_free_aligned_sized(_this);
+  BlahFree(_this, _this->head->sizeOf, true);
 
   reference[0] = 0;
 

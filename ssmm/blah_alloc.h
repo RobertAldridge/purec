@@ -1,10 +1,8 @@
 
-// blah_aligned_alloc.h
+// blah_alloc.h
 
-uint32_t blah_get_number();
+void BlahEnableAlloc();
 
-void* blah_aligned_alloc(uint32_t size);
+void* BlahAlloc(uint32_t sizeOf, bool zero);
 
-void blah_free_aligned_sized(void* ptr);
-
-bool EnableLargePageSupport();
+void BlahFree(void* pointer, uint32_t sizeOf, bool zero);
