@@ -584,8 +584,6 @@ bool blahTestStack()
 {
   bool result = false;
 
-  uint32_t stackSize = 0;
-
   ssStack* blahStack = 0;
 
   blahStack = SsStackConstruct(sizeof(int64_t), 10, 1000, 10);
@@ -659,7 +657,7 @@ bool blahTestStack()
       goto error;
   }
 
-  SsStackDestruct( &blahStack, &stackSize);
+  SsStackDestruct( &blahStack);
 
   result = true;
 
@@ -670,8 +668,6 @@ error:
 bool blahTestQueue()
 {
   bool result = false;
-
-  uint32_t queueSize = 0;
 
   ssQueue* blahQueue = 0;
 
@@ -746,7 +742,7 @@ bool blahTestQueue()
       goto error;
   }
 
-  SsQueueDestruct( &blahQueue, &queueSize);
+  SsQueueDestruct( &blahQueue);
 
   result = true;
 
@@ -862,11 +858,6 @@ static void swapInt(uint32_t& lhs, uint32_t& rhs)
   lhs = rhs;
   rhs = temporary;
 }
-
-#include "ssmm.h"
-
-extern ssmm* SsmmConstruct(uint32_t sizeOf, uint32_t initialCapacity, bool isTentative);
-extern bool SsmmSetResize(ssmm* _this, uint32_t resize);
 
 extern uint32_t gDebugRotate[69];
 

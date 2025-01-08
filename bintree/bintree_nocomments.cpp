@@ -322,13 +322,9 @@ int bintree::reset()
 
     SETROOTFROMTREE(tree, 0);
 
-    uint32_t allocatorSize = 0;
-    uint32_t stackSize = 0;
-    uint32_t queueSize = 0;
-
-    SsQueueReset(tree->queue, &queueSize);
-    SsStackReset(tree->stack, &stackSize);
-    SsmmReset(tree->allocator, &allocatorSize);
+    SsQueueReset(tree->queue);
+    SsStackReset(tree->stack);
+    SsmmReset(tree->allocator);
 
     result = RETURN_OK;
   }
@@ -426,17 +422,13 @@ int bintree::term()
 
   if(tree)
   {
-    uint32_t allocatorSize = 0;
-    uint32_t stackSize = 0;
-    uint32_t queueSize = 0;
-
-    SsQueueDestruct( &tree->queue, &queueSize);
+    SsQueueDestruct( &tree->queue);
     tree->queue = 0;
 
-    SsStackDestruct( &tree->stack, &stackSize);
+    SsStackDestruct( &tree->stack);
     tree->stack = 0;
 
-    SsmmDestruct( &tree->allocator, &allocatorSize);
+    SsmmDestruct( &tree->allocator);
     tree->allocator = 0;
 
     BlahFree(tree, sizeof(BinaryTree), true);

@@ -238,8 +238,6 @@ bool SsmmDestruct(ssmm** reference)
 {
   bool result = false;
 
-  uint32_t numChunks = 0;
-
   ssmm* _this = 0;
 
   if( !reference)
@@ -281,8 +279,6 @@ bool SsmmReset(ssmm* _this)
 {
   bool result = false;
 
-  uint32_t numChunks = 0;
-
   SsmmPool* pool = 0;
 
   if( !_this)
@@ -296,8 +292,6 @@ bool SsmmReset(ssmm* _this)
 
   _this->most = 0;
   _this->max = pool->num;
-
-  *num = numChunks;
 
   result = true;
 

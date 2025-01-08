@@ -3,6 +3,8 @@
 // Robert Aldridge
 
 #if defined(_MSC_VER)
+#pragma warning (disable : 4668)
+#pragma warning (disable : 5039)
 #include <windows.h>
 #include <ntsecapi.h>
 #include <Sddl.h>

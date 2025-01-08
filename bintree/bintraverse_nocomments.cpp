@@ -10,7 +10,7 @@ void IterativePreorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binar
   uint32_t stackSize = 0;
 
   // PSTACK Stack = InitStack()
-  SsStackReset(tree->stack, &stackSize);
+  SsStackReset(tree->stack);
 
   BinaryTreeNode* LeftChild = 0;
   BinaryTreeNode* RightChild = 0;
@@ -32,7 +32,6 @@ void IterativePreorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binar
           break;
 
         stackSize = 0;
-
         if(SsStackNum(tree->stack, &stackSize) && stackSize > tree->maxStack)
           tree->maxStack = stackSize;
 
@@ -56,7 +55,6 @@ void IterativePreorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binar
     else
     {
       stackSize = 0;
-
       // if(Stack->Empty() == TRUE)
       if( !SsStackNum(tree->stack, &stackSize) || !stackSize)
         break;
@@ -74,7 +72,7 @@ void IterativeInorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binary
   uint32_t stackSize = 0;
 
   // PSTACK Stack = InitStack()
-  SsStackReset(tree->stack, &stackSize);
+  SsStackReset(tree->stack);
 
   while(1)
   {
@@ -90,7 +88,6 @@ void IterativeInorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binary
     }
 
     stackSize = 0;
-
     if(SsStackNum(tree->stack, &stackSize) && stackSize > tree->maxStack)
       tree->maxStack = stackSize;
 
@@ -115,7 +112,7 @@ void IterativePostorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, bina
   uint32_t stackSize = 0;
 
   // PSTACK Stack = InitStack()
-  SsStackReset(tree->stack, &stackSize);
+  SsStackReset(tree->stack);
 
   BinaryTreeNode* NodePushed = 0;
   BinaryTreeNode* RightChild = 0;
@@ -137,7 +134,6 @@ void IterativePostorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, bina
 popOneOffStack:
 
     stackSize = 0;
-
     if(SsStackNum(tree->stack, &stackSize) && stackSize > tree->maxStack)
       tree->maxStack = stackSize;
 
@@ -183,7 +179,7 @@ void IterativeLevelorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, bin
   uint32_t queueSize = 0;
 
   // PQUEUE Queue = InitQueue()
-  SsQueueReset(tree->queue, &queueSize);
+  SsQueueReset(tree->queue);
 
   BinaryTreeNode* LeftChild = 0;
   BinaryTreeNode* RightChild = 0;

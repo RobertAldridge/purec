@@ -273,8 +273,6 @@ bool SsArrayReset(ssArray* _this)
 {
   bool result = false;
 
-  uint32_t numChunks = 0;
-
   SsArrayPool* pool = 0;
 
   if( !_this)
@@ -285,8 +283,6 @@ bool SsArrayReset(ssArray* _this)
   _this->chunk = SsArrayPoolToFirstChunk(pool);
 
   _this->current = pool;
-
-  _this->numChunks = 0;
 
   _this->max = pool->num;
 
