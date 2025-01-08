@@ -6,11 +6,11 @@ struct ssQueue;
 
 ssQueue* SsQueueConstruct(uint32_t sizeOf, uint32_t minimumCapacity, uint32_t maximumCapacity, uint32_t resize);
 
-bool SsQueueDestruct(ssQueue** _this, uint32_t* num);
+bool SsQueueDestruct(ssQueue** _this);
 
 bool SsQueueNum(ssQueue* _this, uint32_t* num);
 
-bool SsQueueReset(ssQueue* _this, uint32_t* num);
+bool SsQueueReset(ssQueue* _this);
 
 bool SsQueuePushBack(ssQueue* _this, void* client);
 bool SsQueuePopBack(ssQueue* _this, void* client);

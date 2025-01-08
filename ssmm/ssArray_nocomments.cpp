@@ -228,15 +228,13 @@ error:
   return (ssArray*)result;
 }
 
-bool SsArrayDestruct(ssArray** reference, uint32_t* num)
+bool SsArrayDestruct(ssArray** reference)
 {
   bool result = false;
 
-  uint32_t numChunks = 0;
-
   ssArray* _this = 0;
 
-  if( !reference || !num)
+  if( !reference)
     goto error;
 
   _this = reference[0];
@@ -244,15 +242,11 @@ bool SsArrayDestruct(ssArray** reference, uint32_t* num)
   if( !_this)
     goto error;
 
-  numChunks = _this->numChunks;
-
   SsArrayPoolListReverseAndFree(_this, _this->head);
 
   BlahFree(_this, _this->head->sizeOf, true);
 
   reference[0] = 0;
-
-  *num = numChunks;
 
   result = true;
 
@@ -275,7 +269,7 @@ error:
   return result;
 }
 
-bool SsArrayReset(ssArray* _this, uint32_t* num)
+bool SsArrayReset(ssArray* _this)
 {
   bool result = false;
 
@@ -283,10 +277,8 @@ bool SsArrayReset(ssArray* _this, uint32_t* num)
 
   SsArrayPool* pool = 0;
 
-  if( !_this || !num)
+  if( !_this)
     goto error;
-
-  numChunks = _this->numChunks;
 
   pool = _this->head;
 
@@ -299,8 +291,6 @@ bool SsArrayReset(ssArray* _this, uint32_t* num)
   _this->max = pool->num;
 
   _this->counter++;
-
-  *num = numChunks;
 
   result = true;
 

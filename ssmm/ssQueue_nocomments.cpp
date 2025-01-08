@@ -519,15 +519,13 @@ error:
   return (ssQueue*)result;
 }
 
-bool SsQueueDestruct(ssQueue** reference, uint32_t* num)
+bool SsQueueDestruct(ssQueue** reference)
 {
   bool result = false;
 
-  uint32_t numChunks = 0;
-
   ssQueue* _this = 0;
 
-  if( !reference || !num)
+  if( !reference)
     goto error;
 
   _this = reference[0];
@@ -535,15 +533,11 @@ bool SsQueueDestruct(ssQueue** reference, uint32_t* num)
   if( !_this)
     goto error;
 
-  numChunks = _this->numChunks;
-
   SsQueuePoolListFree(_this, _this->tail);
 
   BlahFree(_this, _this->head->sizeOf, true);
 
   reference[0] = 0;
-
-  *num = numChunks;
 
   result = true;
 
@@ -566,16 +560,12 @@ error:
   return result;
 }
 
-bool SsQueueReset(ssQueue* _this, uint32_t* num)
+bool SsQueueReset(ssQueue* _this)
 {
   bool result = false;
 
-  uint32_t numChunks = 0;
-
-  if( !_this || !num)
+  if( !_this)
     goto error;
-
-  numChunks = _this->numChunks;
 
   _this->front = _this->back;
 
@@ -585,8 +575,6 @@ bool SsQueueReset(ssQueue* _this, uint32_t* num)
   _this->indexFront = 0;
 
   _this->counter++;
-
-  *num = numChunks;
 
   result = true;
 

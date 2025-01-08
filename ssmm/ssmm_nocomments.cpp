@@ -69,9 +69,6 @@ static uint32_t SsmmGetSizeOfPoolHeader()
 static uint32_t SsmmGetSizeOfSsmmHeader()
   { return SsmmAlignedOfValue(sizeof(ssmm) ); }
 
-static uint32_t SsmmGetSizeOfChunk(uint32_t sizeOf)
-  { return SsmmAlignedOfValue(sizeOf); }
-
 static uint32_t SsmmGetPoolSizeOf(ssmm* _this, uint32_t nmemb)
   { return SsmmGetSizeOfPoolHeader() + nmemb * _this->sizeOf; }
 
@@ -224,7 +221,7 @@ ssmm* SsmmConstruct(uint32_t sizeOf, uint32_t minimumCapacity, uint32_t maximumC
   _this.resize = resize;
   _this.capacity = maximumCapacity;
 
-  _this.sizeOf = SsmmGetSizeOfChunk(sizeOf);
+  _this.sizeOf = sizeOf;
 
   if( !SsmmResize( &_this, minimumCapacity) || !_this.head)
     goto error;
@@ -237,7 +234,7 @@ error:
   return (ssmm*)result;
 }
 
-bool SsmmDestruct(ssmm** reference, uint32_t* num)
+bool SsmmDestruct(ssmm** reference)
 {
   bool result = false;
 
@@ -245,7 +242,7 @@ bool SsmmDestruct(ssmm** reference, uint32_t* num)
 
   ssmm* _this = 0;
 
-  if( !reference || !num)
+  if( !reference)
     goto error;
 
   _this = reference[0];
@@ -253,15 +250,11 @@ bool SsmmDestruct(ssmm** reference, uint32_t* num)
   if( !_this)
     goto error;
 
-  numChunks = _this->numChunks;
-
   SsmmPoolListReverseAndFree(_this, _this->head);
 
   BlahFree(_this, _this->head->sizeOf, true);
 
   reference[0] = 0;
-
-  *num = numChunks;
 
   result = true;
 
@@ -284,7 +277,7 @@ error:
   return result;
 }
 
-bool SsmmReset(ssmm* _this, uint32_t* num)
+bool SsmmReset(ssmm* _this)
 {
   bool result = false;
 
@@ -292,18 +285,14 @@ bool SsmmReset(ssmm* _this, uint32_t* num)
 
   SsmmPool* pool = 0;
 
-  if( !_this || !num)
+  if( !_this)
     goto error;
-
-  numChunks = _this->numChunks;
 
   pool = _this->head;
 
   _this->chunk = SsmmPoolToFirstChunk(pool);
 
   _this->current = pool;
-
-  _this->numChunks = 0;
 
   _this->most = 0;
   _this->max = pool->num;

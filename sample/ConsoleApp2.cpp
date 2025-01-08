@@ -133,8 +133,7 @@ static Node* nodeAllocate(Node* sentinel, int count)
 
     if (count > 0)
     {
-        nodeList = (Node*)blah_aligned_alloc(sizeof(Node) * count, 0, false);
-        memset(nodeList, 0, sizeof(Node) * count);
+        nodeList = (Node*)BlahAlloc(sizeof(Node) * count, true);
 
         for (int index = 0; index < count; index++)
         {
@@ -170,8 +169,7 @@ static List* listInitialize(int count)
 
     if (count >= 0)
     {
-        daList = (List*)blah_aligned_alloc(sizeof(List), 0, false);
-        memset(daList, 0, sizeof(List));
+        daList = (List*)BlahAlloc(sizeof(List), true);
 
         daList->index = 0;
         daList->capacity = count;
@@ -187,17 +185,13 @@ static List* listInitialize(int count)
 
 static void ListTerminate(List* daList)
 {
-    if (daList)
-    {
-        if (daList->capacity > 0)
-        {
-            memset(daList->memory, 0, sizeof(Node) * daList->capacity);
-            blah_free_aligned_sized(daList->memory, 0, 0);
-        }
+  if(daList)
+  {
+    if(daList->capacity > 0)
+      BlahFree(daList->memory, sizeof(Node) * daList->capacity, true);
 
-        memset(daList, 0, sizeof(List));
-        blah_free_aligned_sized(daList, 0, 0);
-    }
+    BlahFree(daList, sizeof(List), true);
+  }
 }
 
 struct CacheType
@@ -541,7 +535,7 @@ error:
 
 #include "bintree_nocomments.h"
 
-#include "blah_aligned_alloc.h"
+#include "blah_alloc.h"
 
 #if 0
 ssStack* SsStackConstruct(int sizeOf, int minimumCapacity, int maximumCapacity, int resize);
@@ -764,141 +758,37 @@ static bool binTreeTest(blahRandom* random);
 
 int main()
 {
+  int result = -1;
+
   blahRandom random = {0};
 
   struct timespec sleep_time = {0};
 
-  if( !EnableLargePageSupport() )
-    goto errorLabel;
-
-//uint8_t** randomArray = 0;
+  BlahEnableAlloc();
 
   if( !BlahRandomConstructDefault( &random) )
-    goto errorLabel;
+    goto error;
+
+  if( !BlahRandomIterate( &random) )
+        goto error;
 
   if( !blahTestStack() )
-    goto errorLabel;
+    goto error;
 
   if( !blahTestQueue() )
-    goto errorLabel;
+    goto error;
 
-#if 0
-  //printf("%llu\n", (uint64_t)time(0) );
-
-  uint64_t* randomArray = (uint64_t*)blah_aligned_alloc(sizeof(uint64_t) * BLAH_SIZE, 0, false);
-  memset(randomArray, 0, sizeof(uint64_t) * BLAH_SIZE);
-#endif
-
-  sleep_time.tv_sec = 30;
-
-#if 0
-  try
-  {
-    randomArray = (uint8_t**)blah_aligned_alloc(sizeof(uint8_t*) * BLAH_SIZE, 0, false);
-  }
-  catch(bad_alloc& )
-  {
-    goto errorLabel;
-  }
-
-  if( !randomArray)
-    goto errorLabel;
-
-  memset(randomArray, 0, sizeof(uint8_t*) * BLAH_SIZE);
-
-  for(uint32_t index = 0; index < BLAH_SIZE; index++)
-  {
-    try
-    {
-      randomArray[index] = (uint8_t*)blah_aligned_alloc(sizeof(uint8_t) * 1024 * 1024, 0, false);
-    }
-    catch(bad_alloc& )
-    {
-      goto errorLabel;
-    }
-    
-    if( !randomArray[index] )
-      goto errorLabel;
-
-    for(uint32_t indexByte = 0; indexByte < 1024 * 1024; indexByte++)
-    {
-      randomArray[index][indexByte] = (uint8_t)(random.previous & 0xFF);
-
-      if( !BlahRandomIterate( &random) )
-        goto errorLabel;
-    }
-
-    printf("%i\n", index);
-  }
+  sleep_time.tv_sec = 1;
 
   thrd_sleep( &sleep_time, 0);
 
-  for(uint32_t index = BLAH_SIZE; index > 0; index--)
-  {
-    try
-    {
-      blah_free_aligned_sized(randomArray[index - 1], 0, 0);
-      randomArray[index - 1] = 0;
-    }
-    catch(bad_alloc& )
-    {
-      goto errorLabel;
-    }
-  }
-#endif
-
   if( !binTreeTest( &random) )
-    goto errorLabel;
+    goto error;
 
-  goto successLabel;
+  BlahRandomDestruct( &random);
 
-errorLabel:
-  printf("error\n");
-  return -1;
-
-successLabel:
-  printf("success\n");
-  return 0;
-
-#if 0
-  uint64_t result1 = 0;
-  uint64_t result2 = 0;
-
-  result2 = random;
-
-  do
-  {
-    result1 = result2;
-
-    result2 = randomIterate(result1);
-
-  }while(result2 == result1);
-
-  randomArray[0] = result2;
-
-  for(uint32_t index = 1; index < BLAH_SIZE; index++)
-  {
-    randomArray[index] = randomIterate(randomArray[index - 1] );
-
-    //printf("%llu\n", randomArray[index] );
-  }
-
-  // void qsort(void* base, size_t nmemb, size_t size, int(*compar)(const void*, const void*) )
-  qsort(randomArray, BLAH_SIZE, sizeof(uint64_t), qsortCompare);
-
-  for(uint32_t index = 0; index < BLAH_SIZE; index++)
-  {
-    printf("%llu %u\n", randomArray[index], (uint32_t)(randomArray[index] / (UINT64_MAX / 1000) ) );
-  }
-
-  // (a + b) * (c + d) ==
-  // a * c + a * d + b * c + b * d
-
-  blah_free_aligned_sized(randomArray, 0, 0);
-  randomArray = 0;
-
-  return 0;
-#endif
+error:
+  return result;
 }
 
 #if BLAH_BINTREE
@@ -980,28 +870,34 @@ extern bool SsmmSetResize(ssmm* _this, uint32_t resize);
 
 extern uint32_t gDebugRotate[69];
 
-static uint32_t gFullCount = 0;
-static uint32_t gModCount = 0;
+static uint32_t g1000fullCount = 0;
+static uint32_t g1000modCount = 0;
+static uint32_t g1000sizeOf = 0;
 
-static bool DebugAllocate(uint32_t* data[1000], uint32_t count)
+#define G1000NUMERATOR 1000
+#define G1000DIVISOR 200
+
+static bool DebugAllocate(uint32_t* data[G1000NUMERATOR], uint32_t count)
 {
   bool result = false;
 
-  if(count % 200)
+  if(count % G1000DIVISOR)
     goto error;
 
-  if(count < 200)
+  if(count < G1000DIVISOR)
     goto error;
 
-  gFullCount = count;
+  g1000fullCount = count;
 
-  count /= 200;
+  count /= G1000DIVISOR;
 
-  gModCount = count;
+  g1000modCount = count;
 
-  for(uint32_t index = 0; index < 200; index++)
+  g1000sizeOf = sizeof(uint32_t) * count;
+
+  for(uint32_t index = 0; index < G1000DIVISOR; index++)
   {
-    data[index] = (uint32_t*)blah_aligned_alloc(sizeof(uint32_t) * count);
+    data[index] = (uint32_t*)BlahAlloc(g1000sizeOf, true);
 
     if( !data[index] )
       goto error;
@@ -1013,26 +909,26 @@ error:
   return result;
 }
 
-static uint32_t DebugGet(uint32_t* data[1000], uint32_t index)
+static uint32_t DebugGet(uint32_t* data[G1000NUMERATOR], uint32_t index)
 {
-  return data[index / gModCount][index % gModCount];
+  return data[index / g1000modCount][index % g1000modCount];
 }
 
-static void DebugSet(uint32_t* data[1000], uint32_t index, uint32_t value)
+static void DebugSet(uint32_t* data[G1000NUMERATOR], uint32_t index, uint32_t value)
 {
-  data[index / gModCount][index % gModCount] = value;
+  data[index / g1000modCount][index % g1000modCount] = value;
 }
 
-static void DebugFree(uint32_t* data[1000] )
+static void DebugFree(uint32_t* data[G1000NUMERATOR] )
 {
-  for(uint32_t index = 200; index > 0; index--)
+  for(uint32_t index = G1000DIVISOR; index > 0; index--)
   {
-    blah_free_aligned_sized(data[index - 1] );
+    BlahFree(data[index - 1], g1000sizeOf, true);
     data[index - 1] = 0;
   }
 }
 
-bool binTreeTest(blahRandom* random)
+bool binTreeTest(blahRandom* /*random*/)
 {
   //ssmm* ssmmBlah = SsmmConstruct(sizeof(void*), 100, false);
   //SsmmSetResize(ssmmBlah, -1);
@@ -1081,7 +977,7 @@ uint32_t numData = 4000000000;
       return false;
 
     //myStruct data[numData] = { {-2}, {-1}, {0}, {1}, {2} };
-    uint32_t* datablah[1000] = {0};
+    uint32_t* datablah[G1000NUMERATOR] = {0};
     if( !DebugAllocate(datablah, numData) )
       return false;
 
@@ -1117,10 +1013,10 @@ uint32_t numData = 4000000000;
 
       //uint32_t indexToSwap = (uint32_t)(randomValue % (uint64_t)modulus);
       uint32_t indexToSwap = (uint32_t)rand() % modulus;
-      
+
       uint32_t lhs = DebugGet(datablah, index);
       uint32_t rhs = DebugGet(datablah, (index + 1) + indexToSwap);
-      
+
       //swapInt(data[index], data[ (index + 1) + indexToSwap] );
       DebugSet(datablah, index, rhs);
       DebugSet(datablah, (index + 1) + indexToSwap, lhs);
@@ -1314,7 +1210,7 @@ uint32_t numData = 4000000000;
       // if index == numData - 2, modulus == 1, indexToSwap in range [0, 0], swapInt rhs index range is [numData - 1, numData - 1]
 
       uint32_t modulus = (numData - index) - 1;
-      
+
       //uint64_t randomValue = 0;
       //BlahRandomIterate(random);
       //BlahRandomGet(random, &randomValue);
@@ -1465,7 +1361,7 @@ uint32_t numData = 4000000000;
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
 
-// Tips for Getting Started: 
+// Tips for Getting Started:
 //   1. Use the Solution Explorer window to add/manage files
 //   2. Use the Team Explorer window to connect to source control
 //   3. Use the Output window to see build output and other messages

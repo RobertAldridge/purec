@@ -333,15 +333,13 @@ error:
   return (ssStack*)result;
 }
 
-bool SsStackDestruct(ssStack** reference, uint32_t* num)
+bool SsStackDestruct(ssStack** reference)
 {
   bool result = false;
 
-  uint32_t numChunks = 0;
-
   ssStack* _this = 0;
 
-  if( !reference || !num)
+  if( !reference)
     goto error;
 
   _this = reference[0];
@@ -349,15 +347,11 @@ bool SsStackDestruct(ssStack** reference, uint32_t* num)
   if( !_this)
     goto error;
 
-  numChunks = _this->numChunks;
-
   SsStackPoolListFree(_this, _this->tail);
 
   BlahFree(_this, _this->head->sizeOf, true);
 
   reference[0] = 0;
-
-  *num = numChunks;
 
   result = true;
 
@@ -380,16 +374,12 @@ error:
   return result;
 }
 
-bool SsStackReset(ssStack* _this, uint32_t* num)
+bool SsStackReset(ssStack* _this)
 {
   bool result = false;
 
-  uint32_t numChunks = 0;
-
-  if( !_this || !num)
+  if( !_this)
     goto error;
-
-  numChunks = _this->numChunks;
 
   _this->current = _this->head;
 
@@ -398,8 +388,6 @@ bool SsStackReset(ssStack* _this, uint32_t* num)
   _this->index = 0;
 
   _this->counter++;
-
-  *num = numChunks;
 
   result = true;
 

@@ -6,11 +6,11 @@ struct ssArray;
 
 ssArray* SsArrayConstruct(uint32_t sizeOf, uint32_t minimumCapacity, uint32_t maximumCapacity, uint32_t resize);
 
-bool SsArrayDestruct(ssArray** _this, uint32_t* num);
+bool SsArrayDestruct(ssArray** _this);
 
 bool SsArrayNum(ssArray* _this, uint32_t* num);
 
-bool SsArrayReset(ssArray* _this, uint32_t* num);
+bool SsArrayReset(ssArray* _this);
 
 bool SsArrayPush(ssArray* _this, void* client);
 
