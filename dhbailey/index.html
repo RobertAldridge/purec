@@ -1,0 +1,199 @@
+<HTML><HEAD><TITLE>Software Directory</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<CENTER>
+<H1>High-Precision Software Directory</H1>
+<H3>Updated: 28 Nov 2024</H3><BR>
+</CENTER>
+
+<p>
+This website contains software written by David H. Bailey, either solely (items 1, 2, 3, 4 and 5) or in collaboration with other authors (items 6 and 7). Please send any comments or questions for this site to:<p>
+<img border=0 width=200 src="dhb-newemail.png">
+
+</p>
+Here are the software packages that are available:
+<ol>
+<li><b>MPFUN2020</b>: A thread-safe arbitrary precision package with special functions.</li>
+<li><b>DQFUN</b>: A double-quad precision package with special functions (approx. 66 digits).</li>
+<li><b>QXFUN</b>: A quad precision package with special functions (approx. 33 digits).</li>
+<li><b>DDFUN</b>: A double-double precision package with special functions (approx. 30 digits).</li>
+<li><b>MPFUN2015</b>: An older thread-safe arbitrary precision package (new users should use MPFUN2020).</li>
+<li><b>ARPREC</b>: An older arbitrary precision package for Fortran and C++ (new users should use MPFUN2020).</li>
+<li><b>QD</b>: An older quad-double package (approx. 60 digits) for Fortran and C++ (new users should use DQFUN, QXFUN or DDFUN).</li>
+</ol>
+
+Detailed instructions:
+<ol>
+<li><b>MPFUN2020</b>: A thread-safe arbitrary precision package with special functions.
+
+<p>
+This package permits one to perform floating-point computations (real and complex) to arbitrarily high numeric precision, by making only relatively minor changes to existing Fortran-90 programs (mostly changes to type statements). All basic arithmetic operations and transcendental functions are supported, together with an extensive set of special functions and polynomial evaluation routines.
+
+<p>
+The package comes in two versions: one completely self-contained, all-Fortran version that is simple to install; and one version based on the MPFR package that is more complicated to install but runs somewhat faster on most applications. Both versions are completely thread-safe. Both versions also detect, and provide means to overcome, accuracy problems rooted in the usage of inexact double-precision constants and expressions. A high-level Fortran-90 interface, supporting both multiprecision real and complex datatypes, is provided for each, so that most users need only to make minor changes to existing double-precision code. The two versions are "plug-compatible" in the sense that applications written for one also run with the other (provided a simple guideline is followed). 
+
+<p>
+A technical paper describing the package and providing details for
+usage is available here: <a href="https://www.davidhbailey.com/dhbpapers/mpfun2020.pdf">MPFUN2020 technical paper (updated 30 May 2024)</a>.
+
+<p>
+*** IMPORTANT NOTE: Please read this license document carefully before using the MPFUN package: 
+<a href="https://www.davidhbailey.com/dhbsoftware/DHB-License.docx">
+DHB-License.docx</a> or <a href="https://www.davidhbailey.com/dhbsoftware/DHB-License.txt">
+DHB-License.txt</a>. By downloading or using this software you are agreeing to the modified BSD license that is in this file. If you wish to use this software for any commercial purpose, please contact the author.</li>
+
+<p>
+The two versions of the software are available here:
+<ul>
+<li><b>MPFUN20-Fort</b> for Unix-based systems (including Apple OS X systems):
+<a href="https://www.davidhbailey.com/dhbsoftware/mpfun10-fort-v32.tar.gz">
+mpfun20-fort-v32.tar.gz</a>
+
+<p>
+MPFUN20-Fort: This is an all-Fortran version based on 8-byte integer arithmetic. It includes support for a medium precision datatype, which results in faster execution on very large problems, and features FFT-based multiplication to accelerate very high precision computations. It compiles in just a few seconds on any system with a Fortran-2008 compliant compiler (examples include the GNU gfortran compiler, the Intel ifort compiler and the NAG Fortran compiler).
+
+<p>
+For installation instructions, see this <a href="https://www.davidhbailey.com/dhbsoftware/README-mpfun20-fort.txt">README file</a> or <a href="https://www.davidhbailey.com/dhbsoftware/DHB-License.txt">
+DHB-License.txt</a>. The README file also includes a brief summary of programming instructions, although the technical paper above has full details.</li>
+
+<p>
+<li><b>MPFUN20-MPFR</b> for Unix-based systems (including Apple OS X systems):
+<a href="https://www.davidhbailey.com/dhbsoftware/mpfun20-mpfr-v32.tar.gz">
+mpfun20-mpfr-v32.tar.gz</a>
+
+<p>
+MPFUN20-MPFR: This is virtually identical to MPFUN20-Fort in its user interface, but it calls the MPFR package for all low-level functions and operations. The MPFUN20-MPFR version is faster than MPFUN20-Fort on most applications, particularly those that involve transcendental functions. However, installation of MPFUN20-MPFR is significantly more complicated (because the GMP and MPFR packages must first be installed, usually requiring administrator privilege).
+
+<p>
+For installation instructions, see this <a href="https://www.davidhbailey.com/dhbsoftware/README-mpfun-mpfr.txt">README file</a>. The README file also includes a brief summary of programming instructions, although the technical paper above has full details.</li></ul>
+
+<p>
+<li><b>DQFUN</b>: A double-quad precision package with special functions (approximately 66 digit precision).
+
+<p>
+This package permits one to perform floating-point computations (real and complex) to double-quad precision (approximately 65 digits), by making only relatively minor changes to existing Fortran programs. All basic arithmetic operations and transcendental functions are supported, together with numerous special functions. The package should run correctly on any Unix-based system supporting a Fortran-2008 compiler and IEEE 128-bit floating-point arithmetic (in hardware or software).
+
+<p>
+Software for Unix-based systems (including Apple OS X systems):
+<a href="https://www.davidhbailey.com/dhbsoftware/dqfun-v03.tar.gz">
+dqfun-v03.tar.gz</a>
+
+<p>
+For installation instructions, see this <a href="https://www.davidhbailey.com/dhbsoftware/README-dqfun.txt">README file</a>. The README file also includes a brief summary of programming instructions.
+
+<p>
+*** IMPORTANT NOTE: Please read this license document carefully before using the DQFUN package: 
+<a href="https://www.davidhbailey.com/dhbsoftware/DHB-License.docx">
+DHB-License.docx</a> or <a href="https://www.davidhbailey.com/dhbsoftware/DHB-License.txt">
+DHB-License.txt</a>. By downloading or using this software you are agreeing to the modified BSD license that is in this file. If you wish to use this software for any commercial purpose, please contact the author.</li>
+
+<p>
+<p>
+<li><b>QXFUN</b>: A quad precision package with special functions (approximately 33 digit precision).
+
+<p>
+This package enhances an IEEE quad precision floating-point facility (approx. 33 digit accuracy) to include a library of numerous special functions, all by making only very minor changes to existing Fortran programs. The package should run correctly on any Unix-based system supporting a Fortran-2008 compiler and IEEE 128-bit floating-point arithmetic, in hardware or software.
+
+<p>
+Software for Unix-based systems (including Apple OS X systems):
+<a href="https://www.davidhbailey.com/dhbsoftware/qxfun-v01.tar.gz">
+qxfun-v01.tar.gz</a>
+
+<p>
+For installation instructions, see this <a href="https://www.davidhbailey.com/dhbsoftware/README-qxfun.txt">README file</a>. The README file also includes a brief summary of programming instructions.
+
+<p>
+*** IMPORTANT NOTE: Please read this license document carefully before using the DQFUN package: 
+<a href="https://www.davidhbailey.com/dhbsoftware/DHB-License.docx">
+DHB-License.docx</a> or <a href="https://www.davidhbailey.com/dhbsoftware/DHB-License.txt">
+DHB-License.txt</a>. By downloading or using this software you are agreeing to the modified BSD license that is in this file. If you wish to use this software for any commercial purpose, please contact the author.</li>
+
+<p>
+<li><b>DDFUN</b>: A double-double package with special functions (approximately 30 digit precision).
+
+<p>
+This package permits one to perform floating-point computations (real and complex) to double-double precision (approximately 30 digits), by making only relatively minor changes to existing Fortran programs. It is intended as a substitute for IEEE 128-bit quad precision on systems where quad precision is not available. All basic arithmetic operations and transcendental functions are supported, together with numerous special functions. The package should run correctly on any Unix-based system supporting a Fortran-2008 compiler and IEEE 64-bit floating-point arithmetic. 
+
+<p>
+Software for Unix-based systems (including Apple OS X systems):
+<a href="https://www.davidhbailey.com/dhbsoftware/ddfun-v03.tar.gz">
+ddfun-v03.tar.gz</a>
+
+<p>
+For installation instructions, see this <a href="https://www.davidhbailey.com/dhbsoftware/README-dqfun.txt">README file</a>. The README file also includes a brief summary of programming instructions.
+
+<p>
+*** IMPORTANT NOTE: Please read this license document carefully before using the DQFUN package: 
+<a href="https://www.davidhbailey.com/dhbsoftware/DHB-License.docx">
+DHB-License.docx</a> or <a href="https://www.davidhbailey.com/dhbsoftware/DHB-License.txt">
+DHB-License.txt</a>. By downloading or using this software you are agreeing to the modified BSD license that is in this file. If you wish to use this software for any commercial purpose, please contact the author.</li>
+
+<p>
+<li><b>MPFUN2015</b>: An older thread-safe arbitrary precision package.
+
+<p>
+This is an older all-Fortran version of the MPFUN software, based on floating-point arithmetic. It is several times slower than MPFUN2020. This version is still supported, but MPFUN2020 should be used for new development.
+
+<p>
+A technical paper describing the package and providing details for
+usage is available here: <a href="https://www.davidhbailey.com/dhbpapers/mpfun2015.pdf">MPFUN2015 technical paper</a>.
+
+<p>
+*** IMPORTANT NOTE: Please read this license document carefully before using the MPFUN package: 
+<a href="https://www.davidhbailey.com/dhbsoftware/DHB-License.docx">
+DHB-License.docx</a> or <a href="https://www.davidhbailey.com/dhbsoftware/DHB-License.txt">
+DHB-License.txt</a>. By downloading or using this software you are agreeing to the modified BSD license that is in this file. If you wish to use this software for any commercial purpose, please contact the author.</li>
+
+<p>
+The software is available here:
+<ul>
+<li><b>MPFUN-Fort</b> for Unix-based systems (including Apple OS X systems):
+<a href="https://www.davidhbailey.com/dhbsoftware/mpfun-fort-v24.tar.gz">
+mpfun-fort-v24.tar.gz</a>
+
+<p>
+For installation instructions, see this <a href="https://www.davidhbailey.com/dhbsoftware/README-mpfun-fort.txt">README file</a>. The README.txt file also includes a brief summary of programming instructions, although the technical paper above has full details.</li></ul>
+ 
+<p>
+<li><b>ARPREC</b>: An arbitrary precision package for Fortran and C++.
+
+<p>
+This package is an older arbitrary precision package. It is not thread-safe, but, unlike MPFUN2020, is available with both a Fortran-90 and a C++ high-level interface.
+
+<p>
+<b>ARPREC</b> for Unix-based systems (including Apple OS X systems):
+<a href="https://www.davidhbailey.com/dhbsoftware/arprec-2.2.20.tar.gz">arprec-2.2.20.tar.gz</a>
+
+<p>
+Note: On some systems, notably a Mac with Safari, the browser may automatically unzip the file as it downloads it. In that case, you may need to rename the file, say from "arprec-2.2.20.tar.gz" to "arprec-2.2.20.tar" before proceeding.
+
+<p>
+*** IMPORTANT NOTE: This software was written by David Bailey, Xiaoye Li and Yozo Hida, each of whom at the time were at the Lawrence Berkeley National Laboratory. It is available on this site as a convenience. Please read this license document carefully before using: <a href="https://www.davidhbailey.com/dhbsoftware/LBNL-BSD-License.docx">LBNL-BSD-License.docx</a> or <a href="https://www.davidhbailey.com/dhbsoftware/LBNL-BSD-License.txt">
+LBNL-BSD-License.txt</a>. By downloading or using this software you are agreeing to the modified BSD license that is in this file. If you wish to use this software for any commercial purpose, please contact the Intellectual Property Office at the Lawrence Berkeley National Laboratory, ipo@lbl.gov.</li>
+
+<p>
+<li><b>QD</b>: A double-double and quad-double package for Fortran and C++.
+
+<p>
+This package is an older package that provides double-double (approximately 31-digit precision) and quad-double (approximately 62-digit precision) functionality. It is not thread-safe, but, unlike MPFUN2020, is available with both a Fortran-90 and a C++ high-level interface.
+
+<p>
+<b>QD</b> for Unix-based systems (including Apple OS X systems):
+<a href="https://www.davidhbailey.com/dhbsoftware/qd-2.3.24.tar.gz">qd-2.3.24.tar.gz</a>
+
+<p>
+Note: On some systems, notably a Mac with Safari, the browser may automatically unzip the file as it downloads it. In that case, you may need to rename the file, say from "qd-2.3.24.tar.gz" to "qd-2.3.24.tar" before proceeding.
+
+<p>
+*** IMPORTANT NOTE: This software was written by David Bailey, Xiaoye Li and Yozo Hida, each of whom at the time were at the Lawrence Berkeley National Laboratory. It is available on this site as a convenience. Please read this license document carefully before using: <a href="https://www.davidhbailey.com/dhbsoftware/LBNL-BSD-License.docx">LBNL-BSD-License.docx</a> or <a href="https://www.davidhbailey.com/dhbsoftware/LBNL-BSD-License.txt">
+LBNL-BSD-License.txt</a>. By downloading or using this software you are agreeing to the modified BSD license that is in this file. If you wish to use this software for any commercial purpose, please contact the Intellectual Property Office at the Lawrence Berkeley National Laboratory, ipo@lbl.gov.</li>
+
+</ol>
+
+<br>
+<br>
+
+
+</BODY>
+</HTML>
+

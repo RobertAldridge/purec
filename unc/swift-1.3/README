@@ -1,0 +1,98 @@
+---------------------------------------------------------
+-- SWIFT (Speedy Walking via Improved Feature Testing) --
+---------------------------------------------------------
+
+SWIFT is a collision detection package capable of determining the intersection,
+approximate distance, exact distance, or contacts amidst a scene composed of
+convex polyhedral models.  It is a powerful package from its input interface
+to its query interface.  There are many features available but the basic
+principles are rather simple and straightforward.
+
+
+----------------------------------------
+-- Contents of the SWIFT distribution --
+----------------------------------------
+
+1) README    -- This file.
+
+2) CONTACT   -- Contact information.
+                Ming Lin: PI for the Collide research group
+                Stephen Ehmann: the author of SWIFT.
+
+3) LICENSE   -- License information.  Make sure that you understand the
+                contents before using SWIFT.
+
+4) QTIPS     -- Tips on compiling and using QSlim and Qhull with SWIFT.
+
+5) Makefile  -- Main makefile.
+
+6) swift.dsp -- VC++ 6.0 project file.
+
+7) doc/      -- Documentation directory.  Contains the user manual for SWIFT in
+                various document formats.
+
+8) include/  -- The directory containing the header files for the SWIFT source.
+                SWIFT.h in the include/ directory is the file that applications
+                using SWIFT must include.
+
+9) src/      -- The directory containing the main SWIFT source.  A Makefile
+                resides in this directory which is used to create object files.
+
+10) lib/     -- The library libSWIFT.a will be placed in this directory.
+
+11) example/ -- An example application that uses SWIFT.  There are also
+                example model files in this directory.
+
+
+--------------------------------
+-- Building the SWIFT library --
+--------------------------------
+
+1) Look through the configuration file in the include/ directory called
+   SWIFT_config.h and set all desired options.  Various compile-time features
+   may be selected including floating point type, usage of the hierarchy, type
+   of hierarchy to be used, debugging, etc.  Read SWIFT_config.h and the user
+   manual for full details.
+
+2) Compile the library.
+
+  If compiling using VC++ 6.0
+    Use swift.dsp.
+
+  Else if compiling under some Unix
+    Look through SWIFT/Makefile and do the following:
+    - Set CC to point to the proper compiler and set CFLAGS to the desired
+      compile flags.
+    - Uncomment the Qhull and QSlim flags and point them to the current
+      system's installation of those packages if the QSlim hierarchy is desired
+      (and the option was turned on in SWIFT_config.h).
+    Type ``make'' in this directory and a library will be built as
+    lib/libSWIFT.a.  There may be a few warnings which can be safely ignored.
+
+  Else
+    You will have to create your own compiler configuration
+
+
+--------------------------------------------------
+-- Building and Running the Example Application --
+--------------------------------------------------
+
+1) First build the SWIFT library as desired (see above section).
+
+2) Type ``make example'' (under Unix).
+
+3) To run the example program enter the example/ directory and type
+   ``example -h'' for a list of options.  Also, read the USAGE file located
+   there for information about the exmaple program and what it does.
+
+
+-----------------------------------------------
+-- Using and Understanding the SWIFT library --
+-----------------------------------------------
+
+1) Include the file include/SWIFT.h in the application source code.
+
+2) Read the included user manual for a full treatment of how to use the SWIFT
+   library effectively.  It is in the doc/ directory in .dvi, .ps, and .pdf
+   formats.
+

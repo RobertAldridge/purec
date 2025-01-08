@@ -1,0 +1,30 @@
+
+This small package differs from I_Collide in several ways:
+
+-- OBBTree does not contain any io routines.  You will have to write
+   your own functions to read and parse files to obtain the polygons
+   which define a model.  The ONLY way to feed a model to the OBBTree
+   system is with the box::add_tri() member function, which takes
+   the vertex coordinates of a triangle, and an id.
+
+-- OBBTree operates only with triangles.  If your models contain
+   polygons with more than 3 vertices, you will have to triangulate
+   them yourself, and feed the triangles to OBBTree.
+
+-- OBBTree has just one collision query function: collide().
+
+-- OBBTree does not keep track of where the objects are.  You must
+   specify where the objects are in world space on every collision
+   query.
+
+-- OBBTree does not report distances between models, only triangle
+   contact pairs.  Pairs of triangle id's are returned by the
+   collision query function.
+
+-- OBBTree makes no use of frame-to-frame coherence in the motion of
+   objects.
+
+-- OBBTree contains support for pair-wise collision queries only.
+   There is as yet no support for multiple object collision detection.
+   Support may added at a later date.
+

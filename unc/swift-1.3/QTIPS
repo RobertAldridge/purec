@@ -1,0 +1,25 @@
+----------------------------------------------
+-- Tips on using QSlim and Qhull with SWIFT --
+----------------------------------------------
+
+These tips are not necessary if you are not using QSlim and Qhull
+(SWIFT_HIERARCHY or SWIFT_QSLIM_HIER are undefined in SWIFT_config.h).
+
+
+1) SWIFT has only been tested with Qhull v 2.6 and QSlim v 2.0.  Use other
+   versions at your own risk.  The web sites are:
+   Qhull: www.geom.umn.edu/software/qhull/ 
+   QSlim: graphics.cs.uiuc.edu/~garland/software/qslim.html
+
+2) Don't forget to point the -I flags in Makefile to the distributions of
+   QSlim and Qhull on your system.
+
+3) When you link, don't forget to put -lqhull, -lmix (or whatever you have
+   named the libraries) after -lSWIFT.
+
+4) If you are having trouble compiling QSlim it may help to comment out
+   GL_SRCS and GUI_SRCS in qslim-2.0/mixkit/src/Makefile.
+
+5) On the QSlim web site there is mention that it does not compile on VC++ 6
+   unless you get the fix posted there.
+

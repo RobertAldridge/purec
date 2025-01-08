@@ -1,0 +1,93 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Demo1", "Demo1\Demo1.vcproj", "{C0DC77C6-4B33-4D0D-AE8C-E0AAF79EB45F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A8E50EFB-2FAA-4B96-BE13-A013B6B60758} = {A8E50EFB-2FAA-4B96-BE13-A013B6B60758}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Demo2", "Demo2\Demo2.vcproj", "{F44F7D55-B216-41C9-87AE-6D80CD4E2E04}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A8E50EFB-2FAA-4B96-BE13-A013B6B60758} = {A8E50EFB-2FAA-4B96-BE13-A013B6B60758}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F6EBEC4E-984F-436F-BF63-E640A6A513D2}"
+	ProjectSection(SolutionItems) = preProject
+		Readme.txt = Readme.txt
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "deformCD", "deformCD\deformCD.vcproj", "{A8E50EFB-2FAA-4B96-BE13-A013B6B60758}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Demo3", "Demo3\Demo3.vcproj", "{349F1D10-B114-478E-A37A-9B8745169230}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Demo-balls", "Demo-Balls\Demo-balls.vcproj", "{CDEFEBFC-70F8-438E-902A-4DAD0ACC3015}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Demo-cloth", "Demo-cloth\Demo-cloth.vcproj", "{71FB06D5-C06B-4D9A-BBD0-F790F5B4A53A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Demo-dragon", "Demo-dragon\Demo-dragon.vcproj", "{0FC13939-A9DF-4526-B336-3AE4132B196A}"
+EndProject
+Global
+	GlobalSection(SourceCodeControl) = preSolution
+		SccNumberOfProjects = 8
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = deformCD\\deformCD.vcproj
+		SccLocalPath1 = .
+		SccProjectFilePathRelativizedFromConnection1 = deformCD\\
+		SccProjectUniqueName2 = Demo1\\Demo1.vcproj
+		SccLocalPath2 = .
+		SccProjectFilePathRelativizedFromConnection2 = Demo1\\
+		SccProjectUniqueName3 = Demo2\\Demo2.vcproj
+		SccLocalPath3 = .
+		SccProjectFilePathRelativizedFromConnection3 = Demo2\\
+		SccProjectUniqueName4 = Demo3\\Demo3.vcproj
+		SccLocalPath4 = .
+		SccProjectFilePathRelativizedFromConnection4 = Demo3\\
+		SccProjectUniqueName5 = Demo-Balls\\Demo-balls.vcproj
+		SccProjectName5 = \u0022$/rapid_fit.root/rapid_fit\u0022,\u0020MCBAAAAA
+		SccLocalPath5 = .
+		SccProjectFilePathRelativizedFromConnection5 = Demo-Balls\\
+		SccProjectUniqueName6 = Demo-cloth\\Demo-cloth.vcproj
+		SccLocalPath6 = .
+		SccProjectFilePathRelativizedFromConnection6 = Demo-cloth\\
+		SccProjectUniqueName7 = Demo-dragon\\Demo-dragon.vcproj
+		SccLocalPath7 = .
+		SccProjectFilePathRelativizedFromConnection7 = Demo-dragon\\
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C0DC77C6-4B33-4D0D-AE8C-E0AAF79EB45F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C0DC77C6-4B33-4D0D-AE8C-E0AAF79EB45F}.Debug|Win32.Build.0 = Debug|Win32
+		{C0DC77C6-4B33-4D0D-AE8C-E0AAF79EB45F}.Release|Win32.ActiveCfg = Release|Win32
+		{C0DC77C6-4B33-4D0D-AE8C-E0AAF79EB45F}.Release|Win32.Build.0 = Release|Win32
+		{F44F7D55-B216-41C9-87AE-6D80CD4E2E04}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F44F7D55-B216-41C9-87AE-6D80CD4E2E04}.Debug|Win32.Build.0 = Debug|Win32
+		{F44F7D55-B216-41C9-87AE-6D80CD4E2E04}.Release|Win32.ActiveCfg = Release|Win32
+		{F44F7D55-B216-41C9-87AE-6D80CD4E2E04}.Release|Win32.Build.0 = Release|Win32
+		{A8E50EFB-2FAA-4B96-BE13-A013B6B60758}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A8E50EFB-2FAA-4B96-BE13-A013B6B60758}.Debug|Win32.Build.0 = Debug|Win32
+		{A8E50EFB-2FAA-4B96-BE13-A013B6B60758}.Release|Win32.ActiveCfg = Release|Win32
+		{A8E50EFB-2FAA-4B96-BE13-A013B6B60758}.Release|Win32.Build.0 = Release|Win32
+		{349F1D10-B114-478E-A37A-9B8745169230}.Debug|Win32.ActiveCfg = Debug|Win32
+		{349F1D10-B114-478E-A37A-9B8745169230}.Debug|Win32.Build.0 = Debug|Win32
+		{349F1D10-B114-478E-A37A-9B8745169230}.Release|Win32.ActiveCfg = Release|Win32
+		{349F1D10-B114-478E-A37A-9B8745169230}.Release|Win32.Build.0 = Release|Win32
+		{CDEFEBFC-70F8-438E-902A-4DAD0ACC3015}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CDEFEBFC-70F8-438E-902A-4DAD0ACC3015}.Debug|Win32.Build.0 = Debug|Win32
+		{CDEFEBFC-70F8-438E-902A-4DAD0ACC3015}.Release|Win32.ActiveCfg = Release|Win32
+		{CDEFEBFC-70F8-438E-902A-4DAD0ACC3015}.Release|Win32.Build.0 = Release|Win32
+		{71FB06D5-C06B-4D9A-BBD0-F790F5B4A53A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{71FB06D5-C06B-4D9A-BBD0-F790F5B4A53A}.Debug|Win32.Build.0 = Debug|Win32
+		{71FB06D5-C06B-4D9A-BBD0-F790F5B4A53A}.Release|Win32.ActiveCfg = Release|Win32
+		{71FB06D5-C06B-4D9A-BBD0-F790F5B4A53A}.Release|Win32.Build.0 = Release|Win32
+		{0FC13939-A9DF-4526-B336-3AE4132B196A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0FC13939-A9DF-4526-B336-3AE4132B196A}.Debug|Win32.Build.0 = Debug|Win32
+		{0FC13939-A9DF-4526-B336-3AE4132B196A}.Release|Win32.ActiveCfg = Release|Win32
+		{0FC13939-A9DF-4526-B336-3AE4132B196A}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

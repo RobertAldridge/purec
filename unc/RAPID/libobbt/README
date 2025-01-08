@@ -1,0 +1,25 @@
+
+This software works with g++ and gcc.
+
+To make the collision detection library, type
+
+	make library
+
+The test programs t.C and t_plain_c.c illustrate how to make use of
+the library with C++ or C, respectively.  The test programs construct
+a pair of tori, and perform collision queries between them.
+
+Before making the test programs, you must first compile the simple
+vector/matrix library (in libSVM).  To do so, type (with csh),
+
+	(cd ../libSVM; make library)
+
+To make the test programs, type,
+
+	make t; 
+
+or
+
+	make t_plain_c
+
+

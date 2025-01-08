@@ -1,0 +1,67 @@
+
+Short Users Manual   ---   OBBTree version 0.0
+
+The library interface has been kept as simple as possible.  The
+library is written in C++, and the "box" class is used to create
+models and perform collision queries on them.  For those of you with
+plain C applications and needing to link to the library, a plain C
+interface is provided -- these are functions with the OBBTC prefix,
+which in turn call the corresponding box class methods.
+
+The file t.C is a sample C++ application.  The file t_plain_c.c is
+a sample plain C application.  Look at these to see how to use
+the library.
+
+The basic sequence of calls for an OBBTree application is as follows:
+
+  -- initialize the library with box::initialize() [or
+     OBBTC_initialize()].  This must be the first OBBTree function
+     called.
+
+  -- allocate the oriented bounding box tree root node using the box
+     constructor, box() [or OBBTC_new_box()].  You will need one root
+     node for each object you want to perform collision detection on.
+
+  -- feed your model to the root node with repeated calls to
+     box::add_tri() [or OBBTC_add_tri()].  When you have fed all the
+     necessary triangles to the root node, have it construct the tree
+     by calling box::build_hierarchy() [or OBBTC_build_hierarchy()].
+
+  -- Collision queries may be performed between root nodes which have
+     had their trees constructed with the Collide() function.  This
+     function takes as arguments the two root nodes, and their
+     positions and orientations in world space.  After the call, the
+     array OBBT_num_contacts contains the number of polygon contact
+     pairs found, and OBBT_contact is the array of id pairs
+     identifying the contacts.
+
+  -- If your application has no more need for a model, it's memory can
+     be released with the destructor box::~box() [or
+     OBBTC_delete_box()].
+
+------
+
+Please also note that the library has been tested on hp's and sgi's
+using the g++ and gcc compilers.  Other machine/compiler combinations
+are not yet supported.  If you attempt another combination please
+send mail to geom@cs.unc.edu concerning your results -- if you
+have difficulties we may be able to fix them, and if you have 
+solutions we may wish to incorporate them.
+
+------
+
+PERFORMANCE NOTE:
+
+On sgi's and hp's using the gnu compilers an inline assembly
+instruction is used to obtain absolute values.  On other
+machine/compiler combinations a macro (if then else) is
+used to obtain absolute value.  Our experience is that
+using the assembly instruction results in significantly faster
+collision queries.
+
+If you learn how to imbed the inline assembly instruction
+for other machine/compiler combinations, we'd love to hear
+about it.
+
+------
+
