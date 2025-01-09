@@ -1,5 +1,5 @@
 
-// ssmm.cpp
+// ssMm.cpp
 // Robert Aldridge, code
 // Robert Aldridge and Charlie Burns, design
 
@@ -19,28 +19,30 @@ using std::uint8_t;
 using std::printf;
 #endif
 
-struct SsmmNode
+struct SsMmNode
 {
-  SsmmNode* next;
+  SsMmNode* next;
 };
 
-struct SsmmPool
+struct SsMmPool
 {
-  SsmmPool* next;
+  SsMmPool* next;
 
   uint32_t num;
 
   uint32_t sizeOf;
 };
 
-struct ssmm
+struct ssMm
 {
-  SsmmNode* chunk;
+  SsMmNode* chunk;
 
-  SsmmPool* current;
+  SsMmPool* current;
 
-  SsmmPool* head;
-  SsmmPool* tail;
+  SsMmPool* head;
+  SsMmPool* tail;
+  
+  uint64_t capacity;
 
   uint32_t numPools;
   uint32_t numChunks;
@@ -49,45 +51,42 @@ struct ssmm
   uint32_t max;
 
   uint32_t resize;
-  uint32_t capacity;
 
   uint32_t sizeOf;
-
-  uint32_t padding;
 };
 
-#include "ssmm_nocomments.h"
+#include "ssMm_nocomments.h"
 
 #include "blah_alloc.h"
 
-static uint32_t SsmmAlignedOfValue(uint32_t size)
+static uint32_t SsMmAlignedOfValue(uint32_t size)
   { return (size % sizeof(void*) ) ? size + (sizeof(void*) - size % sizeof(void*) ) : size; }
 
-static uint32_t SsmmGetSizeOfPoolHeader()
-  { return SsmmAlignedOfValue(sizeof(SsmmPool) ); }
+static uint32_t SsMmGetSizeOfPoolHeader()
+  { return SsMmAlignedOfValue(sizeof(SsMmPool) ); }
 
-static uint32_t SsmmGetSizeOfSsmmHeader()
-  { return SsmmAlignedOfValue(sizeof(ssmm) ); }
+static uint32_t SsMmGetSizeOfSsMmHeader()
+  { return SsMmAlignedOfValue(sizeof(ssMm) ); }
 
-static uint32_t SsmmGetPoolSizeOf(ssmm* _this, uint32_t nmemb)
-  { return SsmmGetSizeOfPoolHeader() + nmemb * _this->sizeOf; }
+static uint32_t SsMmGetPoolSizeOf(ssMm* _this, uint32_t nmemb)
+  { return SsMmGetSizeOfPoolHeader() + nmemb * _this->sizeOf; }
 
-static uint8_t* SsmmPoolToChunkOperatorIndex(ssmm* _this, SsmmPool* pool, uint32_t index)
-  { return (uint8_t*)pool + SsmmGetSizeOfPoolHeader() + index * _this->sizeOf; }
+static uint8_t* SsMmPoolToChunkOperatorIndex(ssMm* _this, SsMmPool* pool, uint32_t index)
+  { return (uint8_t*)pool + SsMmGetSizeOfPoolHeader() + index * _this->sizeOf; }
 
-static SsmmNode* SsmmPoolToFirstChunk(SsmmPool* pool)
-  { return (SsmmNode*)( (uint8_t*)pool + SsmmGetSizeOfPoolHeader() ); }
+static SsMmNode* SsMmPoolToFirstChunk(SsMmPool* pool)
+  { return (SsMmNode*)( (uint8_t*)pool + SsMmGetSizeOfPoolHeader() ); }
 
-static SsmmNode* SsmmChunkToChunkSequential(ssmm* _this, SsmmNode* chunk)
-  { return (SsmmNode*)( (uint8_t*)chunk + _this->sizeOf); }
+static SsMmNode* SsMmChunkToChunkSequential(ssMm* _this, SsMmNode* chunk)
+  { return (SsMmNode*)( (uint8_t*)chunk + _this->sizeOf); }
 
-static void SsmmMemcpySsmm(uint8_t* destination, ssmm* source)
-  { memcpy(destination, source, sizeof(ssmm) ); }
+static void SsMmMemcpySsMm(uint8_t* destination, ssMm* source)
+  { memcpy(destination, source, sizeof(ssMm) ); }
 
 // list was reversed before this call so we are actually walking the list backwards
-static void SsmmPoolListFree(ssmm* _this, SsmmPool* current)
+static void SsMmPoolListFree(ssMm* _this, SsMmPool* current)
 {
-  for(SsmmPool* next = 0; current; current = next)
+  for(SsMmPool* next = 0; current; current = next)
   {
     next = current->next;
 
@@ -96,11 +95,11 @@ static void SsmmPoolListFree(ssmm* _this, SsmmPool* current)
   }
 }
 
-static void SsmmPoolListReverseAndFree(ssmm* _this, SsmmPool* current)
+static void SsMmPoolListReverseAndFree(ssMm* _this, SsMmPool* current)
 {
-  SsmmPool* previous = 0;
+  SsMmPool* previous = 0;
 
-  for(SsmmPool* next = 0; current; current = next)
+  for(SsMmPool* next = 0; current; current = next)
   {
     next = current->next;
     current->next = previous;
@@ -108,16 +107,16 @@ static void SsmmPoolListReverseAndFree(ssmm* _this, SsmmPool* current)
     previous = current;
   }
 
-  SsmmPoolListFree(_this, previous);
+  SsMmPoolListFree(_this, previous);
 }
 
 // ZERO
 
-static bool SsArrayResizeExistingPool(ssmm* _this)
+static bool SsMmResizeExistingPool(ssMm* _this)
 {
-  SsmmPool* pool = _this->current->next;
+  SsMmPool* pool = _this->current->next;
 
-  _this->chunk = SsmmPoolToFirstChunk(pool);
+  _this->chunk = SsMmPoolToFirstChunk(pool);
 
   _this->current = pool;
 
@@ -126,7 +125,7 @@ static bool SsArrayResizeExistingPool(ssmm* _this)
   return true;
 }
 
-static bool SsmmResizeNewPool(ssmm* _this, uint32_t minimumCapacity)
+static bool SsMmResizeNewPool(ssMm* _this, uint32_t minimumCapacity)
 {
   bool result = false;
 
@@ -136,7 +135,7 @@ static bool SsmmResizeNewPool(ssmm* _this, uint32_t minimumCapacity)
 
   uint8_t* pointer = 0;
 
-  SsmmPool* pool = 0;
+  SsMmPool* pool = 0;
 
   if(minimumCapacity > 0)
     diff = minimumCapacity;
@@ -151,17 +150,17 @@ static bool SsmmResizeNewPool(ssmm* _this, uint32_t minimumCapacity)
   if( !diff)
     goto error;
 
-  sizeOf = SsmmGetPoolSizeOf(_this, diff);
+  sizeOf = SsMmGetPoolSizeOf(_this, diff);
 
   if(minimumCapacity > 0)
-    sizeOf += SsmmGetSizeOfSsmmHeader();
+    sizeOf += SsMmGetSizeOfSsMmHeader();
 
   pointer = (uint8_t*)BlahAlloc(sizeOf, true);
 
   if(minimumCapacity > 0)
-    pointer += SsmmGetSizeOfSsmmHeader();
+    pointer += SsMmGetSizeOfSsMmHeader();
 
-  pool = (SsmmPool*)pointer;
+  pool = (SsMmPool*)pointer;
 
   if( !pool)
     goto error;
@@ -172,13 +171,13 @@ static bool SsmmResizeNewPool(ssmm* _this, uint32_t minimumCapacity)
 
   pool->num = diff;
 
-  _this->chunk = SsmmPoolToFirstChunk(pool);
+  _this->chunk = SsMmPoolToFirstChunk(pool);
 
   _this->current = pool;
 
   if( !_this->head)
     _this->head = pool;
-  else// if(_this->head)
+  else // if(_this->head)
     _this->tail->next = pool;
 
   _this->tail = pool;
@@ -193,7 +192,7 @@ error:
   return result;
 }
 
-static bool SsmmResize(ssmm* _this, uint32_t minimumCapacity)
+static bool SsMmResize(ssMm* _this, uint32_t minimumCapacity)
 {
   bool result = false;
 
@@ -201,19 +200,19 @@ static bool SsmmResize(ssmm* _this, uint32_t minimumCapacity)
     goto error;
 
   if(_this->current != _this->tail)
-    result = SsArrayResizeExistingPool(_this);
-  else// if(_this->current == _this->tail)
-    result = SsmmResizeNewPool(_this, minimumCapacity);
+    result = SsMmResizeExistingPool(_this);
+  else // if(_this->current == _this->tail)
+    result = SsMmResizeNewPool(_this, minimumCapacity);
 
 error:
   return result;
 }
 
-ssmm* SsmmConstruct(uint32_t sizeOf, uint32_t minimumCapacity, uint32_t maximumCapacity, uint32_t resize)
+ssMm* SsMmConstruct(uint32_t sizeOf, uint32_t minimumCapacity, uint32_t maximumCapacity, uint32_t resize)
 {
   uint8_t* result = 0;
 
-  ssmm _this = {0};
+  ssMm _this = {0};
 
   if( !sizeOf || !minimumCapacity || minimumCapacity > maximumCapacity || !resize)
     goto error;
@@ -223,22 +222,22 @@ ssmm* SsmmConstruct(uint32_t sizeOf, uint32_t minimumCapacity, uint32_t maximumC
 
   _this.sizeOf = sizeOf;
 
-  if( !SsmmResize( &_this, minimumCapacity) || !_this.head)
+  if( !SsMmResize( &_this, minimumCapacity) || !_this.head)
     goto error;
 
-  result = (uint8_t*)_this.head - (ptrdiff_t)SsmmGetSizeOfSsmmHeader();
+  result = (uint8_t*)_this.head - (ptrdiff_t)SsMmGetSizeOfSsMmHeader();
 
-  SsmmMemcpySsmm(result, &_this);
+  SsMmMemcpySsMm(result, &_this);
 
 error:
-  return (ssmm*)result;
+  return (ssMm*)result;
 }
 
-bool SsmmDestruct(ssmm** reference)
+bool SsMmDestruct(ssMm** reference)
 {
   bool result = false;
 
-  ssmm* _this = 0;
+  ssMm* _this = 0;
 
   if( !reference)
     goto error;
@@ -248,7 +247,7 @@ bool SsmmDestruct(ssmm** reference)
   if( !_this)
     goto error;
 
-  SsmmPoolListReverseAndFree(_this, _this->head);
+  SsMmPoolListReverseAndFree(_this, _this->head);
 
   BlahFree(_this, _this->head->sizeOf, true);
 
@@ -260,12 +259,18 @@ error:
   return result;
 }
 
-bool SsmmNum(ssmm* _this, uint32_t* num)
+bool SsMmNum(ssMm* _this, uint32_t* num)
 {
   bool result = false;
-
-  if( !_this || !num)
+  
+  if( !num)
     goto error;
+
+  if( !_this)
+  {
+    *num = 0;
+    goto error;
+  }
 
   *num = _this->numChunks;
 
@@ -275,18 +280,18 @@ error:
   return result;
 }
 
-bool SsmmReset(ssmm* _this)
+bool SsMmReset(ssMm* _this)
 {
   bool result = false;
 
-  SsmmPool* pool = 0;
+  SsMmPool* pool = 0;
 
   if( !_this)
     goto error;
 
   pool = _this->head;
 
-  _this->chunk = SsmmPoolToFirstChunk(pool);
+  _this->chunk = SsMmPoolToFirstChunk(pool);
 
   _this->current = pool;
 
@@ -299,18 +304,18 @@ error:
   return result;
 }
 
-void* SsmmAlloc(ssmm* _this)
+void* SsMmAlloc(ssMm* _this)
 {
   void* result = 0;
 
-  SsmmNode* chunk = 0;
+  SsMmNode* chunk = 0;
 
   if( !_this || _this->numChunks > _this->max)
     goto error;
 
   if(_this->numChunks == _this->max)
   {
-    if( !SsmmResize(_this, 0) )
+    if( !SsMmResize(_this, 0) )
       goto error;
   }
 
@@ -321,7 +326,7 @@ void* SsmmAlloc(ssmm* _this)
 
   if(_this->numChunks == _this->most)
   {
-    _this->chunk = SsmmChunkToChunkSequential(_this, chunk);
+    _this->chunk = SsMmChunkToChunkSequential(_this, chunk);
 
     _this->most++;
   }
@@ -338,16 +343,16 @@ error:
   return result;
 }
 
-bool SsmmFree(ssmm* _this, void** client)
+bool SsMmFree(ssMm* _this, void** client)
 {
   bool result = false;
 
-  SsmmNode* chunk = 0;
+  SsMmNode* chunk = 0;
 
   if( !_this || !client || !client[0] || !_this->numChunks)
     goto error;
 
-  chunk = (SsmmNode*)client[0];
+  chunk = (SsMmNode*)client[0];
 
   _this->numChunks--;
 

@@ -52,6 +52,8 @@ struct ssQueue
 
   SsQueuePool* head;
   SsQueuePool* tail;
+  
+  uint64_t capacity;
 
   uint32_t numNodes;
   uint32_t numPools;
@@ -65,9 +67,10 @@ struct ssQueue
   uint32_t counter;
 
   uint32_t resize;
-  uint32_t capacity;
 
   uint32_t sizeOf;
+  
+  uint32_t padding;
 };
 
 #include "ssQueue_nocomments.h"
@@ -385,7 +388,7 @@ static bool SsQueueResizeNewPool(ssQueue* _this, uint32_t minimumCapacity)
     _this->indexBack = 0;
     _this->indexFront = 0;
   }
-  else// if(_this->head)
+  else // if(_this->head)
   {
     _this->tail->next = pool;
     pool->previous = _this->tail;
@@ -436,7 +439,7 @@ static bool SsQueueResizeNewPool(ssQueue* _this, uint32_t minimumCapacity)
 
       _this->numNodes += 2;
     }
-    else// if( !count_lhs)
+    else // if( !count_lhs)
     {
 #if BLAH_DEBUG
       SsQueueDebugGrow("grow count_lhs == 0", _this);
@@ -548,9 +551,15 @@ error:
 bool SsQueueNum(ssQueue* _this, uint32_t* num)
 {
   bool result = false;
-
-  if( !_this || !num)
+  
+  if( !num)
     goto error;
+
+  if( !_this)
+  {
+    *num = 0;
+    goto error;
+  }
 
   *num = _this->numChunks;
 

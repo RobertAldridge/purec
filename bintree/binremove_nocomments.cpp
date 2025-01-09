@@ -5,10 +5,10 @@
 // Charlie H. Burns III
 
 // integrated for root sentinel
-void BinDeleteFixup(BinaryTree* tree, BinaryTreeNode* x)
+void BinDeleteFixup(ssSet* tree, SsSetNode* x)
 {
-  BinaryTreeNode* w = 0;
-  BinaryTreeNode* xP = 0;
+  SsSetNode* w = 0;
+  SsSetNode* xP = 0;
 
   while(x != GETROOTFROMTREE(tree) && x->color == BLACK)
   {
@@ -230,16 +230,16 @@ void BinDeleteFixup(BinaryTree* tree, BinaryTreeNode* x)
 }
 
 // integrated for root sentinel as long as y is never sentinelRoot
-BinaryTreeNode* BinDelete(BinaryTree* tree, BinaryTreeNode* z)
+SsSetNode* BinDelete(ssSet* tree, SsSetNode* z)
 {
   uint32_t Color = 0;
 
 // Sentinel {
-  BinaryTreeNode* T_Nil = &tree->sentinelLeaf;
+  SsSetNode* T_Nil = &tree->sentinelLeaf;
 // Sentinel }
 
-  BinaryTreeNode* x = 0;
-  BinaryTreeNode* y = 0;
+  SsSetNode* x = 0;
+  SsSetNode* y = 0;
 
   if( !z->left || !z->right)
     y = z;
@@ -304,14 +304,14 @@ BinaryTreeNode* BinDelete(BinaryTree* tree, BinaryTreeNode* z)
 }
 
 // integrated for root sentinel
-int bintree::remove(void* objectKey, binaryTreeEquivalence equalTo, void* objectResult)
+bool SsSetRemove(ssSet* _this, void* key, SsSetEquivalence equalTo, void* client, bool* found)
 {
-  BinaryTree* tree = (BinaryTree*)this;
+  ssSet* tree = (ssSet*)this;
 
   int result = RETURN_ERROR;
 
-  BinaryTreeNode* t = 0;
-  BinaryTreeNode* z = 0;
+  SsSetNode* t = 0;
+  SsSetNode* z = 0;
 
   if( !tree || !objectKey || tree->numberOfNodes <= 0)
   {
@@ -350,7 +350,7 @@ int bintree::remove(void* objectKey, binaryTreeEquivalence equalTo, void* object
   }
 
   //*( --tree->MemoryManagerArrayCurrent) = (char*)z;
-  if( !SsmmFree(tree->allocator, (void**)&z) )
+  if( !SsMmFree(tree->allocator, (void**)&z) )
   {
     _log("error");
     goto error;

@@ -5,15 +5,15 @@
 // Charlie H. Burns III
 
 // integrated for root sentinel
-void IterativePreorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binaryTreeEvaluate ClientEvaluate)
+void IterativePreorderTreeTraverse(ssSet* tree, SsSetNode* node, binaryTreeEvaluate ClientEvaluate)
 {
   uint32_t stackSize = 0;
 
   // PSTACK Stack = InitStack()
   SsStackReset(tree->stack);
 
-  BinaryTreeNode* LeftChild = 0;
-  BinaryTreeNode* RightChild = 0;
+  SsSetNode* LeftChild = 0;
+  SsSetNode* RightChild = 0;
 
   while(1)
   {
@@ -67,7 +67,7 @@ void IterativePreorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binar
 }
 
 // integrated for root sentinel
-void IterativeInorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binaryTreeEvaluate ClientEvaluate)
+void IterativeInorderTreeTraverse(ssSet* tree, SsSetNode* node, binaryTreeEvaluate ClientEvaluate)
 {
   uint32_t stackSize = 0;
 
@@ -107,15 +107,15 @@ void IterativeInorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binary
 }
 
 // integrated for root sentinel
-void IterativePostorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binaryTreeEvaluate ClientEvaluate)
+void IterativePostorderTreeTraverse(ssSet* tree, SsSetNode* node, binaryTreeEvaluate ClientEvaluate)
 {
   uint32_t stackSize = 0;
 
   // PSTACK Stack = InitStack()
   SsStackReset(tree->stack);
 
-  BinaryTreeNode* NodePushed = 0;
-  BinaryTreeNode* RightChild = 0;
+  SsSetNode* NodePushed = 0;
+  SsSetNode* RightChild = 0;
 
   while(1)
   {
@@ -174,15 +174,15 @@ popOneOffStack:
 }
 
 // integrated for root sentinel
-void IterativeLevelorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binaryTreeEvaluate ClientEvaluate)
+void IterativeLevelorderTreeTraverse(ssSet* tree, SsSetNode* node, binaryTreeEvaluate ClientEvaluate)
 {
   uint32_t queueSize = 0;
 
   // PQUEUE Queue = InitQueue()
   SsQueueReset(tree->queue);
 
-  BinaryTreeNode* LeftChild = 0;
-  BinaryTreeNode* RightChild = 0;
+  SsSetNode* LeftChild = 0;
+  SsSetNode* RightChild = 0;
 
   // Queue->Put( &node)
   if( !SsQueuePushBack(tree->queue, &node) )
@@ -228,43 +228,41 @@ error:
 }
 
 // integrated for root sentinel
-int bintree::dump(binaryTreeEvaluate clientEvaluate, ORDER TraversalOrder)
+bool SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
 {
-  BinaryTree* tree = (BinaryTree*)this;
+  bool result = false;
 
-  int result = RETURN_ERROR;
+  SsSetNode* root = 0;
 
-  BinaryTreeNode* root = 0;
-
-  if( !tree || TraversalOrder < PREORDER || TraversalOrder > LEVELORDER)
+  if( !_this || order < SsSetPreorder || order > SsSetLevelorder)
   {
     _log("error");
     goto error;
   }
 
-  if( !clientEvaluate && !tree->clientEvaluate)
+  if( !evaluate && !_this->evaluate)
   {
     _log("error");
     goto error;
   }
 
-  if(clientEvaluate)
-    tree->clientEvaluate = clientEvaluate;
+  if(evaluate)
+    _this->evaluate = evaluate;
 
-  root = GETROOTFROMTREE(tree);
+  root = GETROOTFROMTREE(_this);
 
   if(root)
   {
-    switch(TraversalOrder)
+    switch(order)
     {
-    case PREORDER: IterativePreorderTreeTraverse(tree, root, tree->clientEvaluate); break;
-    case INORDER: IterativeInorderTreeTraverse(tree, root, tree->clientEvaluate); break;
-    case POSTORDER: IterativePostorderTreeTraverse(tree, root, tree->clientEvaluate); break;
-    case LEVELORDER: IterativeLevelorderTreeTraverse(tree, root, tree->clientEvaluate); break;
+    case SsSetPreorder: IterativePreorderTreeTraverse(_this, root, _this->evaluate); break;
+    case SsSetInorder: IterativeInorderTreeTraverse(_this, root, _this->evaluate); break;
+    case SsSetPostorder: IterativePostorderTreeTraverse(_this, root, _this->evaluate); break;
+    case SsSetLevelorder: IterativeLevelorderTreeTraverse(_this, root, _this->evaluate); break;
     }
   }
 
-  result = RETURN_OK;
+  result = true;
 
 error:
   return result;

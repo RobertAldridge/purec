@@ -5,11 +5,11 @@
 // Charlie H. Burns III
 
 // integrated for root sentinel
-void TreeInsert(BinaryTree* tree, BinaryTreeNode* insert)
+void TreeInsert(ssSet* tree, SsSetNode* insert)
 {
-  BinaryTreeNode* parent = GETSENTINELFROMTREE(tree);
+  SsSetNode* parent = GETSENTINELFROMTREE(tree);
 
-  for(BinaryTreeNode* child = GETROOTFROMTREE(tree); child; /*nop*/)
+  for(SsSetNode* child = GETROOTFROMTREE(tree); child; /*nop*/)
   {
     bool isLessThan = (bool)tree->lessThan(GETCLIENT(insert), GETCLIENT(child) );
 
@@ -27,15 +27,15 @@ void TreeInsert(BinaryTree* tree, BinaryTreeNode* insert)
 }
 
 // integrated for root sentinel
-void BinInsert(BinaryTree* tree, BinaryTreeNode* x)
+void BinInsert(ssSet* tree, SsSetNode* x)
 {
-  BinaryTreeNode* y = 0;
+  SsSetNode* y = 0;
 
   TreeInsert(tree, x);
 
   x->color = RED;
 
-  for(BinaryTreeNode* xP = x->parent; xP->color == RED; xP = x->parent)
+  for(SsSetNode* xP = x->parent; xP->color == RED; xP = x->parent)
   {
     if(xP == xP->parent->left)
     {
@@ -109,13 +109,13 @@ void BinInsert(BinaryTree* tree, BinaryTreeNode* x)
 }
 
 // integrated for root sentinel
-int bintree::insert(void* object, binaryTreeCompare lessThan)
+bool SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
 {
-  BinaryTree* tree = (BinaryTree*)this;
+  ssSet* tree = (ssSet*)this;
   
   int result = RETURN_ERROR;
 
-  BinaryTreeNode* x = 0;
+  SsSetNode* x = 0;
 
   if( !tree || !object)
   {
@@ -132,8 +132,8 @@ int bintree::insert(void* object, binaryTreeCompare lessThan)
     goto error;
   }
 
-  //x = (BinaryTreeNode*)(*tree->MemoryManagerArrayCurrent++);
-  x = (BinaryTreeNode*)SsmmAlloc(tree->allocator);
+  //x = (SsSetNode*)(*tree->MemoryManagerArrayCurrent++);
+  x = (SsSetNode*)SsMmAlloc(tree->allocator);
 
   if( !x)
   {

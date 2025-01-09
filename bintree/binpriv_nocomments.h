@@ -1,39 +1,32 @@
 
 // File Name: binpriv.h
 
-struct BinaryTreeNode;
-struct BinaryTree;
-
-typedef int(*binaryTreeCompare)(void* keyObject, void* treeObject);
-
-typedef int(*binaryTreeEvaluate)(void* treeObject);
-
-typedef int(*binaryTreeEquivalence)(void* keyObject, void* treeObject);
-
-struct BinaryTreeNode
+struct SsSetNode
 {
-  BinaryTreeNode* left;
-  BinaryTreeNode* right;
-  BinaryTreeNode* parent;
+  SsSetNode* left;
+  SsSetNode* right;
+  SsSetNode* parent;
 
   uint32_t color;
   uint32_t padding;
 };
 
-struct BinaryTree
+struct ssSet
 {
-  BinaryTreeNode sentinelRoot;
+  // sentinel
+  SsSetNode root;
 
-  BinaryTreeNode sentinelLeaf;
+  // sentinel
+  SsSetNode leaf;
 
-  binaryTreeCompare lessThan;
+  SsSetCompare lessThan;
 
-  binaryTreeEquivalence equalTo;
+  SsSetEquivalence equalTo;
 
-  binaryTreeEvaluate clientEvaluate;
+  SsSetEvaluate evaluate;
 
-  // main allocator for BinaryTree nodes
-  ssmm* allocator;
+  // main allocator for ssSet nodes
+  ssMm* allocator;
 
   // for interative pre-order, in-order, post-order traversal
   ssStack* stack;
@@ -42,7 +35,7 @@ struct BinaryTree
   uint32_t maxStack;
   uint32_t maxQueue;
 
-  uint32_t numberOfNodes;
+  uint32_t num;
 
-  uint32_t sizeOfClient;
+  uint32_t sizeOf;
 };

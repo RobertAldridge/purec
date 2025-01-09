@@ -5,10 +5,10 @@
 // Charlie H. Burns III
 
 // integrated for root sentinel
-void RightRightRotate(BinaryTreeNode* xP)
+void RightRightRotate(SsSetNode* xP)
 {
-  BinaryTreeNode* xPL = xP->left;
-  BinaryTreeNode* xPLR = xPL->right;
+  SsSetNode* xPL = xP->left;
+  SsSetNode* xPLR = xPL->right;
 
   if(xPLR->right)
     xPLR->right->parent = xP, gDebugRotate[26]++;

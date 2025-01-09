@@ -35,6 +35,8 @@ struct ssStack
 
   SsStackPool* head;
   SsStackPool* tail;
+  
+  uint64_t capacity;
 
   uint32_t numPools;
   uint32_t numChunks;
@@ -46,9 +48,10 @@ struct ssStack
   uint32_t counter;
 
   uint32_t resize;
-  uint32_t capacity;
 
   uint32_t sizeOf;
+  
+  uint32_t padding;
 };
 
 #include "ssStack_nocomments.h"
@@ -273,7 +276,7 @@ static bool SsStackResizeNewPool(ssStack* _this, uint32_t minimumCapacity)
   {
     _this->head = pool;
   }
-  else// if(_this->head)
+  else // if(_this->head)
   {
     _this->tail->next = pool;
     pool->previous = _this->tail;
@@ -362,9 +365,15 @@ error:
 bool SsStackNum(ssStack* _this, uint32_t* num)
 {
   bool result = false;
-
-  if( !_this || !num)
+  
+  if( !num)
     goto error;
+
+  if( !_this)
+  {
+    *num = 0;
+    goto error;
+  }
 
   *num = _this->numChunks;
 

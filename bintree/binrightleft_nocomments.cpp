@@ -5,10 +5,10 @@
 // Charlie H. Burns III
 
 // integrated for root sentinel
-void RightLeftRotateInsert(BinaryTreeNode* x)
+void RightLeftRotateInsert(SsSetNode* x)
 {
-  BinaryTreeNode* xP = x->parent;
-  BinaryTreeNode* xPP = xP->parent;
+  SsSetNode* xP = x->parent;
+  SsSetNode* xPP = xP->parent;
 
   if(x->right)
     x->right->parent = xP, gDebugRotate[28]++;
@@ -41,10 +41,10 @@ void RightLeftRotateInsert(BinaryTreeNode* x)
 }
 
 // integrated for root sentinel
-void RightLeftRotateDelete(BinaryTreeNode* xP)
+void RightLeftRotateDelete(SsSetNode* xP)
 {
-  BinaryTreeNode* xPR = xP->right;
-  BinaryTreeNode* xPRL = xPR->left;
+  SsSetNode* xPR = xP->right;
+  SsSetNode* xPRL = xPR->left;
 
   if(xPRL->left)
     xPRL->left->parent = xP, gDebugRotate[32]++;

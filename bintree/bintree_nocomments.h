@@ -1,55 +1,93 @@
 
-// File Name: bintree.h
+// File Name: ssSet.h
 // Robert Aldridge
 
-class bintree
-{
-public:
-  typedef int(*compare)(void* keyObject, void* treeObject);
+struct ssSet;
 
-  typedef int(*evaluate)(void* treeObject);
+typedef int(*SsSetCompare)(void*, void*);
 
-  typedef int(*equivalence)(void* keyObject, void* treeObject);
+typedef int(*SsSetEvaluate)(void*);
 
-  static const int ok; // ok == 0
-  static const int error; // error == -1
+typedef int(*SsSetEquivalence)(void* key, void*);
 
-  static const int empty; // empty == 1
+const int SsSetPreorder = 0; // preorder == 0; preorder == depth-first
+const int SsSetInorder = 1; // inorder == 1
+const int SsSetPostorder = 2; // postorder == 2
+const int SsSetLevelorder = 3; // levelorder == 3; levelorder == breadth-first
 
-  static const int preorder; // preorder == 0; preorder == depth-first
-  static const int inorder; // inorder == 1
-  static const int postorder; // postorder == 2
-  static const int levelorder; // levelorder == 3; levelorder == breadth-first
+ssSet* SsSetConstruct(uint32_t sizeOf, uint32_t minimum, uint32_t maximum, uint32_t resize, SsSetCompare lessThan);
 
-  static bintree* init(uint32_t initialCapacity, uint32_t sizeOfEachObject, compare lessThan);
+bool SsSetDestruct(ssSet* _this);
 
-  int isEmpty(uint32_t* numberOfClientObjects);
+bool SsSetNum(ssSet* _this, uint32_t* num);
 
-  int insert(void* object, compare lessThan);
+bool SsSetReset(ssSet* _this);
 
-  int remove(void* keyObject, equivalence equalTo, void* objectReturn);
+bool SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client);
 
-  int getExtrema(int getGreatest, void* objectReturn);
+bool SsSetRemove(ssSet* _this, void* key, SsSetEquivalence equalTo, void* client, bool* found);
 
-  int find(void* keyObject, equivalence equalTo, void* objectReturn);
+bool SsSetGetExtrema(ssSet* _this, int getGreatest, void* client, bool* found);
 
-  int reset();
+bool SsSetFind(ssSet* _this, void* key, SsSetEquivalence equalTo, void* client, bool* found);
 
-  int term();
+bool SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order);
 
-  int dump(evaluate clientEvaluate, int traversalOrder);
+// for debugging not production use
+int SsSetDepthTree(ssSet* _this);
+int SsSetDepthStack(ssSet* _this);
+int SsSetDepthQueue(ssSet* _this);
 
-  // for debugging not production use
-  int depthTree();
-  int depthStack();
-  int depthQueue();
+#if 0
+bool SsSetPush(ssSet* _this, void* client);
+bool SsSetPop(ssSet* _this, void* client);
 
-private:
-  bintree();
+bool SsSetGet(ssSet* _this, void* key, SsSetEquivalence equalTo, void* client);
+bool SsSetSet(ssSet* _this, void* key, SsSetEquivalence equalTo, void* client);
 
-  bintree(bintree& );
+bool SsSetGetAt(ssSet* _this, uint32_t index, void* client);
+bool SsSetSetAt(ssSet* _this, uint32_t index, void* client);
+#endif
 
-  virtual ~bintree() = 0;
+// iterator begin()
+// iterator end()
 
-  bintree& operator=(bintree& );
-};
+// iterator rbegin()
+// iterator rend()
+
+// bool empty()
+// size_type size()
+// size_type max_size()
+
+// key_value& operator[key_value key]; unique
+// key_value& at(key_value key); unique
+
+// pair<iterator, bool> insert(key_value key, key_value client); unique
+// iterator insert(key_value key, key_value client); non-unique
+
+// iterator insert(iterator position, key_value)
+// void insert(iterator first, iterator last)
+
+// pair<iterator, bool> insert_or_assign(key_value key, key_value client); unique
+// iterator insert_or_assign(iterator hint, key_value key, key_value client); unique
+
+// node extract(iterator position)
+// node extract(key_value key)
+// pair<iterator position, bool inserted, node> insert(node); unique
+// iterator insert(node); non-unique
+// iterator insert(iterator hint, node)
+
+// size_type erase(key_value key)
+// iterator erase(iterator position)
+// iterator erase(iterator first, iterator last)
+
+// void clear()
+
+// iterator find(key_value key)
+
+// size_type count(key_value key)
+// bool contains(key_value key)
+
+// iterator lower_bound(key_value key)
+// iterator upper_bound(key_value key)
+// pair<iterator, iterator> equal_range(key_value key)

@@ -5,9 +5,9 @@
 // Charlie H. Burns III
 
 // integrated for root sentinel
-void LeftRotateDelete1(BinaryTreeNode* xP)
+void LeftRotateDelete1(SsSetNode* xP)
 {
-  BinaryTreeNode* xPR = xP->right;
+  SsSetNode* xPR = xP->right;
 
   xP->right = xPR->left;
 
@@ -29,9 +29,9 @@ void LeftRotateDelete1(BinaryTreeNode* xP)
 }
 
 // integrated for root sentinel
-void LeftRotateDelete2(BinaryTreeNode* xP)
+void LeftRotateDelete2(SsSetNode* xP)
 {
-  BinaryTreeNode* xPR = xP->right;
+  SsSetNode* xPR = xP->right;
 
   xP->right = xPR->left;
 
@@ -53,9 +53,9 @@ void LeftRotateDelete2(BinaryTreeNode* xP)
 }
 
 // integrated for root sentinel
-void LeftRotateInsert(BinaryTreeNode* xPP)
+void LeftRotateInsert(SsSetNode* xPP)
 {
-  BinaryTreeNode* xPPR = xPP->right;
+  SsSetNode* xPPR = xPP->right;
 
   xPP->right = xPPR->left;
 

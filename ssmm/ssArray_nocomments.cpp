@@ -29,6 +29,8 @@ struct ssArray
 
   SsArrayPool* head;
   SsArrayPool* tail;
+  
+  uint64_t capacity;
 
   uint32_t numPools;
   uint32_t numChunks;
@@ -38,11 +40,8 @@ struct ssArray
   uint32_t counter;
 
   uint32_t resize;
-  uint32_t capacity;
 
   uint32_t sizeOf;
-
-  uint32_t padding;
 };
 
 #include "ssArray_nocomments.h"
@@ -172,7 +171,7 @@ static bool SsArrayResizeNewPool(ssArray* _this, uint32_t minimumCapacity)
 
   if( !_this->head)
     _this->head = pool;
-  else// if(_this->head)
+  else // if(_this->head)
     _this->tail->next = pool;
 
   _this->tail = pool;
@@ -196,7 +195,7 @@ static bool SsArrayResize(ssArray* _this, uint32_t minimumCapacity)
 
   if(_this->current != _this->tail)
     result = SsArrayResizeExistingPool(_this);
-  else// if(_this->current == _this->tail)
+  else // if(_this->current == _this->tail)
     result = SsArrayResizeNewPool(_this, minimumCapacity);
 
 error:
@@ -258,8 +257,14 @@ bool SsArrayNum(ssArray* _this, uint32_t* num)
 {
   bool result = false;
 
-  if( !_this || !num)
+  if( !num)
     goto error;
+
+  if( !_this)
+  {
+    *num = 0;
+    goto error;
+  }
 
   *num = _this->numChunks;
 
