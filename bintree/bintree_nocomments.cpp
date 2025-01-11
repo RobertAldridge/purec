@@ -1,5 +1,5 @@
 
-// File Name: bintree.cpp
+// file name bintree.cpp
 // Ming C. Lin
 // Robert B. Aldridge III
 // Charlie H. Burns III
@@ -26,32 +26,34 @@ using std::ptrdiff_t;
 
 #include "binpriv_nocomments.h"
 
-#define RED 1
-#define BLACK 2
+const uint32_t SsSetRed = 1;
+const uint32_t SsSetBlack = 2;
 
 #define GETCLIENT(node) (void*)(node + 1)
 
 //#define GETROOTFROMSENTINEL(sentinel) (sentinel->left)
 //#define SETROOTFROMSENTINEL(sentinel, node) (sentinel->left = node)
 
-#define GETROOTFROMTREE(tree) (tree->root.left)
-#define SETROOTFROMTREE(tree, node) (tree->root.left = node)
+#define GETROOTFROMTREE(_this) (_this->root.left)
+#define SETROOTFROMTREE(_this, node) (_this->root.left = node)
 
-#define SETROOTCOLORFROMTREE(tree, value) (tree->root.left->color = value)
+#define SETROOTCOLORFROMTREE(_this, value) (_this->root.left->color = value)
 
-#define GETSENTINELFROMTREE(tree) ( &tree->root)
+#define GETSENTINELFROMTREE(_this) ( &_this->root)
 
-#define LESSTHANWRAPPER(tree, client, node) \
-  (node == GETSENTINELFROMTREE(tree) ? 1 : tree->lessThan(client, GETCLIENT(node) ) )
+#define LESSTHANWRAPPER(_this, client, node) \
+  (node == GETSENTINELFROMTREE(_this) ? 1 : _this->lessThan(client, GETCLIENT(node) ) )
+  
+#define EQUALTOWRAPPER(lessThan, lhs, rhs) !lessThan(lhs, rhs) && !lessThan(rhs, lhs)
 
-//#define EQUALTOWRAPPER(tree, client, node) \
-//  (node == GETSENTINELFROMTREE(tree) ? 0 : tree->equalTo(client, GETCLIENT(node) ) )
+//#define EQUALTOWRAPPER(_this, client, node) \
+//  (node == GETSENTINELFROMTREE(_this) ? 0 : _this->equalTo(client, GETCLIENT(node) ) )
 
-//#define CLIENTEVALUATEWRAPPER(tree, node) \
-//  (node == GETSENTINELFROMTREE(tree) ? 0 : tree->clientEvaluate(GETCLIENT(node) ) )
+//#define CLIENTEVALUATEWRAPPER(_this, node) \
+//  (node == GETSENTINELFROMTREE(_this) ? 0 : _this->clientEvaluate(GETCLIENT(node) ) )
 
 //#define _log(blah) {}
-#define _log(blah) printf("%s\n", blah)
+#define _log(blah) printf("%s %s %i\n", blah, __FILE__, (int)__LINE__)
 
 // bintree.cpp
 static uint32_t DepthMax(SsSetNode* node);
@@ -59,7 +61,7 @@ static uint32_t CalculateLogBase2(uint32_t number);
 static SsSetNode* TreeMinimum(SsSetNode* node);
 static SsSetNode* TreeMaximum(SsSetNode* node);
 static SsSetNode* TreeSuccessor(SsSetNode* x);
-static SsSetNode* TreeSearch(SsSetNode* x, void* objectKey, binaryTreeCompare LessThan, binaryTreeEquivalence EqualTo);
+static SsSetNode* TreeSearch(SsSetNode* x, void* objectKey, SsSetCompare lessThan);
 
 uint32_t gDebugRotate[69] = {0};
 
@@ -104,22 +106,22 @@ static void RightLeftRightRotate(SsSetNode* xP);
 #include "binrightleftright_nocomments.cpp"
 
 // bininsert.cpp
-static void TreeInsert(ssSet* tree, SsSetNode* insert);
-static void BinInsert(ssSet* tree, SsSetNode* x);
+static bool TreeInsert(ssSet* _this, SsSetNode* insert);
+static bool BinInsert(ssSet* _this, SsSetNode* x);
 
 #include "bininsert_nocomments.cpp"
 
 // binremove.cpp
-static void BinDeleteFixup(ssSet* tree, SsSetNode* x);
-static SsSetNode* BinDelete(ssSet* tree, SsSetNode* z);
+static void BinDeleteFixup(ssSet* _this, SsSetNode* x);
+static SsSetNode* BinDelete(ssSet* _this, SsSetNode* z);
 
 #include "binremove_nocomments.cpp"
 
 // bintraverse.cpp
-static void IterativePreorderTreeTraverse(ssSet* tree, SsSetNode* node, binaryTreeEvaluate ClientEvaluate);
-static void IterativeInorderTreeTraverse(ssSet* tree, SsSetNode* node, binaryTreeEvaluate ClientEvaluate);
-static void IterativePostorderTreeTraverse(ssSet* tree, SsSetNode* node, binaryTreeEvaluate ClientEvaluate);
-static void IterativeLevelorderTreeTraverse(ssSet* tree, SsSetNode* node, binaryTreeEvaluate ClientEvaluate);
+static int64_t IterativePreorderTreeTraverse(ssSet* _this, SsSetNode* node, SsSetEvaluate ClientEvaluate);
+static int64_t IterativeInorderTreeTraverse(ssSet* _this, SsSetNode* node, SsSetEvaluate ClientEvaluate);
+static int64_t IterativePostorderTreeTraverse(ssSet* _this, SsSetNode* node, SsSetEvaluate ClientEvaluate);
+static int64_t IterativeLevelorderTreeTraverse(ssSet* _this, SsSetNode* node, SsSetEvaluate ClientEvaluate);
 
 #include "bintraverse_nocomments.cpp"
 
@@ -131,7 +133,7 @@ uint32_t DepthMax(SsSetNode* node)
   uint32_t right = 0;
 
   if( !node)
-    goto error;
+    goto label_return;
 
   left = DepthMax(node->left);
 
@@ -142,11 +144,11 @@ uint32_t DepthMax(SsSetNode* node)
   else
     result = right + 1;
 
-error:
+label_return:
   return result;
 }
 
-uint32_t CalculateLogBase2(uint32_t number)
+uint32_t CalculateLogBase2(int64_t number)
 {
   uint32_t result = 0;
 
@@ -196,8 +198,9 @@ SsSetNode* TreeSuccessor(SsSetNode* x)
 }
 
 // integrated for root sentinel
-SsSetNode* TreeSearch(SsSetNode* x, void* objectKey, binaryTreeCompare lessThan, binaryTreeEquivalence equalTo)
+SsSetNode* TreeSearch(SsSetNode* x, void* objectKey, SsSetCompare lessThan)
 {
+#if 0
   while(x && !equalTo(objectKey, GETCLIENT(x) ) )
   {
     if(lessThan(objectKey, GETCLIENT(x) ) )
@@ -205,277 +208,594 @@ SsSetNode* TreeSearch(SsSetNode* x, void* objectKey, binaryTreeCompare lessThan,
     else
       x = x->right;
   }
+#else
+  while(x)
+  {
+    // less than
+    if(lessThan(objectKey, GETCLIENT(x) ) )
+    {
+      x = x->left;
+    }
+    // greater than
+    else if(lessThan(GETCLIENT(x), objectKey) )
+    {
+      x = x->right;
+    }
+    // equivalent
+    else
+    {
+      // when there are duplicates, return the chronologically earliest
+      while(x->left && EQUALTOWRAPPER(lessThan, objectKey, x->left) )
+      {
+        x = x->left;
+      }
+
+      break;
+    }
+  }
+#endif
 
   return x;
 }
 
 // integrated for root sentinel
-bool SsSetGetExtrema(ssSet* _this, int getGreatest, void* client, bool* found)
+int64_t SsSetGetExtrema(ssSet* _this, bool maximum, void* client)
 {
-  ssSet* tree = (ssSet*)this;
+  bool result = false;
 
-  int result = RETURN_ERROR;
+  int empty = 1;
 
   SsSetNode* node = 0;
 
-  if( !tree || (getGreatest != TRUE && getGreatest != FALSE) )
+  if( !_this)
   {
     _log("error");
-    goto error;
+    goto label_return;
   }
 
-  if(getGreatest == FALSE)
-    node = TreeMinimum(GETROOTFROMTREE(tree) );
+  // root
+  // leaf
+  // lessThan
+  // equalTo
+  // evaluate
+  // allocator
+  // stack
+  // queue
+  // maxStack
+  // maxQueue
+  // num
+  // sizeOf
+
+  // no change
+  // -----
+  // root
+  // leaf
+  // lessThan
+  // equalTo
+  // evaluate
+  // allocator
+  // stack
+  // queue
+  // maxStack
+  // maxQueue
+  // num
+  // sizeOf
+
+  // touched in this function
+  // -----
+  // n/a
+
+  if(maximum)
+    node = TreeMaximum(GETROOTFROMTREE(_this) );
   else
-    node = TreeMaximum(GETROOTFROMTREE(tree) );
-
-  if( !node)
-    goto error;
-
-  if(objectReturn)
-    memcpy(objectReturn, GETCLIENT(node), tree->sizeOfClient);
-
-  result = RETURN_OK;
-
-error:
-  return result;
-}
-
-// integrated for root sentinel
-bool SsSetFind(ssSet* _this, void* key, SsSetEquivalence equalTo, void* client, bool* found)
-{
-  ssSet* tree = (ssSet*)this;
-
-  int result = RETURN_ERROR;
-
-  SsSetNode* node = 0;
-  
-  if( !found)
-    goto error;
-  
-  *found = false;
-
-  if( !tree || !object1)
-  {
-    _log("error");
-    goto error;
-  }
-
-  if(equalTo)
-    tree->equalTo = equalTo;
-
-  if( !tree->equalTo)
-  {
-    _log("error");
-    goto error;
-  }
-
-  node = TreeSearch(GETROOTFROMTREE(tree), object1, tree->lessThan, tree->equalTo);
+    node = TreeMinimum(GETROOTFROMTREE(_this) );
 
   if(node)
   {
-    if(objectReturn)
-      memcpy(objectReturn, GETCLIENT(node), tree->sizeOfClient);
-
-    *found = true;
-    result = RETURN_OK;
+    empty = 0;
+    
+    if(client)
+      memcpy(client, GETCLIENT(node), _this->sizeOf);
   }
-
-error:
-  return result;
-}
-
-// integrated for root sentinel
-bool SsSetReset(ssSet* _this)
-{
-  ssSet* tree = (ssSet*)this;
-
-  int result = RETURN_ERROR;
-
-  if(tree)
-  {
-    tree->numberOfNodes = 0;
-
-    SETROOTFROMTREE(tree, 0);
-
-    SsQueueReset(tree->queue);
-    SsStackReset(tree->stack);
-    SsMmReset(tree->allocator);
-
-    result = RETURN_OK;
-  }
-
-  if(result != RETURN_OK)
-  {
-    _log("error");
-  }
-
-  return result;
-}
-
-// integrated for root sentinel
-bool SsSetNum(ssSet* _this, uint32_t* num)
-{
-  ssSet* tree = (ssSet*)this;
-
-  bool result = false;
-  
-  if( !num)
-    goto error;
-  
-  *num = 0;
-
-  if( !tree)
-  {
-    _log("error");
-    goto error;
-  }
-
-  *num = _this->num;
 
   result = true;
 
-error:
-  return result;
-}
-
-int SsSetDepthTree(ssSet* _this)
-{
-  ssSet* tree = (ssSet*)this;
-
-  int result = RETURN_ERROR;
-
-  if( !tree)
-  {
-    _log("error");
-    goto error;
-  }
-
-  result = (int)DepthMax(GETROOTFROMTREE(tree) );
-
-error:
-  return result;
-}
-
-int SsSetDepthStack(ssSet* _this)
-{
-  ssSet* tree = (ssSet*)this;
-
-  int result = RETURN_ERROR;
-
-  if( !tree)
-  {
-    _log("error");
-    goto error;
-  }
-
-  result = (int)tree->maxStack;
-
-error:
-  return result;
-}
-
-int SsSetDepthQueue(ssSet* _this)
-{
-  ssSet* tree = (ssSet*)this;
-
-  int result = RETURN_ERROR;
-
-  if( !tree)
-  {
-    _log("error");
-    goto error;
-  }
-
-  result = (int)tree->maxQueue;
-
-error:
-  return result;
+label_return:
+  return result ? empty : -1;
 }
 
 // integrated for root sentinel
-bool SsSetDestruct(ssSet* _this)
+int64_t SsSetFind(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
 {
-  ssSet* tree = (ssSet*)this;
+  bool result = false;
 
-  int result = RETURN_ERROR;
+  int empty = 1;
 
-  if(tree)
-  {
-    SsQueueDestruct( &tree->queue);
-    tree->queue = 0;
+  SsSetNode* node = 0;
 
-    SsStackDestruct( &tree->stack);
-    tree->stack = 0;
-
-    SsMmDestruct( &tree->allocator);
-    tree->allocator = 0;
-
-    BlahFree(tree, sizeof(ssSet), true);
-    tree = 0;
-
-    result = RETURN_OK;
-  }
-
-  if(result != RETURN_OK)
+  if( !_this || !key)
   {
     _log("error");
+    goto label_return;
   }
 
-  return result;
+  if( !lessThan && !_this->lessThan)
+  {
+    _log("error");
+    goto label_return;
+  }
+
+  // root
+  // leaf
+  // lessThan
+  // equalTo
+  // evaluate
+  // allocator
+  // stack
+  // queue
+  // maxStack
+  // maxQueue
+  // num
+  // sizeOf
+
+  // no change
+  // -----
+  // root
+  // leaf
+  // equalTo
+  // evaluate
+  // allocator
+  // stack
+  // queue
+  // maxStack
+  // maxQueue
+  // num
+  // sizeOf
+
+  // touched in this function
+  // -----
+  // lessThan
+
+  if(lessThan)
+    _this->lessThan = lessThan;
+
+  node = TreeSearch(GETROOTFROMTREE(_this), key, _this->lessThan);
+
+  if(node)
+  {
+    empty = 0;
+
+    if(client)
+      memcpy(client, GETCLIENT(node), _this->sizeOf);
+  }
+
+  result = true;
+
+label_return:
+  return result ? empty : -1;
 }
 
 // integrated for root sentinel
-ssSet* SsSetConstruct(uint32_t sizeOf, uint32_t minimum, uint32_t maximum, uint32_t resize, SsSetCompare lessThan)
+int64_t SsSetReset(ssSet* _this)
 {
-  ssSet* tree = 0;
+  bool result = false;
 
-  void* result = 0;
+  uint32_t num = 0;
+
+  if( !_this)
+  {
+    _log("error");
+    goto label_return;
+  }
+
+  // root
+  // leaf
+  // lessThan
+  // equalTo
+  // evaluate
+  // allocator
+  // stack
+  // queue
+  // maxStack
+  // maxQueue
+  // num
+  // sizeOf
+
+  // no change
+  // -----
+  // leaf
+  // lessThan
+  // equalTo
+  // evaluate
+  // maxStack
+  // maxQueue
+  // sizeOf
+
+  // touched in this function
+  // -----
+  // root SETROOTFROMTREE
+  // allocator SsMmReset
+  // stack SsStackReset
+  // queue SsQueueReset
+  // num
+
+  num = _this->num;
+
+  _this->num = 0;
+
+  SETROOTFROMTREE(_this, 0);
+
+  SsQueueReset(_this->queue);
+  SsStackReset(_this->stack);
+  SsMmReset(_this->allocator);
+
+  result = true;
+
+label_return:
+  return result ? (int64_t)num : -1;
+}
+
+// integrated for root sentinel
+int64_t SsSetNum(ssSet* _this)
+{
+  bool result = false;
+
+  uint32_t num = 0;
+
+  if( !_this)
+  {
+    _log("error");
+    goto label_return;
+  }
+
+  // root
+  // leaf
+  // lessThan
+  // equalTo
+  // evaluate
+  // allocator
+  // stack
+  // queue
+  // maxStack
+  // maxQueue
+  // num
+  // sizeOf
+
+  // no change
+  // -----
+  // root
+  // leaf
+  // lessThan
+  // equalTo
+  // evaluate
+  // allocator
+  // stack
+  // queue
+  // maxStack
+  // maxQueue
+  // num
+  // sizeOf
+
+  // touched in this function
+  // -----
+  // n/a
+
+  num = _this->num;
+
+  result = true;
+
+label_return:
+  return result ? (int64_t)num : -1;
+}
+
+int64_t SsSetDepthTree(ssSet* _this)
+{
+  bool result = false;
+
+  uint32_t depthTree = 0;
+
+  if( !_this)
+  {
+    _log("error");
+    goto label_return;
+  }
+
+  // root
+  // leaf
+  // lessThan
+  // equalTo
+  // evaluate
+  // allocator
+  // stack
+  // queue
+  // maxStack
+  // maxQueue
+  // num
+  // sizeOf
+
+  // no change
+  // -----
+  // root
+  // leaf
+  // lessThan
+  // equalTo
+  // evaluate
+  // allocator
+  // stack
+  // queue
+  // maxStack
+  // maxQueue
+  // num
+  // sizeOf
+
+  // touched in this function
+  // -----
+  // n/a
+
+  depthTree = DepthMax(GETROOTFROMTREE(_this) );
+
+  result = true;
+
+label_return:
+  return result ? (int64_t)depthTree : -1;
+}
+
+int64_t SsSetMaxStack(ssSet* _this)
+{
+  bool result = false;
+
+  int64_t maxStack = 0;
+
+  if( !_this)
+  {
+    _log("error");
+    goto label_return;
+  }
+
+  // root
+  // leaf
+  // lessThan
+  // equalTo
+  // evaluate
+  // allocator
+  // stack
+  // queue
+  // maxStack
+  // maxQueue
+  // num
+  // sizeOf
+
+  // no change
+  // -----
+  // root
+  // leaf
+  // lessThan
+  // equalTo
+  // evaluate
+  // allocator
+  // stack
+  // queue
+  // maxStack
+  // maxQueue
+  // num
+  // sizeOf
+
+  // touched in this function
+  // -----
+  // n/a
+
+  maxStack = _this->maxStack;
+
+  result = true;
+
+label_return:
+  return result ? maxStack : -1;
+}
+
+int64_t SsSetMaxQueue(ssSet* _this)
+{
+  bool result = false;
+
+  int64_t maxQueue = 0;
+
+  if( !_this)
+  {
+    _log("error");
+    goto label_return;
+  }
+
+  // root
+  // leaf
+  // lessThan
+  // equalTo
+  // evaluate
+  // allocator
+  // stack
+  // queue
+  // maxStack
+  // maxQueue
+  // num
+  // sizeOf
+
+  // no change
+  // -----
+  // root
+  // leaf
+  // lessThan
+  // equalTo
+  // evaluate
+  // allocator
+  // stack
+  // queue
+  // maxStack
+  // maxQueue
+  // num
+  // sizeOf
+
+  // touched in this function
+  // -----
+  // n/a
+
+  maxQueue = _this->maxQueue;
+
+  result = true;
+
+label_return:
+  return result ? maxQueue : -1;
+}
+
+// integrated for root sentinel
+int64_t SsSetDestruct(ssSet* _this)
+{
+  bool result = false;
+
+  uint32_t num = 0;
+
+  if( !_this)
+  {
+    _log("error");
+    goto label_return;
+  }
+  
+  // _this
+
+  // root
+  // leaf
+  // lessThan
+  // equalTo
+  // evaluate
+  // allocator
+  // stack
+  // queue
+  // maxStack
+  // maxQueue
+  // num
+  // sizeOf
+
+  // no other change, then cleared in BlahFree
+  // -----
+  // root
+  // leaf
+  // lessThan
+  // equalTo
+  // evaluate
+  // maxStack
+  // maxQueue
+  // num
+  // sizeOf
+
+  // first touched in this function, then cleared in BlahFree
+  // -----
+  // allocator SsMmDestruct
+  // stack SsStackDestruct
+  // queue SsQueueDestruct
+
+  num = _this->num;
+
+  SsQueueDestruct( &_this->queue);
+  SsStackDestruct( &_this->stack);
+  SsMmDestruct( &_this->allocator);
+
+  BlahFree(_this, sizeof(ssSet), true);
+  _this = 0;
+
+  result = true;
+
+label_return:
+  return result ? (int64_t)num : -1;
+}
+
+// integrated for root sentinel
+ssSet* SsSetConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32_t resize, SsSetCompare lessThan)
+{
+  bool result = false;
+
+  ssSet* _this = 0;
 
   uint32_t stackSize = 0;
+  uint32_t queueSize = 0;
 
-  if( !initialCapacity || !sizeOfClient || !lessThan)
+  if( !sizeOf || !minimum || minimum > (uint32_t)maximum || !resize || !lessThan)
   {
     _log("error");
-    goto error;
+    goto label_return;
   }
+  
+  // _this
 
-  tree = (ssSet*)BlahAlloc(sizeof(ssSet), true);
-  if( !tree)
+  // root
+  // leaf
+  // lessThan
+  // equalTo
+  // evaluate
+  // allocator
+  // stack
+  // queue
+  // maxStack
+  // maxQueue
+  // num
+  // sizeOf
+
+  // cleared in BlahAlloc, then no other change
+  // -----
+  // root
+  // leaf
+  // equalTo
+  // evaluate
+  // maxStack
+  // maxQueue
+  // num
+
+  // cleared in BlahAlloc, then further touched in this function
+  // -----
+  // lessThan
+  // allocator SsMmConstruct
+  // stack SsStackConstruct
+  // queue SsQueueConstruct
+  // sizeOf
+
+  _this = (ssSet*)BlahAlloc(sizeof(ssSet), true);
+  if( !_this)
   {
     _log("error");
-    goto error;
+    goto label_return;
   }
 
-  tree->lessThan = lessThan;
+  _this->lessThan = lessThan;
 
-  tree->sizeOfClient = sizeOfClient;
+  _this->sizeOf = sizeOf;
 
-  tree->allocator = SsMmConstruct(sizeof(SsSetNode) + sizeOfClient, initialCapacity, 4100000000, 10000000);
-  if( !tree->allocator)
+  _this->allocator = SsMmConstruct(sizeof(SsSetNode) + sizeOf, minimum, maximum, resize);
+  if( !_this->allocator)
   {
     _log("error");
-    goto error;
+    goto label_return;
   }
 
-  stackSize = 2 * CalculateLogBase2(initialCapacity + 1);
+  stackSize = 2 * CalculateLogBase2( (int64_t)minimum + 1);
+  if( !stackSize)
+    stackSize = 1;
 
-  tree->stack = SsStackConstruct(sizeof(SsSetNode*), stackSize, 4100000000, 10000000);
-  if( !tree->stack)
+  _this->stack = SsStackConstruct(sizeof(SsSetNode*), stackSize, maximum, resize);
+  if( !_this->stack)
   {
     _log("error");
-    goto error;
+    goto label_return;
   }
 
-  tree->queue = SsQueueConstruct(sizeof(SsSetNode*), initialCapacity / 2, 4100000000, 10000000);
-  if( !tree->queue)
+  queueSize = minimum / 2;
+  if( !queueSize)
+    queueSize = 1;
+
+  _this->queue = SsQueueConstruct(sizeof(SsSetNode*), queueSize, maximum, resize);
+  if( !_this->queue)
   {
     _log("error");
-    goto error;
+    goto label_return;
   }
 
-  result = tree;
+  result = true;
 
-error:
-  return (bintree*)result;
+label_return:
+  return result ? _this : 0;
 }

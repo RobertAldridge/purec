@@ -4,13 +4,13 @@
 
 struct ssQueue;
 
-ssQueue* SsQueueConstruct(uint32_t sizeOf, uint32_t minimumCapacity, uint32_t maximumCapacity, uint32_t resize);
+ssQueue* SsQueueConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32_t resize);
 
-bool SsQueueDestruct(ssQueue** _this);
+int64_t SsQueueDestruct(ssQueue** _this);
 
-bool SsQueueNum(ssQueue* _this, uint32_t* num);
+int64_t SsQueueNum(ssQueue* _this);
 
-bool SsQueueReset(ssQueue* _this);
+int64_t SsQueueReset(ssQueue* _this);
 
 bool SsQueuePushBack(ssQueue* _this, void* client);
 bool SsQueuePopBack(ssQueue* _this, void* client);

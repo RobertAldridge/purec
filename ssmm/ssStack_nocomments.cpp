@@ -26,7 +26,7 @@ struct SsStackPool
 
   uint32_t num;
 
-  uint32_t sizeOf;
+  uint32_t index;
 };
 
 struct ssStack
@@ -36,7 +36,7 @@ struct ssStack
   SsStackPool* head;
   SsStackPool* tail;
   
-  uint64_t capacity;
+  SsStackPool** lookup;
 
   uint32_t numPools;
   uint32_t numChunks;
@@ -48,10 +48,9 @@ struct ssStack
   uint32_t counter;
 
   uint32_t resize;
+  uint32_t capacity;
 
   uint32_t sizeOf;
-  
-  uint32_t padding;
 };
 
 #include "ssStack_nocomments.h"
@@ -246,7 +245,7 @@ static bool SsStackResizeNewPool(ssStack* _this, uint32_t minimumCapacity)
     diff = _this->capacity - _this->max;
 
   if( !diff)
-    goto error;
+    goto label_return;
 
   sizeOf = SsStackGetPoolSizeOf(_this, diff);
 
@@ -261,7 +260,7 @@ static bool SsStackResizeNewPool(ssStack* _this, uint32_t minimumCapacity)
   pool = (SsStackPool*)pointer;
 
   if( !pool)
-    goto error;
+    goto label_return;
 
   pool->sizeOf = sizeOf;
 
@@ -291,64 +290,68 @@ static bool SsStackResizeNewPool(ssStack* _this, uint32_t minimumCapacity)
 
   result = true;
 
-error:
+label_return:
   return result;
 }
 
-static bool SsStackResize(ssStack* _this, uint32_t minimumCapacity)
+static bool SsStackResize(ssStack* _this, uint32_t minimum)
 {
   bool result = false;
 
   if(_this->max >= _this->capacity)
-    goto error;
+    goto label_return;
 
   if(_this->current != _this->tail)
-    goto error;
+    goto label_return;
 
-  result = SsStackResizeNewPool(_this, minimumCapacity);
+  result = SsStackResizeNewPool(_this, minimum);
 
-error:
+label_return:
   return result;
 }
 
-ssStack* SsStackConstruct(uint32_t sizeOf, uint32_t minimumCapacity, uint32_t maximumCapacity, uint32_t resize)
+ssStack* SsStackConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32_t resize)
 {
   uint8_t* result = 0;
 
   ssStack _this = {0};
 
-  if( !sizeOf || !minimumCapacity || minimumCapacity > maximumCapacity || !resize)
-    goto error;
+  if( !sizeOf || !minimum || minimum > (uint32_t)maximum || !resize)
+    goto label_return;
 
   _this.resize = resize;
-  _this.capacity = maximumCapacity;
+  _this.capacity = (uint32_t)maximum;
 
   _this.sizeOf = sizeOf;
 
-  if( !SsStackResize( &_this, minimumCapacity) || !_this.head)
-    goto error;
+  if( !SsStackResize( &_this, minimum) || !_this.head)
+    goto label_return;
 
   result = (uint8_t*)_this.head - (ptrdiff_t)SsStackGetSizeOfSsStackHeader();
 
   SsStackMemcpySsStack(result, &_this);
 
-error:
+label_return:
   return (ssStack*)result;
 }
 
-bool SsStackDestruct(ssStack** reference)
+int64_t SsStackDestruct(ssStack** reference)
 {
   bool result = false;
 
   ssStack* _this = 0;
+  
+  uint32_t num = 0;
 
   if( !reference)
-    goto error;
+    goto label_return;
 
   _this = reference[0];
 
   if( !_this)
-    goto error;
+    goto label_return;
+  
+  num = _this->numChunks;
 
   SsStackPoolListFree(_this, _this->tail);
 
@@ -358,37 +361,37 @@ bool SsStackDestruct(ssStack** reference)
 
   result = true;
 
-error:
-  return result;
+label_return:
+  return result ? (int64_t)num : -1;
 }
 
-bool SsStackNum(ssStack* _this, uint32_t* num)
+int64_t SsStackNum(ssStack* _this)
 {
   bool result = false;
   
-  if( !num)
-    goto error;
+  uint32_t num = 0;
 
   if( !_this)
-  {
-    *num = 0;
-    goto error;
-  }
+    goto label_return;
 
-  *num = _this->numChunks;
+  num = _this->numChunks;
 
   result = true;
 
-error:
-  return result;
+label_return:
+  return result ? (int64_t)num : -1;
 }
 
-bool SsStackReset(ssStack* _this)
+int64_t SsStackReset(ssStack* _this)
 {
   bool result = false;
+  
+  uint32_t num = 0;
 
   if( !_this)
-    goto error;
+    goto label_return;
+  
+  num = _this->numChunks;
 
   _this->current = _this->head;
 
@@ -400,8 +403,8 @@ bool SsStackReset(ssStack* _this)
 
   result = true;
 
-error:
-  return result;
+label_return:
+  return result ? (int64_t)num : -1;
 }
 
 bool SsStackPush(ssStack* _this, void* client)
@@ -411,16 +414,16 @@ bool SsStackPush(ssStack* _this, void* client)
   uint8_t* chunk = 0;
 
   if( !_this || !client)
-    goto error;
+    goto label_return;
 
   if(_this->numChunks == _this->max)
   {
     if( !SsStackResize(_this, 0) )
-      goto error;
+      goto label_return;
   }
 
   if(_this->numChunks >= _this->max)
-    goto error;
+    goto label_return;
 
   // for this type of data structure, this call must be before _this->index++
   SsStackStateChangeProcessRolloverNext(_this);
@@ -440,7 +443,7 @@ bool SsStackPush(ssStack* _this, void* client)
 
   result = true;
 
-error:
+label_return:
   return result;
 }
 
@@ -451,7 +454,7 @@ bool SsStackPop(ssStack* _this, void* client)
   uint8_t* chunk = 0;
 
   if( !_this || !client || !_this->numChunks)
-    goto error;
+    goto label_return;
 
   // _this->index-- is performed inside of SsStackStateChangeProcessRolloverPrevious(...)
   SsStackStateChangeProcessRolloverPrevious(_this);
@@ -468,7 +471,7 @@ bool SsStackPop(ssStack* _this, void* client)
 
   result = true;
 
-error:
+label_return:
   return result;
 }
 
@@ -479,18 +482,18 @@ bool SsStackGet(ssStack* _this, void* client)
   uint8_t* chunk = 0;
 
   if( !_this || !client || !_this->numChunks)
-    goto error;
+    goto label_return;
 
   chunk = SsStackGetPreviousChunk(_this);
 
   if( !chunk)
-    goto error;
+    goto label_return;
 
   SsStackMemcpyChunk(_this, client, chunk);
 
   result = true;
 
-error:
+label_return:
   return result;
 }
 
@@ -501,18 +504,18 @@ bool SsStackSet(ssStack* _this, void* client)
   uint8_t* chunk = 0;
 
   if( !_this || !client || !_this->numChunks)
-    goto error;
+    goto label_return;
 
   chunk = SsStackGetPreviousChunk(_this);
 
   if( !chunk)
-    goto error;
+    goto label_return;
 
   SsStackMemcpyChunk(_this, chunk, client);
 
   result = true;
 
-error:
+label_return:
   return result;
 }
 
@@ -521,7 +524,7 @@ bool SsStackGetAt(ssStack* _this, uint32_t index, void* client)
   bool result = false;
 
   if( !_this || !client || index >= _this->numChunks)
-    goto error;
+    goto label_return;
 
   for(SsStackPool* pool = _this->head; pool; pool = pool->next)
   {
@@ -542,7 +545,7 @@ bool SsStackGetAt(ssStack* _this, uint32_t index, void* client)
     index -= pool->num;
   }
 
-error:
+label_return:
   return result;
 }
 
@@ -551,7 +554,7 @@ bool SsStackSetAt(ssStack* _this, uint32_t index, void* client)
   bool result = false;
 
   if( !_this || !client || index >= _this->numChunks)
-    goto error;
+    goto label_return;
 
   for(SsStackPool* pool = _this->head; pool; pool = pool->next)
   {
@@ -572,6 +575,6 @@ bool SsStackSetAt(ssStack* _this, uint32_t index, void* client)
     index -= pool->num;
   }
 
-error:
+label_return:
   return result;
 }

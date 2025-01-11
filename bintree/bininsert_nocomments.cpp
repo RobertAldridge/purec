@@ -1,61 +1,81 @@
 
-// File Name: bininsert.cpp
+// File Name bininsert.cpp
 // Ming C. Lin
 // Robert B. Aldridge III
 // Charlie H. Burns III
 
 // integrated for root sentinel
-void TreeInsert(ssSet* tree, SsSetNode* insert)
+bool TreeInsert(ssSet* _this, SsSetNode* insert)
 {
-  SsSetNode* parent = GETSENTINELFROMTREE(tree);
+  bool duplicate = false;
 
-  for(SsSetNode* child = GETROOTFROMTREE(tree); child; /*nop*/)
+  SsSetNode* parent = GETSENTINELFROMTREE(_this);
+
+  for(SsSetNode* child = GETROOTFROMTREE(_this); child; /*nop*/)
   {
-    bool isLessThan = (bool)tree->lessThan(GETCLIENT(insert), GETCLIENT(child) );
-
     parent = child;
+    
+    // if less than
+    if(_this->lessThan(GETCLIENT(insert), GETCLIENT(child) ) )
+    {
+      child = child->left;
+    }
+    // if greater than or equivalent
+    else
+    {
+      // if !lessThan(a, b) && !lessThan(b, a) then a == b
+      //
+      // if equivalent we set the duplicate flag
+      if( !duplicate && !_this->lessThan(GETCLIENT(child), GETCLIENT(insert) ) )
+        duplicate = true;
 
-    child = isLessThan ? child->left : child->right;
+      // if equivalent we still traverse the right child so that we insert as the chronologically latest
+      child = child->right;
+    }
   }
 
   insert->parent = parent;
 
-  if(LESSTHANWRAPPER(tree, GETCLIENT(insert), parent) )
+  if(LESSTHANWRAPPER(_this, GETCLIENT(insert), parent) )
     parent->left = insert;
   else
     parent->right = insert;
+
+  return duplicate;
 }
 
 // integrated for root sentinel
-void BinInsert(ssSet* tree, SsSetNode* x)
+bool BinInsert(ssSet* _this, SsSetNode* x)
 {
+  bool duplicate = false;
+
   SsSetNode* y = 0;
 
-  TreeInsert(tree, x);
+  duplicate = TreeInsert(_this, x);
 
-  x->color = RED;
+  x->color = SsSetRed;
 
-  for(SsSetNode* xP = x->parent; xP->color == RED; xP = x->parent)
+  for(SsSetNode* xP = x->parent; xP->color == SsSetRed; xP = x->parent)
   {
     if(xP == xP->parent->left)
     {
       y = xP->parent->right;
 
-      if(y && y->color == RED)
+      if(y && y->color == SsSetRed)
       {
-        xP->color = BLACK;
+        xP->color = SsSetBlack;
 
-        y->color = BLACK;
+        y->color = SsSetBlack;
 
-        xP->parent->color = RED;
+        xP->parent->color = SsSetRed;
 
         x = xP->parent;
       }
       else if(x == xP->right)
       {
-        x->color = BLACK;
+        x->color = SsSetBlack;
 
-        xP->parent->color = RED;
+        xP->parent->color = SsSetRed;
 
         LeftRightRotateInsert(x);
 
@@ -63,9 +83,9 @@ void BinInsert(ssSet* tree, SsSetNode* x)
       }
       else
       {
-        xP->parent->color = RED;
+        xP->parent->color = SsSetRed;
 
-        xP->color = BLACK;
+        xP->color = SsSetBlack;
 
         RightRotateInsert(xP->parent);
       }
@@ -74,21 +94,21 @@ void BinInsert(ssSet* tree, SsSetNode* x)
     {
       y = xP->parent->left;
 
-      if(y && y->color == RED)
+      if(y && y->color == SsSetRed)
       {
-        xP->color = BLACK;
+        xP->color = SsSetBlack;
 
-        y->color = BLACK;
+        y->color = SsSetBlack;
 
-        xP->parent->color = RED;
+        xP->parent->color = SsSetRed;
 
         x = xP->parent;
       }
       else if(x == xP->left)
       {
-        x->color = BLACK;
+        x->color = SsSetBlack;
 
-        xP->parent->color = RED;
+        xP->parent->color = SsSetRed;
 
         RightLeftRotateInsert(x);
 
@@ -96,62 +116,97 @@ void BinInsert(ssSet* tree, SsSetNode* x)
       }
       else
       {
-        xP->color = BLACK;
+        xP->color = SsSetBlack;
 
-        xP->parent->color = RED;
+        xP->parent->color = SsSetRed;
 
         LeftRotateInsert(xP->parent);
       }
     }
   }
 
-  SETROOTCOLORFROMTREE(tree, BLACK);
+  SETROOTCOLORFROMTREE(_this, SsSetBlack);
+
+  return duplicate;
 }
 
 // integrated for root sentinel
-bool SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
+int64_t SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
 {
-  ssSet* tree = (ssSet*)this;
+  bool result = false;
   
-  int result = RETURN_ERROR;
+  int duplicate = 0;
 
   SsSetNode* x = 0;
 
-  if( !tree || !object)
+  if( !_this || !key || !client)
   {
     _log("error");
-    goto error;
+    goto label_return;
   }
+
+  if( !lessThan && !_this->lessThan)
+  {
+    _log("error");
+    goto label_return;
+  }
+  
+  // set modified
+
+  // root
+  // leaf
+  // lessThan
+  // equalTo
+  // evaluate
+  // allocator
+  // stack
+  // queue
+  // maxStack
+  // maxQueue
+  // num
+  // sizeOf
+
+  // no change
+  // -----
+  // leaf
+  // equalTo
+  // evaluate
+  // stack
+  // queue
+  // maxStack
+  // maxQueue
+  // sizeOf
+
+  // touched in this function
+  // -----
+  // root BinInsert
+  // lessThan
+  // allocator SsMmAlloc
+  // num
 
   if(lessThan)
-    tree->lessThan = lessThan;
+    _this->lessThan = lessThan;
 
-  if( !tree->lessThan)
-  {
-    _log("error");
-    goto error;
-  }
-
-  //x = (SsSetNode*)(*tree->MemoryManagerArrayCurrent++);
-  x = (SsSetNode*)SsMmAlloc(tree->allocator);
+  x = (SsSetNode*)SsMmAlloc(_this->allocator);
 
   if( !x)
   {
     _log("error");
-    goto error;
+    goto label_return;
   }
 
   x->left = 0;
   x->right = 0;
 
-  memcpy(GETCLIENT(x), object, tree->sizeOfClient);
+  memcpy(GETCLIENT(x), client, _this->sizeOf);
 
-  BinInsert(tree, x);
+  if(BinInsert(_this, x) )
+    duplicate = 1;
 
-  tree->numberOfNodes++;
+  _this->num++;
   
-  result = RETURN_OK;
+  result = true;
 
-error:
-  return result;
+label_return:
+  return result ? duplicate : -1;
 }

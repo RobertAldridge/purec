@@ -10,8 +10,43 @@
 #include <Sddl.h>
 #endif
 
-#include <cstddef> // ptrdiff_t, size_t
-#include <cstdint> // uint32_t, uint8_t
+// _MSC_VER
+// ERROR_INSUFFICIENT_BUFFER
+// ERROR_SUCCESS
+// MEM_COMMIT
+// MEM_LARGE_PAGES
+// MEM_RELEASE
+// MEM_RESERVE
+// PAGE_READWRITE
+// POLICY_CREATE_ACCOUNT
+// POLICY_LOOKUP_NAMES
+// SE_LOCK_MEMORY_NAME
+// SE_PRIVILEGE_ENABLED
+// TOKEN_ADJUST_PRIVILEGES
+// TOKEN_QUERY
+
+// LSA_OBJECT_ATTRIBUTES
+// LSA_UNICODE_STRING
+// TOKEN_PRIVILEGES
+// TOKEN_USER
+
+// AdjustTokenPrivileges
+// CloseHandle
+// ConvertSidToStringSid
+// GetCurrentProcess
+// GetLargePageMinimum
+// GetLastError
+// GetTokenInformation
+// LookupPrivilegeValue
+// LsaAddAccountRights
+// LsaOpenPolicy
+// LsaRemoveAccountRights
+// OpenProcessToken
+// VirtualAlloc
+// VirtualFree
+
+#include <cstddef> // size_t
+#include <cstdint> // uint32_t
 #include <cstdio> // printf
 #include <cstdlib> // free, malloc
 #include <cstring> // memset
@@ -20,181 +55,189 @@ using std::free;
 using std::malloc;
 using std::memset;
 using std::printf;
-using std::ptrdiff_t;
 using std::size_t;
-using std::uint8_t;
 using std::uint32_t;
+using std::wchar_t;
 
 #include "blah_alloc.h"
 
 #if defined(_MSC_VER)
-static void InitLsaString(PLSA_UNICODE_STRING LsaString, LPWSTR String)
-{
-  DWORD StringLength = 0;
+//static bool gBlahLargePageSupportEnabled;
+//static uint32_t gLargePageMinimum;
+static void InitLsaString(LSA_UNICODE_STRING* lhsString, wchar_t* rhsString);
+static long OpenPolicy(wchar_t* serverName, unsigned long desiredAccess, void** policyHandle);
+static long SetPrivilegeOnAccount(void* policyHandle, void* accountSid, wchar_t* privilegeName, int bEnable);
+static bool EnableLargePageSupport();
+#endif
 
-  if( !String)
+static uint32_t BlahAlignedOfValue(uint32_t alignmentOf, uint32_t sizeOf);
+
+#if defined(_MSC_VER)
+static bool gBlahLargePageSupportEnabled = false;
+
+static uint32_t gLargePageMinimum = 0;
+
+void InitLsaString(LSA_UNICODE_STRING* lhsString, wchar_t* rhsString)
+{
+  size_t stringLength = 0;
+
+  if( !rhsString)
   {
-    LsaString->Buffer = 0;
-    LsaString->Length = 0;
-    LsaString->MaximumLength = 0;
+    lhsString->Buffer = 0;
+    lhsString->Length = 0;
+    lhsString->MaximumLength = 0;
   }
   else
   {
-    StringLength = (DWORD)wcslen(String);
-    LsaString->Buffer = String;
-    LsaString->Length = (USHORT)StringLength * sizeof(WCHAR);
-    LsaString->MaximumLength = (USHORT)(StringLength + 1) * sizeof(WCHAR);
+    stringLength = wcslen(rhsString);
+
+    lhsString->Buffer = rhsString;
+    lhsString->Length = (unsigned short)(sizeof(wchar_t) * stringLength);
+    lhsString->MaximumLength = (unsigned short)(sizeof(wchar_t) * (stringLength + 1) );
   }
 }
 
-static NTSTATUS OpenPolicy(LPWSTR ServerName, DWORD DesiredAccess, PLSA_HANDLE PolicyHandle)
+long OpenPolicy(wchar_t* serverName, unsigned long desiredAccess, void** policyHandle)
 {
-  LSA_OBJECT_ATTRIBUTES ObjectAttributes = {0};
-  LSA_UNICODE_STRING ServerString = {0};
-  PLSA_UNICODE_STRING Server = 0;
+  long result = 0;
 
-  NTSTATUS result = 0;
+  LSA_OBJECT_ATTRIBUTES objectAttributes = {0};
+  LSA_UNICODE_STRING serverString = {0};
+  LSA_UNICODE_STRING* server = 0;
 
-  memset( &ObjectAttributes, 0, sizeof(ObjectAttributes) );
+  memset( &objectAttributes, 0, sizeof(LSA_OBJECT_ATTRIBUTES) );
 
-  if(ServerName)
+  if(serverName)
   {
-    InitLsaString( &ServerString, ServerName);
+    InitLsaString( &serverString, serverName);
 
-    Server = &ServerString;
+    server = &serverString;
   }
 
-  result = LsaOpenPolicy(Server, &ObjectAttributes, DesiredAccess, PolicyHandle);
+  result = LsaOpenPolicy(server, &objectAttributes, desiredAccess, policyHandle);
 
   return result;
 }
 
-static NTSTATUS SetPrivilegeOnAccount(LSA_HANDLE PolicyHandle, PSID AccountSid, LPWSTR PrivilegeName, BOOL bEnable)
+long SetPrivilegeOnAccount(void* policyHandle, void* accountSid, wchar_t* privilegeName, int bEnable)
 {
-  LSA_UNICODE_STRING PrivilegeString = {0};
+  long result = 0;
 
-  NTSTATUS result = 0;
+  LSA_UNICODE_STRING privilegeString = {0};
 
-  InitLsaString( &PrivilegeString, PrivilegeName);
+  InitLsaString( &privilegeString, privilegeName);
 
   if(bEnable)
-    result = LsaAddAccountRights(PolicyHandle, AccountSid, &PrivilegeString, 1);
+    result = LsaAddAccountRights(policyHandle, accountSid, &privilegeString, 1);
   else
-    result = LsaRemoveAccountRights(PolicyHandle, AccountSid, FALSE, &PrivilegeString, 1);
+    result = LsaRemoveAccountRights(policyHandle, accountSid, false, &privilegeString, 1);
 
   return result;
 }
 
-static bool EnableLargePageSupport()
+bool EnableLargePageSupport()
 {
   bool result = false;
 
-  HANDLE hToken = 0;
-  DWORD dwBufferSize = 0;
-  PTOKEN_USER pTokenUser = 0;
-
-  LPWSTR strsid = {0};
-  NTSTATUS status = {0};
-  LSA_HANDLE policyHandle = {0};
+  void* hToken = 0;
+  unsigned long dwBufferSize = 0;
+  unsigned long error = 0;
+  TOKEN_USER* tokenUser = 0;
+  wchar_t* strsid = 0;
+  void* policyHandle = 0;
+  long status = 0;
   TOKEN_PRIVILEGES tp = {0};
-
-  BOOL privileged = 0;
-  DWORD error = 0;
-
-  char* largeBuffer = 0;
+  int privileged = 0;
+  void* pointer = 0;
 
   if( !OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &hToken) )
   {
-    printf("OpenProcessToken failed. GetLastError returned: %i\n", (uint32_t)GetLastError() );
-    goto error;
+    printf("OpenProcessToken failed %lu\n", GetLastError() );
+    goto label_return;
   }
 
-  if( !GetTokenInformation(hToken, TokenUser, 0, 0, &dwBufferSize) && GetLastError() != ERROR_INSUFFICIENT_BUFFER)
+  if( !GetTokenInformation(hToken, TokenUser, 0, 0, &dwBufferSize) )
   {
-    printf("GetTokenInformation failed. GetLastError returned: %i\n", (uint32_t)GetLastError() );
+    error = GetLastError();
+    if(error != ERROR_INSUFFICIENT_BUFFER)
+    {
+      printf("GetTokenInformation failed %lu\n", error);
+
+      CloseHandle(hToken);
+      hToken = 0;
+
+      goto label_return;
+    }
+  }
+
+  tokenUser = (TOKEN_USER*)malloc(dwBufferSize);
+
+  if( !GetTokenInformation(hToken, TokenUser, tokenUser, dwBufferSize, &dwBufferSize) )
+  {
+    printf("GetTokenInformation failed %lu\n", GetLastError() );
 
     CloseHandle(hToken);
     hToken = 0;
 
-    goto error;
+    goto label_return;
   }
 
-  pTokenUser = (PTOKEN_USER)malloc(dwBufferSize);
-
-  if( !GetTokenInformation(hToken, TokenUser, pTokenUser, dwBufferSize, &dwBufferSize) )
-  {
-    printf("GetTokenInformation failed. GetLastError returned: %i\n", (uint32_t)GetLastError() );
-
-    CloseHandle(hToken);
-    hToken = 0;
-
-    goto error;
-  }
-
-  ConvertSidToStringSid(pTokenUser->User.Sid, &strsid);
+  ConvertSidToStringSid(tokenUser->User.Sid, &strsid);
   printf("User SID: %S\n", strsid);
 
   CloseHandle(hToken);
   hToken = 0;
 
   status = OpenPolicy(0, POLICY_CREATE_ACCOUNT | POLICY_LOOKUP_NAMES, &policyHandle);
-
   if(status)
-    printf("OpenPolicy %i", (int)status);
+    printf("OpenPolicy %li\n", status);
 
-  status = SetPrivilegeOnAccount(policyHandle, pTokenUser->User.Sid, (wchar_t*)SE_LOCK_MEMORY_NAME, TRUE);
-
+  status = SetPrivilegeOnAccount(policyHandle, tokenUser->User.Sid, (wchar_t*)SE_LOCK_MEMORY_NAME, true);
   if(status)
-    printf("OpenPSetPrivilegeOnAccountolicy %i", (int)status);
-
-  hToken = 0;
+    printf("OpenPSetPrivilegeOnAccountolicy %li\n", status);
 
   if( !OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY | TOKEN_ADJUST_PRIVILEGES, &hToken) )
   {
-    printf("OpenProcessToken #2 failed. GetLastError returned: %i\n", (uint32_t)GetLastError() );
-    goto error;
+    printf("OpenProcessToken #2 failed %lu\n", GetLastError() );
+    goto label_return;
   }
 
   tp.PrivilegeCount = 1;
   tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
 
-  if( !LookupPrivilegeValue(0, SE_LOCK_MEMORY_NAME, &tp.Privileges[0].Luid))
+  if( !LookupPrivilegeValue(0, SE_LOCK_MEMORY_NAME, &tp.Privileges[0].Luid) )
   {
-    printf("LookupPrivilegeValue failed. GetLastError returned: %i\n", (uint32_t)GetLastError() );
-    goto error;
+    printf("LookupPrivilegeValue failed %lu\n", GetLastError() );
+    goto label_return;
   }
 
-  privileged = AdjustTokenPrivileges(hToken, FALSE, &tp, 0, (PTOKEN_PRIVILEGES)0, 0);
+  privileged = AdjustTokenPrivileges(hToken, false, &tp, 0, 0, 0);
   error = GetLastError();
 
   if( !privileged || error != ERROR_SUCCESS)
   {
-      printf("AdjustTokenPrivileges failed. GetLastError returned: %i\n", (uint32_t)error);
-      goto error;
+      printf("AdjustTokenPrivileges failed %lu\n", error);
+      goto label_return;
   }
 
   CloseHandle(hToken);
   hToken = 0;
 
-  largeBuffer = (char*)VirtualAlloc(0, GetLargePageMinimum(), MEM_RESERVE | MEM_COMMIT | MEM_LARGE_PAGES, PAGE_READWRITE);
+  pointer = VirtualAlloc(0, GetLargePageMinimum(), MEM_RESERVE | MEM_COMMIT | MEM_LARGE_PAGES, PAGE_READWRITE);
+  if( !pointer)
+    printf("VirtualAlloc failed %lu\n", GetLastError() );
 
-  if( !largeBuffer)
-    printf("VirtualAlloc failed, error 0x%x", (uint32_t)GetLastError() );
-
-  VirtualFree(largeBuffer, 0, MEM_RELEASE);
+  VirtualFree(pointer, 0, MEM_RELEASE);
+  pointer = 0;
 
   result = true;
 
-error:
+label_return:
   return result;
 }
-
-static bool gBlahLargePageSupportEnabled = false;
-
-static uint32_t gLargePageMinimum = 0;
 #endif
 
-static uint32_t BlahAlignedOfValue(uint32_t alignmentOf, uint32_t sizeOf)
+uint32_t BlahAlignedOfValue(uint32_t alignmentOf, uint32_t sizeOf)
 {
   return (sizeOf % alignmentOf) ? sizeOf + (alignmentOf - sizeOf % alignmentOf) : sizeOf;
 }
@@ -203,14 +246,14 @@ void BlahEnableAlloc()
 {
 #if defined(_MSC_VER)
   if(gBlahLargePageSupportEnabled)
-    goto error;
+    goto label_return;
 
   gBlahLargePageSupportEnabled = EnableLargePageSupport();
 
   if(gBlahLargePageSupportEnabled)
     gLargePageMinimum = (uint32_t)GetLargePageMinimum();
 
-error:
+label_return:
   return;
 #endif
 }
@@ -220,7 +263,7 @@ void* BlahAlloc(uint32_t sizeOf, bool zero)
   void* pointer = 0;
 
   if( !sizeOf)
-    goto error;
+    goto label_return;
 
 #if defined(_MSC_VER)
   if(gBlahLargePageSupportEnabled && sizeOf >= gLargePageMinimum)
@@ -233,19 +276,21 @@ void* BlahAlloc(uint32_t sizeOf, bool zero)
   {
     sizeOf = BlahAlignedOfValue(sizeof(void*), sizeOf);
     pointer = malloc(sizeOf);
-
-    if(pointer && zero)
+    if( !pointer)
+      goto label_return;
+    
+    if(zero)
       memset(pointer, 0, sizeOf);
   }
 
-error:
+label_return:
   return pointer;
 }
 
 void BlahFree(void* pointer, uint32_t sizeOf, bool zero)
 {
   if( !pointer || !sizeOf)
-    goto error;
+    goto label_return;
 
 #if defined(_MSC_VER)
   if(gBlahLargePageSupportEnabled && sizeOf >= gLargePageMinimum)
@@ -270,6 +315,6 @@ void BlahFree(void* pointer, uint32_t sizeOf, bool zero)
     free(pointer);
   }
 
-error:
+label_return:
   return;
 }

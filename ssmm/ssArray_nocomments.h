@@ -4,13 +4,13 @@
 
 struct ssArray;
 
-ssArray* SsArrayConstruct(uint32_t sizeOf, uint32_t minimumCapacity, uint32_t maximumCapacity, uint32_t resize);
+ssArray* SsArrayConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32_t resize, bool lookup);
 
-bool SsArrayDestruct(ssArray** _this);
+int64_t SsArrayDestruct(ssArray** _this);
 
-bool SsArrayNum(ssArray* _this, uint32_t* num);
+int64_t SsArrayNum(ssArray* _this);
 
-bool SsArrayReset(ssArray* _this);
+int64_t SsArrayReset(ssArray* _this);
 
 bool SsArrayPush(ssArray* _this, void* client);
 

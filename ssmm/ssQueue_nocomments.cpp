@@ -29,7 +29,8 @@ struct SsQueueNode
 
   uint32_t num;
 
-  uint32_t padding;
+  // only used when lookup is enabled
+  uint32_t index;
 };
 
 struct SsQueuePool
@@ -41,8 +42,8 @@ struct SsQueuePool
   SsQueuePool* next;
 
   uint32_t num;
-
-  uint32_t sizeOf;
+  
+  uint32_t index;
 };
 
 struct ssQueue
@@ -53,7 +54,7 @@ struct ssQueue
   SsQueuePool* head;
   SsQueuePool* tail;
   
-  uint64_t capacity;
+  SsQueueNode** lookup;
 
   uint32_t numNodes;
   uint32_t numPools;
@@ -67,10 +68,9 @@ struct ssQueue
   uint32_t counter;
 
   uint32_t resize;
+  uint32_t capacity;
 
   uint32_t sizeOf;
-  
-  uint32_t padding;
 };
 
 #include "ssQueue_nocomments.h"
@@ -345,7 +345,7 @@ static bool SsQueueResizeNewPool(ssQueue* _this, uint32_t minimumCapacity)
     diff = _this->capacity - _this->max;
 
   if( !diff)
-    goto error;
+    goto label_return;
 
   sizeOf = SsQueueGetPoolSizeOf(_this, diff);
 
@@ -360,7 +360,7 @@ static bool SsQueueResizeNewPool(ssQueue* _this, uint32_t minimumCapacity)
   pool = (SsQueuePool*)pointer;
 
   if( !pool)
-    goto error;
+    goto label_return;
 
   pool->sizeOf = sizeOf;
 
@@ -477,64 +477,68 @@ static bool SsQueueResizeNewPool(ssQueue* _this, uint32_t minimumCapacity)
 
   result = true;
 
-error:
+label_return:
   return result;
 }
 
-static bool SsQueueResize(ssQueue* _this, uint32_t minimumCapacity)
+static bool SsQueueResize(ssQueue* _this, uint32_t minimum)
 {
   bool result = false;
 
   if(_this->max >= _this->capacity)
-    goto error;
+    goto label_return;
 
   if(_this->front != _this->back)
-    goto error;
+    goto label_return;
 
-  result = SsQueueResizeNewPool(_this, minimumCapacity);
+  result = SsQueueResizeNewPool(_this, minimum);
 
-error:
+label_return:
   return result;
 }
 
-ssQueue* SsQueueConstruct(uint32_t sizeOf, uint32_t minimumCapacity, uint32_t maximumCapacity, uint32_t resize)
+ssQueue* SsQueueConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32_t resize)
 {
   uint8_t* result = 0;
 
   ssQueue _this = {0};
 
-  if( !sizeOf || !minimumCapacity || minimumCapacity > maximumCapacity || !resize)
-    goto error;
+  if( !sizeOf || !minimum || minimum > (uint32_t)maximum || !resize)
+    goto label_return;
 
   _this.resize = resize;
-  _this.capacity = maximumCapacity;
+  _this.capacity = (uint32_t)maximum;
 
   _this.sizeOf = sizeOf;
 
-  if( !SsQueueResize( &_this, minimumCapacity) || !_this.head)
-    goto error;
+  if( !SsQueueResize( &_this, minimum) || !_this.head)
+    goto label_return;
 
   result = (uint8_t*)_this.head - (ptrdiff_t)SsQueueGetSizeOfSsQueueHeader();
 
   SsQueueMemcpySsQueue(result, &_this);
 
-error:
+label_return:
   return (ssQueue*)result;
 }
 
-bool SsQueueDestruct(ssQueue** reference)
+int64_t SsQueueDestruct(ssQueue** reference)
 {
   bool result = false;
 
   ssQueue* _this = 0;
+  
+  uint32_t num = 0;
 
   if( !reference)
-    goto error;
+    goto label_return;
 
   _this = reference[0];
 
   if( !_this)
-    goto error;
+    goto label_return;
+  
+  num = _this->numChunks;
 
   SsQueuePoolListFree(_this, _this->tail);
 
@@ -544,37 +548,37 @@ bool SsQueueDestruct(ssQueue** reference)
 
   result = true;
 
-error:
-  return result;
+label_return:
+  return result ? (int64_t)num : -1;
 }
 
-bool SsQueueNum(ssQueue* _this, uint32_t* num)
+int64_t SsQueueNum(ssQueue* _this)
 {
   bool result = false;
   
-  if( !num)
-    goto error;
+  uint32_t num = 0;
 
   if( !_this)
-  {
-    *num = 0;
-    goto error;
-  }
+    goto label_return;
 
-  *num = _this->numChunks;
+  num = _this->numChunks;
 
   result = true;
 
-error:
-  return result;
+label_return:
+  return result ? (int64_t)num : -1;
 }
 
-bool SsQueueReset(ssQueue* _this)
+int64_t SsQueueReset(ssQueue* _this)
 {
   bool result = false;
+  
+  uint32_t num = 0;
 
   if( !_this)
-    goto error;
+    goto label_return;
+  
+  num = _this->numChunks;
 
   _this->front = _this->back;
 
@@ -587,8 +591,8 @@ bool SsQueueReset(ssQueue* _this)
 
   result = true;
 
-error:
-  return result;
+label_return:
+  return result ? (int64_t)num : -1;
 }
 
 bool SsQueuePushBack(ssQueue* _this, void* client)
@@ -598,16 +602,16 @@ bool SsQueuePushBack(ssQueue* _this, void* client)
   uint8_t* chunk = 0;
 
   if( !_this || !client)
-    goto error;
+    goto label_return;
 
   if(_this->numChunks == _this->max)
   {
     if( !SsQueueResize(_this, 0) )
-      goto error;
+      goto label_return;
   }
 
   if(_this->numChunks >= _this->max)
-    goto error;
+    goto label_return;
 
   chunk = SsQueueNodeToChunkOperatorIndex(_this, _this->back, _this->indexBack);
 
@@ -626,7 +630,7 @@ bool SsQueuePushBack(ssQueue* _this, void* client)
 
   result = true;
 
-error:
+label_return:
   return result;
 }
 
@@ -637,7 +641,7 @@ bool SsQueuePopBack(ssQueue* _this, void* client)
   uint8_t* chunk = 0;
 
   if( !_this || !client || !_this->numChunks)
-    goto error;
+    goto label_return;
 
   // _this->indexBack-- is performed inside of SsQueueStateChangeProcessRolloverBackPrevious(...)
   SsQueueStateChangeProcessRolloverBackPrevious(_this);
@@ -654,7 +658,7 @@ bool SsQueuePopBack(ssQueue* _this, void* client)
 
   result = true;
 
-error:
+label_return:
   return result;
 }
 
@@ -665,16 +669,16 @@ bool SsQueuePushFront(ssQueue* _this, void* client)
   uint8_t* chunk = 0;
 
   if( !_this || !client)
-    goto error;
+    goto label_return;
 
   if(_this->numChunks == _this->max)
   {
     if( !SsQueueResize(_this, 0) )
-      goto error;
+      goto label_return;
   }
 
   if(_this->numChunks >= _this->max)
-    goto error;
+    goto label_return;
 
   // _this->indexFront-- is performed inside of SsQueueStateChangeProcessRolloverFrontPrevious(...)
   SsQueueStateChangeProcessRolloverFrontPrevious(_this);
@@ -691,7 +695,7 @@ bool SsQueuePushFront(ssQueue* _this, void* client)
 
   result = true;
 
-error:
+label_return:
   return result;
 }
 
@@ -702,7 +706,7 @@ bool SsQueuePopFront(ssQueue* _this, void* client)
   uint8_t* chunk = 0;
 
   if( !_this || !client || _this->numChunks <= 0)
-    goto error;
+    goto label_return;
 
   chunk = SsQueueNodeToChunkOperatorIndex(_this, _this->front, _this->indexFront);
 
@@ -721,7 +725,7 @@ bool SsQueuePopFront(ssQueue* _this, void* client)
 
   result = true;
 
-error:
+label_return:
   return result;
 }
 
@@ -732,18 +736,18 @@ bool SsQueueGetBack(ssQueue* _this, void* client)
   uint8_t* chunk = 0;
 
   if( !_this || !client || !_this->numChunks)
-    goto error;
+    goto label_return;
 
   chunk = SsQueueGetPreviousBackChunk(_this);
 
   if( !chunk)
-    goto error;
+    goto label_return;
 
   SsQueueMemcpyChunk(_this, client, chunk);
 
   result = true;
 
-error:
+label_return:
   return result;
 }
 
@@ -754,18 +758,18 @@ bool SsQueueSetBack(ssQueue* _this, void* client)
   uint8_t* chunk = 0;
 
   if( !_this || !client || !_this->numChunks)
-    goto error;
+    goto label_return;
 
   chunk = SsQueueGetPreviousBackChunk(_this);
 
   if( !chunk)
-    goto error;
+    goto label_return;
 
   SsQueueMemcpyChunk(_this, chunk, client);
 
   result = true;
 
-error:
+label_return:
   return result;
 }
 
@@ -776,18 +780,18 @@ bool SsQueueGetFront(ssQueue* _this, void* client)
   uint8_t* chunk = 0;
 
   if( !_this || !client || !_this->numChunks)
-    goto error;
+    goto label_return;
 
   chunk = SsQueueNodeToChunkOperatorIndex(_this, _this->front, _this->indexFront);
 
   if( !chunk)
-    goto error;
+    goto label_return;
 
   SsQueueMemcpyChunk(_this, client, chunk);
 
   result = true;
 
-error:
+label_return:
   return result;
 }
 
@@ -798,18 +802,18 @@ bool SsQueueSetFront(ssQueue* _this, void* client)
   uint8_t* chunk = 0;
 
   if( !_this || !client || !_this->numChunks)
-    goto error;
+    goto label_return;
 
   chunk = SsQueueNodeToChunkOperatorIndex(_this, _this->front, _this->indexFront);
 
   if( !chunk)
-    goto error;
+    goto label_return;
 
   SsQueueMemcpyChunk(_this, chunk, client);
 
   result = true;
 
-error:
+label_return:
   return result;
 }
 
@@ -818,7 +822,7 @@ bool SsQueueGetAt(ssQueue* _this, uint32_t index, void* client)
   bool result = false;
 
   if( !_this || !client || index >= _this->numChunks)
-    goto error;
+    goto label_return;
 
   index += _this->indexFront;
 
@@ -841,7 +845,7 @@ bool SsQueueGetAt(ssQueue* _this, uint32_t index, void* client)
     index -= node->num;
   }
 
-error:
+label_return:
   return result;
 }
 
@@ -850,7 +854,7 @@ bool SsQueueSetAt(ssQueue* _this, uint32_t index, void* client)
   bool result = false;
 
   if( !_this || !client || index >= _this->numChunks)
-    goto error;
+    goto label_return;
 
   index += _this->indexFront;
 
@@ -873,6 +877,6 @@ bool SsQueueSetAt(ssQueue* _this, uint32_t index, void* client)
     index -= node->num;
   }
 
-error:
+label_return:
   return result;
 }

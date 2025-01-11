@@ -1,5 +1,5 @@
 
-// File Name: binpriv.h
+// file name binpriv.h
 
 struct SsSetNode
 {
@@ -8,6 +8,7 @@ struct SsSetNode
   SsSetNode* parent;
 
   uint32_t color;
+
   uint32_t padding;
 };
 
@@ -21,7 +22,7 @@ struct ssSet
 
   SsSetCompare lessThan;
 
-  SsSetEquivalence equalTo;
+  //SsSetEquivalence equalTo;
 
   SsSetEvaluate evaluate;
 
@@ -30,10 +31,12 @@ struct ssSet
 
   // for interative pre-order, in-order, post-order traversal
   ssStack* stack;
+
+  // for interactive level-order traversal
   ssQueue* queue;
 
-  uint32_t maxStack;
-  uint32_t maxQueue;
+  int64_t maxStack;
+  int64_t maxQueue;
 
   uint32_t num;
 

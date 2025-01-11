@@ -1,4 +1,9 @@
 
+int main()
+{
+  return 0;
+}
+#if 0
 // ConsoleApp2.cpp
 
 #include <cstdint>
@@ -70,12 +75,12 @@ typedef struct ListType List;
 
 static void nodeRemove(Node* current)
 {
-    if (current)
+    if(current)
     {
         Node* previous = current->previous;
         Node* next = current->next;
 
-        if (previous && next)
+        if(previous && next)
         {
             previous->next = next;
             next->previous = previous;
@@ -89,11 +94,11 @@ static void nodeRemove(Node* current)
 static void nodeInsertNext(Node* previous, Node* insert)
 {
     // current is already detached
-    if (previous && insert)
+    if(previous && insert)
     {
         Node* next = previous->next;
 
-        if (next)
+        if(next)
         {
             previous->next = insert;
             insert->previous = previous;
@@ -107,11 +112,11 @@ static void nodeInsertNext(Node* previous, Node* insert)
 static void nodeInsertPrevious(Node* insert, Node* next)
 {
     // current is already detached
-    if (insert && next)
+    if(insert && next)
     {
         Node* previous = next->previous;
 
-        if (previous)
+        if(previous)
         {
             previous->next = insert;
             insert->previous = previous;
@@ -127,22 +132,22 @@ static Node* nodeAllocate(Node* sentinel, int count)
     Node* nodeList = 0;
 
     if (!sentinel || count < 0)
-        goto returnLabel;
+        goto label_return;
 
     sentinel->key = INT_MAX;
 
-    if (count > 0)
+    if(count > 0)
     {
         nodeList = (Node*)BlahAlloc(sizeof(Node) * count, true);
 
-        for (int index = 0; index < count; index++)
+        for(int index = 0; index < count; index++)
         {
             nodeList[index].key = 0; // or -1, INT_MAX
 
-            if (index > 0)
+            if(index > 0)
                 nodeList[index].previous = &nodeList[index - 1];
 
-            if (index < (count - 1))
+            if(index < (count - 1))
                 nodeList[index].next = &nodeList[index + 1];
         }
 
@@ -158,8 +163,7 @@ static Node* nodeAllocate(Node* sentinel, int count)
         sentinel->previous = sentinel;
     }
 
-returnLabel:
-
+label_return:
     return nodeList;
 }
 
@@ -167,7 +171,7 @@ static List* listInitialize(int count)
 {
     List* daList = 0;
 
-    if (count >= 0)
+    if(count >= 0)
     {
         daList = (List*)BlahAlloc(sizeof(List), true);
 
@@ -207,11 +211,11 @@ static Node* listAddData(List* daList, int data, unordered_map<int, Cache>& cach
 {
     Node* current = 0;
 
-    if (daList)
+    if(daList)
     {
         // no checking for duplicate key
 
-        if (daList->index < daList->capacity)
+        if(daList->index < daList->capacity)
         {
             // remove from front of free list
             current = daList->sentinelFree.previous;
@@ -251,7 +255,7 @@ static Node* listAddData(List* daList, int data, unordered_map<int, Cache>& cach
 
 static void listRemoveNode(List* daList, Node* daNode)
 {
-    if (daList && daNode && daList->index > 0 && daList->index <= daList->capacity)
+    if(daList && daNode && daList->index > 0 && daList->index <= daList->capacity)
     {
         // can add optional check here if daNode is in used list
         // (no check for now)
@@ -273,7 +277,7 @@ static void listRemoveNode(List* daList, Node* daNode)
 
 static void listMoveToFrontUsedNode(List* daList, Node* daNode)
 {
-    if (daList && daNode && daList->index > 0 && daList->index <= daList->capacity)
+    if(daList && daNode && daList->index > 0 && daList->index <= daList->capacity)
     {
         // can add optional check here if daNode is in used list
         // (no check for now)
@@ -297,7 +301,7 @@ static void cachePut(unordered_map<int, Cache>& cacheHashTable, List* cacheList,
 {
     printf("put start %i %i\n", key, value);
 
-    if (cacheHashTable.count(key))
+    if(cacheHashTable.count(key))
     {
         Cache& cacheHit = cacheHashTable.at(key);
 
@@ -317,7 +321,7 @@ static void cachePut(unordered_map<int, Cache>& cacheHashTable, List* cacheList,
 
     printf("put finish %i %i\n", key, value);
 
-    for (Node* cacheEntry = cacheList->sentinelUsed.next; cacheEntry != &cacheList->sentinelUsed; cacheEntry = cacheEntry->next)
+    for(Node* cacheEntry = cacheList->sentinelUsed.next; cacheEntry != &cacheList->sentinelUsed; cacheEntry = cacheEntry->next)
     {
         printf("%i %i; ", cacheEntry->key, cacheHashTable[cacheEntry->key].value);
     }
@@ -332,7 +336,7 @@ static int cacheGet(unordered_map<int, Cache>& cacheHashTable, List* cacheList, 
 
     printf("get start %i\n", key);
 
-    if (cacheHashTable.count(key))
+    if(cacheHashTable.count(key))
     {
         Cache& cacheHit = cacheHashTable.at(key);
 
@@ -343,7 +347,7 @@ static int cacheGet(unordered_map<int, Cache>& cacheHashTable, List* cacheList, 
 
     printf("get finish %i %i\n", key, value);
 
-    for (Node* cacheEntry = cacheList->sentinelUsed.next; cacheEntry != &cacheList->sentinelUsed; cacheEntry = cacheEntry->next)
+    for(Node* cacheEntry = cacheList->sentinelUsed.next; cacheEntry != &cacheList->sentinelUsed; cacheEntry = cacheEntry->next)
     {
         printf("%i %i; ", cacheEntry->key, cacheHashTable[cacheEntry->key].value);
     }
@@ -458,7 +462,7 @@ bool BlahRandomConstructCustom(blahRandom* _this, uint64_t factor, uint64_t seed
   bool result = false;
 
   if( !_this)
-    goto error;
+    goto label_return;
 
   _this->factor = factor;
   _this->previous = seed;
@@ -466,7 +470,7 @@ bool BlahRandomConstructCustom(blahRandom* _this, uint64_t factor, uint64_t seed
 
   result = true;
 
-error:
+label_return:
   return result;
 }
 
@@ -480,13 +484,13 @@ bool BlahRandomDestruct(blahRandom* _this)
   bool result = false;
 
   if( !_this)
-    goto error;
+    goto label_return;
 
   // nop
 
   result = true;
 
-error:
+label_return:
   return result;
 }
 
@@ -495,13 +499,13 @@ bool BlahRandomIterate(blahRandom* _this)
   bool result = false;
 
   if( !_this)
-    goto error;
+    goto label_return;
 
   _this->previous = random64(_this->factor, _this->previous, _this->term);
 
   result = true;
 
-error:
+label_return:
   return result;
 }
 
@@ -510,13 +514,13 @@ bool BlahRandomGet(blahRandom* _this, uint64_t* current)
   bool result = false;
 
   if( !_this || !current)
-    goto error;
+    goto label_return;
 
   *current = _this->previous;
 
   result = true;
 
-error:
+label_return:
   return result;
 }
 
@@ -528,7 +532,7 @@ error:
 
 #define BLAH_QUEUE_SIZE 5
 
-#include "ssmm_nocomments.h"
+#include "ssMm_nocomments.h"
 #include "ssArray_nocomments.h"
 #include "ssStack_nocomments.h"
 #include "ssQueue_nocomments.h"
@@ -536,49 +540,6 @@ error:
 #include "bintree_nocomments.h"
 
 #include "blah_alloc.h"
-
-#if 0
-ssStack* SsStackConstruct(int sizeOf, int minimumCapacity, int maximumCapacity, int resize);
-
-int SsStackDestruct(ssStack** _this/*reference*/);
-
-int SsStackNum(ssStack* _this);
-
-int SsStackReset(ssStack* _this);
-
-bool SsStackPush(ssStack* _this, void* client);
-bool SsStackPop(ssStack* _this, void* client);
-
-bool SsStackGet(ssStack* _this, void* client);
-bool SsStackSet(ssStack* _this, void* client);
-
-bool SsStackGetAt(ssStack* _this, int index, void* client);
-bool SsStackSetAt(ssStack* _this, int index, void* client);
-
-
-ssQueue* SsQueueConstruct(int sizeOf, int minimumCapacity, int maximumCapacity, int resize);
-
-int SsQueueDestruct(ssQueue** _this/*reference*/);
-
-int SsQueueNum(ssQueue* _this);
-
-int SsQueueReset(ssQueue* _this);
-
-bool SsQueuePushBack(ssQueue* _this, void* client);
-bool SsQueuePopBack(ssQueue* _this, void* client);
-
-bool SsQueuePushFront(ssQueue* _this, void* client);
-bool SsQueuePopFront(ssQueue* _this, void* client);
-
-bool SsQueueGetBack(ssQueue* _this, void* client);
-bool SsQueueSetBack(ssQueue* _this, void* client);
-
-bool SsQueueGetFront(ssQueue* _this, void* client);
-bool SsQueueSetFront(ssQueue* _this, void* client);
-
-bool SsQueueGetAt(ssQueue* _this, int index, void* client);
-bool SsQueueSetAt(ssQueue* _this, int index, void* client);
-#endif
 
 bool blahTestStack()
 {
@@ -589,14 +550,14 @@ bool blahTestStack()
   blahStack = SsStackConstruct(sizeof(int64_t), 10, 1000, 10);
 
   if( !blahStack)
-    goto error;
+    goto label_return;
 
   printf("\n");
 
   for(int64_t index = 1; index <= 5; index++)
   {
     if( !SsStackPush(blahStack, &index) )
-      goto error;
+      goto label_return;
   }
 
   for(int64_t index = 0; index < 2; index++)
@@ -604,19 +565,19 @@ bool blahTestStack()
     int64_t getStackData = 0;
 
     if( !SsStackPop(blahStack, &getStackData) )
-      goto error;
+      goto label_return;
   }
 
   for(int64_t index = 6; index <= 11; index++)
   {
     if( !SsStackPush(blahStack, &index) )
-      goto error;
+      goto label_return;
   }
 
   for(int64_t index = 12; index <= 21; index++)
   {
     if( !SsStackPush(blahStack, &index) )
-      goto error;
+      goto label_return;
   }
 
   for(int64_t index = 0; index < 3; index++)
@@ -624,44 +585,44 @@ bool blahTestStack()
     int64_t getStackData = 0;
 
     if( !SsStackPop(blahStack, &getStackData) )
-      goto error;
+      goto label_return;
   }
 
   for(int64_t index = 22; index <= 25; index++)
   {
     if( !SsStackPush(blahStack, &index) )
-      goto error;
+      goto label_return;
   }
 
   for(int64_t index = 5; index >= 1; index--)
   {
     if( !SsStackPush(blahStack, &index) )
-      goto error;
+      goto label_return;
   }
 
   for(int64_t index = 26; index <= 30; index++)
   {
     if( !SsStackPush(blahStack, &index) )
-      goto error;
+      goto label_return;
   }
 
   for(int64_t index = 31; index <= 41; index++)
   {
     if( !SsStackPush(blahStack, &index) )
-      goto error;
+      goto label_return;
   }
 
   for(int64_t index = 0; index >= -20; index--)
   {
     if( !SsStackPush(blahStack, &index) )
-      goto error;
+      goto label_return;
   }
 
   SsStackDestruct( &blahStack);
 
   result = true;
 
-error:
+label_return:
   return result;
 }
 
@@ -674,14 +635,14 @@ bool blahTestQueue()
   blahQueue = SsQueueConstruct(sizeof(int64_t), 10, 1000, 10);
 
   if( !blahQueue)
-    goto error;
+    goto label_return;
 
   printf("\n");
 
   for(int64_t index = 1; index <= 5; index++)
   {
     if( !SsQueuePushBack(blahQueue, &index) )
-      goto error;
+      goto label_return;
   }
 
   for(int64_t index = 0; index < 2; index++)
@@ -689,19 +650,19 @@ bool blahTestQueue()
     int64_t getQueueData = 0;
 
     if( !SsQueuePopFront(blahQueue, &getQueueData) )
-      goto error;
+      goto label_return;
   }
 
   for(int64_t index = 6; index <= 11; index++)
   {
     if( !SsQueuePushBack(blahQueue, &index) )
-      goto error;
+      goto label_return;
   }
 
   for(int64_t index = 12; index <= 21; index++)
   {
     if( !SsQueuePushBack(blahQueue, &index) )
-      goto error;
+      goto label_return;
   }
 
   for(int64_t index = 0; index < 3; index++)
@@ -709,44 +670,44 @@ bool blahTestQueue()
     int64_t getQueueData = 0;
 
     if( !SsQueuePopFront(blahQueue, &getQueueData) )
-      goto error;
+      goto label_return;
   }
 
   for(int64_t index = 22; index <= 25; index++)
   {
     if( !SsQueuePushBack(blahQueue, &index) )
-      goto error;
+      goto label_return;
   }
 
   for(int64_t index = 5; index >= 1; index--)
   {
     if( !SsQueuePushFront(blahQueue, &index) )
-      goto error;
+      goto label_return;
   }
 
   for(int64_t index = 26; index <= 30; index++)
   {
     if( !SsQueuePushBack(blahQueue, &index) )
-      goto error;
+      goto label_return;
   }
 
   for(int64_t index = 31; index <= 41; index++)
   {
     if( !SsQueuePushBack(blahQueue, &index) )
-      goto error;
+      goto label_return;
   }
 
   for(int64_t index = 0; index >= -20; index--)
   {
     if( !SsQueuePushFront(blahQueue, &index) )
-      goto error;
+      goto label_return;
   }
 
   SsQueueDestruct( &blahQueue);
 
   result = true;
 
-error:
+label_return:
   return result;
 }
 
@@ -763,27 +724,27 @@ int main()
   BlahEnableAlloc();
 
   if( !BlahRandomConstructDefault( &random) )
-    goto error;
+    goto label_return;
 
   if( !BlahRandomIterate( &random) )
-        goto error;
+    goto label_return;
 
   if( !blahTestStack() )
-    goto error;
+    goto label_return;
 
   if( !blahTestQueue() )
-    goto error;
+    goto label_return;
 
   sleep_time.tv_sec = 1;
 
   thrd_sleep( &sleep_time, 0);
 
   if( !binTreeTest( &random) )
-    goto error;
+    goto label_return;
 
   BlahRandomDestruct( &random);
 
-error:
+label_return:
   return result;
 }
 
@@ -800,10 +761,10 @@ struct myStruct
   uint32_t testInt;
 };
 
-static int lessThan(myStruct* keyObject, myStruct* treeObject)
+static int lessThan(myStruct* lhs, myStruct* rhs)
 {
   // return non-zero if object 1 < object 2
-  if(keyObject->testInt < treeObject->testInt)
+  if(lhs->testInt < rhs->testInt)
     return 1;
 
   // return zero if object 1 >= object 2
@@ -824,16 +785,6 @@ static int check(myStruct* treeObject)
   }
 
   // return zero to continue traversal
-  return 0;
-}
-
-static int equal(myStruct* keyObject, myStruct* treeObject)
-{
-  // return non-zero if object 1 == object 2
-  if(keyObject->testInt == treeObject->testInt)
-    return 1;
-
-  // return zero if object 1 != object 2
   return 0;
 }
 
@@ -873,10 +824,10 @@ static bool DebugAllocate(uint32_t* data[G1000NUMERATOR], uint32_t count)
   bool result = false;
 
   if(count % G1000DIVISOR)
-    goto error;
+    goto label_return;
 
   if(count < G1000DIVISOR)
-    goto error;
+    goto label_return;
 
   g1000fullCount = count;
 
@@ -891,12 +842,12 @@ static bool DebugAllocate(uint32_t* data[G1000NUMERATOR], uint32_t count)
     data[index] = (uint32_t*)BlahAlloc(g1000sizeOf, true);
 
     if( !data[index] )
-      goto error;
+      goto label_return;
   }
 
   result = true;
 
-error:
+label_return:
   return result;
 }
 
@@ -921,8 +872,8 @@ static void DebugFree(uint32_t* data[G1000NUMERATOR] )
 
 bool binTreeTest(blahRandom* /*random*/)
 {
-  //ssmm* ssmmBlah = SsmmConstruct(sizeof(void*), 100, false);
-  //SsmmSetResize(ssmmBlah, -1);
+  //ssMm* ssMmBlah = SsMmConstruct(sizeof(void*), 100, false);
+  //SsMmSetResize(ssMmBlah, -1);
 
 #if 0
     uint32_t cacheCapacity = 2;
@@ -963,8 +914,8 @@ uint32_t numData = 4000000000;
 {
     memset(gDebugRotate, 0, sizeof(gDebugRotate) );
 
-    bintree* myTree = bintree::init(5000000, sizeof(myStruct), (bintree::compare)lessThan);
-    if( !myTree)
+    ssSet* mySet = SsSetConstruct(sizeof(myStruct), 5000000, 4100000000, 10000000, (SsSetCompare)lessThan);
+    if( !mySet)
       return false;
 
     //myStruct data[numData] = { {-2}, {-1}, {0}, {1}, {2} };
@@ -1069,7 +1020,7 @@ uint32_t numData = 4000000000;
 
 #if BLAH_KEEP
       resultObject = -1;
-      findResult = myTree->find( &keyObject, (bintree::equivalence)equal, &resultObject);
+      findResult = myTree->find( &keyObject, (SsSetCompare)lessThan, &resultObject);
       if(findResult != bintree::ok && findResult != bintree::empty)
       {
         printf("blah f\n");
@@ -1100,7 +1051,7 @@ uint32_t numData = 4000000000;
 #if BLAH_KEEP
     printf("dump preorder\n");
 #endif
-    if(myTree->dump( (bintree::evaluate)check, bintree::preorder) != bintree::ok)
+    if(myTree->dump( (SsSetEvaluate)check, SsSetPreorder) != bintree::ok)
     {
 #if BLAH_KEEP
       printf("blah i\n");
@@ -1113,7 +1064,7 @@ uint32_t numData = 4000000000;
 #if BLAH_KEEP
     printf("dump inorder\n");
 #endif
-    if(myTree->dump( (bintree::evaluate)check, bintree::inorder) != bintree::ok)
+    if(myTree->dump( (SsSetEvaluate)check, SsSetInorder) != bintree::ok)
     {
 #if BLAH_KEEP
       printf("blah i\n");
@@ -1126,7 +1077,7 @@ uint32_t numData = 4000000000;
 #if BLAH_KEEP
     printf("dump postorder\n");
 #endif
-    if(myTree->dump( (bintree::evaluate)check, bintree::postorder) != bintree::ok)
+    if(myTree->dump( (SsSetEvaluate)check, SsSetPostorder) != bintree::ok)
     {
 #if BLAH_KEEP
       printf("blah i\n");
@@ -1139,7 +1090,7 @@ uint32_t numData = 4000000000;
 #if BLAH_KEEP
     printf("dump levelorder\n");
 #endif
-    if(myTree->dump( (bintree::evaluate)check, bintree::levelorder) != bintree::ok)
+    if(myTree->dump( (SsSetEvaluate)check, SsSetLevelorder) != bintree::ok)
     {
 #if BLAH_KEEP
       printf("blah i\n");
@@ -1171,7 +1122,7 @@ uint32_t numData = 4000000000;
     }
 
     resultObject = 0;
-    findResult = myTree->find( &keyObject, (bintree::equivalence)equal, &resultObject);
+    findResult = myTree->find( &keyObject, (SsSetCompare)lessThan, &resultObject);
     if(findResult != bintree::ok && findResult != bintree::empty)
     {
       printf("blah j\n");
@@ -1256,7 +1207,7 @@ uint32_t numData = 4000000000;
 
       uint32_t data1 = DebugGet(datablah, index);
 
-      int result = myTree->remove( &data1, (bintree::equivalence)equal, &resultObject);
+      int result = myTree->remove( &data1, (SsSetCompare)lessThan, &resultObject);
 
       if(result != bintree::ok || resultObject != data1)
       {
@@ -1265,7 +1216,7 @@ uint32_t numData = 4000000000;
 
 #if BLAH_KEEP
       resultObject = -1;
-      findResult = myTree->find( &keyObject, (bintree::equivalence)equal, &resultObject);
+      findResult = myTree->find( &keyObject, (SsSetCompare)lessThan, &resultObject);
       if(findResult != bintree::ok && findResult != bintree::empty)
       {
         printf("blah f\n");
@@ -1359,3 +1310,4 @@ uint32_t numData = 4000000000;
 //   4. Use the Error List window to view errors
 //   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
 //   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
+#endif

@@ -1,269 +1,370 @@
 
-// File Name: bintraverse.cpp
+// file name bintraverse.cpp
 // Ming C. Lin
 // Robert B. Aldridge III
 // Charlie H. Burns III
 
 // integrated for root sentinel
-void IterativePreorderTreeTraverse(ssSet* tree, SsSetNode* node, binaryTreeEvaluate ClientEvaluate)
+int64_t IterativePreorderTreeTraverse(ssSet* _this, SsSetNode* node, SsSetEvaluate evaluate)
 {
-  uint32_t stackSize = 0;
+  bool result = false;
 
-  // PSTACK Stack = InitStack()
-  SsStackReset(tree->stack);
+  uint32_t callback = 0;
 
-  SsSetNode* LeftChild = 0;
-  SsSetNode* RightChild = 0;
+  int64_t stackNum = 0;
+
+  if( !node)
+    goto label_num;
+
+  // Stack* stack = StackInit()
+  if(SsStackReset(_this->stack) < 0)
+    goto label_return;
 
   while(1)
   {
-    if(ClientEvaluate(GETCLIENT(node) ) )
+    SsSetNode* left = 0;
+    SsSetNode* right = 0;
+
+    callback = evaluate(GETCLIENT(node) );
+    if(callback)
       break;
 
-    LeftChild = node->left;
-    RightChild = node->right;
+    left = node->left;
+    right = node->right;
 
-    if(RightChild)
+    if(right)
     {
-      if(LeftChild)
+      if(left)
       {
-        // Stack->Push( &RightChild)
-        if( !SsStackPush(tree->stack, &RightChild) )
-          break;
+        if( !SsStackPush(_this->stack, &right) )
+          goto label_return;
 
-        stackSize = 0;
-        if(SsStackNum(tree->stack, &stackSize) && stackSize > tree->maxStack)
-          tree->maxStack = stackSize;
+        // we only get num here for debugging in non-production so ignore error
+        stackNum = SsStackNum(_this->stack);
+        if(stackNum > _this->maxStack)
+          _this->maxStack = stackNum;
 
-        // Stack->Push( &LeftChild)
-        // node = Stack->Pop()
-        node = LeftChild;
+        // stack->push( &left)
+        // node = stack->pop()
+        node = left;
       }
       else /* !node->left */
       {
-        // Stack->Push( &RightChild)
-        // node = Stack->Pop()
-        node = RightChild;
+        // stack->push( &right)
+        // node = stack->pop()
+        node = right;
       }
     }
-    else if(LeftChild)
+    else if(left)
     {
-      // Stack->Push( &LeftChild)
-      // node = Stack->Pop()
-      node = LeftChild;
+      // stack->push( &left)
+      // node = stack->pop()
+      node = left;
     }
     else
     {
-      stackSize = 0;
-      // if(Stack->Empty() == TRUE)
-      if( !SsStackNum(tree->stack, &stackSize) || !stackSize)
+      // if(stack->empty() )
+      stackNum = SsStackNum(_this->stack);
+      if(stackNum <= 0)
         break;
 
-      // node = Stack->Pop()
-      if( !SsStackPop(tree->stack, &node) )
-        break;
+      if( !SsStackPop(_this->stack, &node) )
+        goto label_return;
     }
   }
+
+label_num:
+  if(stackNum < 0)
+    goto label_return;
+
+  result = true;
+
+label_return:
+  return result ? (int64_t)callback : -1;
 }
 
 // integrated for root sentinel
-void IterativeInorderTreeTraverse(ssSet* tree, SsSetNode* node, binaryTreeEvaluate ClientEvaluate)
+int64_t IterativeInorderTreeTraverse(ssSet* _this, SsSetNode* node, SsSetEvaluate evaluate)
 {
-  uint32_t stackSize = 0;
+  bool result = false;
 
-  // PSTACK Stack = InitStack()
-  SsStackReset(tree->stack);
+  uint32_t callback = 0;
+
+  int64_t stackNum = 0;
+
+  if( !node)
+    goto label_num;
+
+  // Stack* stack = StackInit()
+  if(SsStackReset(_this->stack) < 0)
+    goto label_return;
 
   while(1)
   {
-// label pushLeftAllTheWayDown:
-
     while(node)
     {
-      // Stack->Push( &node)
-      if( !SsStackPush(tree->stack, &node) )
-        break;
+      if( !SsStackPush(_this->stack, &node) )
+        goto label_return;
 
       node = node->left;
     }
 
-    stackSize = 0;
-    if(SsStackNum(tree->stack, &stackSize) && stackSize > tree->maxStack)
-      tree->maxStack = stackSize;
-
-    // if(Stack->Empty() )
-    if( !stackSize)
+    // if(stack->empty() )
+    stackNum = SsStackNum(_this->stack);
+    if(stackNum <= 0)
       break;
 
-    // node = Stack->Pop()
-    if( !SsStackPop(tree->stack, &node) )
-      break;
+    // debugging in non-production
+    if(stackNum > _this->maxStack)
+      _this->maxStack = stackNum;
 
-    if(ClientEvaluate(GETCLIENT(node) ) )
+    if( !SsStackPop(_this->stack, &node) )
+      goto label_return;
+
+    callback = evaluate(GETCLIENT(node) );
+    if(callback)
       break;
 
     node = node->right;
   }
+
+label_num:
+  if(stackNum < 0)
+    goto label_return;
+
+  result = true;
+
+label_return:
+  return result ? (int64_t)callback : -1;
 }
 
 // integrated for root sentinel
-void IterativePostorderTreeTraverse(ssSet* tree, SsSetNode* node, binaryTreeEvaluate ClientEvaluate)
+int64_t IterativePostorderTreeTraverse(ssSet* _this, SsSetNode* node, SsSetEvaluate evaluate)
 {
-  uint32_t stackSize = 0;
+  bool result = false;
 
-  // PSTACK Stack = InitStack()
-  SsStackReset(tree->stack);
+  uint32_t callback = 0;
 
-  SsSetNode* NodePushed = 0;
-  SsSetNode* RightChild = 0;
+  int64_t stackNum = 0;
+
+  SsSetNode* parent = 0;
+
+  if( !node)
+    goto label_num;
+
+  // Stack* stack = StackInit()
+  if(SsStackReset(_this->stack) < 0)
+    goto label_return;
 
   while(1)
   {
-// label pushLeftAllTheWayDown:
+    SsSetNode* right = 0;
 
     do
     {
-      // Stack->Push( &node)
-      if( !SsStackPush(tree->stack, &node) )
-        break;
+      if( !SsStackPush(_this->stack, &node) )
+        goto label_return;
 
       node = node->left;
 
     }while(node);
 
-popOneOffStack:
-
-    stackSize = 0;
-    if(SsStackNum(tree->stack, &stackSize) && stackSize > tree->maxStack)
-      tree->maxStack = stackSize;
-
-    // if(Stack->Empty() )
-    if( !stackSize)
-      break;
-
-    // node = Stack->Pop()
-    if( !SsStackPop(tree->stack, &node) )
-      break;
-
-    RightChild = node->right;
-
-    if(RightChild && RightChild != NodePushed)
+    do
     {
-      // Stack->Push( &node)
-      if( !SsStackPush(tree->stack, &node) )
-        break;
+      // if(stack->empty() )
+      stackNum = SsStackNum(_this->stack);
+      if(stackNum <= 0)
+        goto label_num;
 
-      NodePushed = RightChild;
+      // debugging in non-production
+      if(stackNum > _this->maxStack)
+        _this->maxStack = stackNum;
 
-      node = RightChild;
+      if( !SsStackPop(_this->stack, &node) )
+        goto label_return;
 
-      continue;
-    }
-    else
-    {
-      if(ClientEvaluate(GETCLIENT(node) ) )
-        break;
+      right = node->right;
 
-      NodePushed = node;
+      if(right && right != parent)
+      {
+        if( !SsStackPush(_this->stack, &node) )
+          goto label_return;
 
-      node = 0;
+        parent = right;
+        node = right;
+      }
+      else
+      {
+        callback = evaluate(GETCLIENT(node) );
+        if(callback)
+          goto label_num;
 
-      goto popOneOffStack;
-    }
+        parent = node;
+        node = 0;
+      }
+
+    }while( !node);
   }
+
+label_num:
+  if(stackNum < 0)
+    goto label_return;
+
+  result = true;
+
+label_return:
+  return result ? (int64_t)callback : -1;
 }
 
 // integrated for root sentinel
-void IterativeLevelorderTreeTraverse(ssSet* tree, SsSetNode* node, binaryTreeEvaluate ClientEvaluate)
-{
-  uint32_t queueSize = 0;
-
-  // PQUEUE Queue = InitQueue()
-  SsQueueReset(tree->queue);
-
-  SsSetNode* LeftChild = 0;
-  SsSetNode* RightChild = 0;
-
-  // Queue->Put( &node)
-  if( !SsQueuePushBack(tree->queue, &node) )
-    goto error;
-
-  queueSize = 0;
-
-  // while( !Queue->Empty() )
-  while(SsQueueNum(tree->queue, &queueSize) && queueSize)
-  {
-    if(queueSize > tree->maxQueue)
-      tree->maxQueue = queueSize;
-
-    // Queue->Get()
-    if( !SsQueuePopFront(tree->queue, &node) )
-      break;
-
-    if(ClientEvaluate(GETCLIENT(node) ) )
-      break;
-
-    LeftChild = node->left;
-    RightChild = node->right;
-
-    if(LeftChild)
-    {
-      // Queue->Put( &LeftChild)
-      if( !SsQueuePushBack(tree->queue, &LeftChild) )
-        break;
-    }
-
-    if(RightChild)
-    {
-      // Queue->Put( &RightChild)
-      if( !SsQueuePushBack(tree->queue, &RightChild) )
-        break;
-    }
-
-    queueSize = 0;
-  }
-
-error:
-  return;
-}
-
-// integrated for root sentinel
-bool SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
+int64_t IterativeLevelorderTreeTraverse(ssSet* _this, SsSetNode* node, SsSetEvaluate evaluate)
 {
   bool result = false;
+
+  uint32_t callback = 0;
+
+  int64_t queueNum = 0;
+
+  if( !node)
+    goto label_num;
+
+  // Queue* queue = QueueInit()
+  if(SsQueueReset(_this->queue) < 0)
+    goto label_return;
+
+  if( !SsQueuePushBack(_this->queue, &node) )
+    goto label_return;
+
+  // do { } while( !queue->empty() )
+  do
+  {
+    SsSetNode* left = 0;
+    SsSetNode* right = 0;
+
+    // we only get num here for debugging in non-production so ignore error
+    queueNum = SsQueueNum(_this->queue);
+    if(queueNum > _this->maxQueue)
+      _this->maxQueue = queueNum;
+
+    if( !SsQueuePopFront(_this->queue, &node) )
+      goto label_return;
+
+    callback = evaluate(GETCLIENT(node) );
+    if(callback)
+      break;
+
+    left = node->left;
+    right = node->right;
+
+    if(left)
+    {
+      if( !SsQueuePushBack(_this->queue, &left) )
+        goto label_return;
+    }
+
+    if(right)
+    {
+      if( !SsQueuePushBack(_this->queue, &right) )
+        goto label_return;
+    }
+
+    queueNum = SsQueueNum(_this->queue);
+
+  }while(queueNum > 0);
+
+label_num:
+  if(queueNum < 0)
+    goto label_return;
+
+  result = true;
+
+label_return:
+  return result ? (int64_t)callback : -1;
+}
+
+#if 0
+static int64_t(*gSsSetIterativeTreeTraverse)(ssSet* _this, SsSetNode* node, SsSetEvaluate evaluate)[4] =
+{
+  IterativePreorderTreeTraverse,
+  IterativeInorderTreeTraverse,
+  IterativePostorderTreeTraverse,
+  IterativeLevelorderTreeTraverse
+};
+#endif
+
+// integrated for root sentinel
+int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
+{
+  bool result = false;
+
+  int64_t dump = 0;
 
   SsSetNode* root = 0;
 
   if( !_this || order < SsSetPreorder || order > SsSetLevelorder)
   {
     _log("error");
-    goto error;
+    goto label_return;
   }
 
   if( !evaluate && !_this->evaluate)
   {
     _log("error");
-    goto error;
+    goto label_return;
   }
+
+  // root
+  // leaf
+  // lessThan
+  // equalTo
+  // evaluate
+  // allocator
+  // stack
+  // queue
+  // maxStack
+  // maxQueue
+  // num
+  // sizeOf
+
+  // no change
+  // -----
+  // root
+  // leaf
+  // lessThan
+  // equalTo
+  // allocator
+  // num
+  // sizeOf
+
+  // touched in this function
+  // -----
+  // evaluate
+  // stack IterativePreorderTreeTraverse IterativeInorderTreeTraverse IterativePostorderTreeTraverse
+  // queue IterativeLevelorderTreeTraverse
+  // maxStack IterativePreorderTreeTraverse IterativeInorderTreeTraverse IterativePostorderTreeTraverse
+  // maxQueue IterativeLevelorderTreeTraverse
 
   if(evaluate)
     _this->evaluate = evaluate;
 
   root = GETROOTFROMTREE(_this);
 
-  if(root)
+  switch(order)
   {
-    switch(order)
-    {
-    case SsSetPreorder: IterativePreorderTreeTraverse(_this, root, _this->evaluate); break;
-    case SsSetInorder: IterativeInorderTreeTraverse(_this, root, _this->evaluate); break;
-    case SsSetPostorder: IterativePostorderTreeTraverse(_this, root, _this->evaluate); break;
-    case SsSetLevelorder: IterativeLevelorderTreeTraverse(_this, root, _this->evaluate); break;
-    }
+  case SsSetPreorder: dump = IterativePreorderTreeTraverse(_this, root, _this->evaluate); break;
+  case SsSetInorder: dump = IterativeInorderTreeTraverse(_this, root, _this->evaluate); break;
+  case SsSetPostorder: dump = IterativePostorderTreeTraverse(_this, root, _this->evaluate); break;
+  case SsSetLevelorder: dump = IterativeLevelorderTreeTraverse(_this, root, _this->evaluate); break;
+  }
+
+  if(dump < 0)
+  {
+    _log("error");
+    goto label_return;
   }
 
   result = true;
 
-error:
-  return result;
+label_return:
+  return result ? dump : -1;
 }

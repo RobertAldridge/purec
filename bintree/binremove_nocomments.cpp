@@ -1,16 +1,16 @@
 
-// File Name: binremove.cpp
+// file name binremove.cpp
 // Ming C. Lin
 // Robert B. Aldridge III
 // Charlie H. Burns III
 
 // integrated for root sentinel
-void BinDeleteFixup(ssSet* tree, SsSetNode* x)
+void BinDeleteFixup(ssSet* _this, SsSetNode* x)
 {
   SsSetNode* w = 0;
   SsSetNode* xP = 0;
 
-  while(x != GETROOTFROMTREE(tree) && x->color == BLACK)
+  while(x != GETROOTFROMTREE(_this) && x->color == SsSetBlack)
   {
     xP = x->parent;
 
@@ -18,33 +18,33 @@ void BinDeleteFixup(ssSet* tree, SsSetNode* x)
     {
       w = xP->right;
 
-      if(w->color == RED)
+      if(w->color == SsSetRed)
       {
         w = w->left;
 
-        if( ( !w->left || w->left->color == BLACK) && ( !w->right || w->right->color == BLACK) )
+        if( ( !w->left || w->left->color == SsSetBlack) && ( !w->right || w->right->color == SsSetBlack) )
         {
           w = xP->right;
 
-          w->color = BLACK;
+          w->color = SsSetBlack;
 
-          xP->color = RED;
+          xP->color = SsSetRed;
 
           LeftRotateDelete1(xP);
 
           w = xP->right;
 
-          w->color = RED;
+          w->color = SsSetRed;
 
           x = xP;
         }
-        else if( !w->right || w->right->color == BLACK)
+        else if( !w->right || w->right->color == SsSetBlack)
         {
           w = xP->right;
 
-          w->color = BLACK;
+          w->color = SsSetBlack;
 
-          xP->color = RED;
+          xP->color = SsSetRed;
 
           LeftRightLeftRotate(xP);
 
@@ -52,19 +52,19 @@ void BinDeleteFixup(ssSet* tree, SsSetNode* x)
 
           w->color = xP->color;
 
-          xP->color = BLACK;
+          xP->color = SsSetBlack;
 
-          w->right->color = BLACK;
+          w->right->color = SsSetBlack;
 
-          x = GETROOTFROMTREE(tree);
+          x = GETROOTFROMTREE(_this);
         }
         else
         {
           w = xP->right;
 
-          w->color = BLACK;
+          w->color = SsSetBlack;
 
-          xP->color = RED;
+          xP->color = SsSetRed;
 
           LeftLeftRotate(xP);
 
@@ -72,26 +72,26 @@ void BinDeleteFixup(ssSet* tree, SsSetNode* x)
 
           w->color = xP->color;
 
-          xP->color = BLACK;
+          xP->color = SsSetBlack;
 
-          w->right->color = BLACK;
+          w->right->color = SsSetBlack;
 
-          x = GETROOTFROMTREE(tree);
+          x = GETROOTFROMTREE(_this);
         }
       }
       else
       {
-        if( ( !w->left || w->left->color == BLACK) && ( !w->right || w->right->color == BLACK) )
+        if( ( !w->left || w->left->color == SsSetBlack) && ( !w->right || w->right->color == SsSetBlack) )
         {
-          w->color = RED;
+          w->color = SsSetRed;
 
           x = xP;
         }
-        else if( !w->right || w->right->color == BLACK)
+        else if( !w->right || w->right->color == SsSetBlack)
         {
-          w->left->color = BLACK;
+          w->left->color = SsSetBlack;
 
-          w->color = RED;
+          w->color = SsSetRed;
 
           RightLeftRotateDelete(xP);
 
@@ -99,23 +99,23 @@ void BinDeleteFixup(ssSet* tree, SsSetNode* x)
 
           w->color = xP->color;
 
-          xP->color = BLACK;
+          xP->color = SsSetBlack;
 
-          w->right->color = BLACK;
+          w->right->color = SsSetBlack;
 
-          x = GETROOTFROMTREE(tree);
+          x = GETROOTFROMTREE(_this);
         }
         else
         {
           w->color = xP->color;
 
-          xP->color = BLACK;
+          xP->color = SsSetBlack;
 
-          w->right->color = BLACK;
+          w->right->color = SsSetBlack;
 
           LeftRotateDelete2(xP);
 
-          x = GETROOTFROMTREE(tree);
+          x = GETROOTFROMTREE(_this);
         }
       }
     }
@@ -123,33 +123,33 @@ void BinDeleteFixup(ssSet* tree, SsSetNode* x)
     {
       w = xP->left;
 
-      if(w->color == RED)
+      if(w->color == SsSetRed)
       {
         w = w->right;
 
-        if( ( !w->right || w->right->color == BLACK) && ( !w->left || w->left->color == BLACK) )
+        if( ( !w->right || w->right->color == SsSetBlack) && ( !w->left || w->left->color == SsSetBlack) )
         {
           w = xP->left;
 
-          w->color = BLACK;
+          w->color = SsSetBlack;
 
-          xP->color = RED;
+          xP->color = SsSetRed;
 
           RightRotateDelete1(xP);
 
           w = xP->left;
 
-          w->color = RED;
+          w->color = SsSetRed;
 
           x = xP;
         }
-        else if( !w->left || w->left->color == BLACK)
+        else if( !w->left || w->left->color == SsSetBlack)
         {
           w = xP->left;
 
-          w->color = BLACK;
+          w->color = SsSetBlack;
 
-          xP->color = RED;
+          xP->color = SsSetRed;
 
           RightLeftRightRotate(xP);
 
@@ -157,19 +157,19 @@ void BinDeleteFixup(ssSet* tree, SsSetNode* x)
 
           w->color = xP->color;
 
-          xP->color = BLACK;
+          xP->color = SsSetBlack;
 
-          w->left->color = BLACK;
+          w->left->color = SsSetBlack;
 
-          x = GETROOTFROMTREE(tree);
+          x = GETROOTFROMTREE(_this);
         }
         else
         {
           w = xP->left;
 
-          w->color = BLACK;
+          w->color = SsSetBlack;
 
-          xP->color = RED;
+          xP->color = SsSetRed;
 
           RightRightRotate(xP);
 
@@ -177,26 +177,26 @@ void BinDeleteFixup(ssSet* tree, SsSetNode* x)
 
           w->color = xP->color;
 
-          xP->color = BLACK;
+          xP->color = SsSetBlack;
 
-          w->left->color = BLACK;
+          w->left->color = SsSetBlack;
 
-          x = GETROOTFROMTREE(tree);
+          x = GETROOTFROMTREE(_this);
         }
       }
       else
       {
-        if( ( !w->right || w->right->color == BLACK) && ( !w->left || w->left->color == BLACK) )
+        if( ( !w->right || w->right->color == SsSetBlack) && ( !w->left || w->left->color == SsSetBlack) )
         {
-          w->color = RED;
+          w->color = SsSetRed;
 
           x = xP;
         }
-        else if( !w->left || w->left->color == BLACK)
+        else if( !w->left || w->left->color == SsSetBlack)
         {
-          w->right->color = BLACK;
+          w->right->color = SsSetBlack;
 
-          w->color = RED;
+          w->color = SsSetRed;
 
           LeftRightRotateDelete(xP);
 
@@ -204,38 +204,41 @@ void BinDeleteFixup(ssSet* tree, SsSetNode* x)
 
           w->color = xP->color;
 
-          xP->color = BLACK;
+          xP->color = SsSetBlack;
 
-          w->left->color = BLACK;
+          w->left->color = SsSetBlack;
 
-          x = GETROOTFROMTREE(tree);
+          x = GETROOTFROMTREE(_this);
         }
         else
         {
           w->color = xP->color;
 
-          xP->color = BLACK;
+          xP->color = SsSetBlack;
 
-          w->left->color = BLACK;
+          w->left->color = SsSetBlack;
 
           RightRotateDelete2(xP);
 
-          x = GETROOTFROMTREE(tree);
+          x = GETROOTFROMTREE(_this);
         }
       }
     }
   }
 
-  x->color = BLACK;
+  //if(x == GETROOTFROMTREE(_this) )
+  //  gDebugRotate[68]++;
+
+  x->color = SsSetBlack;
 }
 
 // integrated for root sentinel as long as y is never sentinelRoot
-SsSetNode* BinDelete(ssSet* tree, SsSetNode* z)
+SsSetNode* BinDelete(ssSet* _this, SsSetNode* z)
 {
-  uint32_t Color = 0;
+  uint32_t color = 0;
 
 // Sentinel {
-  SsSetNode* T_Nil = &tree->sentinelLeaf;
+  SsSetNode* t_nil = &_this->leaf;
 // Sentinel }
 
   SsSetNode* x = 0;
@@ -245,26 +248,37 @@ SsSetNode* BinDelete(ssSet* tree, SsSetNode* z)
     y = z;
   else
     y = TreeSuccessor(z);
+  
+  if( !y)
+    goto label_return;
+  
+  // check if y is ever sentinelRoot
+  if(y == GETSENTINELFROMTREE(_this) )
+  {
+    y = 0;
+    
+    goto label_return;
+  }
 
 // check if y is ever sentinelRoot
 
 // Sentinel {
-  T_Nil->left = 0; // todo
-  T_Nil->right = 0; // todo
+  t_nil->left = 0; // todo
+  t_nil->right = 0; // todo
 
-  T_Nil->parent = y;
+  t_nil->parent = y;
 
-  T_Nil->color = BLACK;
+  t_nil->color = SsSetBlack;
 
   if( !y->left)
-    y->left = T_Nil;
+    y->left = t_nil;
 
   if( !y->right)
-    y->right = T_Nil;
+    y->right = t_nil;
 // Sentinel }
 
 // Sentinel {
-  if(y->left != T_Nil)
+  if(y->left != t_nil)
 // Sentinel }
     x = y->left;
   else
@@ -277,89 +291,118 @@ SsSetNode* BinDelete(ssSet* tree, SsSetNode* z)
   else
     y->parent->right = x;
 
-  Color = y->color;
+  color = y->color;
 
   if(y != z)
   {
     // copy all fields besides left right parent color
-    memcpy(GETCLIENT(z), GETCLIENT(y), tree->sizeOfClient); // todo - 2nd copy in delete
+    memcpy(GETCLIENT(z), GETCLIENT(y), _this->sizeOf); // todo - 2nd copy in delete
   }
 
-  if(Color == BLACK)
-    BinDeleteFixup(tree, x);
+  if(color == SsSetBlack)
+    BinDeleteFixup(_this, x);
 
 // Sentinel {
-  if(T_Nil->parent->left == T_Nil)
-    T_Nil->parent->left = 0;
-  else if(T_Nil->parent->right == T_Nil)
-    T_Nil->parent->right = 0;
+  if(t_nil->parent->left == t_nil)
+    t_nil->parent->left = 0;
+  else if(t_nil->parent->right == t_nil)
+    t_nil->parent->right = 0;
 
-  T_Nil->left = 0; // todo
-  T_Nil->right = 0; // todo
+  t_nil->left = 0; // todo
+  t_nil->right = 0; // todo
 // Sentinel }
 
-// check if y is ever sentinelRoot todo
-
+label_return:
   return y;
 }
 
 // integrated for root sentinel
-bool SsSetRemove(ssSet* _this, void* key, SsSetEquivalence equalTo, void* client, bool* found)
+int64_t SsSetRemove(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
 {
-  ssSet* tree = (ssSet*)this;
+  bool result = false;
 
-  int result = RETURN_ERROR;
+  int empty = 1;
 
   SsSetNode* t = 0;
   SsSetNode* z = 0;
 
-  if( !tree || !objectKey || tree->numberOfNodes <= 0)
+  if( !_this || !key || !_this->num)
   {
     _log("error");
-    goto error;
+    goto label_return;
   }
 
-  if(equalTo)
-    tree->equalTo = equalTo;
-
-  if( !tree->equalTo)
+  if( !lessThan && !_this->lessThan)
   {
     _log("error");
-    goto error;
+    goto label_return;
   }
 
-  z = TreeSearch(GETROOTFROMTREE(tree), objectKey, tree->lessThan, tree->equalTo);
+  // set modified
 
-  if( !z)
+  // root
+  // leaf
+  // lessThan
+  // equalTo
+  // evaluate
+  // allocator
+  // stack
+  // queue
+  // maxStack
+  // maxQueue
+  // num
+  // sizeOf
+
+  // no change
+  // -----
+  // equalTo
+  // evaluate
+  // stack
+  // queue
+  // maxStack
+  // maxQueue
+  // sizeOf
+
+  // touched in this function
+  // -----
+  // root BinDelete
+  // leaf BinDelete
+  // lessThan
+  // allocator SsMmFree
+  // num
+
+  if(lessThan)
+    _this->lessThan = lessThan;
+
+  z = TreeSearch(GETROOTFROMTREE(_this), key, _this->lessThan);
+
+  if(z)
   {
-    _log("error");
-    goto error;
+    empty = 0;
+
+    if(client)
+      memcpy(client, GETCLIENT(z), _this->sizeOf);
+
+    t = BinDelete(_this, z);
+    if( !t)
+    {
+      _log("error");
+      goto label_return;
+    }
+
+    z = t;
+
+    if( !SsMmFree(_this->allocator, (void**)&z) )
+    {
+      _log("error");
+      goto label_return;
+    }
+
+    _this->num--;
   }
 
-  if(objectResult)
-    memcpy(objectResult, GETCLIENT(z), tree->sizeOfClient);
+  result = true;
 
-  t = BinDelete(tree, z);
-
-  z = t;
-
-  if( !z)
-  {
-    _log("error");
-    goto error;
-  }
-
-  //*( --tree->MemoryManagerArrayCurrent) = (char*)z;
-  if( !SsMmFree(tree->allocator, (void**)&z) )
-  {
-    _log("error");
-    goto error;
-  }
-
-  tree->numberOfNodes--;
-
-  result = RETURN_OK;
-
-error:
-  return result;
+label_return:
+  return result ? empty : -1;
 }

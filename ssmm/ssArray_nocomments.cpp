@@ -18,7 +18,7 @@ struct SsArrayPool
 
   uint32_t num;
 
-  uint32_t sizeOf;
+  uint32_t index;
 };
 
 struct ssArray
@@ -29,8 +29,8 @@ struct ssArray
 
   SsArrayPool* head;
   SsArrayPool* tail;
-  
-  uint64_t capacity;
+
+  SsArrayPool** lookup;
 
   uint32_t numPools;
   uint32_t numChunks;
@@ -40,8 +40,11 @@ struct ssArray
   uint32_t counter;
 
   uint32_t resize;
+  uint32_t capacity;
 
   uint32_t sizeOf;
+
+  uint32_t padding;
 };
 
 #include "ssArray_nocomments.h"
@@ -85,7 +88,10 @@ static void SsArrayPoolListFree(ssArray* _this, SsArrayPool* current)
     next = current->next;
 
     if(current != _this->head)
-      BlahFree(current, current->sizeOf, true);
+    {
+      uint32_t sizeOf = SsArrayGetPoolSizeOf(_this, current->num);
+      BlahFree(current, sizeOf, true);
+    }
   }
 }
 
@@ -142,7 +148,7 @@ static bool SsArrayResizeNewPool(ssArray* _this, uint32_t minimumCapacity)
     diff = _this->capacity - _this->max;
 
   if( !diff)
-    goto error;
+    goto label_return;
 
   sizeOf = SsArrayGetPoolSizeOf(_this, diff);
 
@@ -157,7 +163,7 @@ static bool SsArrayResizeNewPool(ssArray* _this, uint32_t minimumCapacity)
   pool = (SsArrayPool*)pointer;
 
   if( !pool)
-    goto error;
+    goto label_return;
 
   pool->sizeOf = sizeOf;
 
@@ -182,106 +188,136 @@ static bool SsArrayResizeNewPool(ssArray* _this, uint32_t minimumCapacity)
 
   result = true;
 
-error:
+label_return:
   return result;
 }
 
-static bool SsArrayResize(ssArray* _this, uint32_t minimumCapacity)
+static bool SsArrayResize(ssArray* _this, uint32_t minimum)
 {
   bool result = false;
 
   if(_this->max >= _this->capacity)
-    goto error;
+    goto label_return;
 
   if(_this->current != _this->tail)
     result = SsArrayResizeExistingPool(_this);
   else // if(_this->current == _this->tail)
-    result = SsArrayResizeNewPool(_this, minimumCapacity);
+    result = SsArrayResizeNewPool(_this, minimum);
 
-error:
+label_return:
   return result;
 }
 
-ssArray* SsArrayConstruct(uint32_t sizeOf, uint32_t minimumCapacity, uint32_t maximumCapacity, uint32_t resize)
+ssArray* SsArrayConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32_t resize, bool lookup)
 {
   uint8_t* result = 0;
 
   ssArray _this = {0};
 
-  if( !sizeOf || !minimumCapacity || minimumCapacity > maximumCapacity || !resize)
-    goto error;
+  if( !sizeOf || !minimum || minimum > (uint32_t)maximum || !resize)
+    goto label_return;
 
   _this.resize = resize;
-  _this.capacity = maximumCapacity;
+  _this.capacity = (uint32_t)maximum;
 
   _this.sizeOf = sizeOf;
 
-  if( !SsArrayResize( &_this, minimumCapacity) || !_this.head)
-    goto error;
+  if( !SsArrayResize( &_this, minimum) || !_this.head)
+    goto label_return;
 
   result = (uint8_t*)_this.head - (ptrdiff_t)SsArrayGetSizeOfSsArrayHeader();
 
   SsArrayMemcpySsArray(result, &_this);
 
-error:
+  if(lookup)
+  {
+    SsArrayPool* current = 0;
+
+    _this->lookup = (SsArrayPool**)BlahAlloc(sizeof(SsArrayPool*) * _this->numPools, true);
+    if( !_this->lookup)
+      goto label_return;
+
+    current = _this->head;
+
+    for(int index = 0; index < _this->numPools; index++)
+    {
+      _this->lookup[index] = current;
+      current = current->next;
+    }
+  }
+
+label_return:
   return (ssArray*)result;
 }
 
-bool SsArrayDestruct(ssArray** reference)
+int64_t SsArrayDestruct(ssArray** reference)
 {
   bool result = false;
 
   ssArray* _this = 0;
 
+  uint32_t num = 0;
+
+  uint32_t sizeOf = 0;
+
   if( !reference)
-    goto error;
+    goto label_return;
 
   _this = reference[0];
 
   if( !_this)
-    goto error;
+    goto label_return;
+
+  num = _this->numChunks;
+
+  if(_this->lookup)
+  {
+    BlahFree(_this->lookup, sizeof(SsArrayPool*) * _this->numPools, true);
+    _this->lookup = 0;
+  }
 
   SsArrayPoolListReverseAndFree(_this, _this->head);
 
-  BlahFree(_this, _this->head->sizeOf, true);
+  sizeOf = SsArrayGetPoolSizeOf(_this, _this->head->num);
+  BlahFree(_this, sizeOf + SsArrayGetSizeOfSsArrayHeader(), true);
 
   reference[0] = 0;
 
   result = true;
 
-error:
-  return result;
+label_return:
+  return result ? (int64_t)num : -1;
 }
 
-bool SsArrayNum(ssArray* _this, uint32_t* num)
+int64_t SsArrayNum(ssArray* _this)
 {
   bool result = false;
 
-  if( !num)
-    goto error;
+  uint32_t num = 0;
 
   if( !_this)
-  {
-    *num = 0;
-    goto error;
-  }
+    goto label_return;
 
-  *num = _this->numChunks;
+  num = _this->numChunks;
 
   result = true;
 
-error:
-  return result;
+label_return:
+  return result ? (int64_t)num : -1;
 }
 
-bool SsArrayReset(ssArray* _this)
+int64_t SsArrayReset(ssArray* _this)
 {
   bool result = false;
+
+  uint32_t num = 0;
 
   SsArrayPool* pool = 0;
 
   if( !_this)
-    goto error;
+    goto label_return;
+
+  num = _this->numChunks;
 
   pool = _this->head;
 
@@ -295,8 +331,8 @@ bool SsArrayReset(ssArray* _this)
 
   result = true;
 
-error:
-  return result;
+label_return:
+  return result ? (int64_t)num : -1;
 }
 
 bool SsArrayPush(ssArray* _this, void* client)
@@ -306,16 +342,16 @@ bool SsArrayPush(ssArray* _this, void* client)
   uint8_t* chunk = 0;
 
   if( !_this || !client)
-    goto error;
+    goto label_return;
 
   if(_this->numChunks == _this->max)
   {
     if( !SsArrayResize(_this, 0) )
-      goto error;
+      goto label_return;
   }
 
   if(_this->numChunks >= _this->max)
-    goto error;
+    goto label_return;
 
   chunk = _this->chunk;
 
@@ -327,7 +363,7 @@ bool SsArrayPush(ssArray* _this, void* client)
 
   result = true;
 
-error:
+label_return:
   return result;
 }
 
@@ -338,7 +374,7 @@ bool SsArrayGet(ssArray* _this, void* client)
   uint8_t* chunk = 0;
 
   if( !_this || !client || !_this->numChunks)
-    goto error;
+    goto label_return;
 
   chunk = SsArrayChunkToChunkPrevious(_this, _this->chunk);
 
@@ -346,7 +382,7 @@ bool SsArrayGet(ssArray* _this, void* client)
 
   result = true;
 
-error:
+label_return:
   return result;
 }
 
@@ -357,7 +393,7 @@ bool SsArraySet(ssArray* _this, void* client)
   uint8_t* chunk = 0;
 
   if( !_this || !client || !_this->numChunks)
-    goto error;
+    goto label_return;
 
   chunk = SsArrayChunkToChunkPrevious(_this, _this->chunk);
 
@@ -365,7 +401,7 @@ bool SsArraySet(ssArray* _this, void* client)
 
   result = true;
 
-error:
+label_return:
   return result;
 }
 
@@ -374,7 +410,7 @@ bool SsArrayGetAt(ssArray* _this, uint32_t index, void* client)
   bool result = false;
 
   if( !_this || !client || index >= _this->numChunks)
-    goto error;
+    goto label_return;
 
   for(SsArrayPool* pool = _this->head; pool; pool = pool->next)
   {
@@ -395,7 +431,7 @@ bool SsArrayGetAt(ssArray* _this, uint32_t index, void* client)
     index -= pool->num;
   }
 
-error:
+label_return:
   return result;
 }
 
@@ -404,7 +440,7 @@ bool SsArraySetAt(ssArray* _this, uint32_t index, void* client)
   bool result = false;
 
   if( !_this || !client || index >= _this->numChunks)
-    goto error;
+    goto label_return;
 
   for(SsArrayPool* pool = _this->head; pool; pool = pool->next)
   {
@@ -425,6 +461,6 @@ bool SsArraySetAt(ssArray* _this, uint32_t index, void* client)
     index -= pool->num;
   }
 
-error:
+label_return:
   return result;
 }

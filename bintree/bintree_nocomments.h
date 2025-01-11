@@ -1,49 +1,49 @@
 
-// File Name: ssSet.h
+// file name ssSet.h
 // Robert Aldridge
 
 struct ssSet;
 
-typedef int(*SsSetCompare)(void*, void*);
+typedef uint32_t(*SsSetCompare)(void*, void*);
 
-typedef int(*SsSetEvaluate)(void*);
+typedef uint32_t(*SsSetEvaluate)(void*);
 
-typedef int(*SsSetEquivalence)(void* key, void*);
+//typedef uint32_t(*SsSetEquivalence)(void* key, void*);
 
 const int SsSetPreorder = 0; // preorder == 0; preorder == depth-first
 const int SsSetInorder = 1; // inorder == 1
 const int SsSetPostorder = 2; // postorder == 2
 const int SsSetLevelorder = 3; // levelorder == 3; levelorder == breadth-first
 
-ssSet* SsSetConstruct(uint32_t sizeOf, uint32_t minimum, uint32_t maximum, uint32_t resize, SsSetCompare lessThan);
+ssSet* SsSetConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32_t resize, SsSetCompare lessThan);
 
-bool SsSetDestruct(ssSet* _this);
+int64_t SsSetDestruct(ssSet* _this);
 
-bool SsSetNum(ssSet* _this, uint32_t* num);
+int64_t SsSetNum(ssSet* _this);
 
-bool SsSetReset(ssSet* _this);
+int64_t SsSetReset(ssSet* _this);
 
-bool SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client);
+int64_t SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client);
 
-bool SsSetRemove(ssSet* _this, void* key, SsSetEquivalence equalTo, void* client, bool* found);
+int64_t SsSetRemove(ssSet* _this, void* key, SsSetCompare lessThan, void* client);
 
-bool SsSetGetExtrema(ssSet* _this, int getGreatest, void* client, bool* found);
+int64_t SsSetGetExtrema(ssSet* _this, bool maximum, void* client);
 
-bool SsSetFind(ssSet* _this, void* key, SsSetEquivalence equalTo, void* client, bool* found);
+int64_t SsSetFind(ssSet* _this, void* key, SsSetCompare lessThan, void* client);
 
-bool SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order);
+int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order);
 
 // for debugging not production use
-int SsSetDepthTree(ssSet* _this);
-int SsSetDepthStack(ssSet* _this);
-int SsSetDepthQueue(ssSet* _this);
+int64_t SsSetDepthTree(ssSet* _this);
+int64_t SsSetMaxStack(ssSet* _this);
+int64_t SsSetMaxQueue(ssSet* _this);
 
 #if 0
 bool SsSetPush(ssSet* _this, void* client);
 bool SsSetPop(ssSet* _this, void* client);
 
-bool SsSetGet(ssSet* _this, void* key, SsSetEquivalence equalTo, void* client);
-bool SsSetSet(ssSet* _this, void* key, SsSetEquivalence equalTo, void* client);
+bool SsSetGet(ssSet* _this, void* key, SsSetCompare lessThan, void* client);
+bool SsSetSet(ssSet* _this, void* key, SsSetCompare lessThan, void* client);
 
 bool SsSetGetAt(ssSet* _this, uint32_t index, void* client);
 bool SsSetSetAt(ssSet* _this, uint32_t index, void* client);
