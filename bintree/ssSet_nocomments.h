@@ -1,5 +1,5 @@
 
-// file name ssSet.h
+// ssSet.h
 // Robert Aldridge
 
 struct ssSet;
