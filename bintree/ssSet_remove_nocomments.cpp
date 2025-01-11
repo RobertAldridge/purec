@@ -1,11 +1,11 @@
 
-// file name binremove.cpp
+// ssSet_remove.cpp
 // Ming C. Lin
 // Robert B. Aldridge III
 // Charlie H. Burns III
 
 // integrated for root sentinel
-void BinDeleteFixup(ssSet* _this, SsSetNode* x)
+void SsSetNodeEraseFixup(ssSet* _this, SsSetNode* x)
 {
   SsSetNode* w = 0;
   SsSetNode* xP = 0;
@@ -233,7 +233,7 @@ void BinDeleteFixup(ssSet* _this, SsSetNode* x)
 }
 
 // integrated for root sentinel as long as y is never sentinelRoot
-SsSetNode* BinDelete(ssSet* _this, SsSetNode* z)
+SsSetNode* SsSetTreeErase(ssSet* _this, SsSetNode* z)
 {
   uint32_t color = 0;
 
@@ -300,7 +300,7 @@ SsSetNode* BinDelete(ssSet* _this, SsSetNode* z)
   }
 
   if(color == SsSetBlack)
-    BinDeleteFixup(_this, x);
+    SsSetNodeEraseFixup(_this, x);
 
 // Sentinel {
   if(t_nil->parent->left == t_nil)
@@ -317,7 +317,7 @@ label_return:
 }
 
 // integrated for root sentinel
-int64_t SsSetRemove(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
+int64_t SsSetErase(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
 {
   bool result = false;
 
@@ -365,8 +365,8 @@ int64_t SsSetRemove(ssSet* _this, void* key, SsSetCompare lessThan, void* client
 
   // touched in this function
   // -----
-  // root BinDelete
-  // leaf BinDelete
+  // root SsSetTreeErase
+  // leaf SsSetTreeErase
   // lessThan
   // allocator SsMmFree
   // num
@@ -383,7 +383,7 @@ int64_t SsSetRemove(ssSet* _this, void* key, SsSetCompare lessThan, void* client
     if(client)
       memcpy(client, GETCLIENT(z), _this->sizeOf);
 
-    t = BinDelete(_this, z);
+    t = SsSetTreeErase(_this, z);
     if( !t)
     {
       _log("error");
@@ -404,5 +404,5 @@ int64_t SsSetRemove(ssSet* _this, void* key, SsSetCompare lessThan, void* client
   result = true;
 
 label_return:
-  return result ? empty : -1;
+  return result ? empty : SsSetError;
 }

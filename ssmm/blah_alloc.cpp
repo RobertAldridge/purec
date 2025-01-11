@@ -7,7 +7,7 @@
 #pragma warning (disable : 5039)
 #include <windows.h>
 #include <ntsecapi.h>
-#include <Sddl.h>
+#include <sddl.h>
 #endif
 
 // _MSC_VER
@@ -45,7 +45,7 @@
 // VirtualAlloc
 // VirtualFree
 
-#include <cstddef> // size_t
+#include <cstddef> // size_t, wchar_t
 #include <cstdint> // uint32_t
 #include <cstdio> // printf
 #include <cstdlib> // free, malloc

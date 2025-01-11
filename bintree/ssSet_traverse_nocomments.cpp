@@ -1,5 +1,5 @@
 
-// file name bintraverse.cpp
+// ssSet_traverse.cpp
 // Ming C. Lin
 // Robert B. Aldridge III
 // Charlie H. Burns III
@@ -80,7 +80,7 @@ label_num:
   result = true;
 
 label_return:
-  return result ? (int64_t)callback : -1;
+  return result ? (int64_t)callback : SsSetError;
 }
 
 // integrated for root sentinel
@@ -135,7 +135,7 @@ label_num:
   result = true;
 
 label_return:
-  return result ? (int64_t)callback : -1;
+  return result ? (int64_t)callback : SsSetError;
 }
 
 // integrated for root sentinel
@@ -213,7 +213,7 @@ label_num:
   result = true;
 
 label_return:
-  return result ? (int64_t)callback : -1;
+  return result ? (int64_t)callback : SsSetError;
 }
 
 // integrated for root sentinel
@@ -279,7 +279,7 @@ label_num:
   result = true;
 
 label_return:
-  return result ? (int64_t)callback : -1;
+  return result ? (int64_t)callback : SsSetError;
 }
 
 #if 0
@@ -366,5 +366,5 @@ int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
   result = true;
 
 label_return:
-  return result ? dump : -1;
+  return result ? dump : SsSetError;
 }

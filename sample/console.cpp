@@ -12,25 +12,23 @@ int main()
 #include <cstring>
 #include <ctime>
 
+// int thrd_sleep(const struct timespec* duration, struct timespec* remaining)
+#include <threads.h>
+
 #define CPP_STUFF 0
 
 #if CPP_STUFF
-#include <new>
 #include <set>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
-using std::bad_alloc;
 using std::set;
 using std::string;
 using std::unordered_map;
 using std::unordered_set;
 using std::vector;
-#else
-#include <new>
-using std::bad_alloc;
 #endif
 
 #define YDEBUG 0
@@ -359,7 +357,7 @@ static int cacheGet(unordered_map<int, Cache>& cacheHashTable, List* cacheList, 
 
 #define BLAH_KEEP 0
 
-#define BLAH_BINTREE 1
+#define BLAH_SSSET 1
 
 // 3,324,924,966
 
@@ -523,9 +521,6 @@ bool BlahRandomGet(blahRandom* _this, uint64_t* current)
 label_return:
   return result;
 }
-
-#include <threads.h>
-// int thrd_sleep(const struct timespec* duration, struct timespec* remaining);
 
 // 5.13 gigabytes == ~5,254 megabytes
 #define BLAH_SIZE 5254
@@ -711,7 +706,7 @@ label_return:
   return result;
 }
 
-static bool binTreeTest(blahRandom* random);
+static bool SsSetTest(blahRandom* random);
 
 int main()
 {
@@ -739,7 +734,7 @@ int main()
 
   thrd_sleep( &sleep_time, 0);
 
-  if( !binTreeTest( &random) )
+  if( !SsSetTest( &random) )
     goto label_return;
 
   BlahRandomDestruct( &random);
@@ -748,10 +743,7 @@ label_return:
   return result;
 }
 
-#if BLAH_BINTREE
-
-// #include < stdio.h >
-//#include "bintree.h"
+#if BLAH_SSSET
 
 //static const uint32_t myFatalError = -1;
 static const uint32_t myFatalError = 0xFFFFFFFFUL;
@@ -870,7 +862,7 @@ static void DebugFree(uint32_t* data[G1000NUMERATOR] )
   }
 }
 
-bool binTreeTest(blahRandom* /*random*/)
+bool SsSetTest(blahRandom* /*random*/)
 {
   //ssMm* ssMmBlah = SsMmConstruct(sizeof(void*), 100, false);
   //SsMmSetResize(ssMmBlah, -1);
@@ -930,7 +922,7 @@ uint32_t numData = 4000000000;
     srand(1);
 
     //for(uint32_t loop = 0; loop < numData; loop++)
-    //  myTree->insert( &data[loop], 0);
+    //  SsSetInsert(myTree, &data[loop], 0, 0);
 
 // check for inserting into tree
 //   keys already sorted
@@ -982,9 +974,8 @@ uint32_t numData = 4000000000;
     printf("\n\n");
 #endif
 
-    uint32_t numberOfClientObject = 0;
-
-    if(myTree->isEmpty( &numberOfClientObject) != bintree::empty)
+    uint32_t numberOfClientObject = SsSetNum(myTree);
+    if(numberOfClientObject)
     {
       printf("blah b\n");
     }
@@ -993,14 +984,13 @@ uint32_t numData = 4000000000;
     {
       uint32_t data1 = DebugGet(datablah, index);
 
-      if(myTree->insert( &data1, 0) != bintree::ok)
+      if(SsSetInsert(myTree, &data1, 0, 0) )
       {
         printf("blah c\n");
       }
 
-      numberOfClientObject = 0;
-
-      if(myTree->isEmpty( &numberOfClientObject) != bintree::ok || numberOfClientObject != (index + 1) )
+      numberOfClientObject = SsSetNum(myTree);
+      if(numberOfClientObject < 0 || numberOfClientObject != (index + 1) )
       {
         printf("blah d\n");
       }
@@ -1041,9 +1031,8 @@ uint32_t numData = 4000000000;
 #endif
     }
 
-    numberOfClientObject = 0;
-
-    if(myTree->isEmpty( &numberOfClientObject) != bintree::ok || numberOfClientObject != numData)
+    numberOfClientObject = SsSetNum(myTree);
+    if(numberOfClientObject < 0 || numberOfClientObject != numData)
     {
       printf("blah h\n");
     }
@@ -1183,9 +1172,8 @@ uint32_t numData = 4000000000;
 
     for(uint32_t index = 0; index < numData; index++)
     {
-      numberOfClientObject = 0;
-
-      if(myTree->isEmpty( &numberOfClientObject) != bintree::ok || numberOfClientObject != (numData - index) )
+      numberOfClientObject = SsSetNum(myTree);
+      if(numberOfClientObject < 0 || numberOfClientObject != (numData - index) )
       {
         printf("blah l\n");
       }
@@ -1207,7 +1195,7 @@ uint32_t numData = 4000000000;
 
       uint32_t data1 = DebugGet(datablah, index);
 
-      int result = myTree->remove( &data1, (SsSetCompare)lessThan, &resultObject);
+      int result = SsSetErase(myTree, &data1, (SsSetCompare)lessThan, &resultObject);
 
       if(result != bintree::ok || resultObject != data1)
       {
@@ -1237,9 +1225,8 @@ uint32_t numData = 4000000000;
 #endif
     }
 
-    numberOfClientObject = 0;
-
-    if(myTree->isEmpty( &numberOfClientObject) != bintree::empty)
+    numberOfClientObject = SsSetNum(myTree);
+    if(numberOfClientObject)
     {
       printf("blah o\n");
     }

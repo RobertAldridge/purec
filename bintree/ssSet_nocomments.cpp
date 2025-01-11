@@ -4,17 +4,12 @@
 // Robert B. Aldridge III
 // Charlie H. Burns III
 
-#include <cstddef>
-#include <cstdint> // int32_t, uint8_t
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#include <cstdint> // int64_t, uint32_t
+#include <cstdio> // printf
 
-using std::free;
-using std::int32_t;
-using std::memset;
+using std::int64_t;
 using std::printf;
-using std::ptrdiff_t;
+using std::uint32_t;
 
 #include "blah_alloc.h"
 
@@ -22,9 +17,9 @@ using std::ptrdiff_t;
 #include "ssStack_nocomments.h"
 #include "ssQueue_nocomments.h"
 
-#include "bintree_nocomments.h"
+#include "ssSet_nocomments.h"
 
-#include "binpriv_nocomments.h"
+#include "ssSet_private_nocomments.h"
 
 const uint32_t SsSetRed = 1;
 const uint32_t SsSetBlack = 2;
@@ -55,7 +50,7 @@ const uint32_t SsSetBlack = 2;
 //#define _log(blah) {}
 #define _log(blah) printf("%s %s %i\n", blah, __FILE__, (int)__LINE__)
 
-// bintree.cpp
+// ssSet.cpp
 static uint32_t DepthMax(SsSetNode* node);
 static uint32_t CalculateLogBase2(uint32_t number);
 static SsSetNode* TreeMinimum(SsSetNode* node);
@@ -65,65 +60,65 @@ static SsSetNode* TreeSearch(SsSetNode* x, void* objectKey, SsSetCompare lessTha
 
 uint32_t gDebugRotate[69] = {0};
 
-// binleft.cpp
+// ssSet_left.cpp
 static void LeftRotateDelete1(SsSetNode* xP);
 static void LeftRotateDelete2(SsSetNode* xP);
 static void LeftRotateInsert(SsSetNode* xPP);
 
-// binleftleft.cpp
+// ssSet_leftleft.cpp
 static void LeftLeftRotate(SsSetNode* xP);
 
-// binleftright.cpp
+// ssSet_leftright.cpp
 static void LeftRightRotateInsert(SsSetNode* x);
 static void LeftRightRotateDelete(SsSetNode* xP);
 
-// binleftrightleft.cpp
+// ssSet_leftrightleft.cpp
 static void LeftRightLeftRotate(SsSetNode* xP);
 
-#include "binleft_nocomments.cpp"
-#include "binleftleft_nocomments.cpp"
-#include "binleftright_nocomments.cpp"
-#include "binleftrightleft_nocomments.cpp"
+#include "ssSet_left_nocomments.cpp"
+#include "ssSet_leftleft_nocomments.cpp"
+#include "ssSet_leftright_nocomments.cpp"
+#include "ssSet_leftrightleft_nocomments.cpp"
 
-// binright.cpp
+// ssSet_right.cpp
 static void RightRotateDelete1(SsSetNode* xP);
 static void RightRotateDelete2(SsSetNode* xP);
 static void RightRotateInsert(SsSetNode* xPP);
 
-// binrightright.cpp
+// ssSet_rightright.cpp
 static void RightRightRotate(SsSetNode* xP);
 
-// binrightleft.cpp
+// ssSet_rightleft.cpp
 static void RightLeftRotateInsert(SsSetNode* x);
 static void RightLeftRotateDelete(SsSetNode* xP);
 
-// binrightleftright.cpp
+// ssSet_rightleftright.cpp
 static void RightLeftRightRotate(SsSetNode* xP);
 
-#include "binright_nocomments.cpp"
-#include "binrightright_nocomments.cpp"
-#include "binrightleft_nocomments.cpp"
-#include "binrightleftright_nocomments.cpp"
+#include "ssSet_right_nocomments.cpp"
+#include "ssSet_rightright_nocomments.cpp"
+#include "ssSet_rightleft_nocomments.cpp"
+#include "ssSet_rightleftright_nocomments.cpp"
 
-// bininsert.cpp
-static bool TreeInsert(ssSet* _this, SsSetNode* insert);
-static bool BinInsert(ssSet* _this, SsSetNode* x);
+// ssSet_insert.cpp
+static bool SsSetTreeInsert(ssSet* _this, SsSetNode* insert);
+static bool SsSetNodeInsertFixup(ssSet* _this, SsSetNode* x);
 
-#include "bininsert_nocomments.cpp"
+#include "ssSet_insert_nocomments.cpp"
 
-// binremove.cpp
-static void BinDeleteFixup(ssSet* _this, SsSetNode* x);
-static SsSetNode* BinDelete(ssSet* _this, SsSetNode* z);
+// ssSet_remove.cpp
+static void SsSetNodeEraseFixup(ssSet* _this, SsSetNode* x);
+static SsSetNode* SsSetTreeErase(ssSet* _this, SsSetNode* z);
 
-#include "binremove_nocomments.cpp"
+#include "ssSet_remove_nocomments.cpp"
 
-// bintraverse.cpp
+// ssSet_traverse.cpp
 static int64_t IterativePreorderTreeTraverse(ssSet* _this, SsSetNode* node, SsSetEvaluate ClientEvaluate);
 static int64_t IterativeInorderTreeTraverse(ssSet* _this, SsSetNode* node, SsSetEvaluate ClientEvaluate);
 static int64_t IterativePostorderTreeTraverse(ssSet* _this, SsSetNode* node, SsSetEvaluate ClientEvaluate);
 static int64_t IterativeLevelorderTreeTraverse(ssSet* _this, SsSetNode* node, SsSetEvaluate ClientEvaluate);
 
-#include "bintraverse_nocomments.cpp"
+#include "ssSet_traverse_nocomments.cpp"
 
 uint32_t DepthMax(SsSetNode* node)
 {
@@ -301,7 +296,7 @@ int64_t SsSetGetExtrema(ssSet* _this, bool maximum, void* client)
   result = true;
 
 label_return:
-  return result ? empty : -1;
+  return result ? empty : SsSetError;
 }
 
 // integrated for root sentinel
@@ -372,7 +367,7 @@ int64_t SsSetFind(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
   result = true;
 
 label_return:
-  return result ? empty : -1;
+  return result ? empty : SsSetError;
 }
 
 // integrated for root sentinel
@@ -432,7 +427,7 @@ int64_t SsSetReset(ssSet* _this)
   result = true;
 
 label_return:
-  return result ? (int64_t)num : -1;
+  return result ? (int64_t)num : SsSetError;
 }
 
 // integrated for root sentinel
@@ -485,7 +480,7 @@ int64_t SsSetNum(ssSet* _this)
   result = true;
 
 label_return:
-  return result ? (int64_t)num : -1;
+  return result ? (int64_t)num : SsSetError;
 }
 
 int64_t SsSetDepthTree(ssSet* _this)
@@ -537,7 +532,7 @@ int64_t SsSetDepthTree(ssSet* _this)
   result = true;
 
 label_return:
-  return result ? (int64_t)depthTree : -1;
+  return result ? (int64_t)depthTree : SsSetError;
 }
 
 int64_t SsSetMaxStack(ssSet* _this)
@@ -589,7 +584,7 @@ int64_t SsSetMaxStack(ssSet* _this)
   result = true;
 
 label_return:
-  return result ? maxStack : -1;
+  return result ? maxStack : SsSetError;
 }
 
 int64_t SsSetMaxQueue(ssSet* _this)
@@ -641,7 +636,7 @@ int64_t SsSetMaxQueue(ssSet* _this)
   result = true;
 
 label_return:
-  return result ? maxQueue : -1;
+  return result ? maxQueue : SsSetError;
 }
 
 // integrated for root sentinel
@@ -702,7 +697,7 @@ int64_t SsSetDestruct(ssSet* _this)
   result = true;
 
 label_return:
-  return result ? (int64_t)num : -1;
+  return result ? (int64_t)num : SsSetError;
 }
 
 // integrated for root sentinel

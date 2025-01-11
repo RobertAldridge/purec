@@ -1,5 +1,5 @@
 
-// file name binpriv.h
+// ssSet_private.h
 
 struct SsSetNode
 {

@@ -4,9 +4,10 @@
 // Robert Aldridge and Charlie Burns, design
 
 #include <cstddef> // ptrdiff_t
-#include <cstdint> // uint32_t, uint8_t
+#include <cstdint> // int64_t, uint32_t, uint8_t
 #include <cstring> // memcpy
 
+using std::int64_t;
 using std::memcpy;
 using std::ptrdiff_t;
 using std::uint32_t;

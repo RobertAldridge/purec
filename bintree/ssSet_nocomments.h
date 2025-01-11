@@ -10,10 +10,16 @@ typedef uint32_t(*SsSetEvaluate)(void*);
 
 //typedef uint32_t(*SsSetEquivalence)(void* key, void*);
 
-const int SsSetPreorder = 0; // preorder == 0; preorder == depth-first
-const int SsSetInorder = 1; // inorder == 1
-const int SsSetPostorder = 2; // postorder == 2
-const int SsSetLevelorder = 3; // levelorder == 3; levelorder == breadth-first
+const int SsSetOk = 0;
+const int SsSetError = -1;
+
+const int SsSetDuplicate = 1;
+const int SsSetNotFound = 1;
+
+const int SsSetPreorder = 0; // preorder == depth-first
+const int SsSetInorder = 1; // inorder
+const int SsSetPostorder = 2; // postorder
+const int SsSetLevelorder = 3; // levelorder == breadth-first
 
 ssSet* SsSetConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32_t resize, SsSetCompare lessThan);
 
@@ -25,7 +31,7 @@ int64_t SsSetReset(ssSet* _this);
 
 int64_t SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client);
 
-int64_t SsSetRemove(ssSet* _this, void* key, SsSetCompare lessThan, void* client);
+int64_t SsSetErase(ssSet* _this, void* key, SsSetCompare lessThan, void* client);
 
 int64_t SsSetGetExtrema(ssSet* _this, bool maximum, void* client);
 

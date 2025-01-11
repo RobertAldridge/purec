@@ -1,11 +1,11 @@
 
-// File Name bininsert.cpp
+// ssSet_insert.cpp
 // Ming C. Lin
 // Robert B. Aldridge III
 // Charlie H. Burns III
 
 // integrated for root sentinel
-bool TreeInsert(ssSet* _this, SsSetNode* insert)
+bool SsSetTreeInsert(ssSet* _this, SsSetNode* insert)
 {
   bool duplicate = false;
 
@@ -45,13 +45,13 @@ bool TreeInsert(ssSet* _this, SsSetNode* insert)
 }
 
 // integrated for root sentinel
-bool BinInsert(ssSet* _this, SsSetNode* x)
+bool SsSetNodeInsertFixup(ssSet* _this, SsSetNode* x)
 {
   bool duplicate = false;
 
   SsSetNode* y = 0;
 
-  duplicate = TreeInsert(_this, x);
+  duplicate = SsSetTreeInsert(_this, x);
 
   x->color = SsSetRed;
 
@@ -179,7 +179,7 @@ int64_t SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client
 
   // touched in this function
   // -----
-  // root BinInsert
+  // root SsSetNodeInsertFixup
   // lessThan
   // allocator SsMmAlloc
   // num
@@ -200,7 +200,7 @@ int64_t SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client
 
   memcpy(GETCLIENT(x), client, _this->sizeOf);
 
-  if(BinInsert(_this, x) )
+  if(SsSetNodeInsertFixup(_this, x) )
     duplicate = 1;
 
   _this->num++;
@@ -208,5 +208,5 @@ int64_t SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client
   result = true;
 
 label_return:
-  return result ? duplicate : -1;
+  return result ? duplicate : SsSetError;
 }

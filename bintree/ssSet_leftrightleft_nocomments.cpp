@@ -1,5 +1,5 @@
 
-// File Name binleftrightleft.cpp
+// ssSet_leftrightleft.cpp
 // Ming C. Lin
 // Robert B. Aldridge III
 // Charlie H. Burns III
