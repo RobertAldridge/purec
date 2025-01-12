@@ -828,6 +828,8 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
 
   BltDC = CreateCompatibleDC(0);
 
+  HGDIOBJ deviceTempCleanUp = 0;
+
   InsertHandle(BltDC);
 
   if( !BltDC)
@@ -997,8 +999,6 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
 
     error = true;
   }
-
-  HGDIOBJ deviceTempCleanUp = 0;
 
   if(BltDC)
   {
@@ -1350,7 +1350,7 @@ static int graphicsInitScreenAndBackBufferDIRECTDRAW(HWND hWindow)
 {
   int result = GRAPHICS_ERROR;
 
-  DDSURFACEDESC ddsd = { 0 };
+  DDSURFACEDESC ddsd = {0};
 
   HRESULT hResult = 0;
 
@@ -1782,11 +1782,11 @@ HWND Graphics::_hWindow = 0;
 
 //#define f(v) ( (v >> S) << S)
 
-#define i(v)   (v >> S)
+#define i(v) (v >> S)
 
 #define r(v) ( (v >> S) << 16)
 #define g(v) ( (v >> S) << 8)
-#define b(v)   (v >> S)
+#define b(v) (v >> S)
 
 #define pixelx(x, y) *(bb[i(y) ] + x)
 #define pixely(x, y) *(bb[y] + i(x) )
@@ -3396,15 +3396,15 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
     IsRightMouseButtonDown = false;
 
     ReleaseCapture();
+  }
+  // ? are we supposed to pass through here ? verify todo
+  return 0; // switch(msg) - WM_KILLFOCUS
 
-  } // switch(msg) - WM_KILLFOCUS
-  // ? are we supposed to pass through here ? todo
-
-  case WM_CAPTURECHANGED: // switch(msg) - WM_KILLFOCUS, WM_CAPTURECHANGED
+  case WM_CAPTURECHANGED: // switch(msg) - WM_CAPTURECHANGED
   {
     /* nop */
   }
-  return 0; // switch(msg) - WM_KILLFOCUS, WM_CAPTURECHANGED
+  return 0; // switch(msg) - WM_CAPTURECHANGED
 
   case WM_SYSCOMMAND: // switch(msg) - WM_SYSCOMMAND
   {
@@ -3744,44 +3744,115 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
   // We need help from DefWindowProc(...).
   break; // switch(msg) - WM_MOVE, WM_MOVING
 
+// WM_SIZE
+//
+// Sent to a window after its size has changed.
+//
+// A window receives this message through its WindowProc function.
+//
+// wParam
+// The type of resizing requested. This parameter can be one of the following values.
+//
+// SIZE_MAXHIDE Message is sent to all pop-up windows when some other window is maximized.
+//
+// SIZE_MAXIMIZED The window has been maximized.
+//
+// SIZE_MAXSHOW Message is sent to all pop-up windows when some other window has been restored to its former size.
+//
+// SIZE_MINIMIZED The window has been minimized.
+//
+// SIZE_RESTORED The window has been resized, but neither the SIZE_MINIMIZED nor SIZE_MAXIMIZED value applies.
+//
+// lParam
+// The low-order word of lParam specifies the new width of the client area.
+// The high-order word of lParam specifies the new height of the client area.
+//
+// Return value
+// Type LRESULT
+//
+// If an application processes this message, it should return zero.
+//
+// If the SetScrollPos or MoveWindow function is called for a child window as a result of the WM_SIZE message, the bRedraw or bRepaint parameter should be nonzero to cause the window to be repainted.
+//
+// Although the width and height of a window are 32-bit values, the lParam parameter contains only the low-order 16 bits of each.
+//
+// The DefWindowProc function sends the WM_SIZE and WM_MOVE messages when it processes the WM_WINDOWPOSCHANGED message. The WM_SIZE and WM_MOVE messages are not sent if an application handles the WM_WINDOWPOSCHANGED message without calling DefWindowProc.
+
   case WM_SIZE: // switch(msg) - WM_SIZE
   {
-    if(wParam == SIZE_MAXHIDE || wParam == SIZE_MAXIMIZED || wParam == SIZE_MAXSHOW || wParam == SIZE_MINIMIZED)
+    // message is sent to all pop-up windows when some other window is maximized
+    // or
+    // the window has been minimized
+    if(wParam == SIZE_MAXHIDE || wParam == SIZE_MINIMIZED)
     {
-      if(wParam == SIZE_MINIMIZED)
+      if( !IsApplicationMinimized)
       {
         IsApplicationMinimized = true;
 
-        // We need help from DefWindowProc(...).
+        // we need help from DefWindowProc(...)
         break;
       }
-
-      Error("Incorrect WM_SIZE message in WindowProc(...)");
-
-      assert(0 && "Incorrect WM_SIZE message in WindowProc(...)");
-
-      return 0;
     }
-
-    if(wParam == SIZE_RESTORED && IsApplicationMinimized == true)
+    // the window has been maximized
+    // or
+    // message is sent to all pop-up windows when some other window has been restored to its former size
+    // or
+    // the window has been resized, but neither the SIZE_MINIMIZED nor SIZE_MAXIMIZED value applies
+    else if(wParam == SIZE_MAXIMIZED || wParam == SIZE_MAXSHOW || wParam == SIZE_RESTORED)
     {
-      unsigned short widthHeight[2] = { 0 };
+      if(IsApplicationMinimized)
+      {
+        unsigned short widthHeight[2] = {0};
 
-      widthHeight[0] = (unsigned short)Graphics::oldWidth;
-      widthHeight[1] = (unsigned short)Graphics::oldHeight;
+        widthHeight[0] = (unsigned short)Graphics::oldWidth;
+        widthHeight[1] = (unsigned short)Graphics::oldHeight;
 
-      IsApplicationMinimized = false;
+        IsApplicationMinimized = false;
 
-      WindowProc(hwnd, WM_DISPLAYCHANGE, Graphics::oldBitDepth, *(unsigned long*)widthHeight);
+        WindowProc(hwnd, WM_DISPLAYCHANGE, Graphics::oldBitDepth, *(unsigned long*)widthHeight);
 
-      // We need help from DefWindowProc(...).
-      break;
+        // we need help from DefWindowProc(...)
+        break;
+      }
     }
+  }
+  // ? are we supposed to pass through here ? verify todo
+  return 0; // switch(msg) - WM_SIZE
 
-  } // switch(msg) - WM_SIZE
-  // ? are we supposed to pass through here ? todo
+// WM_SIZING
+//
+// Sent to a window that the user is resizing. By processing this message, an application can monitor the size and position of the drag rectangle and, if needed, change its size or position.
+//
+// A window receives this message through its WindowProc function.
+//
+// wParam
+// The edge of the window that is being sized. This parameter can be one of the following values.
+//
+// WMSZ_BOTTOM Bottom edge
+//
+// WMSZ_BOTTOMLEFT Bottom-left corner
+//
+// WMSZ_BOTTOMRIGHT Bottom-right corner
+//
+// WMSZ_LEFT Left edge
+//
+// WMSZ_RIGHT Right edge
+//
+// WMSZ_TOP Top edge
+//
+// WMSZ_TOPLEFT Top-left corner
+//
+// WMSZ_TOPRIGHT Top-right corner
+//
+// lParam
+// A pointer to a RECT structure with the screen coordinates of the drag rectangle. To change the size or position of the drag rectangle, an application must change the members of this structure.
+//
+// Return value
+// Type LRESULT
+//
+// An application should return TRUE if it processes this message.
 
-  case WM_SIZING: // switch(msg) - WM_SIZE, WM_SIZING
+  case WM_SIZING: // switch(msg) - WM_SIZING
   {
     if(Graphics::graphicsBackBufferFunction() && Graphics::graphicsIsModeChangeActive() == false && IsWindowStyleChanging == false)
     {
@@ -3887,8 +3958,8 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
       }
     }
   }
-  // We need help from DefWindowProc(...).
-  break; // switch(msg) - WM_SIZE, WM_SIZING
+  // we need help from DefWindowProc(...)
+  break; // switch(msg) - WM_SIZING
 
   // MSDN:
   // An application sends the WM_PAINT message when the system or another
@@ -4312,7 +4383,6 @@ static int mainTerm(HWND hwnd)
 
   input = 0;
 
-
   if(term() )
   {
     Warning("Client term(...) function returns nonzero value.");
@@ -4378,7 +4448,6 @@ static int mainTerm(HWND hwnd)
 
     error = -1;
   }
-
 
   // Check if the three handles that should be in the handle list are
   // really in the handle list.
@@ -4606,7 +4675,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine
   _CrtSetDbgFlag(_CrtSetDbgFlag(_CRTDBG_REPORT_FLAG) | _CRTDBG_LEAK_CHECK_DF);
 
   // Enable floating point exceptions to track down bad floating point usage.
-  // _controlfp(0, _EM_ZERODIVIDE | _EM_INVALID);
+  /* _controlfp(0, _EM_ZERODIVIDE | _EM_INVALID); */
 
   // Copyright 1999-2000 Bruce Dawson. ~ end
 
