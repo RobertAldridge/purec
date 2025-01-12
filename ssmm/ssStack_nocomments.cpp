@@ -13,6 +13,8 @@ using std::ptrdiff_t;
 using std::uint32_t;
 using std::uint8_t;
 
+#include "blah_alloc.h"
+
 #define BLAH_DEBUG 0
 
 #if BLAH_DEBUG
@@ -55,8 +57,6 @@ struct ssStack
 };
 
 #include "ssStack_nocomments.h"
-
-#include "blah_alloc.h"
 
 static uint32_t SsStackAlignedOfValue(uint32_t size)
   { return (size % sizeof(void*) ) ? size + (sizeof(void*) - size % sizeof(void*) ) : size; }
