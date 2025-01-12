@@ -2527,30 +2527,30 @@ BOOL CALLBACK Graphics::AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
   switch(msg) // switch(msg)
   {
 
-  case WM_INITDIALOG: // switch(msg) - case WM_INITDIALOG
+  case WM_INITDIALOG: // switch(msg) - WM_INITDIALOG
   {
     isMenuActive = true;
   }
-  return TRUE; // switch(msg) - case WM_INITDIALOG
+  return TRUE; // switch(msg) - WM_INITDIALOG
 
-  case WM_COMMAND: // switch(msg) - case WM_COMMAND
+  case WM_COMMAND: // switch(msg) - WM_COMMAND
   {
-    switch(LOWORD(wParam) ) // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) )
+    switch(LOWORD(wParam) ) // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) )
     {
 
-    case IDOK: // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDOK
+    case IDOK: // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDOK
     /* nop */
-    case IDCANCEL: // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDCANCEL
+    case IDCANCEL: // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDCANCEL
     {
       EndDialog(hDlg, 0);
 
       isMenuActive = false;
     }
-    return TRUE; // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDOK, case IDCANCEL
+    return TRUE; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDOK, case IDCANCEL
 
-    } // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) )
+    } // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) )
   }
-  break; // switch(msg) - case WM_COMMAND
+  break; // switch(msg) - WM_COMMAND
 
   } // switch(msg)
 
@@ -2624,7 +2624,7 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
   switch(msg) // switch(msg)
   {
 
-  case WM_INITDIALOG: // switch(msg) - case WM_INITDIALOG
+  case WM_INITDIALOG: // switch(msg) - WM_INITDIALOG
   {
     isMenuActive = true;
 
@@ -2663,14 +2663,14 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
     SetDlgItemText(hDlg, EDITS_INT, "1");
     SetDlgItemText(hDlg, EDITS_DEC, "0");
   }
-  return TRUE; // switch(msg) - case WM_INITDIALOG
+  return TRUE; // switch(msg) - WM_INITDIALOG
 
-  case WM_COMMAND: // switch(msg) - case WM_COMMAND
+  case WM_COMMAND: // switch(msg) - WM_COMMAND
   {
-    switch(LOWORD(wParam) ) // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) )
+    switch(LOWORD(wParam) ) // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) )
     {
 
-    case IDOK: // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDOK
+    case IDOK: // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDOK
     {
       menuArray[0] = 3;
 
@@ -2903,9 +2903,9 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
 
       isMenuActive = false;
     }
-    return TRUE; // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDOK
+    return TRUE; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDOK
 
-    case IDCANCEL: // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDCANCEL
+    case IDCANCEL: // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDCANCEL
     {
       _IDCANCEL:
 
@@ -2913,9 +2913,9 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
 
       isMenuActive = false;
     }
-    return TRUE; // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDCANCEL
+    return TRUE; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDCANCEL
 
-    case IDEX1: // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDEX1
+    case IDEX1: // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX1
     {
       SetDlgItemText(hDlg, EDITX3_INT, "0");
       SetDlgItemText(hDlg, EDITX3_DEC, "0");
@@ -2941,9 +2941,9 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
       SetDlgItemText(hDlg, EDITS_INT, "1");
       SetDlgItemText(hDlg, EDITS_DEC, "0");
     }
-    return FALSE; // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDEX1
+    return FALSE; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX1
 
-    case IDEX2: // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDEX2
+    case IDEX2: // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX2
     {
       SetDlgItemText(hDlg, EDITX3_INT, "0");
       SetDlgItemText(hDlg, EDITX3_DEC, "0");
@@ -2969,9 +2969,9 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
       SetDlgItemText(hDlg, EDITS_INT, "1");
       SetDlgItemText(hDlg, EDITS_DEC, "0");
     }
-    return FALSE; // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDEX2
+    return FALSE; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX2
 
-    case IDEX3: // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDEX3
+    case IDEX3: // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX3
     {
       SetDlgItemText(hDlg, EDITX3_INT, "0");
       SetDlgItemText(hDlg, EDITX3_DEC, "0");
@@ -2997,9 +2997,9 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
       SetDlgItemText(hDlg, EDITS_INT, "2");
       SetDlgItemText(hDlg, EDITS_DEC, "0");
     }
-    return FALSE; // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDEX3
+    return FALSE; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX3
 
-    case IDEX4: // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDEX4
+    case IDEX4: // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX4
     {
       SetDlgItemText(hDlg, EDITX3_INT, "0");
       SetDlgItemText(hDlg, EDITX3_DEC, "0");
@@ -3025,9 +3025,9 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
       SetDlgItemText(hDlg, EDITS_INT, "2");
       SetDlgItemText(hDlg, EDITS_DEC, "0");
     }
-    return FALSE; // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDEX4
+    return FALSE; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX4
 
-    case IDEX5: // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDEX5
+    case IDEX5: // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX5
     {
       SetDlgItemText(hDlg, EDITX3_INT, "0");
       SetDlgItemText(hDlg, EDITX3_DEC, "0");
@@ -3053,11 +3053,11 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
       SetDlgItemText(hDlg, EDITS_INT, "3");
       SetDlgItemText(hDlg, EDITS_DEC, "0");
     }
-    return FALSE; // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDEX5
+    return FALSE; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX5
 
-    } // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) )
+    } // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) )
   }
-  break; // switch(msg) - case WM_COMMAND
+  break; // switch(msg) - WM_COMMAND
 
   } // switch(msg)
 
