@@ -23,6 +23,12 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
       {
         w = w->left;
 
+        if( !w->left)
+          gSsSetDebug[70]++;
+
+        if( !w->right)
+          gSsSetDebug[71]++;
+
         if( ( !w->left || w->left->color == SsSetBlack) && ( !w->right || w->right->color == SsSetBlack) )
         {
           w = xP->right;
@@ -31,7 +37,7 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
 
           xP->color = SsSetRed;
 
-          SsSetRotateLeftErase1(xP);
+          SsSetRotateLeftErase1Level4(xP);
 
           w = xP->right;
 
@@ -47,7 +53,7 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
 
           xP->color = SsSetRed;
 
-          SsSetRotateLeftRightLeftErase(xP);
+          SsSetRotateLeftRightLeftEraseLevel4(xP);
 
           w = xP->parent;
 
@@ -67,7 +73,7 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
 
           xP->color = SsSetRed;
 
-          SsSetRotateLeftLeftErase(xP);
+          SsSetRotateLeftLeftEraseLevel4(xP);
 
           w = xP->parent;
 
@@ -82,6 +88,12 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
       }
       else
       {
+        if( !w->left)
+          gSsSetDebug[72]++;
+
+        if( !w->right)
+          gSsSetDebug[73]++;
+
         if( ( !w->left || w->left->color == SsSetBlack) && ( !w->right || w->right->color == SsSetBlack) )
         {
           w->color = SsSetRed;
@@ -94,7 +106,7 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
 
           w->color = SsSetRed;
 
-          SsSetRotateRightLeftErase(xP);
+          SsSetRotateRightLeftEraseLevel4(xP);
 
           w = xP->parent;
 
@@ -114,7 +126,7 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
 
           w->right->color = SsSetBlack;
 
-          SsSetRotateLeftErase2(xP);
+          SsSetRotateLeftErase2Level4(xP);
 
           x = GETROOTFROMTREE(_this);
         }
@@ -128,6 +140,12 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
       {
         w = w->right;
 
+        if( !w->left)
+          gSsSetDebug[74]++;
+
+        if( !w->right)
+          gSsSetDebug[75]++;
+
         if( ( !w->right || w->right->color == SsSetBlack) && ( !w->left || w->left->color == SsSetBlack) )
         {
           w = xP->left;
@@ -136,7 +154,7 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
 
           xP->color = SsSetRed;
 
-          SsSetRotateRightErase1(xP);
+          SsSetRotateRightErase1Level4(xP);
 
           w = xP->left;
 
@@ -152,7 +170,7 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
 
           xP->color = SsSetRed;
 
-          SsSetRotateRightLeftRightErase(xP);
+          SsSetRotateRightLeftRightEraseLevel4(xP);
 
           w = xP->parent;
 
@@ -172,7 +190,7 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
 
           xP->color = SsSetRed;
 
-          SsSetRotateRightRightErase(xP);
+          SsSetRotateRightRightEraseLevel4(xP);
 
           w = xP->parent;
 
@@ -187,6 +205,12 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
       }
       else
       {
+        if( !w->left)
+          gSsSetDebug[76]++;
+
+        if( !w->right)
+          gSsSetDebug[77]++;
+
         if( ( !w->right || w->right->color == SsSetBlack) && ( !w->left || w->left->color == SsSetBlack) )
         {
           w->color = SsSetRed;
@@ -199,7 +223,7 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
 
           w->color = SsSetRed;
 
-          SsSetRotateLeftRightErase(xP);
+          SsSetRotateLeftRightEraseLevel4(xP);
 
           w = xP->parent;
 
@@ -219,7 +243,7 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
 
           w->left->color = SsSetBlack;
 
-          SsSetRotateRightErase2(xP);
+          SsSetRotateRightErase2Level4(xP);
 
           x = GETROOTFROMTREE(_this);
         }
@@ -228,62 +252,6 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
   }
 
   x->color = SsSetBlack;
-}
-
-#if 0
-// integrated for root sentinel
-SsSetNode* SsSetTreeSuccessorLevel3(SsSetNode* z)
-{
-  SsSetNode* y = 0;
-
-  // return the hierarchical leftmost node from z->right
-  if(z->right)
-  {
-    y = z->right;
-
-    for(z = y; z; z = z->left)
-      y = z;
-  }
-  // return earliest parent in the hierarchy that doesn't contain z in its right subtree
-  //
-  // since we are using a root sentinel this will never be null (the root sentinel contains the tree in its left child)
-  //
-  // in the case where this would otherwise be null it will instead be the address of the root sentinel
-  //
-  // but we never hit this case because of the conditional preceding the call
-  //
-  // if( !z->left || !z->right)
-  //   y = z;
-  // else
-  //   y = SsSetTreeSuccessorLevel3(z);
-  else
-  {
-    // loop while z is the right child of its parent
-    for(y = z->parent; y && y->right == z; y = y->parent)
-      z = y;
-  }
-
-  return y;
-}
-#endif
-
-SsSetNode* SsSetTreeSuccessorLevel3(SsSetNode* x)
-{
-  SsSetNode* y = 0;
-
-  if(x->right)
-  {
-    y = SsSetTreeMinimumLevel4(x->right);
-  }
-  else
-  {
-    _log("error");
-
-    for(y = x->parent; y && y->right == x; y = y->parent)
-      x = y;
-  }
-
-  return y;
 }
 
 // integrated for root sentinel as long as y is never sentinelRoot
@@ -299,21 +267,22 @@ SsSetNode* SsSetEraseLevel2(ssSet* _this, SsSetNode* z)
   SsSetNode* y = 0;
 
   if( !z->left || !z->right)
+  {
     y = z;
+  }
   else // z->left && z->right
-    y = SsSetTreeSuccessorLevel3(z);
+  {
+    // hierarchical leftmost from z->right; earliest successor to z
+    for(SsSetNode* left = z->right; left; left = left->left)
+      y = left;
+  }
 
   if( !y)
     goto label_return;
 
   // check if y is ever sentinelRoot (should never get here)
   if(y == GETSENTINELFROMTREE(_this) )
-  {
-    _log("error");
-
-    y = 0;
-    goto label_return;
-  }
+    gSsSetDebug[79]++;
 
 // check if y is ever sentinelRoot
 
@@ -370,6 +339,9 @@ SsSetNode* SsSetEraseLevel2(ssSet* _this, SsSetNode* z)
   t_nil->left = 0; // todo
   t_nil->right = 0; // todo
 // Sentinel }
+
+  if(y == GETSENTINELFROMTREE(_this) )
+    gSsSetDebug[80]++;
 
 label_return:
   return y;
@@ -458,8 +430,11 @@ int64_t SsSetErase(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
     _this->num--;
 
     // verify sentinel root right child is null and color is zero
-    // if(_this->root.right || _this->root.color)
-    //   gSsSetDebug[69]++;
+    if(_this->root.right || _this->root.color)
+    {
+      _log("erase");
+      gSsSetDebug[69]++;
+    }
   }
 
   result = true;

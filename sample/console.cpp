@@ -19,12 +19,19 @@
 
 #include "blah_alloc.h"
 
-//#define _log(blah) {}
-#define _log(blah) printf("%s %s %i\n", blah, __FILE__, (int)__LINE__)
+#if defined NDEBUG
+  //#define _log(blah) {}
+  #define _log(blah) printf("%s %s %i\n", blah, __FILE__, __LINE__)
+#else
+  //#define _log(blah) {}
+  #define _log(blah) printf("%s %s %li\n", blah, __FILE__, __LINE__)
+#endif
 
 #define countof(x) (sizeof(x) / sizeof(x[0] ) )
 
 #define BLAH_KEEP 0
+
+#define G1000ENABLE 0
 
 // 3,324,924,966
 
@@ -38,16 +45,17 @@
 //void qsort(void* base, size_t nmemb, size_t size, int(*compar)(const void*, const void*) )
 static int qsortCompare(const void* lhsRef, const void* rhsRef)
 {
+  int result = 0;
+
   uint64_t lhs = *(const uint64_t*)lhsRef;
   uint64_t rhs = *(const uint64_t*)rhsRef;
 
   if(lhs < rhs)
-    return -1;
+    result = -1;
+  else if(lhs > rhs)
+    result = 1;
 
-  if(lhs > rhs)
-    return 1;
-
-  return 0;
+  return result;
 }
 
 static uint64_t random64(uint64_t factor, uint64_t previous, uint64_t term)
@@ -353,17 +361,22 @@ static const uint32_t myFatalError = 0xFFFFFFFFUL;
 //typedef uint32_t(*SsSetCompare)(void*, void*);
 static uint32_t lessThan(void* lhs, void* rhs)
 {
+  uint32_t result = 0;
+
   // return non-zero if lhs < rhs
   if( *(uint32_t*)lhs < *(uint32_t*)rhs)
-    return 1;
+    result = 1;
 
   // return zero if lhs >= lhs
-  return 0;
+
+  return result;
 }
 
 //typedef uint32_t(*SsSetEvaluate)(void*);
 static uint32_t check(void* lhs)
 {
+  uint32_t result = 0;
+
 #if BLAH_KEEP
   printf("%i ", *(uint32_t*)lhs);
 #endif
@@ -372,11 +385,13 @@ static uint32_t check(void* lhs)
   if( *(uint32_t*)lhs == myFatalError)
   {
     printf("\ndump - object found %u\n", myFatalError);
-    //return 1;
+
+    result = 1;
   }
 
   // return zero to continue traversal
-  return 0;
+
+  return result;
 }
 
 static uint32_t calculateLogBase2(int64_t number)
@@ -401,8 +416,9 @@ static void swapInt(uint32_t& lhs, uint32_t& rhs)
   rhs = temporary;
 }
 
-extern uint64_t gSsSetDebug[69];
+extern uint64_t gSsSetDebug[83];
 
+#if G1000ENABLE
 static uint32_t g1000fullCount = 0;
 static uint32_t g1000modCount = 0;
 static uint32_t g1000sizeOf = 0;
@@ -460,6 +476,44 @@ static void DebugFree(uint32_t* data[G1000NUMERATOR] )
     data[index - 1] = 0;
   }
 }
+#else
+static uint32_t g1000sizeOf = 0;
+
+#define G1000NUMERATOR 1
+
+static bool DebugAllocate(uint32_t* data[G1000NUMERATOR], uint32_t count)
+{
+  bool result = false;
+
+  g1000sizeOf = sizeof(uint32_t) * count;
+
+  data[0] = (uint32_t*)BlahAlloc(g1000sizeOf, true);
+
+  if( !data[0] )
+    goto label_return;
+
+  result = true;
+
+label_return:
+  return result;
+}
+
+static uint32_t DebugGet(uint32_t* data[G1000NUMERATOR], uint32_t index)
+{
+  return data[0][index];
+}
+
+static void DebugSet(uint32_t* data[G1000NUMERATOR], uint32_t index, uint32_t value)
+{
+  data[0][index] = value;
+}
+
+static void DebugFree(uint32_t* data[G1000NUMERATOR] )
+{
+  BlahFree(data[0], g1000sizeOf, true);
+  data[0] = 0;
+}
+#endif
 
 // ssSet* SsSetConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32_t resize, SsSetCompare lessThan)
 // int64_t SsSetDestruct(ssSet* _this)
@@ -476,6 +530,8 @@ static void DebugFree(uint32_t* data[G1000NUMERATOR] )
 
 bool SsSetTest(blahRandom* /*random*/)
 {
+  bool result = false;
+
   //ssMm* ssMmBlah = SsMmConstruct(sizeof(void*), 100, false);
   //SsMmSetResize(ssMmBlah, -1);
 
@@ -512,31 +568,36 @@ bool SsSetTest(blahRandom* /*random*/)
 
   double queueMaximumPercentage = 0;
 
-uint32_t numData = 4000000000;
+//uint32_t numData = 10000000;
 
-//for(uint32_t numData = 100; numData <= 1000; numData++)
+memset(gSsSetDebug, 0, sizeof(gSsSetDebug) );
+
+for(uint32_t numData = 1; numData <= 100; numData += 1)
 {
-  memset(gSsSetDebug, 0, sizeof(gSsSetDebug) );
+  double percentageQueue = 0;
+
+//memset(gSsSetDebug, 0, sizeof(gSsSetDebug) );
 
 //ssSet* SsSetConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32_t resize, SsSetCompare lessThan)
-  ssSet* mySet = SsSetConstruct(sizeof(uint32_t), 5000000, 4100000000, 10000000, lessThan);
+  ssSet* mySet = SsSetConstruct(sizeof(uint32_t), numData <= 5000000 ? numData : 5000000, 4100000000, 10000000, lessThan);
   if( !mySet)
   {
-    printf("blah a\n");
-    return false;
+    _log("error");
+    goto label_return;
   }
 
   //uint32_t data[numData] = { {0}, {1}, {2}, {3}, {4} };
   uint32_t* datablah[G1000NUMERATOR] = {0};
   if( !DebugAllocate(datablah, numData) )
   {
-    printf("blah a\n");
-    return false;
+    _log("error");
+    goto label_return;
   }
 
   uint32_t keyObject = myFatalError;
   uint32_t resultObject = 0;
   int64_t findResult = 0;
+  int64_t eraseResult = 0;
 
   srand(1);
 
@@ -604,14 +665,16 @@ uint32_t numData = 4000000000;
 //int64_t SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
     if(SsSetInsert(mySet, &data1, 0, 0) < 0)
     {
-      printf("blah c\n");
+      _log("error");
+      goto label_return;
     }
 
 //int64_t SsSetNum(ssSet* _this)
     numSet = SsSetNum(mySet);
     if(numSet < 0 || numSet != ( (int64_t)index + 1) )
     {
-      printf("blah d\n");
+      _log("error");
+      goto label_return;
     }
 
 #if BLAH_KEEP
@@ -620,11 +683,12 @@ uint32_t numData = 4000000000;
 
     if(height <= 0 || height > 2 * (int64_t)calculateLogBase2(numSet + 1) )
     {
-      printf("blah e\n");
+      _log("error");
+      goto label_return;
     }
     else
     {
-      printf("%lli %lli %lu\n", numSet, height, 2 * calculateLogBase2(numSet + 1) );
+      printf("%lli %lli %u\n", numSet, height, 2 * calculateLogBase2(numSet + 1) );
     }
 #endif
 
@@ -635,7 +699,8 @@ uint32_t numData = 4000000000;
     findResult = SsSetFind(mySet, &keyObject, lessThan, &resultObject);
     if(findResult < 0)
     {
-      printf("blah f\n");
+      _log("error");
+      goto label_return;
     }
     else if( !findResult && resultObject == keyObject)
     {
@@ -647,7 +712,8 @@ uint32_t numData = 4000000000;
     }
     else
     {
-      printf("blah g\n");
+      _log("error");
+      goto label_return;
     }
 #endif
   }
@@ -656,7 +722,8 @@ uint32_t numData = 4000000000;
   numSet = SsSetNum(mySet);
   if(numSet < 0 || numSet != (int64_t)numData)
   {
-    printf("blah h\n");
+    _log("error");
+    goto label_return;
   }
 
 #if BLAH_KEEP
@@ -665,9 +732,8 @@ uint32_t numData = 4000000000;
 //int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
   if(SsSetDump(mySet, check, SsSetPreorder) )
   {
-#if BLAH_KEEP
-    printf("blah i\n");
-#endif
+    _log("error");
+    goto label_return;
   }
 #if BLAH_KEEP
   printf("\n\n");
@@ -679,9 +745,8 @@ uint32_t numData = 4000000000;
 //int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
   if(SsSetDump(mySet, check, SsSetInorder) )
   {
-#if BLAH_KEEP
-    printf("blah i\n");
-#endif
+    _log("error");
+    goto label_return;
   }
 #if BLAH_KEEP
   printf("\n\n");
@@ -693,9 +758,8 @@ uint32_t numData = 4000000000;
 //int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
   if(SsSetDump(mySet, check, SsSetPostorder) )
   {
-#if BLAH_KEEP
-    printf("blah i\n");
-#endif
+    _log("error");
+    goto label_return;
   }
 #if BLAH_KEEP
   printf("\n\n");
@@ -707,9 +771,8 @@ uint32_t numData = 4000000000;
 //int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
   if(SsSetDump(mySet, check, SsSetLevelorder) )
   {
-#if BLAH_KEEP
-    printf("blah i\n");
-#endif
+    _log("error");
+    goto label_return;
   }
 #if BLAH_KEEP
   printf("\n\n");
@@ -722,7 +785,8 @@ uint32_t numData = 4000000000;
 
     if(height <= 0 || height > 2 * (int64_t)calculateLogBase2(numSet + 1) )
     {
-      printf("blah e\n");
+      _log("error");
+      goto label_return;
     }
     else
     {
@@ -738,10 +802,10 @@ uint32_t numData = 4000000000;
       uint32_t maxHeight = 2 * calculateLogBase2(numSet + 1);
 #endif
 
-      double percentageQueue = (double)maxQueue / (double)numSet;
+      percentageQueue = (double)maxQueue / (double)numSet;
 
 #if BLAH_KEEP
-      printf("size %lli current height %lli stack %lli queue %lli %f max height %lu\n", numSet, height, maxStack, maxQueue, percentageQueue, maxHeight);
+      printf("size %lli current height %lli stack %lli queue %lli %f max height %u\n", numSet, height, maxStack, maxQueue, percentageQueue, maxHeight);
 #endif
 
       if(percentageQueue > queueMaximumPercentage)
@@ -757,7 +821,8 @@ uint32_t numData = 4000000000;
   findResult = SsSetFind(mySet, &keyObject, lessThan, &resultObject);
   if(findResult < 0)
   {
-    printf("blah j\n");
+    _log("error");
+    goto label_return;
   }
   else if( !findResult && resultObject == keyObject)
   {
@@ -773,7 +838,8 @@ uint32_t numData = 4000000000;
   }
   else
   {
-    printf("blah k\n");
+    _log("error");
+    goto label_return;
   }
 
   for(uint32_t index = 0; index < (numData - 1); index++)
@@ -818,7 +884,8 @@ uint32_t numData = 4000000000;
     numSet = SsSetNum(mySet);
     if(numSet < 0 || numSet != ( (int64_t)numData - (int64_t)index) )
     {
-      printf("blah l\n");
+      _log("error");
+      goto label_return;
     }
 
 #if BLAH_KEEP
@@ -827,11 +894,12 @@ uint32_t numData = 4000000000;
 
     if(height <= 0 || height > 2 * (int64_t)calculateLogBase2(numSet + 1) )
     {
-      printf("blah m\n");
+      _log("error");
+      goto label_return;
     }
     else
     {
-      //printf("%lli %lli %lu\n", numSet, height, 2 * calculateLogBase2(numSet + 1) );
+      //printf("%lli %lli %u\n", numSet, height, 2 * calculateLogBase2(numSet + 1) );
     }
 #endif
 
@@ -840,11 +908,12 @@ uint32_t numData = 4000000000;
 //int64_t SsSetErase(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
 
     resultObject = 0;
-    int64_t result = SsSetErase(mySet, &data1, lessThan, &resultObject);
+    eraseResult = SsSetErase(mySet, &data1, lessThan, &resultObject);
 
-    if(result || resultObject != data1)
+    if(eraseResult || resultObject != data1)
     {
-      printf("blah n\n");
+      _log("error");
+      goto label_return;
     }
 
 //int64_t SsSetFind(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
@@ -852,9 +921,11 @@ uint32_t numData = 4000000000;
 #if BLAH_KEEP
     resultObject = 0;
     findResult = SsSetFind(mySet, &keyObject, lessThan, &resultObject);
+
     if(findResult < 0)
     {
-      printf("blah f\n");
+      _log("error");
+      goto label_return;
     }
     else if( !findResult && resultObject == keyObject)
     {
@@ -866,7 +937,8 @@ uint32_t numData = 4000000000;
     }
     else
     {
-      printf("blah g\n");
+      _log("error");
+      goto label_return;
     }
 #endif
   }
@@ -875,7 +947,8 @@ uint32_t numData = 4000000000;
   numSet = SsSetNum(mySet);
   if(numSet)
   {
-    printf("blah o\n");
+    _log("error");
+    goto label_return;
   }
 
   if(1)
@@ -884,46 +957,49 @@ uint32_t numData = 4000000000;
     int64_t height = SsSetDepthTree(mySet);
     if(height)
     {
-      printf("blah m\n");
+      _log("error");
+      goto label_return;
     }
     else
     {
-      //printf("%lli %lli %lu\n", numSet, height, 2 * calculateLogBase2(numSet + 1) );
+      //printf("%lli %lli %u\n", numSet, height, 2 * calculateLogBase2(numSet + 1) );
     }
   }
 
-  //printf("log2 %i %lu\n", 1048576, calculateLogBase2(1048576) );
-  //printf("log2 %i %lu\n", 1048575, calculateLogBase2(1048575) );
+  //printf("log2 %i %u\n", 1048576, calculateLogBase2(1048576) );
+  //printf("log2 %i %u\n", 1048575, calculateLogBase2(1048575) );
 
 //int64_t SsSetDestruct(ssSet* _this)
   if(SsSetDestruct(mySet) < 0)
   {
     _log("error");
+    goto label_return;
   }
 
   DebugFree(datablah);
 
-#if BLAH_KEEP
-  for(uint32_t index = 0; index < countof(gSsSetDebug); index++)
+  if(numData >= 86)
   {
-//printf("debug rotate %lu %llu\n", index, gSsSetDebug[index] );
-  }
-  printf("\n");
+    for(uint32_t index = 0; index < countof(gSsSetDebug); index++)
+    {
+//printf("debug rotate %u %llu\n", index, gSsSetDebug[index] );
+    }
 
-  for(uint32_t index = 0; index < (countof(gSsSetDebug) - 1); index++)
-  {
-    if(index == 1 || index == 21)
+    for(uint32_t index = 0; index < countof(gSsSetDebug); index++)
     {
-      if(gSsSetDebug[index] )
-        printf("debug rotate %lu %llu\n", index, gSsSetDebug[index] );
-    }
-    else if( !gSsSetDebug[index] )
-    {
-      printf("debug rotate %lu %llu\n", index, gSsSetDebug[index] );
+      if(index == 1 || index == 21 || index == 68 || index == 69 || index == 78 || index == 79 || index == 80)
+      {
+        if(gSsSetDebug[index] )
+          printf("debug rotate %u %llu\n", index, gSsSetDebug[index] );
+      }
+      else if( !gSsSetDebug[index] )
+      {
+        printf("debug rotate %u %llu\n", index, gSsSetDebug[index] );
+      }
     }
   }
-  printf("\n");
-#endif
+
+//printf("queue %u %f\n", numData, percentageQueue);
 
 #if BLAH_KEEP
   printf("end\n");
@@ -932,7 +1008,10 @@ uint32_t numData = 4000000000;
 
   printf("\nqueue max %f\n", queueMaximumPercentage);
 
-  return true;
+  result = true;
+
+label_return:
+  return result;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

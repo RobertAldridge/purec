@@ -62,6 +62,9 @@ bool SsSetInsertLevel2(ssSet* _this, SsSetNode* x, SsSetCompare lessThan)
     {
       y = xP->parent->right;
 
+      if( !y)
+        gSsSetDebug[81]++;
+
       if(y && y->color == SsSetRed)
       {
         xP->color = SsSetBlack;
@@ -78,7 +81,7 @@ bool SsSetInsertLevel2(ssSet* _this, SsSetNode* x, SsSetCompare lessThan)
 
         xP->parent->color = SsSetRed;
 
-        SsSetRotateLeftRightInsert(x);
+        SsSetRotateLeftRightInsertLevel3(x);
 
         x = x->left;
       }
@@ -88,12 +91,15 @@ bool SsSetInsertLevel2(ssSet* _this, SsSetNode* x, SsSetCompare lessThan)
 
         xP->color = SsSetBlack;
 
-        SsSetRotateRightInsert(xP->parent);
+        SsSetRotateRightInsertLevel3(xP->parent);
       }
     }
     else
     {
       y = xP->parent->left;
+
+      if( !y)
+        gSsSetDebug[82]++;
 
       if(y && y->color == SsSetRed)
       {
@@ -111,7 +117,7 @@ bool SsSetInsertLevel2(ssSet* _this, SsSetNode* x, SsSetCompare lessThan)
 
         xP->parent->color = SsSetRed;
 
-        SsSetRotateRightLeftInsert(x);
+        SsSetRotateRightLeftInsertLevel3(x);
 
         x = x->right;
       }
@@ -121,7 +127,7 @@ bool SsSetInsertLevel2(ssSet* _this, SsSetNode* x, SsSetCompare lessThan)
 
         xP->parent->color = SsSetRed;
 
-        SsSetRotateLeftInsert(xP->parent);
+        SsSetRotateLeftInsertLevel3(xP->parent);
       }
     }
   }
@@ -208,8 +214,11 @@ int64_t SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client
   _this->num++;
 
   // verify sentinel root right child is null and color is zero
-  // if(_this->root.right || _this->root.color)
-  //   gSsSetDebug[68]++;
+  if(_this->root.right || _this->root.color)
+  {
+    _log("insert");
+    gSsSetDebug[68]++;
+  }
 
   result = true;
 

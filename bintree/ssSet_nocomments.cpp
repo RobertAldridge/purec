@@ -64,7 +64,7 @@ struct ssSet
 const uint32_t SsSetRed = 1;
 const uint32_t SsSetBlack = 2;
 
-uint64_t gSsSetDebug[69] = {0};
+uint64_t gSsSetDebug[83] = {0};
 
 #define GETCLIENT(node) (void*)(node + 1)
 
@@ -89,47 +89,48 @@ uint64_t gSsSetDebug[69] = {0};
 //#define CLIENTEVALUATEWRAPPER(_this, node, evaluate) \
 //  (node == GETSENTINELFROMTREE(_this) ? 0 : evaluate(GETCLIENT(node) ) )
 
-//#define _log(blah) {}
-#define _log(blah) printf("%s %s %i\n", blah, __FILE__, (int)__LINE__)
+#if defined NDEBUG
+  //#define _log(blah) {}
+  #define _log(blah) printf("%s %s %i\n", blah, __FILE__, __LINE__)
+#else
+  //#define _log(blah) {}
+  #define _log(blah) printf("%s %s %li\n", blah, __FILE__, __LINE__)
+#endif
 
 // ssSet.cpp
 static uint32_t SsSetDepthTreeLevel2(SsSetNode* node);
 static uint32_t SsSetCalculateLogBase2Level2(int64_t number);
-static SsSetNode* SsSetTreeMinimumLevel2(SsSetNode* node);
-static SsSetNode* SsSetTreeMinimumLevel4(SsSetNode* node);
-static SsSetNode* SsSetTreeMaximumLevel2(SsSetNode* node);
-static SsSetNode* SsSetTreeSuccessorLevel3(SsSetNode* z);
 static SsSetNode* SsSetTreeSearchLevel2(SsSetNode* x, void* objectKey, SsSetCompare lessThan);
 
 // ssSet_left.cpp
-static void SsSetRotateLeftErase1(SsSetNode* xP);
-static void SsSetRotateLeftErase2(SsSetNode* xP);
-static void SsSetRotateLeftInsert(SsSetNode* xPP);
+static void SsSetRotateLeftErase1Level4(SsSetNode* xP);
+static void SsSetRotateLeftErase2Level4(SsSetNode* xP);
+static void SsSetRotateLeftInsertLevel3(SsSetNode* xPP);
 
 // ssSet_leftleft.cpp
-static void SsSetRotateLeftLeftErase(SsSetNode* xP);
+static void SsSetRotateLeftLeftEraseLevel4(SsSetNode* xP);
 
 // ssSet_leftright.cpp
-static void SsSetRotateLeftRightInsert(SsSetNode* x);
-static void SsSetRotateLeftRightErase(SsSetNode* xP);
+static void SsSetRotateLeftRightInsertLevel3(SsSetNode* x);
+static void SsSetRotateLeftRightEraseLevel4(SsSetNode* xP);
 
 // ssSet_leftrightleft.cpp
-static void SsSetRotateLeftRightLeftErase(SsSetNode* xP);
+static void SsSetRotateLeftRightLeftEraseLevel4(SsSetNode* xP);
 
 // ssSet_right.cpp
-static void SsSetRotateRightErase1(SsSetNode* xP);
-static void SsSetRotateRightErase2(SsSetNode* xP);
-static void SsSetRotateRightInsert(SsSetNode* xPP);
+static void SsSetRotateRightErase1Level4(SsSetNode* xP);
+static void SsSetRotateRightErase2Level4(SsSetNode* xP);
+static void SsSetRotateRightInsertLevel3(SsSetNode* xPP);
 
 // ssSet_rightright.cpp
-static void SsSetRotateRightRightErase(SsSetNode* xP);
+static void SsSetRotateRightRightEraseLevel4(SsSetNode* xP);
 
 // ssSet_rightleft.cpp
-static void SsSetRotateRightLeftInsert(SsSetNode* x);
-static void SsSetRotateRightLeftErase(SsSetNode* xP);
+static void SsSetRotateRightLeftInsertLevel3(SsSetNode* x);
+static void SsSetRotateRightLeftEraseLevel4(SsSetNode* xP);
 
 // ssSet_rightleftright.cpp
-static void SsSetRotateRightLeftRightErase(SsSetNode* xP);
+static void SsSetRotateRightLeftRightEraseLevel4(SsSetNode* xP);
 
 // ssSet_insert.cpp
 static bool SsSetInsertLevel3(ssSet* _this, SsSetNode* insert, SsSetCompare lessThan);
@@ -198,33 +199,6 @@ uint32_t SsSetCalculateLogBase2Level2(int64_t number)
   }
 
   return result;
-}
-
-// integrated for root sentinel
-SsSetNode* SsSetTreeMinimumLevel2(SsSetNode* node)
-{
-  for(SsSetNode* left = node; left; left = left->left)
-    node = left;
-
-  return node;
-}
-
-// integrated for root sentinel
-SsSetNode* SsSetTreeMinimumLevel4(SsSetNode* node)
-{
-  for(SsSetNode* left = node; left; left = left->left)
-    node = left;
-
-  return node;
-}
-
-// integrated for root sentinel
-SsSetNode* SsSetTreeMaximumLevel2(SsSetNode* node)
-{
-  for(SsSetNode* right = node; right; right = right->right)
-    node = right;
-
-  return node;
 }
 
 // integrated for root sentinel
@@ -304,9 +278,17 @@ int64_t SsSetGetExtrema(ssSet* _this, bool maximum, void* client)
   // n/a
 
   if(maximum)
-    node = SsSetTreeMaximumLevel2(GETROOTFROMTREE(_this) );
+  {
+    // hierarchical rightmost starting at root; tree maximum
+    for(SsSetNode* right = GETROOTFROMTREE(_this); right; right = right->right)
+      node = right;
+  }
   else
-    node = SsSetTreeMinimumLevel2(GETROOTFROMTREE(_this) );
+  {
+    // hierarchical leftmost starting at root; tree minimum
+    for(SsSetNode* left = GETROOTFROMTREE(_this); left; left = left->left)
+      node = left;
+  }
 
   if(node)
   {

@@ -5,7 +5,7 @@
 // Charlie H. Burns III
 
 // integrated for root sentinel
-void SsSetRotateRightLeftRightErase(SsSetNode* xP)
+void SsSetRotateRightLeftRightEraseLevel4(SsSetNode* xP)
 {
   SsSetNode* xPL = xP->left;
   SsSetNode* xPLR = xPL->right;
