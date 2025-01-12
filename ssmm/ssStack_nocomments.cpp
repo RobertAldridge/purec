@@ -4,14 +4,13 @@
 // Robert Aldridge and Charlie Burns, design
 
 #include <cstddef> // ptrdiff_t
-#include <cstdint> // int64_t, uint64_t, uint32_t, uint8_t
+#include <cstdint> // int64_t, uint32_t, uint8_t
 #include <cstring> // memcpy
 
 using std::int64_t;
 using std::memcpy;
 using std::ptrdiff_t;
 using std::uint32_t;
-using std::uint64_t;
 using std::uint8_t;
 
 #define BLAH_DEBUG 0
@@ -98,38 +97,33 @@ static void SsStackPoolListFree(ssStack* _this, SsStackPool* current)
 #if BLAH_DEBUG
 static void SsStackDebugShallow(ssStack* _this)
 {
-  {
-    uint64_t blah = 0;
-    SsStackGet(_this, &blah);
-    printf(" front %i", (uint32_t)blah);
-  }
-  printf("\n");
+  int64_t back = 0;
+  SsStackGet(_this, &back);
+  printf(" front %lli\n", back);
 
   printf("get at");
   for(uint32_t index = 0; index < _this->numChunks; index++)
   {
-    uint64_t blah = 0;
-    SsStackGetAt(_this, index, &blah);
-    printf(" %i", (uint32_t)blah);
+    int64_t at = 0;
+    SsStackGetAt(_this, index, &at);
+    printf(" %lli", at);
   }
   printf("\n");
 }
 
 static void SsStackDeepDebug1(ssStack* _this)
 {
+  int64_t stackSize = SsStackNum(_this);
+  printf("num %lli; ", stackSize);
+  
   SsStackPool* pool = _this->head;
-
-  uint32_t stackSize = 0;
-  SsStackNum(_this, &stackSize);
-
-  printf("num %i; ", stackSize);
 
   printf("[");
   for(uint32_t index = 0; index < pool->num; index++)
   {
     uint8_t* chunk = SsStackPoolToChunkOperatorIndex(_this, pool, index);
 
-    printf("%i", (uint32_t)( *(uint64_t*)chunk) );
+    printf("%lli", *(int64_t*)chunk);
 
     if(index != pool->num - 1)
       printf(" ");
@@ -145,7 +139,7 @@ static void SsStackDeepDebug1(ssStack* _this)
     {
       uint8_t* chunk = SsStackPoolToChunkOperatorIndex(_this, pool, index);
 
-      printf("%i", (uint32_t)( *(uint64_t*)chunk) );
+      printf("%lli", *(int64_t*)chunk);
 
       if(index != pool->num - 1)
         printf(" ");
@@ -159,7 +153,7 @@ static void SsStackDeepDebug1(ssStack* _this)
 
 static void SsStackDebug(const char* _string, ssStack* _this, void* client)
 {
-  printf("%s %i;", _string, (uint32_t)( *(uint64_t*)client) );
+  printf("%s %lli;", _string, *(int64_t*)client);
   SsStackDebugShallow(_this);
   SsStackDeepDebug1(_this);
 }

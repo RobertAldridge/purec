@@ -8,7 +8,7 @@ typedef uint32_t(*SsSetCompare)(void*, void*);
 
 typedef uint32_t(*SsSetEvaluate)(void*);
 
-const int SsSetOk = 0;
+//const int SsSetOk = 0;
 const int SsSetError = -1;
 
 const int SsSetDuplicate = 1;

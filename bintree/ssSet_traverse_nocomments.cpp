@@ -349,10 +349,10 @@ int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
 
   switch(order)
   {
-  case SsSetPreorder: dump = SsSetDumpLevel2preorder(_this, root, _this->evaluate); break;
-  case SsSetInorder: dump = SsSetDumpLevel2inorder(_this, root, _this->evaluate); break;
-  case SsSetPostorder: dump = SsSetDumpLevel2postorder(_this, root, _this->evaluate); break;
-  case SsSetLevelorder: dump = SsSetDumpLevel2levelorder(_this, root, _this->evaluate); break;
+  case SsSetPreorder: dump = SsSetDumpLevel2preorder(_this, root, evaluate); break;
+  case SsSetInorder: dump = SsSetDumpLevel2inorder(_this, root, evaluate); break;
+  case SsSetPostorder: dump = SsSetDumpLevel2postorder(_this, root, evaluate); break;
+  case SsSetLevelorder: dump = SsSetDumpLevel2levelorder(_this, root, evaluate); break;
   }
 
   if(dump < 0)

@@ -4,14 +4,13 @@
 // Robert Aldridge and Charlie Burns, design
 
 #include <cstddef> // ptrdiff_t
-#include <cstdint> // int64_t, uint64_t, uint32_t, uint8_t
+#include <cstdint> // int64_t, uint32_t, uint8_t
 #include <cstring> // memcpy
 
 using std::int64_t;
 using std::memcpy;
 using std::ptrdiff_t;
 using std::uint32_t;
-using std::uint64_t;
 using std::uint8_t;
 
 #define BLAH_DEBUG 0
@@ -120,44 +119,36 @@ static void SsQueuePoolListFree(ssQueue* _this, SsQueuePool* current)
 #if BLAH_DEBUG
 static void SsQueueDebugShallow(ssQueue* _this)
 {
-  {
-    uint64_t blah = 0;
-    SsQueueGetFront(_this, &blah);
-    printf(" front %i", (uint32_t)blah);
-  }
-  printf(";");
-  {
-    uint64_t blah = 0;
-    SsQueueGetBack(_this, &blah);
-    printf(" back %i", (uint32_t)blah);
-  }
-  printf("\n");
+  int64_t front = 0;
+  SsQueueGetFront(_this, &front);
+  printf(" front %lli;", front);
+  
+  int64_t back = 0;
+  SsQueueGetBack(_this, &back);
+  printf(" back %lli\n", back);
 
   printf("get at");
   for(uint32_t index = 0; index < _this->numChunks; index++)
   {
-    uint64_t blah = 0;
-    SsQueueGetAt(_this, index, &blah);
-    printf(" %i", (uint32_t)blah);
+    int64_t at = 0;
+    SsQueueGetAt(_this, index, &at);
+    printf(" %lli", at);
   }
   printf("\n");
 }
 
 static void SsQueueDeepDebug1(ssQueue* _this)
 {
+  int64_t queueSize = SsQueueNum(_this);
+  printf("num %lli; ", queueSize);
+  
   SsQueueNode* node = _this->front;
-
-  uint32_t queueSize = 0;
-  SsQueueNum(_this, &queueSize);
-
-  printf("num %i; ", queueSize);
 
   printf("[");
   for(uint32_t index = 0; index < node->num; index++)
   {
     uint8_t* chunk = SsQueueNodeToChunkOperatorIndex(_this, node, index);
-
-    printf("%i", (uint32_t)( *(uint64_t*)chunk) );
+    printf("%lli", *(int64_t*)chunk);
 
     if(index != node->num - 1)
       printf(" ");
@@ -172,8 +163,7 @@ static void SsQueueDeepDebug1(ssQueue* _this)
     for(uint32_t index = 0; index < node->num; index++)
     {
       uint8_t* chunk = SsQueueNodeToChunkOperatorIndex(_this, node, index);
-
-      printf("%i", (uint32_t)( *(uint64_t*)chunk) );
+      printf("%lli", *(int64_t*)chunk);
 
       if(index != node->num - 1)
         printf(" ");
@@ -203,10 +193,9 @@ static void SsQueueDeepDebug2(ssQueue* _this)
 
     uint8_t* chunk = SsQueueNodeToChunkOperatorIndex(_this, node, index);
 
-    uint64_t client = 0;
+    int64_t client = 0;
     SsQueueMemcpyChunk(_this, &client, chunk);
-
-    printf("%i", (uint32_t)client);
+    printf("%lli", client);
 
     if(index != (node->num - 1) && count != (_this->numChunks - 1) )
       printf(" ");
@@ -224,7 +213,7 @@ static void SsQueueDebugGrow(const char* _string, ssQueue* _this)
 
 static void SsQueueDebug(const char* _string, ssQueue* _this, void* client)
 {
-  printf("%s %i;", _string, (uint32_t)( *(uint64_t*)client) );
+  printf("%s %lli;", _string, *(int64_t*)client);
   SsQueueDebugShallow(_this);
   SsQueueDeepDebug1(_this);
   SsQueueDeepDebug2(_this);

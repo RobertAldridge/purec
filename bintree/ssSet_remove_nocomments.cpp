@@ -413,6 +413,7 @@ int64_t SsSetErase(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
 
   // no change
   // -----
+  // lessThan
   // evaluate
   // stack
   // queue
@@ -424,14 +425,13 @@ int64_t SsSetErase(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
   // -----
   // root SsSetEraseLevel2
   // leaf SsSetEraseLevel2
-  // lessThan
   // allocator SsMmFree
   // num
 
-  if(lessThan)
-    _this->lessThan = lessThan;
+  if( !lessThan)
+    lessThan = _this->lessThan;
 
-  z = SsSetTreeSearchLevel2(GETROOTFROMTREE(_this), key, _this->lessThan);
+  z = SsSetTreeSearchLevel2(GETROOTFROMTREE(_this), key, lessThan);
 
   if(z)
   {

@@ -23,28 +23,10 @@ using std::uint32_t;
 
 #include "ssSet_private_nocomments.h"
 
-// ssSet_nocomments.cpp
-
-#include "ssSet_left_nocomments.cpp"
-#include "ssSet_leftleft_nocomments.cpp"
-#include "ssSet_leftright_nocomments.cpp"
-#include "ssSet_leftrightleft_nocomments.cpp"
-
-#include "ssSet_right_nocomments.cpp"
-#include "ssSet_rightright_nocomments.cpp"
-#include "ssSet_rightleft_nocomments.cpp"
-#include "ssSet_rightleftright_nocomments.cpp"
-
-#include "ssSet_insert_nocomments.cpp"
-
-#include "ssSet_remove_nocomments.cpp"
-
-#include "ssSet_traverse_nocomments.cpp"
-
 const uint32_t SsSetRed = 1;
 const uint32_t SsSetBlack = 2;
 
-uint32_t gSsSetDebug[69] = {0};
+uint64_t gSsSetDebug[69] = {0};
 
 #define GETCLIENT(node) (void*)(node + 1)
 
@@ -58,16 +40,16 @@ uint32_t gSsSetDebug[69] = {0};
 
 #define GETSENTINELFROMTREE(_this) ( &_this->root)
 
-#define LESSTHANWRAPPER(_this, client, node) \
-  (node == GETSENTINELFROMTREE(_this) ? 1 : _this->lessThan(client, GETCLIENT(node) ) )
+#define LESSTHANWRAPPER(_this, client, node, lessThan) \
+  (node == GETSENTINELFROMTREE(_this) ? 1 : lessThan(client, GETCLIENT(node) ) )
 
 #define EQUALTOWRAPPER(lessThan, lhs, rhs) !lessThan(lhs, rhs) && !lessThan(rhs, lhs)
 
-//#define EQUALTOWRAPPER(_this, client, node) \
-//  (node == GETSENTINELFROMTREE(_this) ? 0 : EQUALTOWRAPPER(_this->lessThan, client, GETCLIENT(node) ) )
+//#define EQUALTOWRAPPER(_this, client, node, lessThan) \
+//  (node == GETSENTINELFROMTREE(_this) ? 0 : EQUALTOWRAPPER(lessThan, client, GETCLIENT(node) ) )
 
-//#define CLIENTEVALUATEWRAPPER(_this, node) \
-//  (node == GETSENTINELFROMTREE(_this) ? 0 : _this->clientEvaluate(GETCLIENT(node) ) )
+//#define CLIENTEVALUATEWRAPPER(_this, node, evaluate) \
+//  (node == GETSENTINELFROMTREE(_this) ? 0 : evaluate(GETCLIENT(node) ) )
 
 //#define _log(blah) {}
 #define _log(blah) printf("%s %s %i\n", blah, __FILE__, (int)__LINE__)
@@ -112,8 +94,8 @@ static void SsSetRotateRightLeftErase(SsSetNode* xP);
 static void SsSetRotateRightLeftRightErase(SsSetNode* xP);
 
 // ssSet_insert.cpp
-static bool SsSetInsertLevel3(ssSet* _this, SsSetNode* insert);
-static bool SsSetInsertLevel2(ssSet* _this, SsSetNode* x);
+static bool SsSetInsertLevel3(ssSet* _this, SsSetNode* insert, SsSetCompare lessThan);
+static bool SsSetInsertLevel2(ssSet* _this, SsSetNode* x, SsSetCompare lessThan);
 
 // ssSet_remove.cpp
 static void SsSetEraseLevel3(ssSet* _this, SsSetNode* x);
@@ -124,6 +106,24 @@ static int64_t SsSetDumpLevel2preorder(ssSet* _this, SsSetNode* node, SsSetEvalu
 static int64_t SsSetDumpLevel2inorder(ssSet* _this, SsSetNode* node, SsSetEvaluate ClientEvaluate);
 static int64_t SsSetDumpLevel2postorder(ssSet* _this, SsSetNode* node, SsSetEvaluate ClientEvaluate);
 static int64_t SsSetDumpLevel2levelorder(ssSet* _this, SsSetNode* node, SsSetEvaluate ClientEvaluate);
+
+// ssSet_nocomments.cpp
+
+#include "ssSet_left_nocomments.cpp"
+#include "ssSet_leftleft_nocomments.cpp"
+#include "ssSet_leftright_nocomments.cpp"
+#include "ssSet_leftrightleft_nocomments.cpp"
+
+#include "ssSet_right_nocomments.cpp"
+#include "ssSet_rightright_nocomments.cpp"
+#include "ssSet_rightleft_nocomments.cpp"
+#include "ssSet_rightleftright_nocomments.cpp"
+
+#include "ssSet_insert_nocomments.cpp"
+
+#include "ssSet_remove_nocomments.cpp"
+
+#include "ssSet_traverse_nocomments.cpp"
 
 uint32_t SsSetDepthTreeLevel2(SsSetNode* node)
 {
@@ -321,6 +321,7 @@ int64_t SsSetFind(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
   // -----
   // root
   // leaf
+  // lessThan
   // evaluate
   // allocator
   // stack
@@ -332,12 +333,12 @@ int64_t SsSetFind(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
 
   // touched in this function
   // -----
-  // lessThan
+  // n/a
 
-  if(lessThan)
-    _this->lessThan = lessThan;
+  if( !lessThan)
+    lessThan = _this->lessThan;
 
-  node = SsSetTreeSearchLevel2(GETROOTFROMTREE(_this), key, _this->lessThan);
+  node = SsSetTreeSearchLevel2(GETROOTFROMTREE(_this), key, lessThan);
 
   if(node)
   {
@@ -381,6 +382,7 @@ int64_t SsSetReset(ssSet* _this)
   // no change
   // -----
   // leaf
+  
   // lessThan
   // evaluate
   // maxStack

@@ -35,6 +35,7 @@
 
 // x_n_plus_1 = a * x_n + c
 
+//void qsort(void* base, size_t nmemb, size_t size, int(*compar)(const void*, const void*) )
 static int qsortCompare(const void* lhsRef, const void* rhsRef)
 {
   uint64_t lhs = *(const uint64_t*)lhsRef;
@@ -49,7 +50,7 @@ static int qsortCompare(const void* lhsRef, const void* rhsRef)
   return 0;
 }
 
-uint64_t random64(uint64_t factor, uint64_t previous, uint64_t term)
+static uint64_t random64(uint64_t factor, uint64_t previous, uint64_t term)
 {
   uint64_t multB = (uint32_t)factor;
   uint64_t multD = (uint32_t)previous;
@@ -68,7 +69,7 @@ struct blahRandom
   uint64_t term;
 };
 
-bool BlahRandomConstructCustom(blahRandom* _this, uint64_t factor, uint64_t seed, uint64_t term)
+static bool BlahRandomConstructCustom(blahRandom* _this, uint64_t factor, uint64_t seed, uint64_t term)
 {
   bool result = false;
 
@@ -85,12 +86,12 @@ label_return:
   return result;
 }
 
-bool BlahRandomConstructDefault(blahRandom* _this)
+static bool BlahRandomConstructDefault(blahRandom* _this)
 {
   return BlahRandomConstructCustom(_this, 2862933555777941757ULL, (uint64_t)time(0), 3037000493ULL);
 }
 
-bool BlahRandomDestruct(blahRandom* _this)
+static bool BlahRandomDestruct(blahRandom* _this)
 {
   bool result = false;
 
@@ -105,7 +106,7 @@ label_return:
   return result;
 }
 
-bool BlahRandomIterate(blahRandom* _this)
+static bool BlahRandomIterate(blahRandom* _this)
 {
   bool result = false;
 
@@ -120,7 +121,7 @@ label_return:
   return result;
 }
 
-bool BlahRandomGet(blahRandom* _this, uint64_t* current)
+static bool BlahRandomGet(blahRandom* _this, uint64_t* current)
 {
   bool result = false;
 
@@ -140,7 +141,7 @@ label_return:
 
 #define BLAH_QUEUE_SIZE 5
 
-bool blahTestStack()
+static bool blahTestStack()
 {
   bool result = false;
 
@@ -225,7 +226,7 @@ label_return:
   return result;
 }
 
-bool blahTestQueue()
+static bool blahTestQueue()
 {
   bool result = false;
 
@@ -347,9 +348,9 @@ label_return:
   return result;
 }
 
-//static const uint32_t myFatalError = -1;
 static const uint32_t myFatalError = 0xFFFFFFFFUL;
 
+//typedef uint32_t(*SsSetCompare)(void*, void*);
 static uint32_t lessThan(void* lhs, void* rhs)
 {
   // return non-zero if lhs < rhs
@@ -360,16 +361,17 @@ static uint32_t lessThan(void* lhs, void* rhs)
   return 0;
 }
 
-static int check(uint32_t* treeObject)
+//typedef uint32_t(*SsSetEvaluate)(void*);
+static uint32_t check(void* lhs)
 {
 #if BLAH_KEEP
-  printf("%i ", *treeObject);
+  printf("%i ", *(uint32_t*)lhs);
 #endif
 
   // return non-zero to terminate traversal
-  if(treeObject->testInt == myFatalError)
+  if( *(uint32_t*)lhs == myFatalError)
   {
-    printf("\ndump - object found %i\n", myFatalError);
+    printf("\ndump - object found %u\n", myFatalError);
     //return 1;
   }
 
@@ -377,7 +379,7 @@ static int check(uint32_t* treeObject)
   return 0;
 }
 
-static uint32_t calculateLogBase2(uint32_t number)
+static uint32_t calculateLogBase2(int64_t number)
 {
   uint32_t result = 0;
 
@@ -399,7 +401,7 @@ static void swapInt(uint32_t& lhs, uint32_t& rhs)
   rhs = temporary;
 }
 
-extern uint32_t gSsSetDebug[69];
+extern uint64_t gSsSetDebug[69];
 
 static uint32_t g1000fullCount = 0;
 static uint32_t g1000modCount = 0;
@@ -459,428 +461,478 @@ static void DebugFree(uint32_t* data[G1000NUMERATOR] )
   }
 }
 
-bool SsSetTest(blahRandom* random)
+// ssSet* SsSetConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32_t resize, SsSetCompare lessThan)
+// int64_t SsSetDestruct(ssSet* _this)
+// int64_t SsSetNum(ssSet* _this)
+// int64_t SsSetReset(ssSet* _this)
+// int64_t SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
+// int64_t SsSetErase(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
+// int64_t SsSetGetExtrema(ssSet* _this, bool maximum, void* client)
+// int64_t SsSetFind(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
+// int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
+// int64_t SsSetDepthTree(ssSet* _this)
+// int64_t SsSetMaxStack(ssSet* _this)
+// int64_t SsSetMaxQueue(ssSet* _this)
+
+bool SsSetTest(blahRandom* /*random*/)
 {
   //ssMm* ssMmBlah = SsMmConstruct(sizeof(void*), 100, false);
   //SsMmSetResize(ssMmBlah, -1);
 
 #if 0
-    uint32_t cacheCapacity = 2;
+  uint32_t cacheCapacity = 2;
 
-    List* cacheList = listInitialize(cacheCapacity);
+  List* cacheList = listInitialize(cacheCapacity);
 
-    unordered_map<uint32_t, Cache> cacheHashTable;
+  unordered_map<uint32_t, Cache> cacheHashTable;
 
-    cachePut(cacheHashTable, cacheList, 1, 1);
-    cachePut(cacheHashTable, cacheList, 2, 2);
+  cachePut(cacheHashTable, cacheList, 1, 1);
+  cachePut(cacheHashTable, cacheList, 2, 2);
 
-    cacheGet(cacheHashTable, cacheList, 1);
+  cacheGet(cacheHashTable, cacheList, 1);
 
-    cachePut(cacheHashTable, cacheList, 3, 3);
-    //cachePut(cacheHashTable, cacheList, 3, 4);
+  cachePut(cacheHashTable, cacheList, 3, 3);
+  //cachePut(cacheHashTable, cacheList, 3, 4);
 
-    cacheGet(cacheHashTable, cacheList, 2);
+  cacheGet(cacheHashTable, cacheList, 2);
 
-    cachePut(cacheHashTable, cacheList, 4, 4);
+  cachePut(cacheHashTable, cacheList, 4, 4);
 
-    cacheGet(cacheHashTable, cacheList, 1);
+  cacheGet(cacheHashTable, cacheList, 1);
 
-    cacheGet(cacheHashTable, cacheList, 3);
-    cacheGet(cacheHashTable, cacheList, 4);
+  cacheGet(cacheHashTable, cacheList, 3);
+  cacheGet(cacheHashTable, cacheList, 4);
 #endif
 
-    // limit of memory allocation near 30,000,000
+// limit of memory allocation near 30,000,000
 //static const uint32_t numData = 30000000;
 
 //printf("%i\n\n", blah_get_number() );
 //2097152
 
-double queueMaximumPercentage = 0;
+  double queueMaximumPercentage = 0;
 
 uint32_t numData = 4000000000;
 
 //for(uint32_t numData = 100; numData <= 1000; numData++)
 {
-    memset(gSsSetDebug, 0, sizeof(gSsSetDebug) );
+  memset(gSsSetDebug, 0, sizeof(gSsSetDebug) );
 
-    ssSet* mySet = SsSetConstruct(sizeof(uint32_t), 5000000, 4100000000, 10000000, lessThan);
-    if( !mySet)
-      return false;
+//ssSet* SsSetConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32_t resize, SsSetCompare lessThan)
+  ssSet* mySet = SsSetConstruct(sizeof(uint32_t), 5000000, 4100000000, 10000000, lessThan);
+  if( !mySet)
+  {
+    printf("blah a\n");
+    return false;
+  }
 
-    //uint32_t data[numData] = { {0}, {1}, {2}, {3}, {4} };
-    uint32_t* datablah[G1000NUMERATOR] = {0};
-    if( !DebugAllocate(datablah, numData) )
-      return false;
+  //uint32_t data[numData] = { {0}, {1}, {2}, {3}, {4} };
+  uint32_t* datablah[G1000NUMERATOR] = {0};
+  if( !DebugAllocate(datablah, numData) )
+  {
+    printf("blah a\n");
+    return false;
+  }
 
-    uint32_t keyObject = myFatalError;
-    uint32_t resultObject = 0;
-    int64_t findResult = 0;
+  uint32_t keyObject = myFatalError;
+  uint32_t resultObject = 0;
+  int64_t findResult = 0;
 
-    srand(1);
+  srand(1);
 
-    //for(uint32_t loop = 0; loop < numData; loop++)
-    //  SsSetInsert(myTree, &data[loop], 0, 0);
+//int64_t SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
+
+  //for(uint32_t loop = 0; loop < numData; loop++)
+  //  SsSetInsert(mySet, &data[loop], 0, 0);
 
 // check for inserting into tree
 //   keys already sorted
 //   keys alread reverse sorted
 //   all the same key
-    for(uint32_t index = 0; index < numData; index++)
-    {
-      DebugSet(datablah, index, index);//numData - index
-    }
+  for(uint32_t index = 0; index < numData; index++)
+  {
+    DebugSet(datablah, index, index);//numData - index
+  }
 
-    for(uint32_t index = 0; index < (numData - 1); index++)
-    {
-      // if index == 0, modulus == numData - 1, indexToSwap in range [0, numData - 2], swapInt rhs index range is [1, numData - 1]
-      // if index == 1, modulus == numData - 2, indexToSwap in range [0, numData - 3], swapInt rhs index range is [2, numData - 1]
-      // if index == numData - 2, modulus == 1, indexToSwap in range [0, 0], swapInt rhs index range is [numData - 1, numData - 1]
+  for(uint32_t index = 0; index < (numData - 1); index++)
+  {
+    // if index == 0, modulus == numData - 1, indexToSwap in range [0, numData - 2], swapInt rhs index range is [1, numData - 1]
+    // if index == 1, modulus == numData - 2, indexToSwap in range [0, numData - 3], swapInt rhs index range is [2, numData - 1]
+    // if index == numData - 2, modulus == 1, indexToSwap in range [0, 0], swapInt rhs index range is [numData - 1, numData - 1]
 
-      uint32_t modulus = (numData - index) - 1;
+    uint32_t modulus = (numData - index) - 1;
 
-      //uint64_t randomValue = 0;
-      //BlahRandomIterate(random);
-      //BlahRandomGet(random, &randomValue);
+    //uint64_t randomValue = 0;
+    //BlahRandomIterate(random);
+    //BlahRandomGet(random, &randomValue);
 
-      //uint32_t indexToSwap = (uint32_t)(randomValue % (uint64_t)modulus);
-      uint32_t indexToSwap = (uint32_t)rand() % modulus;
+    //uint32_t indexToSwap = (uint32_t)(randomValue % (uint64_t)modulus);
+    uint32_t indexToSwap = (uint32_t)rand() % modulus;
 
-      uint32_t lhs = DebugGet(datablah, index);
-      uint32_t rhs = DebugGet(datablah, (index + 1) + indexToSwap);
+    uint32_t lhs = DebugGet(datablah, index);
+    uint32_t rhs = DebugGet(datablah, (index + 1) + indexToSwap);
 
-      //swapInt(data[index], data[ (index + 1) + indexToSwap] );
-      DebugSet(datablah, index, rhs);
-      DebugSet(datablah, (index + 1) + indexToSwap, lhs);
-    }
-
-    if( !myTree)
-    {
-      printf("blah a\n");
-    }
+    //swapInt(data[index], data[ (index + 1) + indexToSwap] );
+    DebugSet(datablah, index, rhs);
+    DebugSet(datablah, (index + 1) + indexToSwap, lhs);
+  }
 
 #if BLAH_KEEP
-    printf("\ndump original list shuffled before insertion\n");
+  printf("\ndump original list shuffled before insertion\n");
 #endif
-    for(uint32_t index = 0; index < numData; index++)
+  for(uint32_t index = 0; index < numData; index++)
+  {
+#if BLAH_KEEP
+    printf("%i ", data[index] );
+#endif
+  }
+#if BLAH_KEEP
+  printf("\n\n");
+#endif
+
+//int64_t SsSetNum(ssSet* _this)
+  int64_t numSet = SsSetNum(mySet);
+  if(numSet)
+  {
+    printf("blah b\n");
+  }
+
+  for(uint32_t index = 0; index < numData; index++)
+  {
+    uint32_t data1 = DebugGet(datablah, index);
+
+//int64_t SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
+    if(SsSetInsert(mySet, &data1, 0, 0) < 0)
     {
-#if BLAH_KEEP
-      printf("%i ", data[index] );
-#endif
-    }
-#if BLAH_KEEP
-    printf("\n\n");
-#endif
-
-    uint32_t numberOfClientObject = SsSetNum(myTree);
-    if(numberOfClientObject)
-    {
-      printf("blah b\n");
-    }
-
-    for(uint32_t index = 0; index < numData; index++)
-    {
-      uint32_t data1 = DebugGet(datablah, index);
-
-      if(SsSetInsert(myTree, &data1, 0, 0) )
-      {
-        printf("blah c\n");
-      }
-
-      numberOfClientObject = SsSetNum(myTree);
-      if(numberOfClientObject < 0 || numberOfClientObject != (index + 1) )
-      {
-        printf("blah d\n");
-      }
-
-#if BLAH_KEEP
-      uint32_t height = myTree->depthTree();
-
-      if(height <= 0 || height > 2 * calculateLogBase2(numberOfClientObject + 1) )
-      {
-        printf("blah e\n");
-      }
-      else
-      {
-        printf("%i %i %i\n", numberOfClientObject, height, 2 * calculateLogBase2(numberOfClientObject + 1) );
-      }
-#endif
-
-//int64_t SsSetFind(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
-#if BLAH_KEEP
-      resultObject = -1;
-      findResult = SsSetFind(myTree, &keyObject, lessThan, &resultObject);
-      if(findResult != bintree::ok && findResult != bintree::empty)
-      {
-        printf("blah f\n");
-      }
-
-      if(findResult == bintree::ok && resultObject == keyObject)
-      {
-        //printf("find - object found\n");
-      }
-      else if(findResult == bintree::empty && resultObject != keyObject)
-      {
-        //printf("find - object not found\n");
-      }
-      else
-      {
-        printf("blah g\n");
-      }
-#endif
+      printf("blah c\n");
     }
 
-    numberOfClientObject = SsSetNum(myTree);
-    if(numberOfClientObject < 0 || numberOfClientObject != numData)
+//int64_t SsSetNum(ssSet* _this)
+    numSet = SsSetNum(mySet);
+    if(numSet < 0 || numSet != ( (int64_t)index + 1) )
     {
-      printf("blah h\n");
+      printf("blah d\n");
     }
 
 #if BLAH_KEEP
-    printf("dump preorder\n");
-#endif
-    if(myTree->dump( (SsSetEvaluate)check, SsSetPreorder) != bintree::ok)
-    {
-#if BLAH_KEEP
-      printf("blah i\n");
-#endif
-    }
-#if BLAH_KEEP
-    printf("\n\n");
-#endif
+//int64_t SsSetDepthTree(ssSet* _this)
+    int64_t height = SsSetDepthTree(mySet);
 
-#if BLAH_KEEP
-    printf("dump inorder\n");
-#endif
-    if(myTree->dump( (SsSetEvaluate)check, SsSetInorder) != bintree::ok)
+    if(height <= 0 || height > 2 * (int64_t)calculateLogBase2(numSet + 1) )
     {
-#if BLAH_KEEP
-      printf("blah i\n");
-#endif
-    }
-#if BLAH_KEEP
-    printf("\n\n");
-#endif
-
-#if BLAH_KEEP
-    printf("dump postorder\n");
-#endif
-    if(myTree->dump( (SsSetEvaluate)check, SsSetPostorder) != bintree::ok)
-    {
-#if BLAH_KEEP
-      printf("blah i\n");
-#endif
-    }
-#if BLAH_KEEP
-    printf("\n\n");
-#endif
-
-#if BLAH_KEEP
-    printf("dump levelorder\n");
-#endif
-    if(myTree->dump( (SsSetEvaluate)check, SsSetLevelorder) != bintree::ok)
-    {
-#if BLAH_KEEP
-      printf("blah i\n");
-#endif
-    }
-#if BLAH_KEEP
-    printf("\n\n");
-#endif
-
-    if(1)
-    {
-      uint32_t height = (uint32_t)myTree->depthTree();
-
-      if(height <= 0 || height > 2 * calculateLogBase2(numberOfClientObject + 1) )
-      {
-        printf("blah e\n");
-      }
-      else
-      {
-#if BLAH_KEEP
-        printf("size %i current height %i stack %i queue %i %f max height %i\n", numberOfClientObject, height, myTree->depthStack(), myTree->depthQueue(), myTree->depthQueue() / (double)numberOfClientObject, 2 * calculateLogBase2(numberOfClientObject + 1) );
-#endif
-        double queuePercentage = myTree->depthQueue() / (double)numberOfClientObject;
-        if(queuePercentage > queueMaximumPercentage)
-          queueMaximumPercentage = queuePercentage;
-
-        //printf("%f\n", queuePercentage);
-      }
-    }
-
-    resultObject = 0;
-    findResult = myTree->find( &keyObject, lessThan, &resultObject);
-    if(findResult != bintree::ok && findResult != bintree::empty)
-    {
-      printf("blah j\n");
-    }
-
-    if(findResult == bintree::ok && resultObject == keyObject)
-    {
-#if BLAH_KEEP
-      printf("\nfind - object found\n\n");
-#endif
-    }
-    else if(findResult == bintree::empty && resultObject != keyObject)
-    {
-#if BLAH_KEEP
-      printf("\nfind - object not found\n\n");
-#endif
+      printf("blah e\n");
     }
     else
     {
-      printf("blah k\n");
+      printf("%lli %lli %lu\n", numSet, height, 2 * calculateLogBase2(numSet + 1) );
     }
-
-    for(uint32_t index = 0; index < (numData - 1); index++)
-    {
-      // if index == 0, modulus == numData - 1, indexToSwap in range [0, numData - 2], swapInt rhs index range is [1, numData - 1]
-      // if index == 1, modulus == numData - 2, indexToSwap in range [0, numData - 3], swapInt rhs index range is [2, numData - 1]
-      // if index == numData - 2, modulus == 1, indexToSwap in range [0, 0], swapInt rhs index range is [numData - 1, numData - 1]
-
-      uint32_t modulus = (numData - index) - 1;
-
-      //uint64_t randomValue = 0;
-      //BlahRandomIterate(random);
-      //BlahRandomGet(random, &randomValue);
-
-      //uint32_t indexToSwap = (uint32_t)(randomValue % (uint64_t)modulus);
-      uint32_t indexToSwap = (uint32_t)rand() % modulus;
-
-      uint32_t lhs = DebugGet(datablah, index);
-      uint32_t rhs = DebugGet(datablah, (index + 1) + indexToSwap);
-
-      //swapInt(data[index], data[ (index + 1) + indexToSwap] );
-      DebugSet(datablah, index, rhs);
-      DebugSet(datablah, (index + 1) + indexToSwap, lhs);
-    }
-
-#if BLAH_KEEP
-    printf("dump original list reshuffled before deletion\n");
-#endif
-    for(uint32_t index = 0; index < numData; index++)
-    {
-#if BLAH_KEEP
-      printf("%i ", data[index] );
-#endif
-    }
-#if BLAH_KEEP
-    printf("\n\n");
 #endif
 
-    for(uint32_t index = 0; index < numData; index++)
-    {
-      numberOfClientObject = SsSetNum(myTree);
-      if(numberOfClientObject < 0 || numberOfClientObject != (numData - index) )
-      {
-        printf("blah l\n");
-      }
+//int64_t SsSetFind(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
 
 #if BLAH_KEEP
-      uint32_t height = myTree->depthTree();
-
-      if(height <= 0 || height > 2 * calculateLogBase2(numberOfClientObject + 1) )
-      {
-        printf("blah m\n");
-      }
-      else
-      {
-        //printf("%i %i %i\n", numberOfClientObject, height, 2 * calculateLogBase2(numberOfClientObject + 1) );
-      }
+    resultObject = 0;
+    findResult = SsSetFind(mySet, &keyObject, lessThan, &resultObject);
+    if(findResult < 0)
+    {
+      printf("blah f\n");
+    }
+    else if( !findResult && resultObject == keyObject)
+    {
+      //printf("find - object found\n");
+    }
+    else if(findResult == SsSetNotFound && resultObject != keyObject)
+    {
+      //printf("find - object not found\n");
+    }
+    else
+    {
+      printf("blah g\n");
+    }
 #endif
+  }
 
-      resultObject = 0;
-
-      uint32_t data1 = DebugGet(datablah, index);
-
-      int result = SsSetErase(myTree, &data1, lessThan, &resultObject);
-
-      if(result != bintree::ok || resultObject != data1)
-      {
-        printf("blah n\n");
-      }
+//int64_t SsSetNum(ssSet* _this)
+  numSet = SsSetNum(mySet);
+  if(numSet < 0 || numSet != (int64_t)numData)
+  {
+    printf("blah h\n");
+  }
 
 #if BLAH_KEEP
-      resultObject = -1;
-      findResult = myTree->find( &keyObject, lessThan, &resultObject);
-      if(findResult != bintree::ok && findResult != bintree::empty)
-      {
-        printf("blah f\n");
-      }
-
-      if(findResult == bintree::ok && resultObject == keyObject)
-      {
-        //printf("find - object found\n");
-      }
-      else if(findResult == bintree::empty && resultObject != keyObject)
-      {
-        //printf("find - object not found\n");
-      }
-      else
-      {
-        printf("blah g\n");
-      }
+  printf("dump preorder\n");
 #endif
-    }
-
-    numberOfClientObject = SsSetNum(myTree);
-    if(numberOfClientObject)
-    {
-      printf("blah o\n");
-    }
-
-    if(1)
-    {
-      uint32_t height = (uint32_t)myTree->depthTree();
-
-      if(height != 0)
-      {
-        printf("blah m\n");
-      }
-      else
-      {
-        //printf("%i %i %i\n", numberOfClientObject, height, 2 * calculateLogBase2(numberOfClientObject + 1) );
-      }
-    }
-
-    //printf("log2 %i %i\n", 1048576, calculateLogBase2(1048576) );
-    //printf("log2 %i %i\n", 1048575, calculateLogBase2(1048575) );
-
-    myTree->term();
-    myTree = 0;
-
-    DebugFree(datablah);
-
+//int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
+  if(SsSetDump(mySet, check, SsSetPreorder) )
+  {
 #if BLAH_KEEP
-    for(uint32_t index = 0; index < countof(gSsSetDebug); index++)
-    {
-//printf("debug rotate %i %i\n", index, gSsSetDebug[index] );
-    }
-    printf("\n");
-
-    for(uint32_t index = 0; index < (countof(gSsSetDebug) - 1); index++)
-    {
-      if(index == 1 || index == 21)
-      {
-        if(gSsSetDebug[index] )
-          printf("debug rotate %i %i\n", index, gSsSetDebug[index] );
-      }
-      else if( !gSsSetDebug[index] )
-      {
-        printf("debug rotate %i %i\n", index, gSsSetDebug[index] );
-      }
-    }
-    printf("\n");
+    printf("blah i\n");
+#endif
+  }
+#if BLAH_KEEP
+  printf("\n\n");
 #endif
 
 #if BLAH_KEEP
-    printf("end\n");
+  printf("dump inorder\n");
+#endif
+//int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
+  if(SsSetDump(mySet, check, SsSetInorder) )
+  {
+#if BLAH_KEEP
+    printf("blah i\n");
+#endif
+  }
+#if BLAH_KEEP
+  printf("\n\n");
+#endif
+
+#if BLAH_KEEP
+  printf("dump postorder\n");
+#endif
+//int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
+  if(SsSetDump(mySet, check, SsSetPostorder) )
+  {
+#if BLAH_KEEP
+    printf("blah i\n");
+#endif
+  }
+#if BLAH_KEEP
+  printf("\n\n");
+#endif
+
+#if BLAH_KEEP
+  printf("dump levelorder\n");
+#endif
+//int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
+  if(SsSetDump(mySet, check, SsSetLevelorder) )
+  {
+#if BLAH_KEEP
+    printf("blah i\n");
+#endif
+  }
+#if BLAH_KEEP
+  printf("\n\n");
+#endif
+
+  if(1)
+  {
+//int64_t SsSetDepthTree(ssSet* _this)
+    int64_t height = SsSetDepthTree(mySet);
+
+    if(height <= 0 || height > 2 * (int64_t)calculateLogBase2(numSet + 1) )
+    {
+      printf("blah e\n");
+    }
+    else
+    {
+#if BLAH_KEEP
+//int64_t SsSetMaxStack(ssSet* _this)
+      int64_t maxStack = SsSetMaxStack(mySet);
+#endif
+
+//int64_t SsSetMaxQueue(ssSet* _this)
+      int64_t maxQueue = SsSetMaxQueue(mySet);
+
+#if BLAH_KEEP
+      uint32_t maxHeight = 2 * calculateLogBase2(numSet + 1);
+#endif
+
+      double percentageQueue = (double)maxQueue / (double)numSet;
+
+#if BLAH_KEEP
+      printf("size %lli current height %lli stack %lli queue %lli %f max height %lu\n", numSet, height, maxStack, maxQueue, percentageQueue, maxHeight);
+#endif
+
+      if(percentageQueue > queueMaximumPercentage)
+        queueMaximumPercentage = percentageQueue;
+
+      //printf("%f\n", percentageQueue);
+    }
+  }
+
+//int64_t SsSetFind(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
+
+  resultObject = 0;
+  findResult = SsSetFind(mySet, &keyObject, lessThan, &resultObject);
+  if(findResult < 0)
+  {
+    printf("blah j\n");
+  }
+  else if( !findResult && resultObject == keyObject)
+  {
+#if BLAH_KEEP
+    printf("\nfind - object found\n\n");
+#endif
+  }
+  else if(findResult == SsSetNotFound && resultObject != keyObject)
+  {
+#if BLAH_KEEP
+    printf("\nfind - object not found\n\n");
+#endif
+  }
+  else
+  {
+    printf("blah k\n");
+  }
+
+  for(uint32_t index = 0; index < (numData - 1); index++)
+  {
+    // if index == 0, modulus == numData - 1, indexToSwap in range [0, numData - 2], swapInt rhs index range is [1, numData - 1]
+    // if index == 1, modulus == numData - 2, indexToSwap in range [0, numData - 3], swapInt rhs index range is [2, numData - 1]
+    // if index == numData - 2, modulus == 1, indexToSwap in range [0, 0], swapInt rhs index range is [numData - 1, numData - 1]
+
+    uint32_t modulus = (numData - index) - 1;
+
+    //uint64_t randomValue = 0;
+    //BlahRandomIterate(random);
+    //BlahRandomGet(random, &randomValue);
+
+    //uint32_t indexToSwap = (uint32_t)(randomValue % (uint64_t)modulus);
+    uint32_t indexToSwap = (uint32_t)rand() % modulus;
+
+    uint32_t lhs = DebugGet(datablah, index);
+    uint32_t rhs = DebugGet(datablah, (index + 1) + indexToSwap);
+
+    //swapInt(data[index], data[ (index + 1) + indexToSwap] );
+    DebugSet(datablah, index, rhs);
+    DebugSet(datablah, (index + 1) + indexToSwap, lhs);
+  }
+
+#if BLAH_KEEP
+  printf("dump original list reshuffled before deletion\n");
+#endif
+  for(uint32_t index = 0; index < numData; index++)
+  {
+#if BLAH_KEEP
+    printf("%i ", data[index] );
+#endif
+  }
+#if BLAH_KEEP
+  printf("\n\n");
+#endif
+
+  for(uint32_t index = 0; index < numData; index++)
+  {
+//int64_t SsSetNum(ssSet* _this)
+    numSet = SsSetNum(mySet);
+    if(numSet < 0 || numSet != ( (int64_t)numData - (int64_t)index) )
+    {
+      printf("blah l\n");
+    }
+
+#if BLAH_KEEP
+//int64_t SsSetDepthTree(ssSet* _this)
+    int64_t height = SsSetDepthTree(mySet);
+
+    if(height <= 0 || height > 2 * (int64_t)calculateLogBase2(numSet + 1) )
+    {
+      printf("blah m\n");
+    }
+    else
+    {
+      //printf("%lli %lli %lu\n", numSet, height, 2 * calculateLogBase2(numSet + 1) );
+    }
+#endif
+
+    uint32_t data1 = DebugGet(datablah, index);
+
+//int64_t SsSetErase(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
+
+    resultObject = 0;
+    int64_t result = SsSetErase(mySet, &data1, lessThan, &resultObject);
+
+    if(result || resultObject != data1)
+    {
+      printf("blah n\n");
+    }
+
+//int64_t SsSetFind(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
+
+#if BLAH_KEEP
+    resultObject = 0;
+    findResult = SsSetFind(mySet, &keyObject, lessThan, &resultObject);
+    if(findResult < 0)
+    {
+      printf("blah f\n");
+    }
+    else if( !findResult && resultObject == keyObject)
+    {
+      //printf("find - object found\n");
+    }
+    else if(findResult == SsSetNotFound && resultObject != keyObject)
+    {
+      //printf("find - object not found\n");
+    }
+    else
+    {
+      printf("blah g\n");
+    }
+#endif
+  }
+
+//int64_t SsSetNum(ssSet* _this)
+  numSet = SsSetNum(mySet);
+  if(numSet)
+  {
+    printf("blah o\n");
+  }
+
+  if(1)
+  {
+//int64_t SsSetDepthTree(ssSet* _this)
+    int64_t height = SsSetDepthTree(mySet);
+    if(height)
+    {
+      printf("blah m\n");
+    }
+    else
+    {
+      //printf("%lli %lli %lu\n", numSet, height, 2 * calculateLogBase2(numSet + 1) );
+    }
+  }
+
+  //printf("log2 %i %lu\n", 1048576, calculateLogBase2(1048576) );
+  //printf("log2 %i %lu\n", 1048575, calculateLogBase2(1048575) );
+
+//int64_t SsSetDestruct(ssSet* _this)
+  if(SsSetDestruct(mySet) < 0)
+  {
+    _log("error");
+  }
+
+  DebugFree(datablah);
+
+#if BLAH_KEEP
+  for(uint32_t index = 0; index < countof(gSsSetDebug); index++)
+  {
+//printf("debug rotate %lu %llu\n", index, gSsSetDebug[index] );
+  }
+  printf("\n");
+
+  for(uint32_t index = 0; index < (countof(gSsSetDebug) - 1); index++)
+  {
+    if(index == 1 || index == 21)
+    {
+      if(gSsSetDebug[index] )
+        printf("debug rotate %lu %llu\n", index, gSsSetDebug[index] );
+    }
+    else if( !gSsSetDebug[index] )
+    {
+      printf("debug rotate %lu %llu\n", index, gSsSetDebug[index] );
+    }
+  }
+  printf("\n");
+#endif
+
+#if BLAH_KEEP
+  printf("end\n");
 #endif
 }
 
-    printf("\nqueue max %f\n", queueMaximumPercentage);
+  printf("\nqueue max %f\n", queueMaximumPercentage);
 
-    return true;
+  return true;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

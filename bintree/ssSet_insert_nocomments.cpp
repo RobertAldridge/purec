@@ -5,7 +5,7 @@
 // Charlie H. Burns III
 
 // integrated for root sentinel
-bool SsSetInsertLevel3(ssSet* _this, SsSetNode* insert)
+bool SsSetInsertLevel3(ssSet* _this, SsSetNode* insert, SsSetCompare lessThan)
 {
   bool duplicate = false;
 
@@ -16,7 +16,7 @@ bool SsSetInsertLevel3(ssSet* _this, SsSetNode* insert)
     parent = child;
 
     // if less than
-    if(_this->lessThan(GETCLIENT(insert), GETCLIENT(child) ) )
+    if(lessThan(GETCLIENT(insert), GETCLIENT(child) ) )
     {
       child = child->left;
     }
@@ -26,7 +26,7 @@ bool SsSetInsertLevel3(ssSet* _this, SsSetNode* insert)
       // if !lessThan(a, b) && !lessThan(b, a) then a == b
       //
       // if equivalent we set the duplicate flag
-      if( !duplicate && !_this->lessThan(GETCLIENT(child), GETCLIENT(insert) ) )
+      if( !duplicate && !lessThan(GETCLIENT(child), GETCLIENT(insert) ) )
         duplicate = true;
 
       // if equivalent we still traverse the right child so that we insert as the chronologically latest
@@ -36,7 +36,7 @@ bool SsSetInsertLevel3(ssSet* _this, SsSetNode* insert)
 
   insert->parent = parent;
 
-  if(LESSTHANWRAPPER(_this, GETCLIENT(insert), parent) )
+  if(LESSTHANWRAPPER(_this, GETCLIENT(insert), parent, lessThan) )
     parent->left = insert;
   else
     parent->right = insert;
@@ -45,13 +45,13 @@ bool SsSetInsertLevel3(ssSet* _this, SsSetNode* insert)
 }
 
 // integrated for root sentinel
-bool SsSetInsertLevel2(ssSet* _this, SsSetNode* x)
+bool SsSetInsertLevel2(ssSet* _this, SsSetNode* x, SsSetCompare lessThan)
 {
   bool duplicate = false;
 
   SsSetNode* y = 0;
 
-  duplicate = SsSetInsertLevel3(_this, x);
+  duplicate = SsSetInsertLevel3(_this, x, lessThan);
 
   x->color = SsSetRed;
 
@@ -140,7 +140,7 @@ int64_t SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client
 
   SsSetNode* x = 0;
 
-  if( !_this || !key || !client)
+  if( !_this || !key)
   {
     _log("error");
     goto label_return;
@@ -183,8 +183,8 @@ int64_t SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client
   // allocator SsMmAlloc
   // num
 
-  if(lessThan)
-    _this->lessThan = lessThan;
+  if( !lessThan)
+    lessThan = _this->lessThan;
 
   x = (SsSetNode*)SsMmAlloc(_this->allocator);
 
@@ -197,10 +197,13 @@ int64_t SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client
   x->left = 0;
   x->right = 0;
 
-  memcpy(GETCLIENT(x), client, _this->sizeOf);
+  memcpy(GETCLIENT(x), key, _this->sizeOf);
 
-  if(SsSetInsertLevel2(_this, x) )
+  if(SsSetInsertLevel2(_this, x, lessThan) )
     duplicate = 1;
+
+  if(client)
+    memcpy(GETCLIENT(x), client, _this->sizeOf);
 
   _this->num++;
 
