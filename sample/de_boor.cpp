@@ -933,7 +933,7 @@ int updateInput(int inputEvent, double xB, double yB, double B) // de_boor::upda
     dumpAllCaptures();
   }
   break; // switch(inputEvent) - DUMP_ALL_CAPTURES
-  
+
   ////////////////////////////////////////////////////////
   case TOGGLE_CONTROL_POINTS: // switch(inputEvent) - TOGGLE_CONTROL_POINTS
   {
@@ -950,7 +950,7 @@ int updateInput(int inputEvent, double xB, double yB, double B) // de_boor::upda
     }
   }
   break; // switch(inputEvent) - TOGGLE_CONTROL_POINTS
-  
+
   ////////////////////////////////////////////////////////
   case INCREASE_ITERATION_CONSTANT: // switch(inputEvent) - INCREASE_ITERATION_CONSTANT
   {
