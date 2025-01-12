@@ -5,23 +5,23 @@
 // Charlie H. Burns III
 
 // integrated for root sentinel
-void LeftRotateDelete1(SsSetNode* xP)
+void SsSetRotateLeftErase1(SsSetNode* xP)
 {
   SsSetNode* xPR = xP->right;
 
   xP->right = xPR->left;
 
   if(xPR->left)
-    xPR->left->parent = xP, gDebugRotate[0]++;
+    xPR->left->parent = xP, gSsSetDebug[0]++;
   else
-    gDebugRotate[1]++; // never reached through empirical testing
+    gSsSetDebug[1]++; // never reached through empirical testing
 
   xPR->parent = xP->parent;
 
   if(xP == xP->parent->left)
-    xP->parent->left = xPR, gDebugRotate[40]++;
+    xP->parent->left = xPR, gSsSetDebug[40]++;
   else
-    xP->parent->right = xPR, gDebugRotate[41]++;
+    xP->parent->right = xPR, gSsSetDebug[41]++;
 
   xPR->left = xP;
 
@@ -29,23 +29,23 @@ void LeftRotateDelete1(SsSetNode* xP)
 }
 
 // integrated for root sentinel
-void LeftRotateDelete2(SsSetNode* xP)
+void SsSetRotateLeftErase2(SsSetNode* xP)
 {
   SsSetNode* xPR = xP->right;
 
   xP->right = xPR->left;
 
   if(xPR->left)
-    xPR->left->parent = xP, gDebugRotate[2]++;
+    xPR->left->parent = xP, gSsSetDebug[2]++;
   else
-    gDebugRotate[3]++;
+    gSsSetDebug[3]++;
 
   xPR->parent = xP->parent;
 
   if(xP == xP->parent->left)
-    xP->parent->left = xPR, gDebugRotate[42]++;
+    xP->parent->left = xPR, gSsSetDebug[42]++;
   else
-    xP->parent->right = xPR, gDebugRotate[43]++;
+    xP->parent->right = xPR, gSsSetDebug[43]++;
 
   xPR->left = xP;
 
@@ -53,23 +53,23 @@ void LeftRotateDelete2(SsSetNode* xP)
 }
 
 // integrated for root sentinel
-void LeftRotateInsert(SsSetNode* xPP)
+void SsSetRotateLeftInsert(SsSetNode* xPP)
 {
   SsSetNode* xPPR = xPP->right;
 
   xPP->right = xPPR->left;
 
   if(xPPR->left)
-    xPPR->left->parent = xPP, gDebugRotate[4]++;
+    xPPR->left->parent = xPP, gSsSetDebug[4]++;
   else
-    gDebugRotate[5]++;
+    gSsSetDebug[5]++;
 
   xPPR->parent = xPP->parent;
 
   if(xPP == xPP->parent->left)
-    xPP->parent->left = xPPR, gDebugRotate[44]++;
+    xPP->parent->left = xPPR, gSsSetDebug[44]++;
   else
-    xPP->parent->right = xPPR, gDebugRotate[45]++;
+    xPP->parent->right = xPPR, gSsSetDebug[45]++;
 
   xPPR->left = xPP;
 

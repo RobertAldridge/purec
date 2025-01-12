@@ -4,7 +4,7 @@
 
 struct ssArray;
 
-ssArray* SsArrayConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32_t resize, bool lookup);
+ssArray* SsArrayConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32_t resize/*, bool lookup*/);
 
 int64_t SsArrayDestruct(ssArray** _this);
 

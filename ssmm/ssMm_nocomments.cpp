@@ -42,8 +42,8 @@ struct ssMm
 
   SsMmPool* head;
   SsMmPool* tail;
-  
-  SsMmPool** lookup;
+
+//SsMmPool** lookup;
 
   uint32_t numPools;
   uint32_t numChunks;
@@ -96,7 +96,10 @@ static void SsMmPoolListFree(ssMm* _this, SsMmPool* current)
     next = current->next;
 
     if(current != _this->head)
-      BlahFree(current, current->sizeOf, true);
+    {
+      uint32_t sizeOf = SsMmGetPoolSizeOf(_this, current->num);
+      BlahFree(current, sizeOf, true);
+    }
   }
 }
 
@@ -170,8 +173,6 @@ static bool SsMmResizeNewPool(ssMm* _this, uint32_t minimumCapacity)
   if( !pool)
     goto label_return;
 
-  pool->sizeOf = sizeOf;
-
   pool->next = 0;
 
   pool->num = diff;
@@ -243,8 +244,10 @@ int64_t SsMmDestruct(ssMm** reference)
   bool result = false;
 
   ssMm* _this = 0;
-  
+
   uint32_t num = 0;
+
+  uint32_t sizeOf = 0;
 
   if( !reference)
     goto label_return;
@@ -253,12 +256,13 @@ int64_t SsMmDestruct(ssMm** reference)
 
   if( !_this)
     goto label_return;
-  
+
   num = _this->numChunks;
 
   SsMmPoolListReverseAndFree(_this, _this->head);
 
-  BlahFree(_this, _this->head->sizeOf, true);
+  sizeOf = SsMmGetPoolSizeOf(_this, _this->head->num);
+  BlahFree(_this, sizeOf + SsMmGetSizeOfSsMmHeader(), true);
 
   reference[0] = 0;
 
@@ -271,7 +275,7 @@ label_return:
 int64_t SsMmNum(ssMm* _this)
 {
   bool result = false;
-  
+
   uint32_t num = 0;
 
   if( !_this)
@@ -288,14 +292,14 @@ label_return:
 int64_t SsMmReset(ssMm* _this)
 {
   bool result = false;
-  
+
   uint32_t num = 0;
 
   SsMmPool* pool = 0;
 
   if( !_this)
     goto label_return;
-  
+
   num = _this->numChunks;
 
   pool = _this->head;

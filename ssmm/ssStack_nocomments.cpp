@@ -37,8 +37,8 @@ struct ssStack
 
   SsStackPool* head;
   SsStackPool* tail;
-  
-  SsStackPool** lookup;
+
+//SsStackPool** lookup;
 
   uint32_t numPools;
   uint32_t numChunks;
@@ -88,7 +88,10 @@ static void SsStackPoolListFree(ssStack* _this, SsStackPool* current)
     previous = current->previous;
 
     if(current != _this->head)
-      BlahFree(current, current->sizeOf, true);
+    {
+      uint32_t sizeOf = SsStackGetPoolSizeOf(_this, current->num);
+      BlahFree(current, sizeOf, true);
+    }
   }
 }
 
@@ -264,8 +267,6 @@ static bool SsStackResizeNewPool(ssStack* _this, uint32_t minimumCapacity)
   if( !pool)
     goto label_return;
 
-  pool->sizeOf = sizeOf;
-
   pool->previous = 0;
   pool->next = 0;
 
@@ -342,8 +343,10 @@ int64_t SsStackDestruct(ssStack** reference)
   bool result = false;
 
   ssStack* _this = 0;
-  
+
   uint32_t num = 0;
+
+  uint32_t sizeOf = 0;
 
   if( !reference)
     goto label_return;
@@ -352,12 +355,13 @@ int64_t SsStackDestruct(ssStack** reference)
 
   if( !_this)
     goto label_return;
-  
+
   num = _this->numChunks;
 
   SsStackPoolListFree(_this, _this->tail);
 
-  BlahFree(_this, _this->head->sizeOf, true);
+  sizeOf = SsStackGetPoolSizeOf(_this, _this->head->num);
+  BlahFree(_this, sizeOf + SsStackGetSizeOfSsStackHeader(), true);
 
   reference[0] = 0;
 
@@ -370,7 +374,7 @@ label_return:
 int64_t SsStackNum(ssStack* _this)
 {
   bool result = false;
-  
+
   uint32_t num = 0;
 
   if( !_this)
@@ -387,12 +391,12 @@ label_return:
 int64_t SsStackReset(ssStack* _this)
 {
   bool result = false;
-  
+
   uint32_t num = 0;
 
   if( !_this)
     goto label_return;
-  
+
   num = _this->numChunks;
 
   _this->current = _this->head;

@@ -43,7 +43,7 @@ struct SsQueuePool
   SsQueuePool* next;
 
   uint32_t num;
-  
+
   uint32_t index;
 };
 
@@ -54,8 +54,8 @@ struct ssQueue
 
   SsQueuePool* head;
   SsQueuePool* tail;
-  
-  SsQueueNode** lookup;
+
+//SsQueueNode** lookup;
 
   uint32_t numNodes;
   uint32_t numPools;
@@ -110,7 +110,10 @@ static void SsQueuePoolListFree(ssQueue* _this, SsQueuePool* current)
     previous = current->previous;
 
     if(current != _this->head)
-      BlahFree(current, current->sizeOf, true);
+    {
+      uint32_t sizeOf = SsQueueGetPoolSizeOf(_this, current->num);
+      BlahFree(current, sizeOf, true);
+    }
   }
 }
 
@@ -363,8 +366,6 @@ static bool SsQueueResizeNewPool(ssQueue* _this, uint32_t minimumCapacity)
   if( !pool)
     goto label_return;
 
-  pool->sizeOf = sizeOf;
-
   pool->previous = 0;
   pool->next = 0;
 
@@ -528,8 +529,10 @@ int64_t SsQueueDestruct(ssQueue** reference)
   bool result = false;
 
   ssQueue* _this = 0;
-  
+
   uint32_t num = 0;
+
+  uint32_t sizeOf = 0;
 
   if( !reference)
     goto label_return;
@@ -538,12 +541,13 @@ int64_t SsQueueDestruct(ssQueue** reference)
 
   if( !_this)
     goto label_return;
-  
+
   num = _this->numChunks;
 
   SsQueuePoolListFree(_this, _this->tail);
 
-  BlahFree(_this, _this->head->sizeOf, true);
+  sizeOf = SsQueueGetPoolSizeOf(_this, _this->head->num);
+  BlahFree(_this, sizeOf + SsQueueGetSizeOfSsQueueHeader(), true);
 
   reference[0] = 0;
 
@@ -556,7 +560,7 @@ label_return:
 int64_t SsQueueNum(ssQueue* _this)
 {
   bool result = false;
-  
+
   uint32_t num = 0;
 
   if( !_this)
@@ -573,12 +577,12 @@ label_return:
 int64_t SsQueueReset(ssQueue* _this)
 {
   bool result = false;
-  
+
   uint32_t num = 0;
 
   if( !_this)
     goto label_return;
-  
+
   num = _this->numChunks;
 
   _this->front = _this->back;

@@ -31,7 +31,7 @@ struct ssArray
   SsArrayPool* head;
   SsArrayPool* tail;
 
-  SsArrayPool** lookup;
+//SsArrayPool** lookup;
 
   uint32_t numPools;
   uint32_t numChunks;
@@ -166,8 +166,6 @@ static bool SsArrayResizeNewPool(ssArray* _this, uint32_t minimumCapacity)
   if( !pool)
     goto label_return;
 
-  pool->sizeOf = sizeOf;
-
   pool->next = 0;
 
   pool->num = diff;
@@ -209,7 +207,7 @@ label_return:
   return result;
 }
 
-ssArray* SsArrayConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32_t resize, bool lookup)
+ssArray* SsArrayConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32_t resize/*, bool lookup*/)
 {
   uint8_t* result = 0;
 
@@ -230,6 +228,7 @@ ssArray* SsArrayConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, ui
 
   SsArrayMemcpySsArray(result, &_this);
 
+#if 0
   if(lookup)
   {
     SsArrayPool* current = 0;
@@ -246,6 +245,7 @@ ssArray* SsArrayConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, ui
       current = current->next;
     }
   }
+#endif
 
 label_return:
   return (ssArray*)result;
@@ -271,11 +271,13 @@ int64_t SsArrayDestruct(ssArray** reference)
 
   num = _this->numChunks;
 
+#if 0
   if(_this->lookup)
   {
     BlahFree(_this->lookup, sizeof(SsArrayPool*) * _this->numPools, true);
     _this->lookup = 0;
   }
+#endif
 
   SsArrayPoolListReverseAndFree(_this, _this->head);
 

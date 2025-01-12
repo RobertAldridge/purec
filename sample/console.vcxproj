@@ -143,18 +143,51 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\bintree\ssSet_insert_nocomments.cpp" />
-    <ClCompile Include="..\bintree\ssSet_left_nocomments.cpp" />
-    <ClCompile Include="..\bintree\ssSet_leftleft_nocomments.cpp" />
-    <ClCompile Include="..\bintree\ssSet_leftright_nocomments.cpp" />
-    <ClCompile Include="..\bintree\ssSet_leftrightleft_nocomments.cpp" />
+    <ClCompile Include="..\bintree\ssSet_insert_nocomments.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\bintree\ssSet_left_nocomments.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\bintree\ssSet_leftleft_nocomments.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\bintree\ssSet_leftright_nocomments.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\bintree\ssSet_leftrightleft_nocomments.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\bintree\ssSet_nocomments.cpp" />
-    <ClCompile Include="..\bintree\ssSet_remove_nocomments.cpp" />
-    <ClCompile Include="..\bintree\ssSet_right_nocomments.cpp" />
-    <ClCompile Include="..\bintree\ssSet_rightleft_nocomments.cpp" />
-    <ClCompile Include="..\bintree\ssSet_rightleftright_nocomments.cpp" />
-    <ClCompile Include="..\bintree\ssSet_rightright_nocomments.cpp" />
-    <ClCompile Include="..\bintree\ssSet_traverse_nocomments.cpp" />
+    <ClCompile Include="..\bintree\ssSet_remove_nocomments.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\bintree\ssSet_right_nocomments.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\bintree\ssSet_rightleft_nocomments.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\bintree\ssSet_rightleftright_nocomments.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\bintree\ssSet_rightright_nocomments.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\bintree\ssSet_traverse_nocomments.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\ssmm\blah_alloc.cpp" />
     <ClCompile Include="..\ssmm\ssArray_nocomments.cpp" />
     <ClCompile Include="..\ssmm\ssMm_nocomments.cpp" />

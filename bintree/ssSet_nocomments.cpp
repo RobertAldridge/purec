@@ -6,8 +6,10 @@
 
 #include <cstdint> // int64_t, uint32_t
 #include <cstdio> // printf
+#include <cstring> // memcpy
 
 using std::int64_t;
+using std::memcpy;
 using std::printf;
 using std::uint32_t;
 
@@ -24,6 +26,8 @@ using std::uint32_t;
 const uint32_t SsSetRed = 1;
 const uint32_t SsSetBlack = 2;
 
+uint32_t gSsSetDebug[69] = {0};
+
 #define GETCLIENT(node) (void*)(node + 1)
 
 //#define GETROOTFROMSENTINEL(sentinel) (sentinel->left)
@@ -38,7 +42,7 @@ const uint32_t SsSetBlack = 2;
 
 #define LESSTHANWRAPPER(_this, client, node) \
   (node == GETSENTINELFROMTREE(_this) ? 1 : _this->lessThan(client, GETCLIENT(node) ) )
-  
+
 #define EQUALTOWRAPPER(lessThan, lhs, rhs) !lessThan(lhs, rhs) && !lessThan(rhs, lhs)
 
 //#define EQUALTOWRAPPER(_this, client, node) \
@@ -51,29 +55,28 @@ const uint32_t SsSetBlack = 2;
 #define _log(blah) printf("%s %s %i\n", blah, __FILE__, (int)__LINE__)
 
 // ssSet.cpp
-static uint32_t DepthMax(SsSetNode* node);
-static uint32_t CalculateLogBase2(uint32_t number);
-static SsSetNode* TreeMinimum(SsSetNode* node);
-static SsSetNode* TreeMaximum(SsSetNode* node);
-static SsSetNode* TreeSuccessor(SsSetNode* x);
-static SsSetNode* TreeSearch(SsSetNode* x, void* objectKey, SsSetCompare lessThan);
-
-uint32_t gDebugRotate[69] = {0};
+static uint32_t SsSetDepthTreeLevel2(SsSetNode* node);
+static uint32_t SsSetCalculateLogBase2Level2(int64_t number);
+static SsSetNode* SsSetTreeMinimumLevel2(SsSetNode* node);
+static SsSetNode* SsSetTreeMinimumLevel4(SsSetNode* node);
+static SsSetNode* SsSetTreeMaximumLevel2(SsSetNode* node);
+static SsSetNode* SsSetTreeSuccessorLevel3(SsSetNode* z);
+static SsSetNode* SsSetTreeSearchLevel2(SsSetNode* x, void* objectKey, SsSetCompare lessThan);
 
 // ssSet_left.cpp
-static void LeftRotateDelete1(SsSetNode* xP);
-static void LeftRotateDelete2(SsSetNode* xP);
-static void LeftRotateInsert(SsSetNode* xPP);
+static void SsSetRotateLeftErase1(SsSetNode* xP);
+static void SsSetRotateLeftErase2(SsSetNode* xP);
+static void SsSetRotateLeftInsert(SsSetNode* xPP);
 
 // ssSet_leftleft.cpp
-static void LeftLeftRotate(SsSetNode* xP);
+static void SsSetRotateLeftLeftErase(SsSetNode* xP);
 
 // ssSet_leftright.cpp
-static void LeftRightRotateInsert(SsSetNode* x);
-static void LeftRightRotateDelete(SsSetNode* xP);
+static void SsSetRotateLeftRightInsert(SsSetNode* x);
+static void SsSetRotateLeftRightErase(SsSetNode* xP);
 
 // ssSet_leftrightleft.cpp
-static void LeftRightLeftRotate(SsSetNode* xP);
+static void SsSetRotateLeftRightLeftErase(SsSetNode* xP);
 
 #include "ssSet_left_nocomments.cpp"
 #include "ssSet_leftleft_nocomments.cpp"
@@ -81,19 +84,19 @@ static void LeftRightLeftRotate(SsSetNode* xP);
 #include "ssSet_leftrightleft_nocomments.cpp"
 
 // ssSet_right.cpp
-static void RightRotateDelete1(SsSetNode* xP);
-static void RightRotateDelete2(SsSetNode* xP);
-static void RightRotateInsert(SsSetNode* xPP);
+static void SsSetRotateRightErase1(SsSetNode* xP);
+static void SsSetRotateRightErase2(SsSetNode* xP);
+static void SsSetRotateRightInsert(SsSetNode* xPP);
 
 // ssSet_rightright.cpp
-static void RightRightRotate(SsSetNode* xP);
+static void SsSetRotateRightRightErase(SsSetNode* xP);
 
 // ssSet_rightleft.cpp
-static void RightLeftRotateInsert(SsSetNode* x);
-static void RightLeftRotateDelete(SsSetNode* xP);
+static void SsSetRotateRightLeftInsert(SsSetNode* x);
+static void SsSetRotateRightLeftErase(SsSetNode* xP);
 
 // ssSet_rightleftright.cpp
-static void RightLeftRightRotate(SsSetNode* xP);
+static void SsSetRotateRightLeftRightErase(SsSetNode* xP);
 
 #include "ssSet_right_nocomments.cpp"
 #include "ssSet_rightright_nocomments.cpp"
@@ -101,26 +104,26 @@ static void RightLeftRightRotate(SsSetNode* xP);
 #include "ssSet_rightleftright_nocomments.cpp"
 
 // ssSet_insert.cpp
-static bool SsSetTreeInsert(ssSet* _this, SsSetNode* insert);
-static bool SsSetNodeInsertFixup(ssSet* _this, SsSetNode* x);
+static bool SsSetInsertLevel3(ssSet* _this, SsSetNode* insert);
+static bool SsSetInsertLevel2(ssSet* _this, SsSetNode* x);
 
 #include "ssSet_insert_nocomments.cpp"
 
 // ssSet_remove.cpp
-static void SsSetNodeEraseFixup(ssSet* _this, SsSetNode* x);
-static SsSetNode* SsSetTreeErase(ssSet* _this, SsSetNode* z);
+static void SsSetEraseLevel3(ssSet* _this, SsSetNode* x);
+static SsSetNode* SsSetEraseLevel2(ssSet* _this, SsSetNode* z);
 
 #include "ssSet_remove_nocomments.cpp"
 
 // ssSet_traverse.cpp
-static int64_t IterativePreorderTreeTraverse(ssSet* _this, SsSetNode* node, SsSetEvaluate ClientEvaluate);
-static int64_t IterativeInorderTreeTraverse(ssSet* _this, SsSetNode* node, SsSetEvaluate ClientEvaluate);
-static int64_t IterativePostorderTreeTraverse(ssSet* _this, SsSetNode* node, SsSetEvaluate ClientEvaluate);
-static int64_t IterativeLevelorderTreeTraverse(ssSet* _this, SsSetNode* node, SsSetEvaluate ClientEvaluate);
+static int64_t SsSetDumpLevel2preorder(ssSet* _this, SsSetNode* node, SsSetEvaluate ClientEvaluate);
+static int64_t SsSetDumpLevel2inorder(ssSet* _this, SsSetNode* node, SsSetEvaluate ClientEvaluate);
+static int64_t SsSetDumpLevel2postorder(ssSet* _this, SsSetNode* node, SsSetEvaluate ClientEvaluate);
+static int64_t SsSetDumpLevel2levelorder(ssSet* _this, SsSetNode* node, SsSetEvaluate ClientEvaluate);
 
 #include "ssSet_traverse_nocomments.cpp"
 
-uint32_t DepthMax(SsSetNode* node)
+uint32_t SsSetDepthTreeLevel2(SsSetNode* node)
 {
   uint32_t result = 0;
 
@@ -130,9 +133,9 @@ uint32_t DepthMax(SsSetNode* node)
   if( !node)
     goto label_return;
 
-  left = DepthMax(node->left);
+  left = SsSetDepthTreeLevel2(node->left);
 
-  right = DepthMax(node->right);
+  right = SsSetDepthTreeLevel2(node->right);
 
   if(left >= right)
     result = left + 1;
@@ -143,7 +146,7 @@ label_return:
   return result;
 }
 
-uint32_t CalculateLogBase2(int64_t number)
+uint32_t SsSetCalculateLogBase2Level2(int64_t number)
 {
   uint32_t result = 0;
 
@@ -158,7 +161,7 @@ uint32_t CalculateLogBase2(int64_t number)
 }
 
 // integrated for root sentinel
-SsSetNode* TreeMinimum(SsSetNode* node)
+SsSetNode* SsSetTreeMinimumLevel2(SsSetNode* node)
 {
   for(SsSetNode* left = node; left; left = left->left)
     node = left;
@@ -167,7 +170,16 @@ SsSetNode* TreeMinimum(SsSetNode* node)
 }
 
 // integrated for root sentinel
-SsSetNode* TreeMaximum(SsSetNode* node)
+SsSetNode* SsSetTreeMinimumLevel4(SsSetNode* node)
+{
+  for(SsSetNode* left = node; left; left = left->left)
+    node = left;
+
+  return node;
+}
+
+// integrated for root sentinel
+SsSetNode* SsSetTreeMaximumLevel2(SsSetNode* node)
 {
   for(SsSetNode* right = node; right; right = right->right)
     node = right;
@@ -175,25 +187,8 @@ SsSetNode* TreeMaximum(SsSetNode* node)
   return node;
 }
 
-SsSetNode* TreeSuccessor(SsSetNode* x)
-{
-  SsSetNode* y = 0;
-
-  if(x->right)
-  {
-    y = TreeMinimum(x->right);
-  }
-  else
-  {
-    for(y = x->parent; y && x == y->right; y = y->parent)
-      x = y;
-  }
-
-  return y;
-}
-
 // integrated for root sentinel
-SsSetNode* TreeSearch(SsSetNode* x, void* objectKey, SsSetCompare lessThan)
+SsSetNode* SsSetTreeSearchLevel2(SsSetNode* x, void* objectKey, SsSetCompare lessThan)
 {
 #if 0
   while(x && !equalTo(objectKey, GETCLIENT(x) ) )
@@ -281,14 +276,14 @@ int64_t SsSetGetExtrema(ssSet* _this, bool maximum, void* client)
   // n/a
 
   if(maximum)
-    node = TreeMaximum(GETROOTFROMTREE(_this) );
+    node = SsSetTreeMaximumLevel2(GETROOTFROMTREE(_this) );
   else
-    node = TreeMinimum(GETROOTFROMTREE(_this) );
+    node = SsSetTreeMinimumLevel2(GETROOTFROMTREE(_this) );
 
   if(node)
   {
     empty = 0;
-    
+
     if(client)
       memcpy(client, GETCLIENT(node), _this->sizeOf);
   }
@@ -354,7 +349,7 @@ int64_t SsSetFind(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
   if(lessThan)
     _this->lessThan = lessThan;
 
-  node = TreeSearch(GETROOTFROMTREE(_this), key, _this->lessThan);
+  node = SsSetTreeSearchLevel2(GETROOTFROMTREE(_this), key, _this->lessThan);
 
   if(node)
   {
@@ -527,7 +522,7 @@ int64_t SsSetDepthTree(ssSet* _this)
   // -----
   // n/a
 
-  depthTree = DepthMax(GETROOTFROMTREE(_this) );
+  depthTree = SsSetDepthTreeLevel2(GETROOTFROMTREE(_this) );
 
   result = true;
 
@@ -651,7 +646,7 @@ int64_t SsSetDestruct(ssSet* _this)
     _log("error");
     goto label_return;
   }
-  
+
   // _this
 
   // root
@@ -715,7 +710,7 @@ ssSet* SsSetConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32
     _log("error");
     goto label_return;
   }
-  
+
   // _this
 
   // root
@@ -767,7 +762,7 @@ ssSet* SsSetConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32
     goto label_return;
   }
 
-  stackSize = 2 * CalculateLogBase2( (int64_t)minimum + 1);
+  stackSize = 2 * SsSetCalculateLogBase2Level2( (int64_t)minimum + 1);
   if( !stackSize)
     stackSize = 1;
 

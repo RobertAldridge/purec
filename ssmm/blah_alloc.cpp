@@ -57,7 +57,7 @@ using std::memset;
 using std::printf;
 using std::size_t;
 using std::uint32_t;
-using std::wchar_t;
+//using std::wchar_t;
 
 #include "blah_alloc.h"
 
@@ -278,7 +278,7 @@ void* BlahAlloc(uint32_t sizeOf, bool zero)
     pointer = malloc(sizeOf);
     if( !pointer)
       goto label_return;
-    
+
     if(zero)
       memset(pointer, 0, sizeOf);
   }

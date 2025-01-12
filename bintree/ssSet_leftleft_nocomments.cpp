@@ -5,22 +5,22 @@
 // Charlie H. Burns III
 
 // integrated for root sentinel
-void LeftLeftRotate(SsSetNode* xP)
+void SsSetRotateLeftLeftErase(SsSetNode* xP)
 {
   SsSetNode* xPR = xP->right;
   SsSetNode* xPRL = xPR->left;
 
   if(xPRL->left)
-    xPRL->left->parent = xP, gDebugRotate[6]++;
+    xPRL->left->parent = xP, gSsSetDebug[6]++;
   else
-    gDebugRotate[7]++;
+    gSsSetDebug[7]++;
 
   xP->right = xPRL->left;
 
   if(xP == xP->parent->left)
-    xP->parent->left = xPR, gDebugRotate[46]++;
+    xP->parent->left = xPR, gSsSetDebug[46]++;
   else
-    xP->parent->right = xPR, gDebugRotate[47]++;
+    xP->parent->right = xPR, gSsSetDebug[47]++;
 
   xPR->parent = xP->parent;
 

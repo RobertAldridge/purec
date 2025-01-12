@@ -5,29 +5,29 @@
 // Charlie H. Burns III
 
 // integrated for root sentinel
-void LeftRightRotateInsert(SsSetNode* x)
+void SsSetRotateLeftRightInsert(SsSetNode* x)
 {
   SsSetNode* xP = x->parent;
   SsSetNode* xPP = xP->parent;
 
   if(x->left)
-    x->left->parent = xP, gDebugRotate[8]++;
+    x->left->parent = xP, gSsSetDebug[8]++;
   else
-    gDebugRotate[9]++;
+    gSsSetDebug[9]++;
 
   xP->right = x->left;
 
   if(x->right)
-    x->right->parent = xPP, gDebugRotate[10]++;
+    x->right->parent = xPP, gSsSetDebug[10]++;
   else
-    gDebugRotate[11]++;
+    gSsSetDebug[11]++;
 
   xPP->left = x->right;
 
   if(xPP == xPP->parent->right)
-    xPP->parent->right = x, gDebugRotate[48]++;
+    xPP->parent->right = x, gSsSetDebug[48]++;
   else
-    xPP->parent->left = x, gDebugRotate[49]++;
+    xPP->parent->left = x, gSsSetDebug[49]++;
 
   x->left = xP;
 
@@ -41,22 +41,22 @@ void LeftRightRotateInsert(SsSetNode* x)
 }
 
 // integrated for root sentinel
-void LeftRightRotateDelete(SsSetNode* xP)
+void SsSetRotateLeftRightErase(SsSetNode* xP)
 {
   SsSetNode* xPL = xP->left;
   SsSetNode* xPLR = xPL->right;
 
   if(xPLR->right)
-    xPLR->right->parent = xP, gDebugRotate[12]++;
+    xPLR->right->parent = xP, gSsSetDebug[12]++;
   else
-    gDebugRotate[13]++;
+    gSsSetDebug[13]++;
 
   xP->left = xPLR->right;
 
   if(xPLR->left)
-    xPLR->left->parent = xPL, gDebugRotate[14]++;
+    xPLR->left->parent = xPL, gSsSetDebug[14]++;
   else
-    gDebugRotate[15]++;
+    gSsSetDebug[15]++;
 
   xPL->right = xPLR->left;
 
@@ -65,9 +65,9 @@ void LeftRightRotateDelete(SsSetNode* xP)
   xPLR->left = xPL;
 
   if(xP == xP->parent->right)
-    xP->parent->right = xPLR, gDebugRotate[50]++;
+    xP->parent->right = xPLR, gSsSetDebug[50]++;
   else
-    xP->parent->left = xPLR, gDebugRotate[51]++;
+    xP->parent->left = xPLR, gSsSetDebug[51]++;
 
   xPLR->parent = xP->parent;
 

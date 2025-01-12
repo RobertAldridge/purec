@@ -5,7 +5,7 @@
 // Charlie H. Burns III
 
 // integrated for root sentinel
-bool SsSetTreeInsert(ssSet* _this, SsSetNode* insert)
+bool SsSetInsertLevel3(ssSet* _this, SsSetNode* insert)
 {
   bool duplicate = false;
 
@@ -14,7 +14,7 @@ bool SsSetTreeInsert(ssSet* _this, SsSetNode* insert)
   for(SsSetNode* child = GETROOTFROMTREE(_this); child; /*nop*/)
   {
     parent = child;
-    
+
     // if less than
     if(_this->lessThan(GETCLIENT(insert), GETCLIENT(child) ) )
     {
@@ -45,16 +45,17 @@ bool SsSetTreeInsert(ssSet* _this, SsSetNode* insert)
 }
 
 // integrated for root sentinel
-bool SsSetNodeInsertFixup(ssSet* _this, SsSetNode* x)
+bool SsSetInsertLevel2(ssSet* _this, SsSetNode* x)
 {
   bool duplicate = false;
 
   SsSetNode* y = 0;
 
-  duplicate = SsSetTreeInsert(_this, x);
+  duplicate = SsSetInsertLevel3(_this, x);
 
   x->color = SsSetRed;
 
+  // fixup
   for(SsSetNode* xP = x->parent; xP->color == SsSetRed; xP = x->parent)
   {
     if(xP == xP->parent->left)
@@ -77,7 +78,7 @@ bool SsSetNodeInsertFixup(ssSet* _this, SsSetNode* x)
 
         xP->parent->color = SsSetRed;
 
-        LeftRightRotateInsert(x);
+        SsSetRotateLeftRightInsert(x);
 
         x = x->left;
       }
@@ -87,7 +88,7 @@ bool SsSetNodeInsertFixup(ssSet* _this, SsSetNode* x)
 
         xP->color = SsSetBlack;
 
-        RightRotateInsert(xP->parent);
+        SsSetRotateRightInsert(xP->parent);
       }
     }
     else
@@ -110,7 +111,7 @@ bool SsSetNodeInsertFixup(ssSet* _this, SsSetNode* x)
 
         xP->parent->color = SsSetRed;
 
-        RightLeftRotateInsert(x);
+        SsSetRotateRightLeftInsert(x);
 
         x = x->right;
       }
@@ -120,7 +121,7 @@ bool SsSetNodeInsertFixup(ssSet* _this, SsSetNode* x)
 
         xP->parent->color = SsSetRed;
 
-        LeftRotateInsert(xP->parent);
+        SsSetRotateLeftInsert(xP->parent);
       }
     }
   }
@@ -134,7 +135,7 @@ bool SsSetNodeInsertFixup(ssSet* _this, SsSetNode* x)
 int64_t SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
 {
   bool result = false;
-  
+
   int duplicate = 0;
 
   SsSetNode* x = 0;
@@ -150,7 +151,7 @@ int64_t SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client
     _log("error");
     goto label_return;
   }
-  
+
   // set modified
 
   // root
@@ -179,7 +180,7 @@ int64_t SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client
 
   // touched in this function
   // -----
-  // root SsSetNodeInsertFixup
+  // root SsSetInsertLevel2
   // lessThan
   // allocator SsMmAlloc
   // num
@@ -200,11 +201,15 @@ int64_t SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client
 
   memcpy(GETCLIENT(x), client, _this->sizeOf);
 
-  if(SsSetNodeInsertFixup(_this, x) )
+  if(SsSetInsertLevel2(_this, x) )
     duplicate = 1;
 
   _this->num++;
-  
+
+  // verify sentinel root right child is null and color is zero
+  // if(_this->root.right || _this->root.color)
+  //   gSsSetDebug[68]++;
+
   result = true;
 
 label_return:

@@ -5,7 +5,7 @@
 // Charlie H. Burns III
 
 // integrated for root sentinel
-int64_t IterativePreorderTreeTraverse(ssSet* _this, SsSetNode* node, SsSetEvaluate evaluate)
+int64_t SsSetDumpLevel2preorder(ssSet* _this, SsSetNode* node, SsSetEvaluate evaluate)
 {
   bool result = false;
 
@@ -34,7 +34,7 @@ int64_t IterativePreorderTreeTraverse(ssSet* _this, SsSetNode* node, SsSetEvalua
 
     if(right)
     {
-      if(left)
+      if(left) // if node->left && node->right
       {
         if( !SsStackPush(_this->stack, &right) )
           goto label_return;
@@ -48,20 +48,20 @@ int64_t IterativePreorderTreeTraverse(ssSet* _this, SsSetNode* node, SsSetEvalua
         // node = stack->pop()
         node = left;
       }
-      else /* !node->left */
+      else // if !node->left && node->right
       {
         // stack->push( &right)
         // node = stack->pop()
         node = right;
       }
     }
-    else if(left)
+    else if(left) // if node->left && !node->right
     {
       // stack->push( &left)
       // node = stack->pop()
       node = left;
     }
-    else
+    else // if !node->left && !node->right
     {
       // if(stack->empty() )
       stackNum = SsStackNum(_this->stack);
@@ -84,7 +84,7 @@ label_return:
 }
 
 // integrated for root sentinel
-int64_t IterativeInorderTreeTraverse(ssSet* _this, SsSetNode* node, SsSetEvaluate evaluate)
+int64_t SsSetDumpLevel2inorder(ssSet* _this, SsSetNode* node, SsSetEvaluate evaluate)
 {
   bool result = false;
 
@@ -139,7 +139,7 @@ label_return:
 }
 
 // integrated for root sentinel
-int64_t IterativePostorderTreeTraverse(ssSet* _this, SsSetNode* node, SsSetEvaluate evaluate)
+int64_t SsSetDumpLevel2postorder(ssSet* _this, SsSetNode* node, SsSetEvaluate evaluate)
 {
   bool result = false;
 
@@ -217,7 +217,7 @@ label_return:
 }
 
 // integrated for root sentinel
-int64_t IterativeLevelorderTreeTraverse(ssSet* _this, SsSetNode* node, SsSetEvaluate evaluate)
+int64_t SsSetDumpLevel2levelorder(ssSet* _this, SsSetNode* node, SsSetEvaluate evaluate)
 {
   bool result = false;
 
@@ -285,10 +285,10 @@ label_return:
 #if 0
 static int64_t(*gSsSetIterativeTreeTraverse)(ssSet* _this, SsSetNode* node, SsSetEvaluate evaluate)[4] =
 {
-  IterativePreorderTreeTraverse,
-  IterativeInorderTreeTraverse,
-  IterativePostorderTreeTraverse,
-  IterativeLevelorderTreeTraverse
+  SsSetDumpLevel2preorder,
+  SsSetDumpLevel2inorder,
+  SsSetDumpLevel2postorder,
+  SsSetDumpLevel2levelorder
 };
 #endif
 
@@ -339,10 +339,10 @@ int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
   // touched in this function
   // -----
   // evaluate
-  // stack IterativePreorderTreeTraverse IterativeInorderTreeTraverse IterativePostorderTreeTraverse
-  // queue IterativeLevelorderTreeTraverse
-  // maxStack IterativePreorderTreeTraverse IterativeInorderTreeTraverse IterativePostorderTreeTraverse
-  // maxQueue IterativeLevelorderTreeTraverse
+  // stack SsSetDumpLevel2preorder SsSetDumpLevel2inorder SsSetDumpLevel2postorder
+  // queue SsSetDumpLevel2levelorder
+  // maxStack SsSetDumpLevel2preorder SsSetDumpLevel2inorder SsSetDumpLevel2postorder
+  // maxQueue SsSetDumpLevel2levelorder
 
   if(evaluate)
     _this->evaluate = evaluate;
@@ -351,10 +351,10 @@ int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
 
   switch(order)
   {
-  case SsSetPreorder: dump = IterativePreorderTreeTraverse(_this, root, _this->evaluate); break;
-  case SsSetInorder: dump = IterativeInorderTreeTraverse(_this, root, _this->evaluate); break;
-  case SsSetPostorder: dump = IterativePostorderTreeTraverse(_this, root, _this->evaluate); break;
-  case SsSetLevelorder: dump = IterativeLevelorderTreeTraverse(_this, root, _this->evaluate); break;
+  case SsSetPreorder: dump = SsSetDumpLevel2preorder(_this, root, _this->evaluate); break;
+  case SsSetInorder: dump = SsSetDumpLevel2inorder(_this, root, _this->evaluate); break;
+  case SsSetPostorder: dump = SsSetDumpLevel2postorder(_this, root, _this->evaluate); break;
+  case SsSetLevelorder: dump = SsSetDumpLevel2levelorder(_this, root, _this->evaluate); break;
   }
 
   if(dump < 0)

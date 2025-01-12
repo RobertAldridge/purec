@@ -38,7 +38,7 @@ using std::vector;
 #if CPP_STUFF
 typedef struct NodeType Node;
 
-static void nodeRemove(Node* /*current*/)
+static void nodeRemove(Node* current)
 {
 }
 
@@ -802,7 +802,7 @@ static void swapInt(uint32_t& lhs, uint32_t& rhs)
   rhs = temporary;
 }
 
-extern uint32_t gDebugRotate[69];
+extern uint32_t gSsSetDebug[69];
 
 static uint32_t g1000fullCount = 0;
 static uint32_t g1000modCount = 0;
@@ -862,7 +862,7 @@ static void DebugFree(uint32_t* data[G1000NUMERATOR] )
   }
 }
 
-bool SsSetTest(blahRandom* /*random*/)
+bool SsSetTest(blahRandom* random)
 {
   //ssMm* ssMmBlah = SsMmConstruct(sizeof(void*), 100, false);
   //SsMmSetResize(ssMmBlah, -1);
@@ -904,7 +904,7 @@ uint32_t numData = 4000000000;
 
 //for(uint32_t numData = 100; numData <= 1000; numData++)
 {
-    memset(gDebugRotate, 0, sizeof(gDebugRotate) );
+    memset(gSsSetDebug, 0, sizeof(gSsSetDebug) );
 
     ssSet* mySet = SsSetConstruct(sizeof(myStruct), 5000000, 4100000000, 10000000, (SsSetCompare)lessThan);
     if( !mySet)
@@ -1254,22 +1254,22 @@ uint32_t numData = 4000000000;
     DebugFree(datablah);
 
 #if BLAH_KEEP
-    for(uint32_t index = 0; index < countof(gDebugRotate); index++)
+    for(uint32_t index = 0; index < countof(gSsSetDebug); index++)
     {
-//printf("debug rotate %i %i\n", index, gDebugRotate[index] );
+//printf("debug rotate %i %i\n", index, gSsSetDebug[index] );
     }
     printf("\n");
 
-    for(uint32_t index = 0; index < (countof(gDebugRotate) - 1); index++)
+    for(uint32_t index = 0; index < (countof(gSsSetDebug) - 1); index++)
     {
       if(index == 1 || index == 21)
       {
-        if(gDebugRotate[index] )
-          printf("debug rotate %i %i\n", index, gDebugRotate[index] );
+        if(gSsSetDebug[index] )
+          printf("debug rotate %i %i\n", index, gSsSetDebug[index] );
       }
-      else if( !gDebugRotate[index] )
+      else if( !gSsSetDebug[index] )
       {
-        printf("debug rotate %i %i\n", index, gDebugRotate[index] );
+        printf("debug rotate %i %i\n", index, gSsSetDebug[index] );
       }
     }
     printf("\n");
