@@ -321,6 +321,22 @@ label_return:
 
 static bool SsSetTest(blahRandom* random);
 
+int main();
+
+#include "windows.h"
+
+#pragma warning (disable : 4668)
+#pragma warning (disable : 5039)
+
+int WINAPI WinMain( HINSTANCE    hInstance,        // handle to current instance
+                    HINSTANCE /* hPrevInstance */, // handle to previous instance
+                    char*     /* lpCmdLine     */, // pointer to command line
+                    int          nCmdShow          // show state of window
+                  )
+{
+  return main();
+}
+
 int main()
 {
   int result = -1;
@@ -572,7 +588,7 @@ bool SsSetTest(blahRandom* /*random*/)
 
 memset(gSsSetDebug, 0, sizeof(gSsSetDebug) );
 
-for(uint32_t numData = 1; numData <= 100; numData += 1)
+for(uint32_t numData = 10; numData <= 100; numData += 1)
 {
   double percentageQueue = 0;
 

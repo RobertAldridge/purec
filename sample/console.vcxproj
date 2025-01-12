@@ -109,11 +109,11 @@
       <AdditionalIncludeDirectories>C:\business\purec\ssmm;C:\business\purec\bintree;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <DisableSpecificWarnings>4127;4200;4505;4710;4711;5045;6011;28182</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4127;4200;4505;4668;4710;4711;5039;5045;6011;28182</DisableSpecificWarnings>
       <CompileAsManaged>false</CompileAsManaged>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
