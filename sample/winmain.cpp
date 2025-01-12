@@ -134,12 +134,13 @@ static INDEX_TYPE TestObject(CLIENT_POTYPE ClientObject1, CLIENT_POTYPE ClientOb
 // for readability and emphasis
 static FILE* file = 0;
 
-static int numErrors = 0, numWarnings = 0;
+static int numErrors = 0;
+static int numWarnings = 0;
 
 static int ErrorBox(const char* const errorString)
 {
   int result = -1;
-  
+
   char ErrorString1[514] = {0};
   char ErrorString2[514] = {0};
 
@@ -167,7 +168,7 @@ static int ErrorBox(const char* const errorString)
   {
     assert("MessageBox(...) failure" && 0);
   }
-  
+
   result = 0;
 
 label_return:
@@ -182,7 +183,7 @@ static int Error(const char* const errorString)
   {
     if( !errorString || !errorString[0] )
     {
-      assert( "Error -- errorString" && 0 );
+      assert("Error -- errorString" && 0);
       goto label_return;
     }
 
@@ -255,7 +256,7 @@ static int Warning(const char* const warningString)
       --numWarnings;
 
       // If fprintf fails load up the warning as an error.
-      ErrorBox(warningString );
+      ErrorBox(warningString);
 
       ErrorBox("fprintf(...) failure -- fatal low level system error");
     }
@@ -276,7 +277,6 @@ static int Warning(const char* const warningString)
 label_return:
   return result;
 }
-
 
 class Graphics
 {
@@ -420,16 +420,16 @@ static int graphicsUnlockBackBuffer()
 {
   int result = GRAPHICS_ERROR;
 
-  switch(graphicsImplementation() )
+  switch(graphicsImplementation() ) // switch(graphicsImplementation() )
   {
 
-  case GDI:
+  case GDI: // switch(graphicsImplementation() ) - GDI
   {
     result = GRAPHICS_OK;
   }
-  break;
+  break; // switch(graphicsImplementation() ) - GDI
 
-  case DIRECTDRAW:
+  case DIRECTDRAW: // switch(graphicsImplementation() ) - DIRECTDRAW
   {
     HRESULT hResult = 0;
 
@@ -440,15 +440,15 @@ static int graphicsUnlockBackBuffer()
       Error("IDirectDrawSurface::Unlock(...) has failed for the back buffer");
 
       graphicsSafeMode();
-      
+
       goto label_return;
     }
 
     result = GRAPHICS_OK;
   }
-  break;
+  break; // switch(graphicsImplementation() ) - DIRECTDRAW
 
-  }
+  } // switch(graphicsImplementation() )
 
 label_return:
   if(result == GRAPHICS_ERROR)
@@ -463,24 +463,24 @@ static int graphicsLockBackBuffer()
 {
   int result = GRAPHICS_ERROR;
 
-  switch(graphicsImplementation() )
+  switch(graphicsImplementation() ) // switch(graphicsImplementation() )
   {
 
-  case GDI:
+  case GDI: // switch(graphicsImplementation() ) - GDI
   {
     // Flush GDI before testing the back buffer
     if( !GdiFlush() )
     {
-      Error(" GdiFlush(...) function failure ");
-      
+      Error("GdiFlush(...) function failure");
+
       goto label_return;
     }
 
     result = GRAPHICS_OK;
   }
-  break;
+  break; // switch(graphicsImplementation() ) - GDI
 
-  case DIRECTDRAW:
+  case DIRECTDRAW: // switch(graphicsImplementation() ) - DIRECTDRAW
   {
     DDSURFACEDESC ddsd = {0};
 
@@ -495,14 +495,14 @@ static int graphicsLockBackBuffer()
       Error("IDirectDrawSurface::Lock(...) has failed for the back buffer");
 
       graphicsSafeMode();
-      
+
       goto label_return;
     }
 
     if(backbufferArray[0] != ddsd.lpSurface || backbufferArray[1] != (char*)ddsd.lpSurface + ddsd.lPitch)
     {
       char* surface = (char*)ddsd.lpSurface;
-      
+
       for(int index = 0; index < graphicsClientHeight(); index++)
       {
         backbufferArray[index] = surface + index * (int)ddsd.lPitch;
@@ -511,9 +511,9 @@ static int graphicsLockBackBuffer()
 
     result = GRAPHICS_OK;
   }
-  break;
+  break; // switch(graphicsImplementation() ) - DIRECTDRAW
 
-  }
+  } // switch(graphicsImplementation() )
 
 label_return:
   if(result == GRAPHICS_ERROR)
@@ -528,24 +528,24 @@ static int graphicsClearBackBuffer()
 {
   int result = GRAPHICS_ERROR;
 
-  switch(graphicsImplementation() )
+  switch(graphicsImplementation() ) // switch(graphicsImplementation() )
   {
 
-  case GDI:
+  case GDI: // switch(graphicsImplementation() ) - GDI
   {
     // Clear back buffer
     if( !BitBlt(backbufferDC, 0, 0, graphicsClientWidth(), graphicsClientHeight(), 0, 0, 0, BLACKNESS) )
     {
       Error("BitBlt(...) function failure");
-      
+
       goto label_return;
     }
 
     result = GRAPHICS_OK;
   }
-  break;
+  break; // switch(graphicsImplementation() ) - GDI
 
-  case DIRECTDRAW:
+  case DIRECTDRAW: // switch(graphicsImplementation() ) - DIRECTDRAW
   {
     DDBLTFX ddfx = {0};
 
@@ -562,15 +562,15 @@ static int graphicsClearBackBuffer()
       Error("ddraw_backbuffer->Blt(...) function failure");
 
       graphicsSafeMode();
-      
+
       goto label_return;
     }
 
     result = GRAPHICS_OK;
   }
-  break;
+  break; // switch(graphicsImplementation() ) - DIRECTDRAW
 
-  }
+  } // switch(graphicsImplementation() )
 
 label_return:
   if(result == GRAPHICS_ERROR)
@@ -584,11 +584,11 @@ label_return:
 static int graphicsDrawBackBufferToScreen(HWND hWindow)
 {
   int result = GRAPHICS_ERROR;
-  
-  switch(graphicsImplementation() )
+
+  switch(graphicsImplementation() ) // switch(graphicsImplementation() )
   {
 
-  case GDI:
+  case GDI: // switch(graphicsImplementation() ) - GDI
   {
     HDC screen = 0;
 
@@ -598,7 +598,7 @@ static int graphicsDrawBackBufferToScreen(HWND hWindow)
     if( !screen)
     {
       Error("(screen = GetDC(hWindow) ) == NULL");
-      
+
       goto label_return;
     }
 
@@ -606,11 +606,11 @@ static int graphicsDrawBackBufferToScreen(HWND hWindow)
     {
       Error("StretchBlt(...) function failure");
 
-      if(ReleaseDC( hWindow, screen) != 1)
+      if(ReleaseDC(hWindow, screen) != 1)
       {
         Error("ReleaseDC(...) function failure");
       }
-      
+
       goto label_return;
     }
 
@@ -618,15 +618,15 @@ static int graphicsDrawBackBufferToScreen(HWND hWindow)
     if(ReleaseDC(hWindow, screen) != 1)
     {
       Error("ReleaseDC(...) function failure");
-      
+
       goto label_return;
     }
 
     result = GRAPHICS_OK;
   }
-  break;
+  break; // switch(graphicsImplementation() ) - GDI
 
-  case DIRECTDRAW:
+  case DIRECTDRAW: // switch(graphicsImplementation() ) - DIRECTDRAW
   {
     RECT rectBackBuffer = {0};
     RECT rectScreen = {0};
@@ -636,7 +636,7 @@ static int graphicsDrawBackBufferToScreen(HWND hWindow)
     if( !ClientToScreen(hWindow, (POINT*)&rectScreen) )
     {
       Error("The function ClientToScreen(...) has failed");
-      
+
       goto label_return;
     }
 
@@ -656,15 +656,15 @@ static int graphicsDrawBackBufferToScreen(HWND hWindow)
       Error("ddraw_screen->Blt(...) function failure");
 
       graphicsSafeMode();
-      
+
       goto label_return;
     }
 
     result = GRAPHICS_OK;
   }
-  break;
+  break; // switch(graphicsImplementation() ) - DIRECTDRAW
 
-  }
+  } // switch(graphicsImplementation() )
 
 label_return:
   if(result == GRAPHICS_ERROR)
@@ -688,7 +688,7 @@ static int graphicsSaveOldMode()
   if( !screen)
   {
     Error("(screen = GetDC(0) ) == NULL");
-    
+
     goto label_return;
   }
 
@@ -709,7 +709,7 @@ static int graphicsSaveOldMode()
   {
     goto label_return;
   }
-  
+
   result = GRAPHICS_OK;
 
 label_return:
@@ -719,7 +719,7 @@ label_return:
 static int graphicsRestoreOldMode()
 {
   int result = GRAPHICS_ERROR;
-  
+
   DEVMODE DMode = {0};
 
   DMode.dmSize = sizeof(DEVMODE);
@@ -737,12 +737,12 @@ static int graphicsRestoreOldMode()
     Error("The function ChangeDisplaySettings(...) has failed");
 
     isModeChangeActive = false;
-    
+
     goto label_return;
   }
 
   isModeChangeActive = false;
-  
+
   result = GRAPHICS_OK;
 
 label_return:
@@ -758,7 +758,7 @@ static int graphicsSetBitDepthTo32()
   if( (oldWidth >= graphicsWidth() || oldHeight >= graphicsHeight() ) && oldBitDepth == 32 && forceFullScreen == false)
   {
     result = GRAPHICS_OK;
-    
+
     goto label_return;
   }
 
@@ -794,14 +794,14 @@ static int graphicsSetBitDepthTo32()
     Warning("The function ChangeDisplaySettings(...) has failed for 32 bit pixel depth");
 
     isModeChangeActive = false;
-    
+
     goto label_return;
   }
 
   bitDepth = 32;
 
   isModeChangeActive = false;
-  
+
   result = GRAPHICS_OK;
 
 label_return:
@@ -811,7 +811,7 @@ label_return:
 static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destinationHeight, char* sourceFileName)
 {
   int result = GRAPHICS_ERROR;
-  
+
   bool error = false;
 
   int sourceWidth = 0;
@@ -832,7 +832,7 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
 
   if( !BltDC)
   {
-    Error("( BltDC = CreateCompatibleDC(...) ) == NULL");
+    Error("(BltDC = CreateCompatibleDC(...) ) == NULL");
 
     goto label_return;
   }
@@ -843,7 +843,7 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
 
   if( !file)
   {
-    Error("( file = fopen(...) ) == NULL");
+    Error("(file = fopen(...) ) == NULL");
 
     if( !DeleteDC(BltDC) )
     {
@@ -886,7 +886,7 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
   {
     Error("fread(...) error");
 
-    if( fclose(file) )
+    if(fclose(file) )
     {
       Error("fclose(...) error");
     }
@@ -907,7 +907,7 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
     goto label_return;
   }
 
-  sourceWidth  = BInfo.bmiHeader.biWidth;
+  sourceWidth = BInfo.bmiHeader.biWidth;
   sourceHeight = BInfo.bmiHeader.biHeight;
 
   if(sourceWidth <= 0 || sourceHeight <= 0)
@@ -938,7 +938,7 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
   if(fclose(file) )
   {
     Error("fclose(...) error");
-    
+
     error = true;
   }
   else
@@ -952,7 +952,7 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
 
   if( !BltHB)
   {
-    Error("( BltHB = LoadImage(...) ) == NULL");
+    Error("(BltHB = LoadImage(...) ) == NULL");
 
     if( !DeleteDC(BltDC) )
     {
@@ -972,7 +972,7 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
 
   if( !CleanUp || (const unsigned long)CleanUp == GDI_ERROR)
   {
-    Error("( CleanUp = SelectObject(...) ) == NULL");
+    Error("(CleanUp = SelectObject(...) ) == NULL");
 
     if( !DeleteObject(BltHB) )
     {
@@ -994,7 +994,7 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
   if( !StretchBlt(destination, 0, 0, destinationWidth, destinationHeight, BltDC, 0, 0, sourceWidth, sourceHeight, SRCCOPY) )
   {
     Error("StretchBlt failure");
-    
+
     error = true;
   }
 
@@ -1007,8 +1007,8 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
 
     if( !deviceTempCleanUp || (const unsigned long)deviceTempCleanUp == GDI_ERROR)
     {
-      Error("( deviceTempCleanUp = SelectObject(...) ) == NULL");
-      
+      Error("(deviceTempCleanUp = SelectObject(...) ) == NULL");
+
       error = true;
     }
     else
@@ -1019,7 +1019,7 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
     if( !DeleteObject(BltHB) )
     {
       Error("DeleteObject(..) function failure");
-      
+
       error = true;
     }
     else
@@ -1038,7 +1038,7 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
       RemoveHandle(BltDC);
     }
   }
-  
+
   if( !error)
     result = GRAPHICS_OK;
 
@@ -1061,7 +1061,7 @@ static int graphicsTermScreenAndBackBufferGDI()
 
     if( !TempCleanUp || (const unsigned long)TempCleanUp == GDI_ERROR)
     {
-      Error("( TempCleanUp = SelectObject(...) ) == NULL");
+      Error("(TempCleanUp = SelectObject(...) ) == NULL");
 
       error = true;
     }
@@ -1181,10 +1181,10 @@ static int graphicsTermScreenAndBackBuffer()
 {
   int result = GRAPHICS_OK;
 
-  switch(graphicsImplementation() )
+  switch(graphicsImplementation() ) // switch(graphicsImplementation() )
   {
 
-  case GDI:
+  case GDI: // switch(graphicsImplementation() ) - GDI
   {
     result = graphicsTermScreenAndBackBufferGDI();
 
@@ -1197,9 +1197,9 @@ static int graphicsTermScreenAndBackBuffer()
       backbufferArray = 0;
     }
   }
-  goto label_return;
+  goto label_return; // switch(graphicsImplementation() ) - GDI
 
-  case DIRECTDRAW:
+  case DIRECTDRAW: // switch(graphicsImplementation() ) - DIRECTDRAW
   {
     result = graphicsTermScreenAndBackBufferDIRECTDRAW();
 
@@ -1212,10 +1212,10 @@ static int graphicsTermScreenAndBackBuffer()
       backbufferArray = 0;
     }
   }
-  goto label_return;
+  goto label_return; // switch(graphicsImplementation() ) - DIRECTDRAW
 
-  }
-  
+  } // switch(graphicsImplementation() )
+
   result = GRAPHICS_ERROR;
 
 label_return:
@@ -1256,7 +1256,7 @@ static int graphicsInitScreenAndBackBufferGDI(HWND hWindow)
 
   if( !backbufferDC)
   {
-    Error("( backbufferDC = CreateCompatibleDC(...) ) == NULL");
+    Error("(backbufferDC = CreateCompatibleDC(...) ) == NULL");
 
     goto label_return;
   }
@@ -1268,7 +1268,7 @@ static int graphicsInitScreenAndBackBufferGDI(HWND hWindow)
 
   if( !backbufferBitmapHB || !backbufferArray[graphicsClientHeight() - 1] )
   {
-    Error("( backbufferBitmapHB = CreateDIBSection(...) ) == NULL");
+    Error("(backbufferBitmapHB = CreateDIBSection(...) ) == NULL");
 
     if( !DeleteDC(backbufferDC) )
     {
@@ -1288,11 +1288,11 @@ static int graphicsInitScreenAndBackBufferGDI(HWND hWindow)
 
   // Keep the clean up object, so we can store it back
   // into the container when we take the bitmap out.
-  backbufferCleanUp = SelectObject( backbufferDC, backbufferBitmapHB );
+  backbufferCleanUp = SelectObject(backbufferDC, backbufferBitmapHB);
 
-  if( !backbufferCleanUp || (const unsigned long) backbufferCleanUp == GDI_ERROR)
+  if( !backbufferCleanUp || (const unsigned long)backbufferCleanUp == GDI_ERROR)
   {
-    Error("( backbufferCleanUp = SelectObject(...) ) == NULL");
+    Error("(backbufferCleanUp = SelectObject(...) ) == NULL");
 
     if( !DeleteObject(backbufferBitmapHB) )
     {
@@ -1321,25 +1321,25 @@ static int graphicsInitScreenAndBackBufferGDI(HWND hWindow)
   InsertHandle(backbufferCleanUp);
 
   // Set up the back buffer pointer array.
-  for(loop = graphicsClientHeight() - 2; loop >= 0; loop-- )
+  for(loop = graphicsClientHeight() - 2; loop >= 0; loop--)
   {
     backbufferArray[loop] = backbufferArray[loop + 1] + graphicsClientWidth() * 4;
   }
 
   graphicsClearBackBuffer();
 
-//TextOutInitSystem( Graphics::graphicsBackBufferFunction, Graphics::graphicsClientWidth(), Graphics::graphicsClientHeight(), Graphics::graphicsWidth(), Graphics::graphicsHeight() );
+  TextOutInitSystem(Graphics::graphicsBackBufferFunction, Graphics::graphicsClientWidth(), Graphics::graphicsClientHeight(), Graphics::graphicsWidth(), Graphics::graphicsHeight() );
 
-//ParticleSystemsInitGraphics(Graphics::graphicsBackBufferFunction()[0], Graphics::graphicsClientWidth(), Graphics::graphicsClientHeight(), 32, -( (Graphics::graphicsClientWidth() * 4 + 3) & ~3) );
+  ParticleSystemsInitGraphics(Graphics::graphicsBackBufferFunction()[0], Graphics::graphicsClientWidth(), Graphics::graphicsClientHeight(), 32, -( (Graphics::graphicsClientWidth() * 4 + 3) & ~3) );
 
   graphicsLockBackBuffer();
 
-//TextOut(10, 10, "Press F8 for help");
+  TextOut(10, 10, "Press F8 for help");
 
   graphicsUnlockBackBuffer();
 
   graphicsDrawBackBufferToScreen(hWindow);
-  
+
   result = GRAPHICS_OK;
 
 label_return:
@@ -1356,161 +1356,161 @@ static int graphicsInitScreenAndBackBufferDIRECTDRAW(HWND hWindow)
 
   ddsd.dwSize = sizeof(DDSURFACEDESC);
 
-  if( ddraw_obj || ddraw_screen || ddraw_screenclipper || ddraw_backbuffer )
+  if(ddraw_obj || ddraw_screen || ddraw_screenclipper || ddraw_backbuffer)
   {
     result = GRAPHICS_OK;
-    
+
     goto label_return;
   }
 
   // Initialize the direct draw interface.
-  hResult = DirectDrawCreate( 0, &ddraw_obj, 0 );
+  hResult = DirectDrawCreate(0, &ddraw_obj, 0);
 
-  if( FAILED( hResult ) )
+  if(FAILED(hResult) )
   {
-    Error( " The function DirectDrawCreate(...) has failed. " );
+    Error("The function DirectDrawCreate(...) has failed.");
 
     goto label_return;
   }
 
-  hResult = ddraw_obj->SetCooperativeLevel( hWindow, DDSCL_NORMAL );
+  hResult = ddraw_obj->SetCooperativeLevel(hWindow, DDSCL_NORMAL);
 
-  if( FAILED( hResult ) )
+  if(FAILED(hResult) )
   {
-    Error( " The function SetCooperativeLevel(...) has failed. " );
+    Error("The function SetCooperativeLevel(...) has failed.");
 
     hResult = ddraw_obj->Release();
 
     ddraw_obj = 0;
 
-    if( FAILED( hResult ) )
+    if(FAILED(hResult) )
     {
-      Error( " The DirectDraw main object failed to release correctly. " );
+      Error("The DirectDraw main object failed to release correctly.");
     }
 
     goto label_return;
   }
 
   // Gain access to the screen surface.
-  ddsd.dwFlags        = DDSD_CAPS;
+  ddsd.dwFlags = DDSD_CAPS;
 
   ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
 
-  hResult = ddraw_obj->CreateSurface( &ddsd, &ddraw_screen, 0 );
+  hResult = ddraw_obj->CreateSurface( &ddsd, &ddraw_screen, 0);
 
-  if( FAILED( hResult ) )
+  if(FAILED(hResult) )
   {
-    Error( " The function CreateSurface(...) has failed while trying to create the screen surface. " );
+    Error("The function CreateSurface(...) has failed while trying to create the screen surface.");
 
     hResult = ddraw_obj->Release();
 
     ddraw_obj = 0;
 
-    if( FAILED( hResult ) )
+    if(FAILED(hResult) )
     {
-      Error( " The DirectDraw main object failed to release correctly. " );
+      Error("The DirectDraw main object failed to release correctly.");
     }
 
     goto label_return;
   }
 
   // Create the clipper object which will be used on the screen surface.
-  hResult = ddraw_obj->CreateClipper( 0, &ddraw_screenclipper, 0 );
+  hResult = ddraw_obj->CreateClipper(0, &ddraw_screenclipper, 0);
 
-  if( FAILED( hResult ) )
+  if(FAILED(hResult) )
   {
-    Error( " The function CreateClipper(...) has failed while trying to create the screen clipper object. " );
+    Error("The function CreateClipper(...) has failed while trying to create the screen clipper object.");
 
     hResult = ddraw_screen->Release();
 
     ddraw_screen = 0;
 
-    if( FAILED( hResult ) )
+    if(FAILED(hResult) )
     {
-      Error( " The DirectDraw screen object failed to release correctly. " );
+      Error("The DirectDraw screen object failed to release correctly.");
     }
 
     hResult = ddraw_obj->Release();
 
     ddraw_obj = 0;
 
-    if( FAILED( hResult ) )
+    if(FAILED(hResult) )
     {
-      Error( " The DirectDraw main object failed to release correctly. " );
+      Error("The DirectDraw main object failed to release correctly.");
     }
 
     goto label_return;
   }
 
   // Associate the clipper to our client window.
-  hResult = ddraw_screenclipper->SetHWnd( 0, hWindow );
+  hResult = ddraw_screenclipper->SetHWnd(0, hWindow);
 
-  if( FAILED( hResult ) )
+  if(FAILED(hResult) )
   {
-    Error( " The function SetHWnd(...) has failed for the screen clipper object. " );
+    Error("The function SetHWnd(...) has failed for the screen clipper object.");
 
     hResult = ddraw_screenclipper->Release();
 
     ddraw_screenclipper = 0;
 
-    if( FAILED( hResult ) )
+    if(FAILED(hResult) )
     {
-      Error( " The DirectDraw screen clipper object failed to release correctly. " );
+      Error("The DirectDraw screen clipper object failed to release correctly.");
     }
 
     hResult = ddraw_screen->Release();
 
     ddraw_screen = 0;
 
-    if( FAILED( hResult ) )
+    if(FAILED(hResult) )
     {
-      Error( " The DirectDraw screen object failed to release correctly. " );
+      Error("The DirectDraw screen object failed to release correctly.");
     }
 
     hResult = ddraw_obj->Release();
 
     ddraw_obj = 0;
 
-    if( FAILED( hResult ) )
+    if(FAILED(hResult) )
     {
-      Error( " The DirectDraw main object failed to release correctly. " );
+      Error("The DirectDraw main object failed to release correctly.");
     }
 
     goto label_return;
   }
 
   // Clip the screen surface to the client window.
-  hResult = ddraw_screen->SetClipper( ddraw_screenclipper );
+  hResult = ddraw_screen->SetClipper(ddraw_screenclipper);
 
-  if( FAILED( hResult ) )
+  if(FAILED(hResult) )
   {
-    Error( " The function SetClipper(...) has failed for the screen surface. " );
+    Error("The function SetClipper(...) has failed for the screen surface.");
 
     hResult = ddraw_screenclipper->Release();
 
     ddraw_screenclipper = 0;
 
-    if( FAILED( hResult ) )
+    if(FAILED(hResult) )
     {
-      Error( " The DirectDraw screen clipper object failed to release correctly. " );
+      Error("The DirectDraw screen clipper object failed to release correctly.");
     }
 
     hResult = ddraw_screen->Release();
 
     ddraw_screen = 0;
 
-    if( FAILED( hResult ) )
+    if(FAILED(hResult) )
     {
-      Error( " The DirectDraw screen object failed to release correctly. " );
+      Error("The DirectDraw screen object failed to release correctly.");
     }
 
     hResult = ddraw_obj->Release();
 
     ddraw_obj = 0;
 
-    if( FAILED( hResult ) )
+    if(FAILED(hResult) )
     {
-      Error( " The DirectDraw main object failed to release correctly. " );
+      Error("The DirectDraw main object failed to release correctly.");
     }
 
     goto label_return;
@@ -1525,37 +1525,37 @@ static int graphicsInitScreenAndBackBufferDIRECTDRAW(HWND hWindow)
 
   ddsd.dwHeight = graphicsClientHeight();
 
-  hResult = ddraw_obj->CreateSurface( &ddsd, &ddraw_backbuffer, 0 );
+  hResult = ddraw_obj->CreateSurface( &ddsd, &ddraw_backbuffer, 0);
 
-  if( FAILED( hResult ) || FAILED( ddraw_backbuffer->GetSurfaceDesc( &ddsd ) ) )
+  if(FAILED(hResult) || FAILED(ddraw_backbuffer->GetSurfaceDesc( &ddsd) ) )
   {
-    Error( " The function CreateSurface(...) has failed while trying to create the back buffer surface. " );
+    Error("The function CreateSurface(...) has failed while trying to create the back buffer surface.");
 
     hResult = ddraw_screen->Release();
 
     ddraw_screen = 0;
 
-    if( FAILED( hResult ) )
+    if(FAILED(hResult) )
     {
-      Error( " The DirectDraw screen object failed to release correctly. " );
+      Error("The DirectDraw screen object failed to release correctly.");
     }
 
     hResult = ddraw_screenclipper->Release();
 
     ddraw_screenclipper = 0;
 
-    if( FAILED( hResult ) )
+    if(FAILED(hResult) )
     {
-      Error( " The DirectDraw screen clipper object failed to release correctly. " );
+      Error("The DirectDraw screen clipper object failed to release correctly.");
     }
 
     hResult = ddraw_obj->Release();
 
     ddraw_obj = 0;
 
-    if( FAILED( hResult ) )
+    if(FAILED(hResult) )
     {
-      Error( " The DirectDraw main object failed to release correctly. " );
+      Error("The DirectDraw main object failed to release correctly.");
     }
 
     goto label_return;
@@ -1563,13 +1563,13 @@ static int graphicsInitScreenAndBackBufferDIRECTDRAW(HWND hWindow)
 
   graphicsClearBackBuffer();
 
-//TextOutInitSystem(Graphics::graphicsBackBufferFunction, Graphics::graphicsClientWidth(), Graphics::graphicsClientHeight(), Graphics::graphicsWidth(), Graphics::graphicsHeight() );
+  TextOutInitSystem(Graphics::graphicsBackBufferFunction, Graphics::graphicsClientWidth(), Graphics::graphicsClientHeight(), Graphics::graphicsWidth(), Graphics::graphicsHeight() );
 
-//ParticleSystemsInitGraphics(Graphics::graphicsBackBufferFunction()[0], Graphics::graphicsClientWidth(), Graphics::graphicsClientHeight(), 32, ddsd.lPitch);
+  ParticleSystemsInitGraphics(Graphics::graphicsBackBufferFunction()[0], Graphics::graphicsClientWidth(), Graphics::graphicsClientHeight(), 32, ddsd.lPitch);
 
   graphicsLockBackBuffer();
 
-//TextOut(10, 10, "Press F8 for help");
+  TextOut(10, 10, "Press F8 for help");
 
   graphicsUnlockBackBuffer();
 
@@ -1583,64 +1583,64 @@ label_return:
 
 public:
 
-static int graphicsInitScreenAndBackBuffer( HWND hWindow)
+static int graphicsInitScreenAndBackBuffer(HWND hWindow)
 {
   Graphics::_hWindow = hWindow;
 
   graphicsSaveOldMode();
 
-  if( beNice == false )
+  if(beNice == false)
   {
     graphicsSetBitDepthTo32();
   }
 
-  if( bitDepth != 32 )
+  if(bitDepth != 32)
   {
     Implementation = GDI;
   }
 
-  if( bitDepth <= 0 )
+  if(bitDepth <= 0)
   {
     bitDepth = oldBitDepth;
   }
 
-  if( !backbufferArray )
+  if( !backbufferArray)
   {
-    backbufferArray = (char**) InsertHeapAllocation( sizeof(char*) * graphicsClientHeight() );
+    backbufferArray = (char**)InsertHeapAllocation(sizeof(char*) * graphicsClientHeight() );
   }
 
-  if( !backbufferArray )
+  if( !backbufferArray)
   {
     return GRAPHICS_ERROR;
   }
 
-  switch( graphicsImplementation() )
+  switch(graphicsImplementation() ) // switch(graphicsImplementation() )
   {
 
-  case GDI:
+  case GDI: // switch(graphicsImplementation() ) - GDI
   {
-    return graphicsInitScreenAndBackBufferGDI( hWindow );
+    return graphicsInitScreenAndBackBufferGDI(hWindow);
   }
-  break;
+  break; // switch(graphicsImplementation() ) - GDI
 
-  case DIRECTDRAW:
+  case DIRECTDRAW: // switch(graphicsImplementation() ) - DIRECTDRAW
   {
-    if( graphicsInitScreenAndBackBufferDIRECTDRAW( hWindow ) != 0 )
+    if(graphicsInitScreenAndBackBufferDIRECTDRAW(hWindow) != 0)
     {
       Implementation = GDI;
 
-      return graphicsInitScreenAndBackBuffer( hWindow );
+      return graphicsInitScreenAndBackBuffer(hWindow);
     }
     else
     {
       return GRAPHICS_OK;
     }
   }
-  break;
+  break; // switch(graphicsImplementation() ) - DIRECTDRAW
 
-  }
+  } // switch(graphicsImplementation() )
 
-  Error( " The OS code is using an invalid graphics implementation. " );
+  Error("The OS code is using an invalid graphics implementation.");
 
   return GRAPHICS_ERROR;
 }
@@ -1653,27 +1653,27 @@ static int graphicsCheckIsFullScreen()
 
   HDC screen = 0;
 
-  screen = GetDC( 0 );
+  screen = GetDC(0);
 
-  if( screen == NULL )
+  if(screen == NULL)
   {
-    Error( " ( screen = GetDC( 0 ) ) == NULL " );
+    Error("(screen = GetDC(0) ) == NULL");
 
     return GRAPHICS_ERROR;
   }
 
-  screenWidth = GetDeviceCaps( screen, HORZRES );
+  screenWidth = GetDeviceCaps(screen, HORZRES);
 
-  screenHeight = GetDeviceCaps( screen, VERTRES );
+  screenHeight = GetDeviceCaps(screen, VERTRES);
 
-  screenBitDepth = GetDeviceCaps( screen, BITSPIXEL );
+  screenBitDepth = GetDeviceCaps(screen, BITSPIXEL);
 
-  if( ReleaseDC( 0, screen ) != 1 )
+  if(ReleaseDC(0, screen) != 1)
   {
-    Error( " ReleaseDC(...) function failure " );
+    Error("ReleaseDC(...) function failure");
   }
 
-  if( screenWidth  <= 0 || screenHeight <= 0 || screenBitDepth <= 0 )
+  if(screenWidth  <= 0 || screenHeight <= 0 || screenBitDepth <= 0)
   {
     return GRAPHICS_ERROR;
   }
@@ -1682,22 +1682,22 @@ static int graphicsCheckIsFullScreen()
   {
     int  modeTestCounter = 0;
 
-    bool modeTest        = false;
+    bool modeTest = false;
 
-    DEVMODE DMode      = { 0 };
+    DEVMODE DMode = {0};
 
-    DMode.dmSize       = sizeof(DEVMODE);
+    DMode.dmSize = sizeof(DEVMODE);
 
-    DMode.dmFields     = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+    DMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
-    DMode.dmPelsWidth  = graphicsWidth();
+    DMode.dmPelsWidth = graphicsWidth();
     DMode.dmPelsHeight = graphicsHeight();
 
     DMode.dmBitsPerPel = 32;
 
     modeTestCounter = -1;
 
-    while( EnumDisplaySettings( 0, ++modeTestCounter, &DMode ) != 0 )
+    while(EnumDisplaySettings(0, ++modeTestCounter, &DMode) )
     {
       if(DMode.dmPelsWidth == (unsigned int)graphicsWidth() && DMode.dmPelsHeight == (unsigned int)graphicsHeight() && DMode.dmBitsPerPel == 32)
       {
@@ -1705,7 +1705,7 @@ static int graphicsCheckIsFullScreen()
       }
     }
 
-    if( modeTest == true )
+    if(modeTest == true)
     {
       return GRAPHICS_FULLSCREEN;
     }
@@ -1717,15 +1717,15 @@ static int graphicsCheckIsFullScreen()
 
     modeTestCounter = -1;
 
-    while( EnumDisplaySettings( 0, ++modeTestCounter, &DMode ) != 0 )
+    while(EnumDisplaySettings(0, ++modeTestCounter, &DMode) )
     {
-      if(DMode.dmPelsWidth  == (unsigned int) graphicsWidth()  && DMode.dmPelsHeight == (unsigned int) graphicsHeight() && DMode.dmBitsPerPel == (unsigned int) screenBitDepth)
+      if(DMode.dmPelsWidth == (unsigned int)graphicsWidth()  && DMode.dmPelsHeight == (unsigned int)graphicsHeight() && DMode.dmBitsPerPel == (unsigned int)screenBitDepth)
       {
         modeTest = true;
       }
     }
 
-    if( modeTest == true )
+    if(modeTest == true)
     {
       return GRAPHICS_FULLSCREEN;
     }
@@ -1780,14 +1780,20 @@ HWND Graphics::_hWindow = 0;
 
 #define S 8
 
-#define f( v ) ( ( v >> S ) << S  )
-#define i( v )   ( v >> S )
-#define r( v ) ( ( v >> S ) << 16 )
-#define g( v ) ( ( v >> S ) << 8  )
-#define b( v )   ( v >> S )
+//#define f(v) ( (v >> S) << S)
 
-#define pixelx( x, y ) *( bb[ i( y ) ] +    x   )
-#define pixely( x, y ) *( bb[    y   ] + i( x ) )
+#define i(v)   (v >> S)
+
+#define r(v) ( (v >> S) << 16)
+#define g(v) ( (v >> S) << 8)
+#define b(v)   (v >> S)
+
+#define pixelx(x, y) *(bb[i(y) ] + x)
+#define pixely(x, y) *(bb[y] + i(x) )
+
+#define r0(c0) ( (c0 >> 8) & 0xff00)
+#define g0(c0) (c0 & 0xff00)
+#define b0(c0) ( (c0 & 0xff) << 8)
 
 void Graphics::RenderPoint32(int x0, int y0, int c0)
 {
@@ -1888,240 +1894,248 @@ void Graphics::RenderLine32(int x0, int y0, int x1, int y1, int xi, int yi)
     x0 = right;
   }
   // in - out
-  else if( x0 <= right && x1 > right )
+  else if(x0 <= right && x1 > right)
   {
-    t = (double) ( x1 - right ) / (double) ( x1 - x0 );
+    t = (double) (x1 - right) / (double) (x1 - x0);
 
-    r1 = r1 + (int) ( (double) ( r0 - r1 ) * t );
-    g1 = g1 + (int) ( (double) ( g0 - g1 ) * t );
-    b1 = b1 + (int) ( (double) ( b0 - b1 ) * t );
+    r1 = r1 + (int) ( (double) (r0 - r1) * t);
+    g1 = g1 + (int) ( (double) (g0 - g1) * t);
+    b1 = b1 + (int) ( (double) (b0 - b1) * t);
 
-    y1 = y1 + (int) ( (double) ( y0 - y1 ) * t );
+    y1 = y1 + (int) ( (double) (y0 - y1) * t);
 
     x1 = right;
   }
 
   // top clip
   // out - out
-  if( y0 < top && y1 < top )
+  if(y0 < top && y1 < top)
   {
     return;
   }
   // in - in
-  else if( y0 >= top && y1 >= top )
+  else if(y0 >= top && y1 >= top)
   {
     /* nop */
   }
   // out - in
-  else if( y0 < top && y1 >= top )
+  else if(y0 < top && y1 >= top)
   {
-    t = (double) ( top - y0 ) / (double) ( y1 - y0 );
+    t = (double) (top - y0) / (double) (y1 - y0);
 
-    r0 = r0 + (int) ( (double) ( r1 - r0 ) * t );
-    g0 = g0 + (int) ( (double) ( g1 - g0 ) * t );
-    b0 = b0 + (int) ( (double) ( b1 - b0 ) * t );
+    r0 = r0 + (int) ( (double) (r1 - r0) * t);
+    g0 = g0 + (int) ( (double) (g1 - g0) * t);
+    b0 = b0 + (int) ( (double) (b1 - b0) * t);
 
-    x0 = x0 + (int) ( (double) ( x1 - x0 ) * t );
+    x0 = x0 + (int) ( (double) (x1 - x0) * t);
 
     y0 = top;
   }
   // in - out
-  else if( y0 >= top && y1 < top )
+  else if(y0 >= top && y1 < top)
   {
-    t = (double) ( top - y1 ) / (double) ( y0 - y1 );
+    t = (double) (top - y1) / (double) (y0 - y1);
 
-    r1 = r1 + (int) ( (double) ( r0 - r1 ) * t );
-    g1 = g1 + (int) ( (double) ( g0 - g1 ) * t );
-    b1 = b1 + (int) ( (double) ( b0 - b1 ) * t );
+    r1 = r1 + (int) ( (double) (r0 - r1) * t);
+    g1 = g1 + (int) ( (double) (g0 - g1) * t);
+    b1 = b1 + (int) ( (double) (b0 - b1) * t);
 
-    x1 = x1 + (int) ( (double) ( x0 - x1 ) * t );
+    x1 = x1 + (int) ( (double) (x0 - x1) * t);
 
     y1 = top;
   }
 
   // bottom clip
   // out - out
-  if( y0 > bottom && y1 > bottom )
+  if(y0 > bottom && y1 > bottom)
   {
     return;
   }
   // in - in
-  else if( y0 <= bottom && y1 <= bottom )
+  else if(y0 <= bottom && y1 <= bottom)
   {
   }
   // out - in
-  else if( y0 > bottom && y1 <= bottom )
+  else if(y0 > bottom && y1 <= bottom)
   {
-    t = (double) ( y0 - bottom ) / (double) ( y0 - y1 );
+    t = (double) (y0 - bottom) / (double) (y0 - y1);
 
-    r0 = r0 + (int) ( (double) ( r1 - r0 ) * t );
-    g0 = g0 + (int) ( (double) ( g1 - g0 ) * t );
-    b0 = b0 + (int) ( (double) ( b1 - b0 ) * t );
+    r0 = r0 + (int) ( (double) (r1 - r0) * t);
+    g0 = g0 + (int) ( (double) (g1 - g0) * t);
+    b0 = b0 + (int) ( (double) (b1 - b0) * t);
 
-    x0 = x0 + (int) ( (double) ( x1 - x0 ) * t );
+    x0 = x0 + (int) ( (double) (x1 - x0) * t);
 
     y0 = bottom;
   }
   // in - out
-  else if( y0 <= bottom && y1 > bottom )
+  else if(y0 <= bottom && y1 > bottom)
   {
-    t = (double) ( y1 - bottom ) / (double) ( y1 - y0 );
+    t = (double) (y1 - bottom) / (double) (y1 - y0);
 
-    r1 = r1 + (int) ( (double) ( r0 - r1 ) * t );
-    g1 = g1 + (int) ( (double) ( g0 - g1 ) * t );
-    b1 = b1 + (int) ( (double) ( b0 - b1 ) * t );
+    r1 = r1 + (int) ( (double) (r0 - r1) * t);
+    g1 = g1 + (int) ( (double) (g0 - g1) * t);
+    b1 = b1 + (int) ( (double) (b0 - b1) * t);
 
-    x1 = x1 + (int) ( (double) ( x0 - x1 ) * t );
+    x1 = x1 + (int) ( (double) (x0 - x1) * t);
 
     y1 = bottom;
   }
 
-  xi = ( r0 << 16 ) | ( g0 << 8 ) | b0;
-  yi = ( r1 << 16 ) | ( g1 << 8 ) | b1;
+  xi = (r0 << 16) | (g0 << 8) | b0;
+  yi = (r1 << 16) | (g1 << 8) | b1;
 
-  if( x0 < left || x0 > right  ||
-  x1 < left || x1 > right  ||
-  y0 < top  || y0 > bottom ||
-  y1 < top  || y1 > bottom ||
-  r0 < 0    || r0 > 255    ||
-  g0 < 0    || g0 > 255    ||
-  b0 < 0    || b0 > 255    ||
-  r1 < 0    || r1 > 255    ||
-  g1 < 0    || g1 > 255    ||
-  b1 < 0    || b1 > 255
-  )
+  if(x0 < left || x0 > right || x1 < left || x1 > right || y0 < top || y0 > bottom || y1 < top || y1 > bottom || r0 < 0 || r0 > 255 || g0 < 0 || g0 > 255 || b0 < 0 || b0 > 255 || r1 < 0 || r1 > 255 || g1 < 0 || g1 > 255 || b1 < 0 || b1 > 255)
   {
     return;
   }
 
-  x0 <<= 8; x1 <<= 8;
-  y0 <<= 8; y1 <<= 8;
+  x0 <<= 8;
+  x1 <<= 8;
 
-  r0 = ( xi >> 8 ) & 0xff00; g0 = xi & 0xff00; b0 = ( xi & 0xff ) << 8;
-  r1 = ( yi >> 8 ) & 0xff00; g1 = yi & 0xff00; b1 = ( yi & 0xff ) << 8;
+  y0 <<= 8;
+  y1 <<= 8;
+
+  r0 = (xi >> 8) & 0xff00;
+  g0 = xi & 0xff00;
+  b0 = (xi & 0xff) << 8;
+
+  r1 = (yi >> 8) & 0xff00;
+  g1 = yi & 0xff00;
+  b1 = (yi & 0xff) << 8;
 
   dx = x1 - x0;
 
-  if( dx >= 0)
+  if(dx >= 0)
   {
-    dxstep = 1; dxabs = dx;
+    dxstep = 1;
+    dxabs = dx;
   }
   else
   {
-    dxstep = -1; dxabs = -dx;
+    dxstep = -1;
+    dxabs = -dx;
   }
 
   dy = y1 - y0;
 
-  if( dy >= 0 )
+  if(dy >= 0)
   {
-    dystep = 1; dyabs = dy;
+    dystep = 1;
+    dyabs = dy;
   }
   else
   {
-    dystep = -1; dyabs = -dy;
+    dystep = -1;
+    dyabs = -dy;
   }
 
-  if( dxabs >= dyabs )
+  if(dxabs >= dyabs)
   {
-    count = i( dxabs );
+    count = i(dxabs);
 
-    if( count == 0 )
+    if(count == 0)
     {
-      yi = 0; ri = 0; gi = 0; bi = 0;
+      yi = 0;
+      ri = 0;
+      gi = 0;
+      bi = 0;
     }
     else
     {
-      yi = ( ( y1 - y0 ) << S ) / dxabs;
-      ri = ( ( r1 - r0 ) << S ) / dxabs;
-      gi = ( ( g1 - g0 ) << S ) / dxabs;
-      bi = ( ( b1 - b0 ) << S ) / dxabs;
+      yi = ( (y1 - y0) << S) / dxabs;
+      ri = ( (r1 - r0) << S) / dxabs;
+      gi = ( (g1 - g0) << S) / dxabs;
+      bi = ( (b1 - b0) << S) / dxabs;
     }
 
-    x0    = i( x0 );
-    x1    = i( x1 );
+    x0    = i(x0);
+    x1    = i(x1);
     dxabs = x1 - x0;
 
-    if( dxabs < 0 )
+    if(dxabs < 0)
     {
       dxabs =- dxabs;
     }
 
-    if( count > 0 )
+    if(count > 0)
     {
       do
       {
-        pixelx( x0, y0 ) = r( r0 ) | g( g0 ) | b( b0 );
+        pixelx(x0, y0) = r(r0) | g(g0) | b(b0);
 
-        r0 += ri; g0 += gi; b0 += bi;
+        r0 += ri;
+        g0 += gi;
+        b0 += bi;
 
         x0 += dxstep;
         y0 += yi;
 
-      }while( --count != 0 );
+      }while(--count != 0);
     }
   }
   else
   {
-    count = i( dyabs );
+    count = i(dyabs);
 
-    if( count == 0 )
+    if(count == 0)
     {
-      xi = 0; ri = 0; gi = 0; bi = 0;
+      xi = 0;
+      ri = 0;
+      gi = 0;
+      bi = 0;
     }
     else
     {
-      xi = ( ( x1 - x0 ) << S ) / dyabs;
-      ri = ( ( r1 - r0 ) << S ) / dyabs;
-      gi = ( ( g1 - g0 ) << S ) / dyabs;
-      bi = ( ( b1 - b0 ) << S ) / dyabs;
+      xi = ( (x1 - x0) << S) / dyabs;
+      ri = ( (r1 - r0) << S) / dyabs;
+      gi = ( (g1 - g0) << S) / dyabs;
+      bi = ( (b1 - b0) << S) / dyabs;
     }
 
-    y0    = i( y0 );
-    y1    = i( y1 );
+    y0    = i(y0);
+    y1    = i(y1);
     dyabs = y1 - y0;
 
-    if( dyabs < 0 )
+    if(dyabs < 0)
     {
       dyabs =- dyabs;
     }
 
-    if( count > 0 )
+    if(count > 0)
     {
       do
       {
-        pixely( x0, y0 ) = r( r0 ) | g( g0 ) | b( b0 );
+        pixely(x0, y0) = r(r0) | g(g0) | b(b0);
 
-        r0 += ri; g0 += gi; b0 += bi;
+        r0 += ri;
+        g0 += gi;
+        b0 += bi;
 
         y0 += dystep;
         x0 += xi;
 
-      }while( --count != 0 );
+      }while(--count != 0);
     }
   }
 }
 
-#define r0( c0 ) ( ( c0 >> 8 ) & 0xff00 )
-#define g0( c0 ) ( c0 & 0xff00 )
-#define b0( c0 ) ( ( c0 & 0xff ) << 8 )
-
 void Graphics::RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
 {
-  int d, de, dse, x, y;
+  int d = 0; int de = 0; int dse = 0; int x = 0; int y = 0;
 
-  int r8, g8, b8,
-  s1rs, s2rs, s3rs, s4rs, s1re, s2re, s3re, s4re, ri, r_cur,
-  s1gs, s2gs, s3gs, s4gs, s1ge, s2ge, s3ge, s4ge, gi, g_cur,
-  s1bs, s2bs, s3bs, s4bs, s1be, s2be, s3be, s4be, bi, b_cur,
-  num_pixels, pi;
+  int r8 = 0; int g8 = 0; int b8 = 0;
+  int s1rs = 0; int s2rs = 0; int s3rs = 0; int s4rs = 0; int s1re = 0; int s2re = 0; int s3re = 0; int s4re = 0; int ri = 0; int r_cur = 0;
+  int s1gs = 0; int s2gs = 0; int s3gs = 0; int s4gs = 0; int s1ge = 0; int s2ge = 0; int s3ge = 0; int s4ge = 0; int gi = 0; int g_cur = 0;
+  int s1bs = 0; int s2bs = 0; int s3bs = 0; int s4bs = 0; int s1be = 0; int s2be = 0; int s3be = 0; int s4be = 0; int bi = 0; int b_cur = 0;
+  int num_pixels = 0; int pi = 0;
 
-  int *dt, **bb;
-  int local_length, local_ri, local_gi, local_bi;
+  int* dt = 0; int** bb = 0;
+  int local_length = 0; int local_ri = 0; int local_gi = 0; int local_bi = 0;
 
-  int width, height;
+  int width = 0; int height = 0;
 
-  width  = Graphics::graphicsClientWidth();
+  width = Graphics::graphicsClientWidth();
   height = Graphics::graphicsClientHeight();
 
   if(xcen + r < 0 || xcen - r >= width || ycen + r < 0 || ycen - r >= height)
@@ -2129,56 +2143,79 @@ void Graphics::RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
     return;
   }
 
-  pi = 804 << ( S - 8 );
+  pi = 804 << (S - 8);
 
-  bb = (int**) Graphics::graphicsBackBufferFunction();
+  bb = (int**)Graphics::graphicsBackBufferFunction();
 
-  num_pixels = ( pi * ( r << S ) ) >> S;
+  num_pixels = (pi * (r << S) ) >> S;
 
-  d = 1 - r; de = 3; dse = -( r * 2 ) + 5; x = 0; y = r;
+  d = 1 - r;
+  de = 3;
+  dse = -(r * 2) + 5;
+  x = 0;
+  y = r;
 
-  r8 =( r0( c1 ) - r0( c0 ) ) / 4;
-  g8 =( g0( c1 ) - g0( c0 ) ) / 4;
-  b8 =( b0( c1 ) - b0( c0 ) ) / 4;
+  r8 =(r0(c1) - r0(c0) ) / 4;
+  g8 =(g0(c1) - g0(c0) ) / 4;
+  b8 =(b0(c1) - b0(c0) ) / 4;
 
-  if( ( num_pixels / 4 ) == 0 )
+  if( (num_pixels / 4) == 0)
   {
-    ri = 0; gi = 0; bi = 0;
+    ri = 0;
+    gi = 0;
+    bi = 0;
   }
   else
   {
-    ri = ( r8 << ( S - 1 ) ) / ( num_pixels / 4 );
-    gi = ( g8 << ( S - 1 ) ) / ( num_pixels / 4 );
-    bi = ( b8 << ( S - 1 ) ) / ( num_pixels / 4 );
+    ri = (r8 << (S - 1) ) / (num_pixels / 4);
+    gi = (g8 << (S - 1) ) / (num_pixels / 4);
+    bi = (b8 << (S - 1) ) / (num_pixels / 4);
   }
 
-  s1rs = r0( c0 );      s1re = r0( c0 ) + ( r8 * 4 ),
-  s2rs = r0( c0 ) + r8; s2re = r0( c0 ) + ( r8 * 2 ) + r8,
-  s3rs = s2rs;          s3re = s2re,
-  s4rs = s2rs + r8;     s4re = s2rs + r8,
+  s1rs = r0(c0);
+  s1re = r0(c0) + (r8 * 4);
+  //
+  s2rs = r0(c0) + r8;
+  s2re = r0(c0) + (r8 * 2) + r8;
+  //
+  s3rs = s2rs;
+  s3re = s2re;
+  //
+  s4rs = s2rs + r8;
+  s4re = s2rs + r8;
 
-  s1gs = g0( c0 );      s1ge = g0( c0 ) + ( g8 * 4 ),
-  s2gs = g0( c0 ) + g8; s2ge = g0( c0 ) + ( g8 * 2 ) + g8,
-  s3gs = s2gs;          s3ge = s2ge,
-  s4gs = s2gs + g8;     s4ge = s2gs + g8,
+  s1gs = g0(c0);
+  s1ge = g0(c0) + (g8 * 4);
+  //
+  s2gs = g0(c0) + g8;
+  s2ge = g0(c0) + (g8 * 2) + g8;
+  //
+  s3gs = s2gs;
+  s3ge = s2ge;
+  //
+  s4gs = s2gs + g8;
+  s4ge = s2gs + g8;
 
-  s1bs = b0( c0 );      s1be = b0( c0 ) + ( b8 * 4 ),
-  s2bs = b0( c0 ) + b8; s2be = b0( c0 ) + ( b8 * 2 ) + b8,
-  s3bs = s2bs;          s3be = s2be,
-  s4bs = s2bs + b8;     s4be = s2bs + b8;
+  s1bs = b0(c0);
+  s1be = b0(c0) + (b8 * 4);
+  //
+  s2bs = b0(c0) + b8;
+  s2be = b0(c0) + (b8 * 2) + b8;
+  //
+  s3bs = s2bs;
+  s3be = s2be;
+  //
+  s4bs = s2bs + b8;
+  s4be = s2bs + b8;
 
-  if( r < 0 )
+  if(r < 0)
   {
     y =- r;
   }
-  else if( r == 0 )
+  else if(r == 0)
   {
-    if( xcen >= 0 && ycen >= 0 && xcen < width && ycen < height )
-    {
-      *( bb[ ycen ] + xcen ) = r( ( ( s2rs / 2 ) + ( s2re / 2 ) ) )|
-      g( ( ( s2gs / 2 ) + ( s2ge / 2 ) ) )|
-      b( ( ( s2bs / 2 ) + ( s2be / 2 ) ) );
-    }
+    if(xcen >= 0 && ycen >= 0 && xcen < width && ycen < height)
+      *(bb[ycen] + xcen) = r( ( (s2rs / 2) + (s2re / 2) ) ) | g( ( (s2gs / 2) + (s2ge / 2) ) ) | b( ( (s2bs / 2) + (s2be / 2) ) );
 
     return;
   }
@@ -2191,28 +2228,30 @@ void Graphics::RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
 
     local_length = x * 2;
 
-    if( local_length == 0 )
+    if(local_length == 0)
     {
-      local_ri = 0; local_gi = 0; local_bi = 0;
+      local_ri = 0;
+      local_gi = 0;
+      local_bi = 0;
     }
     else
     {
-      local_ri = ( s4re - s4rs ) / local_length;
-      local_gi = ( s4ge - s4gs ) / local_length;
-      local_bi = ( s4be - s4bs ) / local_length;
+      local_ri = (s4re - s4rs) / local_length;
+      local_gi = (s4ge - s4gs) / local_length;
+      local_bi = (s4be - s4bs) / local_length;
     }
 
-    if( ycen + y >= 0 && ycen + y < height )
+    if(ycen + y >= 0 && ycen + y < height)
     {
-      dt = bb[ ycen + y ] + xcen - x;
+      dt = bb[ycen + y] + xcen - x;
 
-      c0 = xcen-x;
+      c0 = xcen - x;
 
-      while( --local_length > 0 )
+      while(--local_length > 0)
       {
-        if( c0 >= 0 && c0 < width )
+        if(c0 >= 0 && c0 < width)
         {
-          *dt = r( r_cur ) | g( g_cur ) | b( b_cur );
+          *dt = r(r_cur) | g(g_cur) | b(b_cur);
         }
 
         c0++;
@@ -2230,28 +2269,30 @@ void Graphics::RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
 
     local_length = x * 2;
 
-    if( local_length == 0 )
+    if(local_length == 0)
     {
-      local_ri = 0; local_gi = 0; local_bi = 0;
+      local_ri = 0;
+      local_gi = 0;
+      local_bi = 0;
     }
     else
     {
-      local_ri = ( s1re - s1rs ) / local_length;
-      local_gi = ( s1ge - s1gs ) / local_length;
-      local_bi = ( s1be - s1bs ) / local_length;
+      local_ri = (s1re - s1rs) / local_length;
+      local_gi = (s1ge - s1gs) / local_length;
+      local_bi = (s1be - s1bs) / local_length;
     }
 
-    if( ycen - y >= 0 && ycen - y < height )
+    if(ycen - y >= 0 && ycen - y < height)
     {
-      dt = bb[ ycen - y ] + xcen - x;
+      dt = bb[ycen - y] + xcen - x;
 
       c0 = xcen - x;
 
-      while( --local_length > 0 )
+      while(--local_length > 0)
       {
-        if( c0 >= 0 && c0 < width )
+        if(c0 >= 0 && c0 < width)
         {
-          *dt = r( r_cur ) | g( g_cur ) | b( b_cur );
+          *dt = r(r_cur) | g(g_cur) | b(b_cur);
         }
 
         c0++;
@@ -2269,28 +2310,30 @@ void Graphics::RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
 
     local_length = y * 2;
 
-    if( local_length == 0 )
+    if(local_length == 0)
     {
-      local_ri = 0; local_gi = 0; local_bi = 0;
+      local_ri = 0;
+      local_gi = 0;
+      local_bi = 0;
     }
     else
     {
-      local_ri = ( s2re - s2rs ) / local_length;
-      local_gi = ( s2ge - s2gs ) / local_length;
-      local_bi = ( s2be - s2bs ) / local_length;
+      local_ri = (s2re - s2rs) / local_length;
+      local_gi = (s2ge - s2gs) / local_length;
+      local_bi = (s2be - s2bs) / local_length;
     }
 
-    if( ycen - x >= 0 && ycen - x < height )
+    if(ycen - x >= 0 && ycen - x < height)
     {
-      dt = bb[ ycen - x ] + xcen - y;
+      dt = bb[ycen - x] + xcen - y;
 
       c0 = xcen - y;
 
-      while( --local_length > 0 )
+      while(--local_length > 0)
       {
-        if( c0 >= 0 && c0 < width )
+        if(c0 >= 0 && c0 < width)
         {
-          *dt = r( r_cur ) | g( g_cur ) | b( b_cur );
+          *dt = r(r_cur) | g(g_cur) | b(b_cur);
         }
 
         c0++;
@@ -2308,28 +2351,30 @@ void Graphics::RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
 
     local_length = y * 2;
 
-    if( local_length == 0 )
+    if(local_length == 0)
     {
-      local_ri = 0; local_gi = 0; local_bi = 0;
+      local_ri = 0;
+      local_gi = 0;
+      local_bi = 0;
     }
     else
     {
-      local_ri = ( s3re - s3rs ) / local_length;
-      local_gi = ( s3ge - s3gs ) / local_length;
-      local_bi = ( s3be - s3bs ) / local_length;
+      local_ri = (s3re - s3rs) / local_length;
+      local_gi = (s3ge - s3gs) / local_length;
+      local_bi = (s3be - s3bs) / local_length;
     }
 
-    if( ycen + x >= 0 && ycen + x < height )
+    if(ycen + x >= 0 && ycen + x < height)
     {
-      dt = bb[ ycen + x ] + xcen - y;
+      dt = bb[ycen + x] + xcen - y;
 
       c0 = xcen - y;
 
-      while( --local_length > 0 )
+      while(--local_length > 0)
       {
-        if( c0 >= 0 && c0 < width )
+        if(c0 >= 0 && c0 < width)
         {
-          *dt = r( r_cur ) | g( g_cur ) | b( b_cur );
+          *dt = r(r_cur) | g(g_cur) | b(b_cur);
         }
 
         c0++;
@@ -2356,40 +2401,54 @@ void Graphics::RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
     s3bs += bi; s3be -= bi;
     s4bs -= bi; s4be += bi;
 
-    if( d < 0 )
+    if(d < 0)
     {
-      d += de; de += 2; dse += 2;
+      d += de;
+      de += 2;
+      dse += 2;
     }
     else
     {
-      d += dse; de += 2; dse += 4; --y;
+      d += dse;
+      de += 2;
+      dse += 4;
+      --y;
     }
 
-  }while( ++x <= y );
+  }while(++x <= y);
 }
 
 #undef S
-#undef f
+
+//#undef f
+
 #undef i
+
 #undef r
 #undef g
 #undef b
+
 #undef pixelx
 #undef pixely
-#undef copy
+
+//#undef copy
+
+#undef r0
+#undef g0
+#undef b0
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 static const char appClassName[] = "de Casteljau Algorithm -- Hit F10 for the Extra Box! --";
 
 static const char appName[] = "de Casteljau Algorithm -- Hit F10 for the Extra Box! --";
 
-// used to disable the warning when exit( 0 ) is called
+// used to disable the warning when exit(0) is called
 #pragma warning (disable: 4702)
 
 // Boolean variable, set to true when the application is top most,
 // set to false when the application is not top most.
 //
-// The application will perform a sleep( 1 ) every message loop
+// The application will perform a sleep(1) every message loop
 // if the application is not top most, to give other applications
 // more processor time.
 //
@@ -2433,14 +2492,14 @@ enum INPUT_EVENT
   CAPTURE_CONTROL_POINT = 8,
   ADD_CONTROL_POINT = 16,
 
-  CAPTURE_T_OF_F_OF_T = 8|1,
-  DUMP_ALL_CONTROL_POINTS = 16|1,
+  CAPTURE_T_OF_F_OF_T = 8 | 1,
+  DUMP_ALL_CONTROL_POINTS = 16 | 1,
 
-  CAPTURE_TRANSLATE = 8|2,
-  CAPTURE_SCALE = 16|2,
+  CAPTURE_TRANSLATE = 8 | 2,
+  CAPTURE_SCALE = 16 | 2,
 
-  CAPTURE_ROTATE = 8|4,
-  REMOVE_CONTROL_POINT = 16|4,
+  CAPTURE_ROTATE = 8 | 4,
+  REMOVE_CONTROL_POINT = 16 | 4,
 
   TOGGLE_SHELLS = 32,
 
@@ -2483,7 +2542,7 @@ BOOL CALLBACK Graphics::AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
     /* nop */
     case IDCANCEL: // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDCANCEL
     {
-      EndDialog( hDlg, 0 );
+      EndDialog(hDlg, 0);
 
       isMenuActive = false;
     }
@@ -2499,14 +2558,14 @@ BOOL CALLBACK Graphics::AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
   {
     POINT mousePt = {0};
 
-    GetCursorPos( &mousePt );
-    ScreenToClient( Graphics::_hWindow, &mousePt );
+    GetCursorPos( &mousePt);
+    ScreenToClient(Graphics::_hWindow, &mousePt);
 
     main(UPDATE_INPUT, mousePt.x, mousePt.y, 1, (double)Graphics::graphicsClientWidth() * 0.5, (double)Graphics::graphicsClientHeight() * 0.5);
 
-    Graphics::graphicsDrawBackBufferToScreen( Graphics::_hWindow );
+    Graphics::graphicsDrawBackBufferToScreen(Graphics::_hWindow);
 
-    Sleep( 1 );
+    Sleep(1);
   }
 
   return FALSE;
@@ -2518,11 +2577,11 @@ static bool checkString(char* string)
 
   int stringI = 1;
 
-  if( charCur == '+' || charCur == '-' )
+  if(charCur == '+' || charCur == '-')
   {
     /* nop */
   }
-  else if( charCur >= '0' && charCur <= '9' )
+  else if(charCur >= '0' && charCur <= '9')
   {
     /* nop */
   }
@@ -2531,9 +2590,9 @@ static bool checkString(char* string)
     return false;
   }
 
-  for( charCur = string[ 1 ]; charCur != 0 && stringI < 256; charCur = string[ ++stringI ] )
+  for(charCur = string[1]; charCur != 0 && stringI < 256; charCur = string[ ++stringI] )
   {
-    if( charCur >= '0' && charCur <= '9' )
+    if(charCur >= '0' && charCur <= '9')
     {
       /* nop */
     }
@@ -2546,9 +2605,9 @@ static bool checkString(char* string)
   return true;
 }
 
-static void plusDecimal(double &lhs, double rhs)
+static void plusDecimal(double& lhs, double rhs)
 {
-  if( lhs < 0 )
+  if(lhs < 0)
   {
     lhs -= rhs;
   }
@@ -2569,40 +2628,40 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
   {
     isMenuActive = true;
 
-    SetDlgItemText( hDlg, EDITX3_INT, "0" );
-    SetDlgItemText( hDlg, EDITX3_DEC, "0" );
-    SetDlgItemText( hDlg, EDITX2_INT, "0" );
-    SetDlgItemText( hDlg, EDITX2_DEC, "0" );
-    SetDlgItemText( hDlg, EDITX1_INT, "0" );
-    SetDlgItemText( hDlg, EDITX1_DEC, "0" );
-    SetDlgItemText( hDlg, EDITX0_INT, "0" );
-    SetDlgItemText( hDlg, EDITX0_DEC, "0" );
+    SetDlgItemText(hDlg, EDITX3_INT, "0");
+    SetDlgItemText(hDlg, EDITX3_DEC, "0");
+    SetDlgItemText(hDlg, EDITX2_INT, "0");
+    SetDlgItemText(hDlg, EDITX2_DEC, "0");
+    SetDlgItemText(hDlg, EDITX1_INT, "0");
+    SetDlgItemText(hDlg, EDITX1_DEC, "0");
+    SetDlgItemText(hDlg, EDITX0_INT, "0");
+    SetDlgItemText(hDlg, EDITX0_DEC, "0");
 
-    SetDlgItemText( hDlg, EDITY3_INT, "0" );
-    SetDlgItemText( hDlg, EDITY3_DEC, "0" );
-    SetDlgItemText( hDlg, EDITY2_INT, "0" );
-    SetDlgItemText( hDlg, EDITY2_DEC, "0" );
-    SetDlgItemText( hDlg, EDITY1_INT, "0" );
-    SetDlgItemText( hDlg, EDITY1_DEC, "0" );
-    SetDlgItemText( hDlg, EDITY0_INT, "0" );
-    SetDlgItemText( hDlg, EDITY0_DEC, "0" );
+    SetDlgItemText(hDlg, EDITY3_INT, "0");
+    SetDlgItemText(hDlg, EDITY3_DEC, "0");
+    SetDlgItemText(hDlg, EDITY2_INT, "0");
+    SetDlgItemText(hDlg, EDITY2_DEC, "0");
+    SetDlgItemText(hDlg, EDITY1_INT, "0");
+    SetDlgItemText(hDlg, EDITY1_DEC, "0");
+    SetDlgItemText(hDlg, EDITY0_INT, "0");
+    SetDlgItemText(hDlg, EDITY0_DEC, "0");
 
-    SetDlgItemText( hDlg, EDITZ3_INT, "0" );
-    SetDlgItemText( hDlg, EDITZ3_DEC, "0" );
-    SetDlgItemText( hDlg, EDITZ2_INT, "0" );
-    SetDlgItemText( hDlg, EDITZ2_DEC, "0" );
-    SetDlgItemText( hDlg, EDITZ1_INT, "0" );
-    SetDlgItemText( hDlg, EDITZ1_DEC, "0" );
-    SetDlgItemText( hDlg, EDITZ0_INT, "0" );
-    SetDlgItemText( hDlg, EDITZ0_DEC, "0" );
+    SetDlgItemText(hDlg, EDITZ3_INT, "0");
+    SetDlgItemText(hDlg, EDITZ3_DEC, "0");
+    SetDlgItemText(hDlg, EDITZ2_INT, "0");
+    SetDlgItemText(hDlg, EDITZ2_DEC, "0");
+    SetDlgItemText(hDlg, EDITZ1_INT, "0");
+    SetDlgItemText(hDlg, EDITZ1_DEC, "0");
+    SetDlgItemText(hDlg, EDITZ0_INT, "0");
+    SetDlgItemText(hDlg, EDITZ0_DEC, "0");
 
-    SetDlgItemText( hDlg, EDIT_KNOT, "0" );
+    SetDlgItemText(hDlg, EDIT_KNOT, "0");
 
-    SetDlgItemText( hDlg, EDITR_INT, "0" );
-    SetDlgItemText( hDlg, EDITR_DEC, "0" );
+    SetDlgItemText(hDlg, EDITR_INT, "0");
+    SetDlgItemText(hDlg, EDITR_DEC, "0");
 
-    SetDlgItemText( hDlg, EDITS_INT, "1" );
-    SetDlgItemText( hDlg, EDITS_DEC, "0" );
+    SetDlgItemText(hDlg, EDITS_INT, "1");
+    SetDlgItemText(hDlg, EDITS_DEC, "0");
   }
   return TRUE; // switch(msg) - case WM_INITDIALOG
 
@@ -2613,234 +2672,234 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
 
     case IDOK: // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDOK
     {
-      menuArray[ 0 ] = 3;
+      menuArray[0] = 3;
 
       //////////////////////////////////////////////////
-      memset( item, 0, sizeof( char ) * 256 );
-      GetDlgItemText( hDlg, EDITX3_INT, item, 255 );
+      memset(item, 0, sizeof(char) * 256);
+      GetDlgItemText(hDlg, EDITX3_INT, item, 255);
 
-      if( checkString( item ) == false )
+      if(checkString(item) == false)
       {
         goto _IDCANCEL;
       }
 
-      menuArray[ 4 ] = atof( item );
+      menuArray[4] = atof(item);
 
-      memset( item, 0, sizeof( char ) * 256 );
-      item[ 0 ] = '.';
-      GetDlgItemText( hDlg, EDITX3_DEC, item + 1, 254 );
-      plusDecimal( menuArray[ 4 ], atof( item ) );
+      memset(item, 0, sizeof(char) * 256);
+      item[0] = '.';
+      GetDlgItemText(hDlg, EDITX3_DEC, item + 1, 254);
+      plusDecimal(menuArray[4], atof(item) );
 
       //////////////////////////////////////////////////
-      memset( item, 0, sizeof( char ) * 256 );
-      GetDlgItemText( hDlg, EDITX2_INT, item, 255 );
+      memset(item, 0, sizeof(char) * 256);
+      GetDlgItemText(hDlg, EDITX2_INT, item, 255);
 
-      if( checkString( item ) == false )
+      if(checkString(item) == false)
       {
         goto _IDCANCEL;
       }
 
-      menuArray[ 3 ] = atof( item );
+      menuArray[3] = atof(item);
 
-      memset( item, 0, sizeof( char ) * 256 );
-      item[ 0 ] = '.';
-      GetDlgItemText( hDlg, EDITX2_DEC, item + 1, 254 );
-      plusDecimal( menuArray[ 3 ], atof( item ) );
+      memset(item, 0, sizeof(char) * 256);
+      item[0] = '.';
+      GetDlgItemText(hDlg, EDITX2_DEC, item + 1, 254);
+      plusDecimal(menuArray[3], atof(item) );
 
       //////////////////////////////////////////////////
-      memset( item, 0, sizeof( char ) * 256 );
-      GetDlgItemText( hDlg, EDITX1_INT, item, 255 );
+      memset(item, 0, sizeof(char) * 256);
+      GetDlgItemText(hDlg, EDITX1_INT, item, 255);
 
-      if( checkString( item ) == false )
+      if(checkString(item) == false)
       {
         goto _IDCANCEL;
       }
 
-      menuArray[ 2 ] = atof( item );
+      menuArray[2] = atof(item);
 
-      memset( item, 0, sizeof( char ) * 256 );
-      item[ 0 ] = '.';
-      GetDlgItemText( hDlg, EDITX1_DEC, item + 1, 254 );
-      plusDecimal( menuArray[ 2 ], atof( item ) );
+      memset(item, 0, sizeof(char) * 256);
+      item[0] = '.';
+      GetDlgItemText(hDlg, EDITX1_DEC, item + 1, 254);
+      plusDecimal(menuArray[2], atof(item) );
 
       //////////////////////////////////////////////////
-      memset( item, 0, sizeof( char ) * 256 );
-      GetDlgItemText( hDlg, EDITX0_INT, item, 255 );
+      memset(item, 0, sizeof(char) * 256);
+      GetDlgItemText(hDlg, EDITX0_INT, item, 255);
 
-      if( checkString( item ) == false )
+      if(checkString(item) == false)
       {
         goto _IDCANCEL;
       }
 
-      menuArray[ 1 ] = atof( item );
+      menuArray[1] = atof(item);
 
-      memset( item, 0, sizeof( char ) * 256 );
-      item[ 0 ] = '.';
-      GetDlgItemText( hDlg, EDITX0_DEC, item + 1, 254 );
-      plusDecimal( menuArray[ 1 ], atof( item ) );
+      memset(item, 0, sizeof(char) * 256);
+      item[0] = '.';
+      GetDlgItemText(hDlg, EDITX0_DEC, item + 1, 254);
+      plusDecimal(menuArray[1], atof(item) );
 
       //////////////////////////////////////////////////
-      memset( item, 0, sizeof( char ) * 256 );
-      GetDlgItemText( hDlg, EDITY3_INT, item, 255 );
+      memset(item, 0, sizeof(char) * 256);
+      GetDlgItemText(hDlg, EDITY3_INT, item, 255);
 
-      if( checkString( item ) == false )
+      if(checkString(item) == false)
       {
         goto _IDCANCEL;
       }
 
-      menuArray[ 8 ] = atof( item );
+      menuArray[8] = atof(item);
 
-      memset( item, 0, sizeof( char ) * 256 );
-      item[ 0 ] = '.';
-      GetDlgItemText( hDlg, EDITY3_DEC, item + 1, 254 );
-      plusDecimal( menuArray[ 8 ], atof( item ) );
+      memset(item, 0, sizeof(char) * 256);
+      item[0] = '.';
+      GetDlgItemText(hDlg, EDITY3_DEC, item + 1, 254);
+      plusDecimal(menuArray[8], atof(item) );
 
       //////////////////////////////////////////////////
-      memset( item, 0, sizeof( char ) * 256 );
-      GetDlgItemText( hDlg, EDITY2_INT, item, 255 );
+      memset(item, 0, sizeof(char) * 256);
+      GetDlgItemText(hDlg, EDITY2_INT, item, 255);
 
-      if( checkString( item ) == false )
+      if(checkString(item) == false)
       {
         goto _IDCANCEL;
       }
 
-      menuArray[ 7 ] = atof( item );
+      menuArray[7] = atof(item);
 
-      memset( item, 0, sizeof( char ) * 256 );
-      item[ 0 ] = '.';
-      GetDlgItemText( hDlg, EDITY2_DEC, item + 1, 254 );
-      plusDecimal( menuArray[ 7 ], atof( item ) );
+      memset(item, 0, sizeof(char) * 256);
+      item[0] = '.';
+      GetDlgItemText(hDlg, EDITY2_DEC, item + 1, 254);
+      plusDecimal(menuArray[7], atof(item) );
 
       //////////////////////////////////////////////////
-      memset( item, 0, sizeof( char ) * 256 );
-      GetDlgItemText( hDlg, EDITY1_INT, item, 255 );
+      memset(item, 0, sizeof(char) * 256);
+      GetDlgItemText(hDlg, EDITY1_INT, item, 255);
 
-      if( checkString( item ) == false )
+      if(checkString(item) == false)
       {
         goto _IDCANCEL;
       }
 
-      menuArray[ 6 ] = atof( item );
+      menuArray[6] = atof(item);
 
-      memset( item, 0, sizeof( char ) * 256 );
-      item[ 0 ] = '.';
-      GetDlgItemText( hDlg, EDITY1_DEC, item + 1, 254 );
-      plusDecimal( menuArray[ 6 ], atof( item ) );
+      memset(item, 0, sizeof(char) * 256);
+      item[0] = '.';
+      GetDlgItemText(hDlg, EDITY1_DEC, item + 1, 254);
+      plusDecimal(menuArray[6], atof(item) );
 
       //////////////////////////////////////////////////
-      memset( item, 0, sizeof( char ) * 256 );
-      GetDlgItemText( hDlg, EDITY0_INT, item, 255 );
+      memset(item, 0, sizeof(char) * 256);
+      GetDlgItemText(hDlg, EDITY0_INT, item, 255);
 
-      if( checkString( item ) == false )
+      if(checkString(item) == false)
       {
         goto _IDCANCEL;
       }
 
-      menuArray[ 5 ] = atof( item );
+      menuArray[5] = atof(item);
 
-      memset( item, 0, sizeof( char ) * 256 );
-      item[ 0 ] = '.';
-      GetDlgItemText( hDlg, EDITY0_DEC, item + 1, 254 );
-      plusDecimal( menuArray[ 5 ], atof( item ) );
+      memset(item, 0, sizeof(char) * 256);
+      item[0] = '.';
+      GetDlgItemText(hDlg, EDITY0_DEC, item + 1, 254);
+      plusDecimal(menuArray[5], atof(item) );
 
       //////////////////////////////////////////////////
-      memset( item, 0, sizeof( char ) * 256 );
-      GetDlgItemText( hDlg, EDITZ3_INT, item, 255 );
+      memset(item, 0, sizeof(char) * 256);
+      GetDlgItemText(hDlg, EDITZ3_INT, item, 255);
 
-      if( checkString( item ) == false )
+      if(checkString(item) == false)
       {
         goto _IDCANCEL;
       }
 
-      menuArray[ 12 ] = atof( item );
+      menuArray[12] = atof(item);
 
-      memset( item, 0, sizeof( char ) * 256 );
-      item[ 0 ] = '.';
-      GetDlgItemText( hDlg, EDITZ3_DEC, item + 1, 254 );
-      plusDecimal( menuArray[ 12 ], atof( item ) );
+      memset(item, 0, sizeof(char) * 256);
+      item[0] = '.';
+      GetDlgItemText(hDlg, EDITZ3_DEC, item + 1, 254);
+      plusDecimal(menuArray[12], atof(item) );
 
       //////////////////////////////////////////////////
-      memset( item, 0, sizeof( char ) * 256 );
-      GetDlgItemText( hDlg, EDITZ2_INT, item, 255 );
+      memset(item, 0, sizeof(char) * 256);
+      GetDlgItemText(hDlg, EDITZ2_INT, item, 255);
 
-      if( checkString( item ) == false )
+      if(checkString(item) == false)
       {
         goto _IDCANCEL;
       }
 
-      menuArray[ 11 ] = atof( item );
+      menuArray[11] = atof(item);
 
-      memset( item, 0, sizeof( char ) * 256 );
-      item[ 0 ] = '.';
-      GetDlgItemText( hDlg, EDITZ2_DEC, item + 1, 254 );
-      plusDecimal( menuArray[ 11 ], atof( item ) );
+      memset(item, 0, sizeof(char) * 256);
+      item[0] = '.';
+      GetDlgItemText(hDlg, EDITZ2_DEC, item + 1, 254);
+      plusDecimal(menuArray[11], atof(item) );
 
       //////////////////////////////////////////////////
-      memset( item, 0, sizeof( char ) * 256 );
-      GetDlgItemText( hDlg, EDITZ1_INT, item, 255 );
+      memset(item, 0, sizeof(char) * 256);
+      GetDlgItemText(hDlg, EDITZ1_INT, item, 255);
 
-      if( checkString( item ) == false )
+      if(checkString(item) == false)
       {
         goto _IDCANCEL;
       }
 
-      menuArray[ 10 ] = atof( item );
+      menuArray[10] = atof(item);
 
-      memset( item, 0, sizeof( char ) * 256 );
-      item[ 0 ] = '.';
-      GetDlgItemText( hDlg, EDITZ1_DEC, item + 1, 254 );
-      plusDecimal( menuArray[ 10 ], atof( item ) );
+      memset(item, 0, sizeof(char) * 256);
+      item[0] = '.';
+      GetDlgItemText(hDlg, EDITZ1_DEC, item + 1, 254);
+      plusDecimal(menuArray[10], atof(item) );
 
       //////////////////////////////////////////////////
-      memset( item, 0, sizeof( char ) * 256 );
-      GetDlgItemText( hDlg, EDITZ0_INT, item, 255 );
+      memset(item, 0, sizeof(char) * 256);
+      GetDlgItemText(hDlg, EDITZ0_INT, item, 255);
 
-      if( checkString( item ) == false )
+      if(checkString(item) == false)
       {
         goto _IDCANCEL;
       }
 
-      menuArray[ 9 ] = atof( item );
+      menuArray[9] = atof(item);
 
-      memset( item, 0, sizeof( char ) * 256 );
-      item[ 0 ] = '.';
-      GetDlgItemText( hDlg, EDITZ0_DEC, item + 1, 254 );
-      plusDecimal( menuArray[ 9 ], atof( item ) );
+      memset(item, 0, sizeof(char) * 256);
+      item[0] = '.';
+      GetDlgItemText(hDlg, EDITZ0_DEC, item + 1, 254);
+      plusDecimal(menuArray[9], atof(item) );
 
       //////////////////////////////////////////////////
-      memset( item, 0, sizeof( char ) * 256 );
-      GetDlgItemText( hDlg, EDITR_INT, item, 255 );
+      memset(item, 0, sizeof(char) * 256);
+      GetDlgItemText(hDlg, EDITR_INT, item, 255);
 
-      if( checkString( item ) == false )
+      if(checkString(item) == false)
       {
         goto _IDCANCEL;
       }
 
-      menuArray[ 9 ] = atof( item );
+      menuArray[9] = atof(item);
 
-      memset( item, 0, sizeof( char ) * 256 );
-      item[ 0 ] = '.';
-      GetDlgItemText( hDlg, EDITR_DEC, item + 1, 254 );
-      plusDecimal( menuArray[ 9 ], atof( item ) );
+      memset(item, 0, sizeof(char) * 256);
+      item[0] = '.';
+      GetDlgItemText(hDlg, EDITR_DEC, item + 1, 254);
+      plusDecimal(menuArray[9], atof(item) );
 
       //////////////////////////////////////////////////
-      memset( item, 0, sizeof( char ) * 256 );
-      GetDlgItemText( hDlg, EDITS_INT, item, 255 );
+      memset(item, 0, sizeof(char) * 256);
+      GetDlgItemText(hDlg, EDITS_INT, item, 255);
 
-      if( checkString( item ) == false )
+      if(checkString(item) == false)
       {
         goto _IDCANCEL;
       }
 
-      menuArray[ 10 ] = atof( item );
+      menuArray[10] = atof(item);
 
-      memset( item, 0, sizeof( char ) * 256 );
-      item[ 0 ] = '.';
-      GetDlgItemText( hDlg, EDITS_DEC, item + 1, 254 );
-      plusDecimal( menuArray[ 10 ], atof( item ) );
+      memset(item, 0, sizeof(char) * 256);
+      item[0] = '.';
+      GetDlgItemText(hDlg, EDITS_DEC, item + 1, 254);
+      plusDecimal(menuArray[10], atof(item) );
 
       //////////////////////////////////////////////////
-      EndDialog( hDlg, 0 );
+      EndDialog(hDlg, 0);
 
       isMenuActive = false;
     }
@@ -2850,7 +2909,7 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
     {
       _IDCANCEL:
 
-      EndDialog( hDlg, -1 );
+      EndDialog(hDlg, -1);
 
       isMenuActive = false;
     }
@@ -2858,141 +2917,141 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
 
     case IDEX1: // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDEX1
     {
-      SetDlgItemText( hDlg, EDITX3_INT, "0" );
-      SetDlgItemText( hDlg, EDITX3_DEC, "0" );
-      SetDlgItemText( hDlg, EDITX2_INT, "0" );
-      SetDlgItemText( hDlg, EDITX2_DEC, "0" );
-      SetDlgItemText( hDlg, EDITX1_INT, "3" );
-      SetDlgItemText( hDlg, EDITX1_DEC, "0" );
-      SetDlgItemText( hDlg, EDITX0_INT, "0" );
-      SetDlgItemText( hDlg, EDITX0_DEC, "0" );
+      SetDlgItemText(hDlg, EDITX3_INT, "0");
+      SetDlgItemText(hDlg, EDITX3_DEC, "0");
+      SetDlgItemText(hDlg, EDITX2_INT, "0");
+      SetDlgItemText(hDlg, EDITX2_DEC, "0");
+      SetDlgItemText(hDlg, EDITX1_INT, "3");
+      SetDlgItemText(hDlg, EDITX1_DEC, "0");
+      SetDlgItemText(hDlg, EDITX0_INT, "0");
+      SetDlgItemText(hDlg, EDITX0_DEC, "0");
 
-      SetDlgItemText( hDlg, EDITY3_INT, "3" );
-      SetDlgItemText( hDlg, EDITY3_DEC, "0" );
-      SetDlgItemText( hDlg, EDITY2_INT, "0" );
-      SetDlgItemText( hDlg, EDITY2_DEC, "0" );
-      SetDlgItemText( hDlg, EDITY1_INT, "-3" );
-      SetDlgItemText( hDlg, EDITY1_DEC, "0" );
-      SetDlgItemText( hDlg, EDITY0_INT, "0" );
-      SetDlgItemText( hDlg, EDITY0_DEC, "0" );
+      SetDlgItemText(hDlg, EDITY3_INT, "3");
+      SetDlgItemText(hDlg, EDITY3_DEC, "0");
+      SetDlgItemText(hDlg, EDITY2_INT, "0");
+      SetDlgItemText(hDlg, EDITY2_DEC, "0");
+      SetDlgItemText(hDlg, EDITY1_INT, "-3");
+      SetDlgItemText(hDlg, EDITY1_DEC, "0");
+      SetDlgItemText(hDlg, EDITY0_INT, "0");
+      SetDlgItemText(hDlg, EDITY0_DEC, "0");
 
-      SetDlgItemText( hDlg, EDITR_INT, "-1" );
-      SetDlgItemText( hDlg, EDITR_DEC, "0" );
+      SetDlgItemText(hDlg, EDITR_INT, "-1");
+      SetDlgItemText(hDlg, EDITR_DEC, "0");
 
-      SetDlgItemText( hDlg, EDITS_INT, "1" );
-      SetDlgItemText( hDlg, EDITS_DEC, "0" );
+      SetDlgItemText(hDlg, EDITS_INT, "1");
+      SetDlgItemText(hDlg, EDITS_DEC, "0");
     }
     return FALSE; // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDEX1
 
     case IDEX2: // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDEX2
     {
-      SetDlgItemText( hDlg, EDITX3_INT, "0" );
-      SetDlgItemText( hDlg, EDITX3_DEC, "0" );
-      SetDlgItemText( hDlg, EDITX2_INT, "3" );
-      SetDlgItemText( hDlg, EDITX2_DEC, "0" );
-      SetDlgItemText( hDlg, EDITX1_INT, "-6" );
-      SetDlgItemText( hDlg, EDITX1_DEC, "0" );
-      SetDlgItemText( hDlg, EDITX0_INT, "9" );
-      SetDlgItemText( hDlg, EDITX0_DEC, "0" );
+      SetDlgItemText(hDlg, EDITX3_INT, "0");
+      SetDlgItemText(hDlg, EDITX3_DEC, "0");
+      SetDlgItemText(hDlg, EDITX2_INT, "3");
+      SetDlgItemText(hDlg, EDITX2_DEC, "0");
+      SetDlgItemText(hDlg, EDITX1_INT, "-6");
+      SetDlgItemText(hDlg, EDITX1_DEC, "0");
+      SetDlgItemText(hDlg, EDITX0_INT, "9");
+      SetDlgItemText(hDlg, EDITX0_DEC, "0");
 
-      SetDlgItemText( hDlg, EDITY3_INT, "3" );
-      SetDlgItemText( hDlg, EDITY3_DEC, "0" );
-      SetDlgItemText( hDlg, EDITY2_INT, "-6" );
-      SetDlgItemText( hDlg, EDITY2_DEC, "0" );
-      SetDlgItemText( hDlg, EDITY1_INT, "9" );
-      SetDlgItemText( hDlg, EDITY1_DEC, "0" );
-      SetDlgItemText( hDlg, EDITY0_INT, "0" );
-      SetDlgItemText( hDlg, EDITY0_DEC, "0" );
+      SetDlgItemText(hDlg, EDITY3_INT, "3");
+      SetDlgItemText(hDlg, EDITY3_DEC, "0");
+      SetDlgItemText(hDlg, EDITY2_INT, "-6");
+      SetDlgItemText(hDlg, EDITY2_DEC, "0");
+      SetDlgItemText(hDlg, EDITY1_INT, "9");
+      SetDlgItemText(hDlg, EDITY1_DEC, "0");
+      SetDlgItemText(hDlg, EDITY0_INT, "0");
+      SetDlgItemText(hDlg, EDITY0_DEC, "0");
 
-      SetDlgItemText( hDlg, EDITR_INT, "0" );
-      SetDlgItemText( hDlg, EDITR_DEC, "0" );
+      SetDlgItemText(hDlg, EDITR_INT, "0");
+      SetDlgItemText(hDlg, EDITR_DEC, "0");
 
-      SetDlgItemText( hDlg, EDITS_INT, "1" );
-      SetDlgItemText( hDlg, EDITS_DEC, "0" );
+      SetDlgItemText(hDlg, EDITS_INT, "1");
+      SetDlgItemText(hDlg, EDITS_DEC, "0");
     }
     return FALSE; // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDEX2
 
     case IDEX3: // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDEX3
     {
-      SetDlgItemText( hDlg, EDITX3_INT, "0" );
-      SetDlgItemText( hDlg, EDITX3_DEC, "0" );
-      SetDlgItemText( hDlg, EDITX2_INT, "3" );
-      SetDlgItemText( hDlg, EDITX2_DEC, "0" );
-      SetDlgItemText( hDlg, EDITX1_INT, "-12" );
-      SetDlgItemText( hDlg, EDITX1_DEC, "0" );
-      SetDlgItemText( hDlg, EDITX0_INT, "15" );
-      SetDlgItemText( hDlg, EDITX0_DEC, "0" );
+      SetDlgItemText(hDlg, EDITX3_INT, "0");
+      SetDlgItemText(hDlg, EDITX3_DEC, "0");
+      SetDlgItemText(hDlg, EDITX2_INT, "3");
+      SetDlgItemText(hDlg, EDITX2_DEC, "0");
+      SetDlgItemText(hDlg, EDITX1_INT, "-12");
+      SetDlgItemText(hDlg, EDITX1_DEC, "0");
+      SetDlgItemText(hDlg, EDITX0_INT, "15");
+      SetDlgItemText(hDlg, EDITX0_DEC, "0");
 
-      SetDlgItemText( hDlg, EDITY3_INT, "3" );
-      SetDlgItemText( hDlg, EDITY3_DEC, "0" );
-      SetDlgItemText( hDlg, EDITY2_INT, "-12" );
-      SetDlgItemText( hDlg, EDITY2_DEC, "0" );
-      SetDlgItemText( hDlg, EDITY1_INT, "15" );
-      SetDlgItemText( hDlg, EDITY1_DEC, "0" );
-      SetDlgItemText( hDlg, EDITY0_INT, "0" );
-      SetDlgItemText( hDlg, EDITY0_DEC, "0" );
+      SetDlgItemText(hDlg, EDITY3_INT, "3");
+      SetDlgItemText(hDlg, EDITY3_DEC, "0");
+      SetDlgItemText(hDlg, EDITY2_INT, "-12");
+      SetDlgItemText(hDlg, EDITY2_DEC, "0");
+      SetDlgItemText(hDlg, EDITY1_INT, "15");
+      SetDlgItemText(hDlg, EDITY1_DEC, "0");
+      SetDlgItemText(hDlg, EDITY0_INT, "0");
+      SetDlgItemText(hDlg, EDITY0_DEC, "0");
 
-      SetDlgItemText( hDlg, EDITR_INT, "0" );
-      SetDlgItemText( hDlg, EDITR_DEC, "0" );
+      SetDlgItemText(hDlg, EDITR_INT, "0");
+      SetDlgItemText(hDlg, EDITR_DEC, "0");
 
-      SetDlgItemText( hDlg, EDITS_INT, "2" );
-      SetDlgItemText( hDlg, EDITS_DEC, "0" );
+      SetDlgItemText(hDlg, EDITS_INT, "2");
+      SetDlgItemText(hDlg, EDITS_DEC, "0");
     }
     return FALSE; // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDEX3
 
     case IDEX4: // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDEX4
     {
-      SetDlgItemText( hDlg, EDITX3_INT, "0" );
-      SetDlgItemText( hDlg, EDITX3_DEC, "0" );
-      SetDlgItemText( hDlg, EDITX2_INT, "3" );
-      SetDlgItemText( hDlg, EDITX2_DEC, "0" );
-      SetDlgItemText( hDlg, EDITX1_INT, "-6" );
-      SetDlgItemText( hDlg, EDITX1_DEC, "0" );
-      SetDlgItemText( hDlg, EDITX0_INT, "3" );
-      SetDlgItemText( hDlg, EDITX0_DEC, "0" );
+      SetDlgItemText(hDlg, EDITX3_INT, "0");
+      SetDlgItemText(hDlg, EDITX3_DEC, "0");
+      SetDlgItemText(hDlg, EDITX2_INT, "3");
+      SetDlgItemText(hDlg, EDITX2_DEC, "0");
+      SetDlgItemText(hDlg, EDITX1_INT, "-6");
+      SetDlgItemText(hDlg, EDITX1_DEC, "0");
+      SetDlgItemText(hDlg, EDITX0_INT, "3");
+      SetDlgItemText(hDlg, EDITX0_DEC, "0");
 
-      SetDlgItemText( hDlg, EDITY3_INT, "3" );
-      SetDlgItemText( hDlg, EDITY3_DEC, "0" );
-      SetDlgItemText( hDlg, EDITY2_INT, "-6" );
-      SetDlgItemText( hDlg, EDITY2_DEC, "0" );
-      SetDlgItemText( hDlg, EDITY1_INT, "3" );
-      SetDlgItemText( hDlg, EDITY1_DEC, "0" );
-      SetDlgItemText( hDlg, EDITY0_INT, "0" );
-      SetDlgItemText( hDlg, EDITY0_DEC, "0" );
+      SetDlgItemText(hDlg, EDITY3_INT, "3");
+      SetDlgItemText(hDlg, EDITY3_DEC, "0");
+      SetDlgItemText(hDlg, EDITY2_INT, "-6");
+      SetDlgItemText(hDlg, EDITY2_DEC, "0");
+      SetDlgItemText(hDlg, EDITY1_INT, "3");
+      SetDlgItemText(hDlg, EDITY1_DEC, "0");
+      SetDlgItemText(hDlg, EDITY0_INT, "0");
+      SetDlgItemText(hDlg, EDITY0_DEC, "0");
 
-      SetDlgItemText( hDlg, EDITR_INT, "0" );
-      SetDlgItemText( hDlg, EDITR_DEC, "0" );
+      SetDlgItemText(hDlg, EDITR_INT, "0");
+      SetDlgItemText(hDlg, EDITR_DEC, "0");
 
-      SetDlgItemText( hDlg, EDITS_INT, "2" );
-      SetDlgItemText( hDlg, EDITS_DEC, "0" );
+      SetDlgItemText(hDlg, EDITS_INT, "2");
+      SetDlgItemText(hDlg, EDITS_DEC, "0");
     }
     return FALSE; // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDEX4
 
     case IDEX5: // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDEX5
     {
-      SetDlgItemText( hDlg, EDITX3_INT, "0" );
-      SetDlgItemText( hDlg, EDITX3_DEC, "0" );
-      SetDlgItemText( hDlg, EDITX2_INT, "0" );
-      SetDlgItemText( hDlg, EDITX2_DEC, "75" );
-      SetDlgItemText( hDlg, EDITX1_INT, "-1" );
-      SetDlgItemText( hDlg, EDITX1_DEC, "5" );
-      SetDlgItemText( hDlg, EDITX0_INT, "-2" );
-      SetDlgItemText( hDlg, EDITX0_DEC, "25" );
+      SetDlgItemText(hDlg, EDITX3_INT, "0");
+      SetDlgItemText(hDlg, EDITX3_DEC, "0");
+      SetDlgItemText(hDlg, EDITX2_INT, "0");
+      SetDlgItemText(hDlg, EDITX2_DEC, "75");
+      SetDlgItemText(hDlg, EDITX1_INT, "-1");
+      SetDlgItemText(hDlg, EDITX1_DEC, "5");
+      SetDlgItemText(hDlg, EDITX0_INT, "-2");
+      SetDlgItemText(hDlg, EDITX0_DEC, "25");
 
-      SetDlgItemText( hDlg, EDITY3_INT, "0" );
-      SetDlgItemText( hDlg, EDITY3_DEC, "75" );
-      SetDlgItemText( hDlg, EDITY2_INT, "-1" );
-      SetDlgItemText( hDlg, EDITY2_DEC, "5" );
-      SetDlgItemText( hDlg, EDITY1_INT, "-2" );
-      SetDlgItemText( hDlg, EDITY1_DEC, "25" );
-      SetDlgItemText( hDlg, EDITY0_INT, "0" );
-      SetDlgItemText( hDlg, EDITY0_DEC, "0" );
+      SetDlgItemText(hDlg, EDITY3_INT, "0");
+      SetDlgItemText(hDlg, EDITY3_DEC, "75");
+      SetDlgItemText(hDlg, EDITY2_INT, "-1");
+      SetDlgItemText(hDlg, EDITY2_DEC, "5");
+      SetDlgItemText(hDlg, EDITY1_INT, "-2");
+      SetDlgItemText(hDlg, EDITY1_DEC, "25");
+      SetDlgItemText(hDlg, EDITY0_INT, "0");
+      SetDlgItemText(hDlg, EDITY0_DEC, "0");
 
-      SetDlgItemText( hDlg, EDITR_INT, "-1" );
-      SetDlgItemText( hDlg, EDITR_DEC, "0" );
+      SetDlgItemText(hDlg, EDITR_INT, "-1");
+      SetDlgItemText(hDlg, EDITR_DEC, "0");
 
-      SetDlgItemText( hDlg, EDITS_INT, "3" );
-      SetDlgItemText( hDlg, EDITS_DEC, "0" );
+      SetDlgItemText(hDlg, EDITS_INT, "3");
+      SetDlgItemText(hDlg, EDITS_DEC, "0");
     }
     return FALSE; // switch(msg) - case WM_COMMAND; switch(LOWORD(wParam) ) - case IDEX5
 
@@ -3006,8 +3065,8 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
   {
     POINT mousePt = {0};
 
-    GetCursorPos( &mousePt );
-    ScreenToClient( Graphics::_hWindow, &mousePt );
+    GetCursorPos( &mousePt);
+    ScreenToClient(Graphics::_hWindow, &mousePt);
 
     main(UPDATE_INPUT, mousePt.x, mousePt.y, 1, (double)Graphics::graphicsClientWidth() * 0.5, (double)Graphics::graphicsClientHeight() * 0.5);
 
@@ -3111,12 +3170,12 @@ static int setSize(int width, int height)
   width += menu.left + menu.right;
   height += menu.top + menu.bottom;
 
-  if( width <= 0 || height <= 0 )
+  if(width <= 0 || height <= 0)
   {
     return style;
   }
 
-  if( width >= Graphics::oldWidth || height >= Graphics::oldHeight)
+  if(width >= Graphics::oldWidth || height >= Graphics::oldHeight)
   {
     style = WINDOWSTYLE_FULLSCREEN;
 
@@ -3141,11 +3200,11 @@ static RECT setMenuRect(int leftEdgeMenuThickness, int topEdgeMenuThickness, int
 
 static int setStyle()
 {
-  if( style == WINDOWSTYLE_WINDOW )
+  if(style == WINDOWSTYLE_WINDOW)
   {
     style = WINDOWSTYLE_FULLSCREEN;
   }
-  else if( style == WINDOWSTYLE_FULLSCREEN )
+  else if(style == WINDOWSTYLE_FULLSCREEN)
   {
     style = WINDOWSTYLE_WINDOW;
   }
@@ -3187,89 +3246,67 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
   ScreenToClient(hwnd, &mousePt);
 
-  switch(msg)
+  switch(msg) // switch(msg)
   {
 
-  case WM_CREATE:
+  case WM_CREATE: // switch(msg) - WM_CREATE
   {
-    hInstance = ( (LPCREATESTRUCT) lParam )->hInstance;
+    hInstance = ( (LPCREATESTRUCT) lParam)->hInstance;
   }
-  return 0;
+  return 0; // switch(msg) - WM_CREATE
 
-  case WM_SETWIDTHHEIGHT:
+  case WM_SETWIDTHHEIGHT: // switch(msg) - WM_SETWIDTHHEIGHT
   {
-    HDC screen = GetDC( 0 );
+    HDC screen = GetDC(0);
 
-    if( !screen )
+    if( !screen)
     {
-      Error( " WindowProc(...) GetDC(...) error " );
+      Error("WindowProc(...) GetDC(...) error");
     }
     else
     {
-      Graphics::width  = GetDeviceCaps( screen, HORZRES ) / 2;
-      Graphics::height = GetDeviceCaps( screen, VERTRES ) / 2;
+      Graphics::width  = GetDeviceCaps(screen, HORZRES) / 2;
+      Graphics::height = GetDeviceCaps(screen, VERTRES) / 2;
 
-      if( ReleaseDC( 0, screen ) != 1 )
+      if(ReleaseDC(0, screen) != 1)
       {
-        Error( " WindowProc(...) ReleaseDC(...) error " );
+        Error("WindowProc(...) ReleaseDC(...) error");
       }
     }
   }
-  return 0;
+  return 0; // switch(msg) - WM_SETWIDTHHEIGHT
 
-  case WM_CHANGEWINDOWSTYLE:
+  case WM_CHANGEWINDOWSTYLE: // switch(msg) - WM_CHANGEWINDOWSTYLE
   {
-    if( IsApplicationMinimized == false )
+    if(IsApplicationMinimized == false)
     {
       IsWindowStyleChanging = true;
 
-      if( !DestroyWindow( hwnd ) )
+      if( !DestroyWindow(hwnd) )
       {
-        Error( " The function DestroyWindow(...) has failed in the function WindowProc(...). " );
+        Error("The function DestroyWindow(...) has failed in the function WindowProc(...).");
       }
 
-      RemoveHandle( hwnd );
+      RemoveHandle(hwnd);
 
-      if( WindowStyle::getStyle() == Graphics::GRAPHICS_WINDOW )
+      if(WindowStyle::getStyle() == Graphics::GRAPHICS_WINDOW)
       {
         POINT origin = WindowStyle::getOrigin();
 
-        POINT size = WindowStyle::getSize( true );
+        POINT size = WindowStyle::getSize(true);
 
         RECT menu = WindowStyle::getMenuRect();
 
-        assert( size.x > 0 && size.y > 0 && " size.x > 0 && size.y > 0 " );
+        assert(size.x > 0 && size.y > 0 && "size.x > 0 && size.y > 0");
 
-        hWindow = CreateWindow( appClassName,
-        appName,
-        WS_OVERLAPPEDWINDOW,
-        origin.x - menu.left,
-        origin.y - menu.top,
-        size.x + menu.left + menu.right,
-        size.y + menu.top + menu.bottom,
-        0,
-        0,
-        hInstance,
-        0
-        );
+        hWindow = CreateWindow(appClassName, appName, WS_OVERLAPPEDWINDOW, origin.x - menu.left, origin.y - menu.top, size.x + menu.left + menu.right, size.y + menu.top + menu.bottom, 0, 0, hInstance, 0);
 
         Graphics::width = size.x;
         Graphics::height = size.y;
       }
       else
       {
-        hWindow = CreateWindow( appClassName,
-        appName,
-        WS_POPUP,
-        0,
-        0,
-        Graphics::oldWidth,
-        Graphics::oldHeight,
-        0,
-        0,
-        hInstance,
-        0
-        );
+        hWindow = CreateWindow(appClassName, appName, WS_POPUP, 0, 0, Graphics::oldWidth, Graphics::oldHeight, 0, 0, hInstance, 0);
 
         Graphics::width = Graphics::oldWidth;
         Graphics::height = Graphics::oldHeight;
@@ -3281,12 +3318,12 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
       Graphics::_hWindow = hWindow;
 
-      InsertHandle( hwnd );
+      InsertHandle(hwnd);
 
-      unsigned short widthHeight[ 2 ] = { 0 };
+      unsigned short widthHeight[2] = {0};
 
-      widthHeight[ 0 ] = (unsigned short) Graphics::oldWidth;
-      widthHeight[ 1 ] = (unsigned short) Graphics::oldHeight;
+      widthHeight[0] = (unsigned short)Graphics::oldWidth;
+      widthHeight[1] = (unsigned short)Graphics::oldHeight;
 
       IsApplicationMinimized = false;
 
@@ -3295,63 +3332,63 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
       IsWindowStyleChanging = false;
     }
   }
-  return 0;
+  return 0; // switch(msg) - WM_CHANGEWINDOWSTYLE
 
-  case WM_MOUSEMOVE:
+  case WM_MOUSEMOVE: // switch(msg) - WM_MOUSEMOVE
   {
-    input->push( pairQI( mousePt, UPDATE_INPUT ) );
+    input->push(pairQI(mousePt, UPDATE_INPUT) );
 
     prevPt = mousePt;
   }
-  return 0;
+  return 0; // switch(msg) - WM_MOUSEMOVE
 
-  case WM_LBUTTONDOWN:
+  case WM_LBUTTONDOWN: // switch(msg) - WM_LBUTTONDOWN
   {
     IsLeftMouseButtonDown = true;
 
-    input->push( pairQI( mousePt, 8 | orInput ) );
+    input->push(pairQI(mousePt, 8 | orInput) );
 
-    SetCapture( hwnd );
+    SetCapture(hwnd);
   }
-  return 0;
+  return 0; // switch(msg) - WM_LBUTTONDOWN
 
-  case WM_LBUTTONUP:
+  case WM_LBUTTONUP: // switch(msg) - WM_LBUTTONUP
   {
     IsLeftMouseButtonDown = false;
 
-    input->push( pairQI( mousePt, DUMP_ALL_CAPTURES ) );
+    input->push(pairQI(mousePt, DUMP_ALL_CAPTURES) );
 
     ReleaseCapture();
   }
-  return 0;
+  return 0; // switch(msg) - WM_LBUTTONUP
 
-  case WM_RBUTTONDOWN:
+  case WM_RBUTTONDOWN: // switch(msg) - WM_RBUTTONDOWN
   {
     IsRightMouseButtonDown = true;
 
-    input->push( pairQI( mousePt, 16 | orInput ) );
+    input->push(pairQI(mousePt, 16 | orInput) );
 
-    SetCapture( hwnd );
+    SetCapture(hwnd);
   }
-  return 0;
+  return 0; // switch(msg) - WM_RBUTTONDOWN
 
-  case WM_RBUTTONUP:
+  case WM_RBUTTONUP: // switch(msg) - WM_RBUTTONUP
   {
     IsRightMouseButtonDown = false;
 
-    input->push( pairQI( mousePt, DUMP_ALL_CAPTURES ) );
+    input->push(pairQI(mousePt, DUMP_ALL_CAPTURES) );
 
     ReleaseCapture();
   }
-  return 0;
+  return 0; // switch(msg) - WM_RBUTTONUP
 
-  case WM_SETFOCUS:
+  case WM_SETFOCUS: // switch(msg) - WM_SETFOCUS
   {
     IsApplicationTopMost = true;
   }
-  return 0;
+  return 0; // switch(msg) - WM_SETFOCUS
 
-  case WM_KILLFOCUS:
+  case WM_KILLFOCUS: // switch(msg) - WM_KILLFOCUS
   {
     IsApplicationTopMost = false;
 
@@ -3359,18 +3396,19 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
     IsRightMouseButtonDown = false;
 
     ReleaseCapture();
-  }
+
+  } // switch(msg) - WM_KILLFOCUS
   // ? are we supposed to pass through here ? todo
 
-  case WM_CAPTURECHANGED:
+  case WM_CAPTURECHANGED: // switch(msg) - WM_KILLFOCUS, WM_CAPTURECHANGED
   {
     /* nop */
   }
-  return 0;
+  return 0; // switch(msg) - WM_KILLFOCUS, WM_CAPTURECHANGED
 
-  case WM_SYSCOMMAND:
+  case WM_SYSCOMMAND: // switch(msg) - WM_SYSCOMMAND
   {
-    if( ( wParam & 0xfff0 ) != SC_MAXIMIZE )
+    if( (wParam & 0xfff0) != SC_MAXIMIZE)
     {
       // We need help from DefWindowProc(...).
       break;
@@ -3378,13 +3416,13 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
     WindowStyle::setStyle();
 
-    WindowProc( hwnd, WM_CHANGEWINDOWSTYLE, 0, 0 );
+    WindowProc(hwnd, WM_CHANGEWINDOWSTYLE, 0, 0);
   }
-  return 0;
+  return 0; // switch(msg) - WM_SYSCOMMAND
 
-  case WM_NCLBUTTONDBLCLK:
+  case WM_NCLBUTTONDBLCLK: // switch(msg) - WM_NCLBUTTONDBLCLK
   {
-    if( wParam != HTCAPTION )
+    if(wParam != HTCAPTION)
     {
       // We need help from DefWindowProc(...).
       break;
@@ -3392,91 +3430,91 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
     WindowStyle::setStyle();
 
-    WindowProc( hwnd, WM_CHANGEWINDOWSTYLE, 0, 0 );
+    WindowProc(hwnd, WM_CHANGEWINDOWSTYLE, 0, 0);
   }
-  return 0;
+  return 0; // switch(msg) - WM_NCLBUTTONDBLCLK
 
-  case WM_SYSKEYDOWN:
+  case WM_SYSKEYDOWN: // switch(msg) - WM_SYSKEYDOWN
   {
-    if( wParam == VK_RETURN && ( lParam & ( 1 << 29 ) ) )
+    if(wParam == VK_RETURN && (lParam & (1 << 29) ) )
     {
       WindowStyle::setStyle();
 
-      WindowProc( hwnd, WM_CHANGEWINDOWSTYLE, 0, 0 );
+      WindowProc(hwnd, WM_CHANGEWINDOWSTYLE, 0, 0);
     }
-    else if( wParam == VK_F10 )
+    else if(wParam == VK_F10)
     {
-      DialogBox( hInstance, "ExtraBox", hwnd, AboutDlgProc );
+      DialogBox(hInstance, "ExtraBox", hwnd, AboutDlgProc);
 
-      // WinExec( "de_Casteljau ExtraBox.exe", 0 );
+      // WinExec("de_Casteljau ExtraBox.exe", 0);
 
       return 0;
     }
   }
-  break;
+  break; // switch(msg) - WM_SYSKEYDOWN
 
-  case WM_KEYDOWN:
+  case WM_KEYDOWN: // switch(msg) - WM_KEYDOWN
   {
-    switch( wParam )
+    switch(wParam) // switch(msg) - WM_KEYDOWN; switch(wParam)
     {
 
-    case VK_ESCAPE:
+    case VK_ESCAPE: // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_ESCAPE
     {
-      Warning( " escape key hit - quitting application " );
+      Warning("escape key hit - quitting application");
 
-      PostMessage( hwnd, WM_DESTROY, 0, 0 );
+      PostMessage(hwnd, WM_DESTROY, 0, 0);
     }
-    return 0;
+    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_ESCAPE
 
-    case VK_F1:
+    case VK_F1: // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F1
     {
       orInput = 0;
     }
-    return 0;
+    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F1
 
-    case VK_F2:
+    case VK_F2: // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F2
     {
       orInput = 1;
     }
-    return 0;
+    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F2
 
-    case VK_F3:
+    case VK_F3: // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F3
     {
       orInput = 2;
     }
-    return 0;
+    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F3
 
-    case VK_F4:
+    case VK_F4: // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F4
     {
       orInput = 4;
     }
-    return 0;
+    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F4
 
-    case VK_F5:
+    case VK_F5: // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F5
     {
       IsLeftMouseButtonDown = false;
       IsRightMouseButtonDown = false;
 
-      input->push( pairQI( mousePt, TOGGLE_SHELLS ) );
+      input->push(pairQI(mousePt, TOGGLE_SHELLS) );
 
       ReleaseCapture();
     }
-    return 0;
+    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F5
 
-    case VK_F6:
+    case VK_F6: // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F6
     {
       IsLeftMouseButtonDown = false;
       IsRightMouseButtonDown = false;
 
-      input->push( pairQI( mousePt, DUMP_ALL_CAPTURES ) );
+      input->push(pairQI(mousePt, DUMP_ALL_CAPTURES) );
 
       ReleaseCapture();
     }
-    return 0;
+    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F6
 
-    case VK_F7:
+    case VK_F7: // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F7
     {
-      if( DialogBox( hInstance, "InputBox", hwnd, InputDlgProc ) == 0 )
+      if(DialogBox(hInstance, "InputBox", hwnd, InputDlgProc) == 0)
       {
         IsLeftMouseButtonDown = false;
         IsRightMouseButtonDown = false;
@@ -3496,217 +3534,217 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
         }menu2;
 
-        assert( sizeof( menu ) == sizeof( menu2 ) );
+        assert(sizeof(menu) == sizeof(menu2) );
 
-        memset( &menu, 0, sizeof( menu ) );
-        memset( &menu2, 0, sizeof( menu2 ) );
+        memset( &menu, 0, sizeof(menu) );
+        memset( &menu2, 0, sizeof(menu2) );
 
         menu.p = menuArray;
 
-        menuArray[ 11 ] = mousePt.x;
-        menuArray[ 12 ] = mousePt.y;
+        menuArray[11] = mousePt.x;
+        menuArray[12] = mousePt.y;
 
-        input->push( pairQI( menu.pt, MENU_INPUT ) );
+        input->push(pairQI(menu.pt, MENU_INPUT) );
 
         //////////////////////////////////////////////////////////////////
-        input->push( pairQI( mousePt, UPDATE_INPUT ) );
+        input->push(pairQI(mousePt, UPDATE_INPUT) );
 
-        input->push( pairQI( mousePt, CAPTURE_TRANSLATE ) );
+        input->push(pairQI(mousePt, CAPTURE_TRANSLATE) );
 
         POINT transPt = {mousePt.x + Graphics::graphicsClientWidth() / 2, mousePt.y + Graphics::graphicsClientHeight() / 2};
 
-        input->push( pairQI( transPt, UPDATE_INPUT ) );
+        input->push(pairQI(transPt, UPDATE_INPUT) );
 
-        input->push( pairQI( transPt, DUMP_ALL_CAPTURES ) );
+        input->push(pairQI(transPt, DUMP_ALL_CAPTURES) );
 
         //////////////////////////////////////////////////////////////////
-        input->push( pairQI( mousePt, UPDATE_INPUT ) );
+        input->push(pairQI(mousePt, UPDATE_INPUT) );
 
-        input->push( pairQI( mousePt, CAPTURE_SCALE ) );
+        input->push(pairQI(mousePt, CAPTURE_SCALE) );
 
         POINT scalePt = {mousePt.x + Graphics::graphicsClientWidth() / 2, mousePt.y + Graphics::graphicsClientWidth() / 2};
 
-        input->push( pairQI( scalePt, UPDATE_INPUT ) );
+        input->push(pairQI(scalePt, UPDATE_INPUT) );
 
         int loop = 0;
 
-        while( ++loop < 8 )
+        while(++loop < 8)
         {
           scalePt.x += Graphics::graphicsClientWidth() / 2;
           scalePt.y += Graphics::graphicsClientWidth() / 2;
 
-          input->push( pairQI( scalePt, UPDATE_INPUT ) );
+          input->push(pairQI(scalePt, UPDATE_INPUT) );
         }
 
-        input->push( pairQI( scalePt, DUMP_ALL_CAPTURES ) );
+        input->push(pairQI(scalePt, DUMP_ALL_CAPTURES) );
         //////////////////////////////////////////////////////////////////
 
-        input->push( pairQI( mousePt, UPDATE_INPUT ) );
+        input->push(pairQI(mousePt, UPDATE_INPUT) );
 
         ReleaseCapture();
       }
     }
-    return 0;
+    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F7
 
-    case VK_F8:
+    case VK_F8: // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F8
     {
-      DialogBox( hInstance, "HelpBox", hwnd, AboutDlgProc );
+      DialogBox(hInstance, "HelpBox", hwnd, AboutDlgProc);
 
-      // WinExec( "de_Casteljau HelpBox.exe", 0 );
+      /* WinExec("de_Casteljau HelpBox.exe", 0); */
     }
-    return 0;
+    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F8
 
-    case VK_F9:
+    case VK_F9: // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F9
     {
-      DialogBox( hInstance, "AboutBox", hwnd, AboutDlgProc );
+      DialogBox(hInstance, "AboutBox", hwnd, AboutDlgProc);
 
-      // WinExec( "de_Casteljau AboutBox.exe", 0 );
+      /* WinExec("de_Casteljau AboutBox.exe", 0); */
     }
-    return 0;
+    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F9
 
-    case 49:
+    case 49: // switch(msg) - WM_KEYDOWN; switch(wParam) - 49
     /* nop */
-    case VK_NUMPAD1:
+    case VK_NUMPAD1: // switch(msg) - WM_KEYDOWN; switch(wParam) - 49, VK_NUMPAD1
     {
       IsLeftMouseButtonDown = false;
       IsRightMouseButtonDown = false;
 
-      input->push( pairQI( mousePt, TOGGLE_CONTROL_POINTS ) );
+      input->push(pairQI(mousePt, TOGGLE_CONTROL_POINTS) );
 
       ReleaseCapture();
     }
-    return 0;
+    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - 49, VK_NUMPAD1
 
-    case 50:
+    case 50: // switch(msg) - WM_KEYDOWN; switch(wParam) - 50
     /* nop */
-    case VK_NUMPAD2:
+    case VK_NUMPAD2: // switch(msg) - WM_KEYDOWN; switch(wParam) - 50, VK_NUMPAD2
     {
       IsLeftMouseButtonDown = false;
       IsRightMouseButtonDown = false;
 
-      input->push( pairQI( mousePt, ADD_CURVE ) );
+      input->push(pairQI(mousePt, ADD_CURVE) );
 
       ReleaseCapture();
     }
-    return 0;
+    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - 50, VK_NUMPAD2
 
-    case 51:
+    case 51: // switch(msg) - WM_KEYDOWN; switch(wParam) - 51
     /* nop */
-    case VK_NUMPAD3:
+    case VK_NUMPAD3: // switch(msg) - WM_KEYDOWN; switch(wParam) - 51, VK_NUMPAD3
     {
-      input->push( pairQI( mousePt, REMOVE_CURVE ) );
+      input->push(pairQI(mousePt, REMOVE_CURVE) );
 
       ReleaseCapture();
     }
-    return 0;
+    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - 51, VK_NUMPAD3
 
-    case 52:
+    case 52: // switch(msg) - WM_KEYDOWN; switch(wParam) - 52
     /* nop */
-    case VK_NUMPAD4:
-    {
-      IsLeftMouseButtonDown = false;
-      IsRightMouseButtonDown = false;
-
-      input->push( pairQI( mousePt, TRAVERSE_CURVE_LIST ) );
-
-      ReleaseCapture();
-    }
-    return 0;
-
-    case 53:
-    /* nop */
-    case VK_NUMPAD5:
+    case VK_NUMPAD4: // switch(msg) - WM_KEYDOWN; switch(wParam) - 52, VK_NUMPAD4
     {
       IsLeftMouseButtonDown = false;
       IsRightMouseButtonDown = false;
 
-      input->push( pairQI( mousePt, TOGGLE_CONTROL_POINT_TEXT ) );
+      input->push(pairQI(mousePt, TRAVERSE_CURVE_LIST) );
 
       ReleaseCapture();
     }
-    return 0;
+    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - 52, VK_NUMPAD4
 
-    case 54:
+    case 53: // switch(msg) - WM_KEYDOWN; switch(wParam) - 53
     /* nop */
-    case VK_NUMPAD6:
+    case VK_NUMPAD5: // switch(msg) - WM_KEYDOWN; switch(wParam) - 53, VK_NUMPAD5
+    {
+      IsLeftMouseButtonDown = false;
+      IsRightMouseButtonDown = false;
+
+      input->push(pairQI(mousePt, TOGGLE_CONTROL_POINT_TEXT) );
+
+      ReleaseCapture();
+    }
+    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - 53, VK_NUMPAD5
+
+    case 54: // switch(msg) - WM_KEYDOWN; switch(wParam) - 54
+    /* nop */
+    case VK_NUMPAD6: // switch(msg) - WM_KEYDOWN; switch(wParam) - 54, VK_NUMPAD6
     {
       /* nop */
     }
-    return 0;
+    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - 54, VK_NUMPAD6
 
-    case 55:
+    case 55: // switch(msg) - WM_KEYDOWN; switch(wParam) - 55
     /* nop */
-    case VK_NUMPAD7:
+    case VK_NUMPAD7: // switch(msg) - WM_KEYDOWN; switch(wParam) - 55, VK_NUMPAD7
     {
       /* nop */
     }
-    return 0;
+    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - 55, VK_NUMPAD7
 
-    case 56:
+    case 56: // switch(msg) - WM_KEYDOWN; switch(wParam) - 56
     /* nop */
-    case VK_NUMPAD8:
+    case VK_NUMPAD8: // switch(msg) - WM_KEYDOWN; switch(wParam) - 56, VK_NUMPAD8
     {
       /* nop */
     }
-    return 0;
+    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - 56, VK_NUMPAD8
 
-    case 57:
+    case 57: // switch(msg) - WM_KEYDOWN; switch(wParam) - 57
     /* nop */
-    case VK_NUMPAD9:
+    case VK_NUMPAD9: // switch(msg) - WM_KEYDOWN; switch(wParam) - 57, VK_NUMPAD9
     {
       /* nop */
     }
-    return 0;
+    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - 57, VK_NUMPAD9
 
-    case VK_ADD:
+    case VK_ADD: // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_ADD
     {
       IsLeftMouseButtonDown = false;
       IsRightMouseButtonDown = false;
 
-      input->push( pairQI( mousePt, INCREASE_ITERATION_CONSTANT ) );
+      input->push(pairQI(mousePt, INCREASE_ITERATION_CONSTANT) );
 
       ReleaseCapture();
     }
-    return 0;
+    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_ADD
 
-    case VK_SUBTRACT:
+    case VK_SUBTRACT: // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_SUBTRACT
     {
       IsLeftMouseButtonDown = false;
       IsRightMouseButtonDown = false;
 
-      input->push( pairQI( mousePt, DECREASE_ITERATION_CONSTANT ) );
+      input->push(pairQI(mousePt, DECREASE_ITERATION_CONSTANT) );
 
       ReleaseCapture();
     }
-    return 0;
+    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_SUBTRACT
 
-    }
+    } // switch(msg) - WM_KEYDOWN; switch(wParam)
   }
-  return 0;
+  return 0; // switch(msg) - WM_KEYDOWN
 
-  case WM_MOVE:
+  case WM_MOVE: // switch(msg) - WM_MOVE
   /* nop */
-  case WM_MOVING:
+  case WM_MOVING: // switch(msg) - WM_MOVE, WM_MOVING
   {
     if(Graphics::graphicsBackBufferFunction() && Graphics::graphicsIsModeChangeActive() == false && WindowStyle::getStyle() != Graphics::GRAPHICS_FULLSCREEN && IsWindowStyleChanging == false)
     {
-      POINT trans = { 0, 0 };
+      POINT trans = {0, 0};
 
-      BOOL returnVal = ClientToScreen( hwnd, &trans );
+      BOOL returnVal = ClientToScreen(hwnd, &trans);
 
-      WindowStyle::setOrigin( trans.x, trans.y );
+      WindowStyle::setOrigin(trans.x, trans.y);
 
       main(UPDATE_INPUT, mousePt.x, mousePt.y, 1, (double)Graphics::graphicsClientWidth() * 0.5, (double)Graphics::graphicsClientHeight() * 0.5);
 
-      Graphics::graphicsDrawBackBufferToScreen( hwnd );
+      Graphics::graphicsDrawBackBufferToScreen(hwnd);
 
       Sleep(1);
     }
   }
   // We need help from DefWindowProc(...).
-  break;
+  break; // switch(msg) - WM_MOVE, WM_MOVING
 
-  case WM_SIZE:
+  case WM_SIZE: // switch(msg) - WM_SIZE
   {
     if(wParam == SIZE_MAXHIDE || wParam == SIZE_MAXIMIZED || wParam == SIZE_MAXSHOW || wParam == SIZE_MINIMIZED)
     {
@@ -3718,19 +3756,19 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
         break;
       }
 
-      Error( " Incorrect WM_SIZE message in WindowProc(...) " );
+      Error("Incorrect WM_SIZE message in WindowProc(...)");
 
-      assert( 0 && " Incorrect WM_SIZE message in WindowProc(...) " );
+      assert(0 && "Incorrect WM_SIZE message in WindowProc(...)");
 
       return 0;
     }
 
     if(wParam == SIZE_RESTORED && IsApplicationMinimized == true)
     {
-      unsigned short widthHeight[ 2 ] = { 0 };
+      unsigned short widthHeight[2] = { 0 };
 
-      widthHeight[ 0 ] = (unsigned short) Graphics::oldWidth;
-      widthHeight[ 1 ] = (unsigned short) Graphics::oldHeight;
+      widthHeight[0] = (unsigned short)Graphics::oldWidth;
+      widthHeight[1] = (unsigned short)Graphics::oldHeight;
 
       IsApplicationMinimized = false;
 
@@ -3739,24 +3777,25 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
       // We need help from DefWindowProc(...).
       break;
     }
-  }
+
+  } // switch(msg) - WM_SIZE
   // ? are we supposed to pass through here ? todo
 
-  case WM_SIZING:
+  case WM_SIZING: // switch(msg) - WM_SIZE, WM_SIZING
   {
-    if( Graphics::graphicsBackBufferFunction() && Graphics::graphicsIsModeChangeActive() == false && IsWindowStyleChanging == false)
+    if(Graphics::graphicsBackBufferFunction() && Graphics::graphicsIsModeChangeActive() == false && IsWindowStyleChanging == false)
     {
       static double scaleTime = 0;
 
-      RECT *rect = (LPRECT) lParam;
+      RECT* rect = (LPRECT)lParam;
 
-      if( msg == WM_SIZE )
+      if(msg == WM_SIZE)
       {
-        rect = (RECT*) InsertHeapAllocation( sizeof( RECT ) );
+        rect = (RECT*)InsertHeapAllocation(sizeof(RECT) );
 
-        if( rect == 0 )
+        if(rect == 0)
         {
-          Error( " WM_SIZE new RECT allocation failure " );
+          Error("WM_SIZE new RECT allocation failure");
 
           // We need help from DefWindowProc(...).
           break;
@@ -3765,14 +3804,14 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
         rect->left = 0;
         rect->top  = 0;
 
-        rect->right = LOWORD( lParam );
-        rect->bottom = HIWORD( lParam );
+        rect->right = LOWORD(lParam);
+        rect->bottom = HIWORD(lParam);
       }
       else
       {
         updateTime();
 
-        if( scaleTime > timeInSeconds() )
+        if(scaleTime > timeInSeconds() )
         {
           // We need help from DefWindowProc(...).
           break;
@@ -3781,30 +3820,30 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
         scaleTime = timeInSeconds() + 0.5;
       }
 
-      WindowStyle::setSize( rect->right - rect->left, rect->bottom - rect->top);
+      WindowStyle::setSize(rect->right - rect->left, rect->bottom - rect->top);
 
-      if( rect->right - rect->left <= 0 || rect->bottom - rect->top <= 0)
+      if(rect->right - rect->left <= 0 || rect->bottom - rect->top <= 0)
       {
         IsApplicationMinimized = true;
 
-        if( msg == WM_SIZE )
+        if(msg == WM_SIZE)
         {
-          RemoveHeapAllocation( rect );
+          RemoveHeapAllocation(rect);
         }
 
-        PostMessage( hwnd, WM_SYSCOMMAND, SC_MINIMIZE, 0 );
+        PostMessage(hwnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);
 
         // We need help from DefWindowProc(...).
         break;
       }
-      else if( WindowStyle::getStyle() == Graphics::GRAPHICS_FULLSCREEN )
+      else if(WindowStyle::getStyle() == Graphics::GRAPHICS_FULLSCREEN)
       {
-        if( msg == WM_SIZE )
+        if(msg == WM_SIZE)
         {
-          RemoveHeapAllocation( rect );
+          RemoveHeapAllocation(rect);
         }
 
-        WindowProc( hwnd, WM_CHANGEWINDOWSTYLE, 0, 0 );
+        WindowProc(hwnd, WM_CHANGEWINDOWSTYLE, 0, 0);
 
         return 0;
       }
@@ -3813,43 +3852,43 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
       TextOutTermSystem();
 
-      RemoveHandle( TextOutInitSystem );
+      RemoveHandle(TextOutInitSystem);
 
       Graphics::graphicsTermScreenAndBackBuffer();
 
       Graphics::width = rect->right - rect->left;
       Graphics::height = rect->bottom - rect->top;
 
-      if( Graphics::graphicsInitScreenAndBackBuffer( hwnd ) != Graphics::GRAPHICS_OK )
+      if(Graphics::graphicsInitScreenAndBackBuffer(hwnd) != Graphics::GRAPHICS_OK)
       {
-        Error( " Graphics::graphicsInitScreenAndBackBuffer(...) != Graphics::GRAPHICS_OK " );
+        Error("Graphics::graphicsInitScreenAndBackBuffer(...) != Graphics::GRAPHICS_OK");
 
-        if( !DestroyWindow( hwnd ) )
+        if( !DestroyWindow(hwnd) )
         {
-          Error( " The function DestroyWindow(...) has failed in the function WindowProc(...). " );
+          Error("The function DestroyWindow(...) has failed in the function WindowProc(...).");
         }
 
-        if( msg == WM_SIZE )
+        if(msg == WM_SIZE)
         {
-          RemoveHeapAllocation( rect );
+          RemoveHeapAllocation(rect);
         }
 
         // There is an error, so we do not need held from DefWindowProc(...).
         return 0;
       }
 
-      InsertHandle( TextOutInitSystem );
+      InsertHandle(TextOutInitSystem);
 
-      Sleep( 1 );
+      Sleep(1);
 
-      if( msg == WM_SIZE )
+      if(msg == WM_SIZE)
       {
-        RemoveHeapAllocation( rect );
+        RemoveHeapAllocation(rect);
       }
     }
   }
   // We need help from DefWindowProc(...).
-  break;
+  break; // switch(msg) - WM_SIZE, WM_SIZING
 
   // MSDN:
   // An application sends the WM_PAINT message when the system or another
@@ -3859,11 +3898,11 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
   // message by using theGetMessage orPeekMessage function.
   //
   // An application returns zero if it processes this message.
-  case WM_PAINT:
+  case WM_PAINT: // switch(msg) - WM_PAINT
   {
     /* nop */
   }
-  return 0;
+  return 0; // switch(msg) - WM_PAINT
 
   // MSDN:
   // An application sends the WM_ERASEBKGND message when the window background
@@ -3872,112 +3911,112 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
   //
   // An application should return nonzero if it erases the background;
   // otherwise, it should return zero.
-  case WM_ERASEBKGND:
+  case WM_ERASEBKGND: // switch(msg) - WM_ERASEBKGND
   {
     /* nop */
   }
   // return nonzero to make believe the background was erased
-  return 1;
+  return 1; // switch(msg) - WM_ERASEBKGND
 
-  case WM_DISPLAYCHANGE:
+  case WM_DISPLAYCHANGE: // switch(msg) - WM_DISPLAYCHANGE
   {
-    if( Graphics::graphicsIsModeChangeActive() == false )
+    if(Graphics::graphicsIsModeChangeActive() == false)
     {
-      if( IsApplicationMinimized == true )
+      if(IsApplicationMinimized == true)
       {
         Graphics::oldBitDepth = wParam;
-        Graphics::oldWidth = LOWORD( lParam );
-        Graphics::oldHeight = HIWORD( lParam );
+        Graphics::oldWidth = LOWORD(lParam);
+        Graphics::oldHeight = HIWORD(lParam);
 
         return 0;
       }
 
       TextOutTermSystem();
 
-      RemoveHandle( TextOutInitSystem );
+      RemoveHandle(TextOutInitSystem);
 
-      if( Graphics::width  != Graphics::oldWidth || Graphics::height != Graphics::oldHeight)
+      if(Graphics::width  != Graphics::oldWidth || Graphics::height != Graphics::oldHeight)
       {
-        if( WindowStyle::getStyle() == Graphics::GRAPHICS_FULLSCREEN )
+        if(WindowStyle::getStyle() == Graphics::GRAPHICS_FULLSCREEN)
         {
           WindowStyle::setStyle();
         }
       }
 
       Graphics::oldBitDepth = wParam;
-      Graphics::oldWidth = LOWORD( lParam );
-      Graphics::oldHeight = HIWORD( lParam );
+      Graphics::oldWidth = LOWORD(lParam);
+      Graphics::oldHeight = HIWORD(lParam);
 
       Graphics::graphicsTermScreenAndBackBuffer();
 
-      if( WindowStyle::getStyle() == Graphics::GRAPHICS_FULLSCREEN )
+      if(WindowStyle::getStyle() == Graphics::GRAPHICS_FULLSCREEN)
       {
         Graphics::width = Graphics::oldWidth;
 
         Graphics::height = Graphics::oldHeight;
       }
-      else if( WindowStyle::getSize( false ).x + WindowStyle::getMenuRect().left + WindowStyle::getMenuRect().right >= Graphics::oldWidth || WindowStyle::getSize( false ).y + WindowStyle::getMenuRect().top + WindowStyle::getMenuRect().bottom >= Graphics::oldHeight)
+      else if(WindowStyle::getSize(false).x + WindowStyle::getMenuRect().left + WindowStyle::getMenuRect().right >= Graphics::oldWidth || WindowStyle::getSize(false).y + WindowStyle::getMenuRect().top + WindowStyle::getMenuRect().bottom >= Graphics::oldHeight)
       {
         WindowStyle::setStyle();
 
-        WindowProc( hwnd, WM_CHANGEWINDOWSTYLE, 0, 0 );
+        WindowProc(hwnd, WM_CHANGEWINDOWSTYLE, 0, 0);
 
         return 0;
       }
 
-      if( Graphics::graphicsInitScreenAndBackBuffer( hwnd ) != Graphics::GRAPHICS_OK )
+      if(Graphics::graphicsInitScreenAndBackBuffer(hwnd) != Graphics::GRAPHICS_OK)
       {
-        Error( " Graphics::graphicsInitScreenAndBackBuffer(...) != Graphics::GRAPHICS_OK " );
+        Error("Graphics::graphicsInitScreenAndBackBuffer(...) != Graphics::GRAPHICS_OK");
 
-        if( !DestroyWindow( hwnd ) )
+        if( !DestroyWindow(hwnd) )
         {
-          Error( " The function DestroyWindow(...) has failed in the function WindowProc(...). " );
+          Error("The function DestroyWindow(...) has failed in the function WindowProc(...).");
         }
 
         return 0;
       }
 
-      InsertHandle( TextOutInitSystem );
+      InsertHandle(TextOutInitSystem);
 
-      if( isMenuActive == true )
+      if(isMenuActive == true)
       {
         main(DUMP_ALL_CAPTURES, mousePt.x, mousePt.y, 1, (double)Graphics::graphicsClientWidth() * 0.5, (double)Graphics::graphicsClientHeight() * 0.5);
       }
       else
       {
-        input->push( pairQI( mousePt, DUMP_ALL_CAPTURES ) );
+        input->push(pairQI(mousePt, DUMP_ALL_CAPTURES) );
       }
     }
   }
-  return 0;
+  return 0; // switch(msg) - WM_DISPLAYCHANGE
 
   // MSDN:
   // The WM_CLOSE message is sent as a signal
   // that a window or an application should terminate.
   //
   // The DefWindowProc function calls the DestroyWindow
-  // function to destroy the window ( since I handle it, I call it myself ).
+  // function to destroy the window (since I handle it, I call it myself).
   //
   // If an application processes this message, it should return zero.
-  case WM_CLOSE:
+  case WM_CLOSE: // switch(msg) - WM_CLOSE
   {
     // MSDN:
     // The DestroyWindow function destroys the specified window.
     // The function sends WM_DESTROY and WM_NCDESTROY messages to the window.
-    if( !DestroyWindow( hwnd ) )
+    if( !DestroyWindow(hwnd) )
     {
-      Error( " The function DestroyWindow(...) has failed in the function WindowProc(...). " );
+      Error("The function DestroyWindow(...) has failed in the function WindowProc(...).");
     }
   }
-  return 0;
+  return 0; // switch(msg) - WM_CLOSE
 
   // MSDN:
   // The WM_DESTROY message is sent when a window is being destroyed.
   //
   // If an application processes this message, it should return zero.
-  case WM_DESTROY:
+  case WM_DESTROY: // switch(msg) - WM_DESTROY
   {
-    if( IsWindowStyleChanging == true )
+    if(IsWindowStyleChanging == true)
     {
       return 0;
     }
@@ -4003,7 +4042,7 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
     // the process, and exits with the supplied status code.
     exit(0);
   }
-  return 0;
+  return 0; // switch(msg) - WM_DESTROY
 
   // MSDN:
   // The WM_QUIT message indicates a request to terminate an application and
@@ -4013,13 +4052,13 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
   // This message does not have a return value, because it causes
   // the message loop to terminate before the message is sent to the
   // application's window procedure.
-  case WM_QUIT:
+  case WM_QUIT: // switch(msg) - WM_QUIT
   {
     /* nop */
   }
-  return wParam;
+  return wParam; // switch(msg) - WM_QUIT
 
-  }
+  } // switch(msg)
 
   // MSDN:
   // The DefWindowProc function calls the default window procedure
@@ -4206,7 +4245,7 @@ static void* InsertHeapAllocation(size_t numBytesToAllocate)
   {
     Error("ListInsert failure -- heap allocation not inserted and freed");
 
-    free( heapAllocation );
+    free(heapAllocation);
   }
   else
   {
@@ -4325,19 +4364,19 @@ static int mainTerm(HWND hwnd)
   // should have been freed.  listOfHeapAllocations should be empty.
   if(functionReturnValue != 1 || numberOfObjects)
   {
-  // Error("listOfHeapAllocations is not empty");
+    /* Error("listOfHeapAllocations is not empty"); */
 
-  CLIENT_POTYPE object = {0};
+    CLIENT_POTYPE object = {0};
 
-  while( !ListGetNext(listOfHeapAllocations, &object, 1) )
-  {
-    if(RemoveHeapAllocation(object.object) )
+    while( !ListGetNext(listOfHeapAllocations, &object, 1) )
     {
-      Error("RemoveHeapAllocation(...) function failure");
+      if(RemoveHeapAllocation(object.object) )
+      {
+        Error("RemoveHeapAllocation(...) function failure");
+      }
     }
-  }
 
-  error = -1;
+    error = -1;
   }
 
 
@@ -4488,14 +4527,10 @@ static int updateTime()
 //     succeed even if the mutex already exists, but the GetLastError function
 //     will return ERROR_ALREADY_EXISTS. This indicates that another instance of
 //     your application exists, because it created the mutex first.
+//
+// int WINAPI WinMain(HINSTANCE currentInstance, HINSTANCE previousInstance, char* commandLine, int showStateOfWindow)
 
-int WINAPI WinMain
-(
-  HINSTANCE hInstance, // handle to current instance
-  HINSTANCE /*hPrevInstance*/, // handle to previous instance
-  char* /*lpCmdLine*/, // pointer to command line
-  int nCmdShow // show state of window
-)
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine, int nCmdShow)
 {
   int currentFrameNumber = 0;
 
@@ -4514,13 +4549,13 @@ int WINAPI WinMain
   // Only allow one instance of the application at a time.  Use CreateMutex
   // to test if an instance of the application already exists, quit if
   // another instance exists or if CreateMutex returns NULL.
-  mutexHandle = CreateMutex( 0, FALSE, "FunkyLovinNicoleSugarDaddy" );
+  mutexHandle = CreateMutex(0, FALSE, "FunkyLovinNicoleSugarDaddy");
 
   if( !mutexHandle)
   {
     // Use MessageBox until we make sure that this is the only instance
     // of the application.  Then we can set up the log file.
-    ErrorBox("( MutexHandle = CreateMutex(...) ) == NULL");
+    ErrorBox("(MutexHandle = CreateMutex(...) ) == NULL");
 
     IsApplicationEntry = false;
 
@@ -4551,7 +4586,7 @@ int WINAPI WinMain
       ErrorBox("CloseHandle(...) failure");
     }
 
-    ErrorBox("( file = fopen(...) ) == NULL");
+    ErrorBox("(file = fopen(...) ) == NULL");
 
     IsApplicationEntry = false;
 
@@ -4568,10 +4603,10 @@ int WINAPI WinMain
   // Bruce Dawson, a man of integrity.
 
   // 6) Set _CrtSetDbgFlag to keep track of allocations on the heap
-  _CrtSetDbgFlag(_CrtSetDbgFlag( _CRTDBG_REPORT_FLAG ) | _CRTDBG_LEAK_CHECK_DF);
+  _CrtSetDbgFlag(_CrtSetDbgFlag(_CRTDBG_REPORT_FLAG) | _CRTDBG_LEAK_CHECK_DF);
 
   // Enable floating point exceptions to track down bad floating point usage.
-  // _controlfp( 0, _EM_ZERODIVIDE | _EM_INVALID );
+  // _controlfp(0, _EM_ZERODIVIDE | _EM_INVALID);
 
   // Copyright 1999-2000 Bruce Dawson. ~ end
 
@@ -4580,7 +4615,7 @@ int WINAPI WinMain
 
   if( !listOfHandles)
   {
-    Error("( listOfHandles = ListInit(...) ) == NULL");
+    Error("(listOfHandles = ListInit(...) ) == NULL");
 
     if( !CloseHandle(mutexHandle) )
     {
@@ -4604,7 +4639,7 @@ int WINAPI WinMain
   {
     ListTerminate(listOfHandles);
 
-    Error("( listOfHeapAllocations = ListInit(...) ) == NULL");
+    Error("(listOfHeapAllocations = ListInit(...) ) == NULL");
 
     if( !CloseHandle(mutexHandle) )
     {
@@ -4741,7 +4776,7 @@ int WINAPI WinMain
     {
       if(fclose(file) )
       {
-        Error("fclose(...) failure ");
+        Error("fclose(...) failure");
       }
       else
       {
@@ -4792,7 +4827,7 @@ int WINAPI WinMain
 
     Error("AdjustWindowRect(...) == 0");
 
-    if( !UnregisterClass( appClassName, _hInstance) )
+    if( !UnregisterClass(appClassName, _hInstance) )
     {
       Error("UnregisterClass(...) failure");
     }
@@ -4849,7 +4884,7 @@ int WINAPI WinMain
     return 0;
   }
 
-  WindowStyle::setMenuRect( -windowRect.left, -windowRect.top, windowRect.right - Graphics::graphicsClientWidth(), windowRect.bottom - Graphics::graphicsClientHeight() );
+  WindowStyle::setMenuRect(-windowRect.left, -windowRect.top, windowRect.right - Graphics::graphicsClientWidth(), windowRect.bottom - Graphics::graphicsClientHeight() );
 
   // The left and top of WindowRect will be less than or equal to
   // zero.  Reposition the window so that WindowRect starts at 0, 0.
@@ -4936,30 +4971,19 @@ int WINAPI WinMain
 
   POINT origin = { (Graphics::graphicsClientWidth() * 2 - windowRect.right) / 2, (Graphics::graphicsClientHeight() * 2 - windowRect.bottom) / 2};
 
-  WindowStyle::setOrigin( origin.x + WindowStyle::getMenuRect().left, origin.y + WindowStyle::getMenuRect().top);
+  WindowStyle::setOrigin(origin.x + WindowStyle::getMenuRect().left, origin.y + WindowStyle::getMenuRect().top);
 
   input = new queueI;
 
-  hWindow = CreateWindow
-  (
-    appClassName, // Window class name
-    appName, // Window text (title)
-    windowType, // Window style
-    origin.x, // Window top left x pos
-    origin.y, // Window top left y pos
-    windowRect.right, // Window x width
-    windowRect.bottom, // Window y height
-    0, // No parent window
-    0, // No menu
-    hInstance, // App's HINSTANCE
-    0 // No data to WM_CREATE
-  );
+// HWND CreateWindowA(const char* windowClassName, const char* windowsTitleText, unsigned long windowStyle, int windowTopLeftXpos, int windowTopLeftYpos, int windowXwidth, int windowYheight, HWND parentWindow, HMENU childMenu, HINSTANCE currentInstance, void* parameterToWmCreate)
+
+  hWindow = CreateWindow(appClassName, appName, windowType, origin.x, origin.y, windowRect.right, windowRect.bottom, 0, 0, hInstance, 0);
 
   if( !hWindow || !input)
   {
     int numberOfObjects = 0;
 
-    Error("( hWindow = CreateWindow(...) ) == NULL");
+    Error("(hWindow = CreateWindow(...) ) == NULL");
 
     if( !UnregisterClass(appClassName, _hInstance) )
     {
@@ -5002,7 +5026,6 @@ int WINAPI WinMain
 
     ListTerminate(listOfHeapAllocations);
 
-
     RemoveHandle(listOfHeapAllocations);
 
     ListIsEmpty(listOfHandles, &numberOfObjects);
@@ -5029,16 +5052,16 @@ int WINAPI WinMain
   // MSDN:
   // The ShowWindow function sets the specified window's show state.
   //
-  // ... the first time ShowWindow is called, the value ( 2nd parameter ) should be
+  // ... the first time ShowWindow is called, the value (2nd parameter) should be
   // the value obtained by the WinMain function in its nCmdShow parameter.
-  if(ShowWindow( hWindow, nCmdShow) )
+  if(ShowWindow(hWindow, nCmdShow) )
   {
     Error("ShowWindow(...) != 0");
 
     goto main_term;
   }
 
-  if(Graphics::graphicsInitScreenAndBackBuffer( hWindow ) != Graphics::GRAPHICS_OK)
+  if(Graphics::graphicsInitScreenAndBackBuffer(hWindow) != Graphics::GRAPHICS_OK)
   {
     Error("Graphics::graphicsInitScreenAndBackBuffer(...) != Graphics::GRAPHICS_OK");
 
@@ -5062,7 +5085,7 @@ int WINAPI WinMain
 
   Graphics::graphicsUnlockBackBuffer();
 
-  PeekMessage( &Message, hWindow, 0, 0, PM_REMOVE );
+  PeekMessage( &Message, hWindow, 0, 0, PM_REMOVE);
 
   // MSDN:
   // The GetMessage function retrieves a message from the calling thread's
@@ -5083,7 +5106,7 @@ int WINAPI WinMain
   //
   // Note that the function return value can be nonzero, zero, or -1.
   // Thus, you should avoid code like this:
-  //     while (GetMessage( lpMsg, hWnd, 0, 0)) ...
+  //     while (GetMessage(lpMsg, hWnd, 0, 0) ) ...
   // The possibility of a -1 return value means that such code can lead to fatal application errors.
   while(Message.message != WM_QUIT)
   {
@@ -5308,7 +5331,7 @@ extern int GetFilesNamed(char* folderPath, int* howManyOutput, PLIST_HEAD fileLi
 
   for(loop = 1; loop < tempStore; loop++)
   {
-    if( !FindNextFile( Search, &data) )
+    if( !FindNextFile(Search, &data) )
     {
       Error("The function FindNextFile(...) has failed in the function GetFilesNamed(...).");
 
