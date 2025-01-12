@@ -194,6 +194,7 @@
     <ClCompile Include="..\ssmm\ssQueue_nocomments.cpp" />
     <ClCompile Include="..\ssmm\ssStack_nocomments.cpp" />
     <ClCompile Include="console.cpp" />
+    <ClCompile Include="winmain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />

@@ -280,7 +280,7 @@ class de_Boor
 
    typedef vector< double > vectorK;
    typedef vectorK::iterator iterVK;
-   
+
    // This variable t is used to describe F( t ), which is
    // the point on the curve that shells are shown for,
    // the very same point that the program user can choose.
@@ -290,13 +290,13 @@ class de_Boor
 
    // r and s define the affine frame ( r, s ).
    double r, s;
-   
+
    // This variable tells the program which control point the user is
    // manipulating.  The value can range from 1 to N, N being the current
    // number of control points.  The variable contains valid data only
    // when the user is manipulating a control point.
    int capturedControlPt;
-   
+
    // The number of control points which the user has entered
    // is stored in this variable.
    int numControlPts;
@@ -359,7 +359,7 @@ class de_Boor
    int colors1[ 100 ];
 
    double halfWidth, halfHeight;
-   
+
    // The function pointer for capture functions, used when the user is
    // manipulating the curve.
    //
@@ -376,9 +376,9 @@ class de_Boor
    void ( *pointDrawingPrimitive )( int x0, int y0, int color0RGB );
    // A pointer to a client supplied text drawing function, set in setPrimitiveDrawingFunctions().
    void ( *textDrawingPrimitive )( int x0, int y0, const char * const, ... );
-   
+
    public:
-      
+
       // Initialize the de Boor algorithm when the user inputs the
       // first control point.
       de_Boor( int _degree = 3,
@@ -494,7 +494,7 @@ class de_Boor
                                          void ( *_pointDrawingPrimitive )( int, int, int ),
                                          void ( *_textDrawingPrimitive )( int, int, const char * const, ... )
                                        )
-      {  
+      {
          halfWidth  = _halfWidth;
          halfHeight = _halfHeight;
 
@@ -521,7 +521,7 @@ class de_Boor
 
       void setPrimitiveDrawingFunctions( de_Boor & rhs
                                        )
-      {  
+      {
          halfWidth  = rhs.halfWidth;
          halfHeight = rhs.halfHeight;
 
@@ -547,7 +547,7 @@ class de_Boor
       }
 
       enum INPUT_EVENT
-      { 
+      {
          // When there are no commands being sent to the algorithm,
          // make sure at the very least UPDATE_INPUT is sent with
          // the current input point every update cycle.
@@ -642,7 +642,7 @@ class de_Boor
 
          // Check the input event ; perform input actions
          switch( inputEvent )
-         { 
+         {
             ////////////////////////////////////////////////////////
             case UPDATE_INPUT:
 
@@ -803,7 +803,7 @@ class de_Boor
                   list< double > sort;
 
                   int loop = 0;
-            
+
                   // Put the knots in ascending order.
                   for( loop = 0; loop != _numKnots; loop++ )
                   {
@@ -1012,7 +1012,7 @@ class de_Boor
                break;
             ////////////////////////////////////////////////////////
             case TOGGLE_CONTROL_POINTS:
-               
+
                retVal = 1;
                dumpAllCaptures();
 
@@ -1092,7 +1092,7 @@ class de_Boor
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
          if( numControlPts < 2 * degree + 1 )
-         {  
+         {
             if( ctrlBl == true && fti( minMaxT ) == 0 )
             {
                point _temp;
@@ -1250,7 +1250,7 @@ class de_Boor
                point _temp;
 
                for( int currentPtIndex = 0; currentPtIndex < numControlPts; currentPtIndex++ )
-               {  
+               {
                   _temp = tranPt[ currentPtIndex ];
 
                   drawCircle( _temp,
@@ -1307,9 +1307,9 @@ class de_Boor
             assert( 0 && "Bad blossom() degree" );
          }
 
-	      va_list argptr = 0;
+        va_list argptr = 0;
 
-	      va_start( argptr, degree );
+        va_start( argptr, degree );
 
          switch( degree )
          {
@@ -1372,7 +1372,7 @@ class de_Boor
       point do_de_Boor( double dt,
                         bool draw = false
                       )
-      {  
+      {
          point temp( -1, -1 );
 
          if( dt < knots.front() || dt > knots.back() || eq( dt, knots.back() ) )
@@ -1443,7 +1443,7 @@ class de_Boor
                   i--;
                }
             }
-      
+
             if( knots.size() > I + 1 )
             {
                j = I + 1;
@@ -1515,9 +1515,9 @@ class de_Boor
                        int radius,
                        int knotIndex
                      )
-      {  
+      {
          if( circleDrawingPrimitive )
-         {  
+         {
             if( center.x < -2000000000 || center.x > 2000000000 ||
                 center.y < -2000000000 || center.y > 2000000000
               )
@@ -1544,9 +1544,9 @@ class de_Boor
                      point end,
                      int knotIndex
                    )
-      {  
+      {
          if( lineDrawingPrimitive )
-         {  
+         {
             if( start.x < -2000000000 || start.x > 2000000000 ||
                 start.y < -2000000000 || start.y > 2000000000 ||
                 end.x < -2000000000 || end.x > 2000000000 ||
@@ -1577,9 +1577,9 @@ class de_Boor
       void drawPoint( point center,
                       int knotIndex
                     )
-      {  
+      {
          if( pointDrawingPrimitive )
-         {  
+         {
             if( center.x < -2000000000 || center.x > 2000000000 ||
                 center.y < -2000000000 || center.y > 2000000000
               )
@@ -1598,7 +1598,7 @@ class de_Boor
             }
          }
       }
-      
+
       // When the user adds another control point, add that control point in the
       // list right after the previous control point.
       //
@@ -1606,7 +1606,7 @@ class de_Boor
       // while evaluating the de Boor algorithm.
       void addControlPoint(
                           )
-      {	
+      {
          // Add the new control point to the list.
          numControlPts++;
 
@@ -1677,7 +1677,7 @@ class de_Boor
       // Captures t of F( t )
       void capture_t_of_F_of_t(
                               )
-      {  
+      {
          // Find the minimum and maximum values of the coordinate pts,
          // which are needed to normalize input.
          minPt.x = maxPt.x = tranPt[ 0 ].x;
@@ -1686,12 +1686,12 @@ class de_Boor
          for( int currentPtIndex = 1; currentPtIndex < numControlPts; currentPtIndex++ )
          {
             if( minPt.x > tranPt[ currentPtIndex ].x )
-            {  
+            {
                minPt.x = tranPt[ currentPtIndex ].x;
             }
 
             if( maxPt.x < tranPt[ currentPtIndex ].x )
-            {  
+            {
                maxPt.x = tranPt[ currentPtIndex ].x;
             }
          }
@@ -1725,7 +1725,7 @@ class de_Boor
       // to manipulate t of F( t ).
       void drag_t_of_F_of_t(
                            )
-      { 
+      {
          if( inputCur.x <= minPt.x )
          {
             inputCur.x = minPt.x + 1;
@@ -1749,7 +1749,7 @@ class de_Boor
       // to manipulate a control pt.
       void dragControlPoint(
                            )
-      {  
+      {
          // Drag the captured ctrl pt relative to input movement between
          // the current input pt and the previous input pt.
          tranPt[ capturedControlPt - 1 ] += inputCur - inputPrv;
@@ -2110,7 +2110,7 @@ extern "C" extern int term(
    if( deBoorList )
    {
       deBoorIter = deBoorList->end();
-         
+
       for( loop = deBoorList->begin(); loop != deBoorList->end(); loop++ )
       {
          if( *loop != 0 )
