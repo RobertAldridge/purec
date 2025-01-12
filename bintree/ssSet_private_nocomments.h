@@ -22,8 +22,6 @@ struct ssSet
 
   SsSetCompare lessThan;
 
-  //SsSetEquivalence equalTo;
-
   SsSetEvaluate evaluate;
 
   // main allocator for ssSet nodes

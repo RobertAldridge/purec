@@ -1,10 +1,5 @@
 
-int main()
-{
-  return 0;
-}
-#if 0
-// ConsoleApp2.cpp
+// console.cpp
 
 #include <cstdint>
 #include <cstdio>
@@ -15,349 +10,21 @@ int main()
 // int thrd_sleep(const struct timespec* duration, struct timespec* remaining)
 #include <threads.h>
 
-#define CPP_STUFF 0
+#include "ssMm_nocomments.h"
+#include "ssArray_nocomments.h"
+#include "ssStack_nocomments.h"
+#include "ssQueue_nocomments.h"
 
-#if CPP_STUFF
-#include <set>
-#include <string>
-#include <unordered_map>
-#include <unordered_set>
-#include <vector>
+#include "ssSet_nocomments.h"
 
-using std::set;
-using std::string;
-using std::unordered_map;
-using std::unordered_set;
-using std::vector;
-#endif
+#include "blah_alloc.h"
 
-#define YDEBUG 0
+//#define _log(blah) {}
+#define _log(blah) printf("%s %s %i\n", blah, __FILE__, (int)__LINE__)
 
 #define countof(x) (sizeof(x) / sizeof(x[0] ) )
 
-#if CPP_STUFF
-typedef struct NodeType Node;
-
-static void nodeRemove(Node* current)
-{
-}
-
-#include "stack.cpp"
-#include "queue.cpp"
-#include "list.cpp"
-#endif
-
-#if 0
-struct NodeType
-{
-    int key;
-
-    struct NodeType* previous;
-    struct NodeType* next;
-};
-
-typedef struct NodeType Node;
-
-struct ListType
-{
-    int index;
-    int capacity;
-
-    Node sentinelUsed;
-    Node sentinelFree;
-
-    Node* memory;
-};
-
-typedef struct ListType List;
-
-static void nodeRemove(Node* current)
-{
-    if(current)
-    {
-        Node* previous = current->previous;
-        Node* next = current->next;
-
-        if(previous && next)
-        {
-            previous->next = next;
-            next->previous = previous;
-
-            current->previous = 0;
-            current->next = 0;
-        }
-    }
-}
-
-static void nodeInsertNext(Node* previous, Node* insert)
-{
-    // current is already detached
-    if(previous && insert)
-    {
-        Node* next = previous->next;
-
-        if(next)
-        {
-            previous->next = insert;
-            insert->previous = previous;
-
-            insert->next = next;
-            next->previous = insert;
-        }
-    }
-}
-
-static void nodeInsertPrevious(Node* insert, Node* next)
-{
-    // current is already detached
-    if(insert && next)
-    {
-        Node* previous = next->previous;
-
-        if(previous)
-        {
-            previous->next = insert;
-            insert->previous = previous;
-
-            insert->next = next;
-            next->previous = insert;
-        }
-    }
-}
-
-static Node* nodeAllocate(Node* sentinel, int count)
-{
-    Node* nodeList = 0;
-
-    if (!sentinel || count < 0)
-        goto label_return;
-
-    sentinel->key = INT_MAX;
-
-    if(count > 0)
-    {
-        nodeList = (Node*)BlahAlloc(sizeof(Node) * count, true);
-
-        for(int index = 0; index < count; index++)
-        {
-            nodeList[index].key = 0; // or -1, INT_MAX
-
-            if(index > 0)
-                nodeList[index].previous = &nodeList[index - 1];
-
-            if(index < (count - 1))
-                nodeList[index].next = &nodeList[index + 1];
-        }
-
-        sentinel->next = &nodeList[0];
-        nodeList[0].previous = sentinel;
-
-        nodeList[count - 1].next = sentinel;
-        sentinel->previous = &nodeList[count - 1];
-    }
-    else // if(count == 0)
-    {
-        sentinel->next = sentinel;
-        sentinel->previous = sentinel;
-    }
-
-label_return:
-    return nodeList;
-}
-
-static List* listInitialize(int count)
-{
-    List* daList = 0;
-
-    if(count >= 0)
-    {
-        daList = (List*)BlahAlloc(sizeof(List), true);
-
-        daList->index = 0;
-        daList->capacity = count;
-
-        daList->memory = nodeAllocate(&daList->sentinelFree, count);
-
-        nodeAllocate(&daList->sentinelUsed, 0);
-    }
-    // ignore if count < 0
-
-    return daList;
-}
-
-static void ListTerminate(List* daList)
-{
-  if(daList)
-  {
-    if(daList->capacity > 0)
-      BlahFree(daList->memory, sizeof(Node) * daList->capacity, true);
-
-    BlahFree(daList, sizeof(List), true);
-  }
-}
-
-struct CacheType
-{
-    int value;
-
-    Node* current;
-};
-
-typedef struct CacheType Cache;
-
-static Node* listAddData(List* daList, int data, unordered_map<int, Cache>& cacheHashTable)
-{
-    Node* current = 0;
-
-    if(daList)
-    {
-        // no checking for duplicate key
-
-        if(daList->index < daList->capacity)
-        {
-            // remove from front of free list
-            current = daList->sentinelFree.previous;
-            nodeRemove(current);
-
-            // set data
-            current->key = data;
-
-            // put in front of used list
-            Node* next = &daList->sentinelUsed;
-            nodeInsertPrevious(current, next);
-
-            daList->index++;
-        }
-        else if(daList->index == daList->capacity)
-        {
-            // remove from back of used list
-            current = daList->sentinelUsed.next;
-            nodeRemove(current);
-
-            // replace data
-            printf("eject %i\n", current->key);
-            cacheHashTable.erase(current->key);
-            current->key = data;
-
-            // put in front of used list
-            Node* next = &daList->sentinelUsed;
-            nodeInsertPrevious(current, next);
-
-            // daList->index unchanged
-        }
-        // ignore if daList->index > daList->capacity
-    }
-
-    return current;
-}
-
-static void listRemoveNode(List* daList, Node* daNode)
-{
-    if(daList && daNode && daList->index > 0 && daList->index <= daList->capacity)
-    {
-        // can add optional check here if daNode is in used list
-        // (no check for now)
-
-        // assumed to be a removal from used list
-        Node* current = daNode;
-        nodeRemove(current);
-
-        // clear data
-        current->key = 0; // or -1, INT_MAX
-
-        // put in back of free list
-        Node* previous = &daList->sentinelFree;
-        nodeInsertNext(previous, current);
-
-        daList->index--;
-    }
-}
-
-static void listMoveToFrontUsedNode(List* daList, Node* daNode)
-{
-    if(daList && daNode && daList->index > 0 && daList->index <= daList->capacity)
-    {
-        // can add optional check here if daNode is in used list
-        // (no check for now)
-
-        // assumed to be a removal from used list
-        Node* current = daNode;
-        nodeRemove(current);
-
-        // current->value unchanged; data unchanged
-        printf("promote %i\n", current->key);
-
-        // put in front of used list
-        Node* next = &daList->sentinelUsed;
-        nodeInsertPrevious(current, next);
-
-        // daList->index unchanged
-    }
-}
-
-static void cachePut(unordered_map<int, Cache>& cacheHashTable, List* cacheList, int key, int value)
-{
-    printf("put start %i %i\n", key, value);
-
-    if(cacheHashTable.count(key))
-    {
-        Cache& cacheHit = cacheHashTable.at(key);
-
-        // update value of key_value pair
-        cacheHit.value = value;
-
-        listMoveToFrontUsedNode(cacheList, cacheHit.current);
-    }
-    else
-    {
-        Node* current = listAddData(cacheList, key, cacheHashTable);
-
-        Cache cacheMiss = { value, current };
-
-        cacheHashTable[key] = cacheMiss;
-    }
-
-    printf("put finish %i %i\n", key, value);
-
-    for(Node* cacheEntry = cacheList->sentinelUsed.next; cacheEntry != &cacheList->sentinelUsed; cacheEntry = cacheEntry->next)
-    {
-        printf("%i %i; ", cacheEntry->key, cacheHashTable[cacheEntry->key].value);
-    }
-    printf("\n\n");
-
-    return;
-}
-
-static int cacheGet(unordered_map<int, Cache>& cacheHashTable, List* cacheList, int key)
-{
-    int value = -1;
-
-    printf("get start %i\n", key);
-
-    if(cacheHashTable.count(key))
-    {
-        Cache& cacheHit = cacheHashTable.at(key);
-
-        value = cacheHit.value;
-
-        listMoveToFrontUsedNode(cacheList, cacheHit.current);
-    }
-
-    printf("get finish %i %i\n", key, value);
-
-    for(Node* cacheEntry = cacheList->sentinelUsed.next; cacheEntry != &cacheList->sentinelUsed; cacheEntry = cacheEntry->next)
-    {
-        printf("%i %i; ", cacheEntry->key, cacheHashTable[cacheEntry->key].value);
-    }
-    printf("\n\n");
-
-    return value;
-}
-#endif
-
 #define BLAH_KEEP 0
-
-#define BLAH_SSSET 1
 
 // 3,324,924,966
 
@@ -382,71 +49,17 @@ static int qsortCompare(const void* lhsRef, const void* rhsRef)
   return 0;
 }
 
-#if 1
 uint64_t random64(uint64_t factor, uint64_t previous, uint64_t term)
 {
   uint64_t multB = (uint32_t)factor;
   uint64_t multD = (uint32_t)previous;
 
-  uint64_t a_times_d = (factor >> 32) * multD << 32;
-  uint64_t b_times_c = multB * (previous >> 32) << 32;
+  uint64_t a_times_d = (factor >> 32) * multD;
+  uint64_t b_times_c = multB * (previous >> 32);
   uint64_t b_times_d = multB * multD;
 
-  return a_times_d + b_times_c + b_times_d + term;
+  return ( (a_times_d + b_times_c) << 32) + b_times_d + term;
 }
-#else
-uint64_t multiplyTwoPlusOneUint64(uint64_t lhs, uint64_t rhs, uint64_t blah)
-{
-  uint64_t multA = lhs >> 32;
-  uint64_t multB = lhs & 0xFFFFFFFFULL;
-
-  uint64_t multC = rhs >> 32;
-  uint64_t multD = rhs & 0xFFFFFFFFULL;
-
-  uint64_t a_times_c_lower = multA * multC & 0xFFFFFFFFULL;
-  uint64_t a_times_c_upper = multA * multC >> 32;
-
-  uint64_t a_times_d_lower = multA * multD & 0xFFFFFFFFULL;
-  uint64_t a_times_d_upper = multA * multD >> 32;
-
-  uint64_t b_times_c_lower = multB * multC & 0xFFFFFFFFULL;
-  uint64_t b_times_c_upper = multB * multC >> 32;
-
-  uint64_t b_times_d_lower = multB * multD & 0xFFFFFFFFULL;
-  uint64_t b_times_d_upper = multB * multD >> 32;
-
-  uint64_t result0 = b_times_d_lower + (blah & 0xFFFFFFFFULL);
-
-  uint64_t result32 = a_times_d_lower + b_times_c_lower + b_times_d_upper + (blah >> 32);
-
-  uint64_t result64 = a_times_c_lower + a_times_d_upper + b_times_c_upper;
-
-  uint64_t result96 = a_times_c_upper;
-
-  uint64_t result128 = 0;
-
-  result32 += result0 >> 32;
-  result0 &= 0xFFFFFFFFULL;
-
-  result64 += result32 >> 32;
-  result32 &= 0xFFFFFFFFULL;
-
-  result96 += result64 >> 32;
-  result64 &= 0xFFFFFFFFULL;
-
-  result128 += result96 >> 32;
-  result96 &= 0xFFFFFFFFULL;
-
-  uint64_t result_lower = (result32 << 32) + result0;
-  uint64_t result_upper = (result96 << 32) + result64;
-  uint64_t carry = result128;
-
-  //printf("%llu %llu %llu ", lhs, rhs, blah);
-  //printf("%llu %llu %llu\n\n", carry, result_upper, result_lower);
-
-  return result_lower;
-}
-#endif
 
 struct blahRandom
 {
@@ -526,15 +139,6 @@ label_return:
 #define BLAH_SIZE 5254
 
 #define BLAH_QUEUE_SIZE 5
-
-#include "ssMm_nocomments.h"
-#include "ssArray_nocomments.h"
-#include "ssStack_nocomments.h"
-#include "ssQueue_nocomments.h"
-
-#include "ssSet_nocomments.h"
-
-#include "blah_alloc.h"
 
 bool blahTestStack()
 {
@@ -743,30 +347,23 @@ label_return:
   return result;
 }
 
-#if BLAH_SSSET
-
 //static const uint32_t myFatalError = -1;
 static const uint32_t myFatalError = 0xFFFFFFFFUL;
 
-struct myStruct
+static uint32_t lessThan(void* lhs, void* rhs)
 {
-  uint32_t testInt;
-};
-
-static int lessThan(myStruct* lhs, myStruct* rhs)
-{
-  // return non-zero if object 1 < object 2
-  if(lhs->testInt < rhs->testInt)
+  // return non-zero if lhs < rhs
+  if( *(uint32_t*)lhs < *(uint32_t*)rhs)
     return 1;
 
-  // return zero if object 1 >= object 2
+  // return zero if lhs >= lhs
   return 0;
 }
 
-static int check(myStruct* treeObject)
+static int check(uint32_t* treeObject)
 {
 #if BLAH_KEEP
-  printf("%i ", treeObject->testInt);
+  printf("%i ", *treeObject);
 #endif
 
   // return non-zero to terminate traversal
@@ -906,18 +503,18 @@ uint32_t numData = 4000000000;
 {
     memset(gSsSetDebug, 0, sizeof(gSsSetDebug) );
 
-    ssSet* mySet = SsSetConstruct(sizeof(myStruct), 5000000, 4100000000, 10000000, (SsSetCompare)lessThan);
+    ssSet* mySet = SsSetConstruct(sizeof(uint32_t), 5000000, 4100000000, 10000000, lessThan);
     if( !mySet)
       return false;
 
-    //myStruct data[numData] = { {-2}, {-1}, {0}, {1}, {2} };
+    //uint32_t data[numData] = { {0}, {1}, {2}, {3}, {4} };
     uint32_t* datablah[G1000NUMERATOR] = {0};
     if( !DebugAllocate(datablah, numData) )
       return false;
 
     uint32_t keyObject = myFatalError;
     uint32_t resultObject = 0;
-    int findResult = 0;
+    int64_t findResult = 0;
 
     srand(1);
 
@@ -1008,9 +605,10 @@ uint32_t numData = 4000000000;
       }
 #endif
 
+//int64_t SsSetFind(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
 #if BLAH_KEEP
       resultObject = -1;
-      findResult = myTree->find( &keyObject, (SsSetCompare)lessThan, &resultObject);
+      findResult = SsSetFind(myTree, &keyObject, lessThan, &resultObject);
       if(findResult != bintree::ok && findResult != bintree::empty)
       {
         printf("blah f\n");
@@ -1111,7 +709,7 @@ uint32_t numData = 4000000000;
     }
 
     resultObject = 0;
-    findResult = myTree->find( &keyObject, (SsSetCompare)lessThan, &resultObject);
+    findResult = myTree->find( &keyObject, lessThan, &resultObject);
     if(findResult != bintree::ok && findResult != bintree::empty)
     {
       printf("blah j\n");
@@ -1195,7 +793,7 @@ uint32_t numData = 4000000000;
 
       uint32_t data1 = DebugGet(datablah, index);
 
-      int result = SsSetErase(myTree, &data1, (SsSetCompare)lessThan, &resultObject);
+      int result = SsSetErase(myTree, &data1, lessThan, &resultObject);
 
       if(result != bintree::ok || resultObject != data1)
       {
@@ -1204,7 +802,7 @@ uint32_t numData = 4000000000;
 
 #if BLAH_KEEP
       resultObject = -1;
-      findResult = myTree->find( &keyObject, (SsSetCompare)lessThan, &resultObject);
+      findResult = myTree->find( &keyObject, lessThan, &resultObject);
       if(findResult != bintree::ok && findResult != bintree::empty)
       {
         printf("blah f\n");
@@ -1285,8 +883,6 @@ uint32_t numData = 4000000000;
     return true;
 }
 
-#endif
-
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
 
@@ -1297,4 +893,3 @@ uint32_t numData = 4000000000;
 //   4. Use the Error List window to view errors
 //   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
 //   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
-#endif

@@ -316,7 +316,6 @@ int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
   // root
   // leaf
   // lessThan
-  // equalTo
   // evaluate
   // allocator
   // stack
@@ -331,7 +330,6 @@ int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
   // root
   // leaf
   // lessThan
-  // equalTo
   // allocator
   // num
   // sizeOf

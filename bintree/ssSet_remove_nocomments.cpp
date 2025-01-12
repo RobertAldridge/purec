@@ -402,7 +402,6 @@ int64_t SsSetErase(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
   // root
   // leaf
   // lessThan
-  // equalTo
   // evaluate
   // allocator
   // stack
@@ -414,7 +413,6 @@ int64_t SsSetErase(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
 
   // no change
   // -----
-  // equalTo
   // evaluate
   // stack
   // queue

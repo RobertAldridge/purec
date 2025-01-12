@@ -23,6 +23,24 @@ using std::uint32_t;
 
 #include "ssSet_private_nocomments.h"
 
+// ssSet_nocomments.cpp
+
+#include "ssSet_left_nocomments.cpp"
+#include "ssSet_leftleft_nocomments.cpp"
+#include "ssSet_leftright_nocomments.cpp"
+#include "ssSet_leftrightleft_nocomments.cpp"
+
+#include "ssSet_right_nocomments.cpp"
+#include "ssSet_rightright_nocomments.cpp"
+#include "ssSet_rightleft_nocomments.cpp"
+#include "ssSet_rightleftright_nocomments.cpp"
+
+#include "ssSet_insert_nocomments.cpp"
+
+#include "ssSet_remove_nocomments.cpp"
+
+#include "ssSet_traverse_nocomments.cpp"
+
 const uint32_t SsSetRed = 1;
 const uint32_t SsSetBlack = 2;
 
@@ -46,7 +64,7 @@ uint32_t gSsSetDebug[69] = {0};
 #define EQUALTOWRAPPER(lessThan, lhs, rhs) !lessThan(lhs, rhs) && !lessThan(rhs, lhs)
 
 //#define EQUALTOWRAPPER(_this, client, node) \
-//  (node == GETSENTINELFROMTREE(_this) ? 0 : _this->equalTo(client, GETCLIENT(node) ) )
+//  (node == GETSENTINELFROMTREE(_this) ? 0 : EQUALTOWRAPPER(_this->lessThan, client, GETCLIENT(node) ) )
 
 //#define CLIENTEVALUATEWRAPPER(_this, node) \
 //  (node == GETSENTINELFROMTREE(_this) ? 0 : _this->clientEvaluate(GETCLIENT(node) ) )
@@ -78,11 +96,6 @@ static void SsSetRotateLeftRightErase(SsSetNode* xP);
 // ssSet_leftrightleft.cpp
 static void SsSetRotateLeftRightLeftErase(SsSetNode* xP);
 
-#include "ssSet_left_nocomments.cpp"
-#include "ssSet_leftleft_nocomments.cpp"
-#include "ssSet_leftright_nocomments.cpp"
-#include "ssSet_leftrightleft_nocomments.cpp"
-
 // ssSet_right.cpp
 static void SsSetRotateRightErase1(SsSetNode* xP);
 static void SsSetRotateRightErase2(SsSetNode* xP);
@@ -98,30 +111,19 @@ static void SsSetRotateRightLeftErase(SsSetNode* xP);
 // ssSet_rightleftright.cpp
 static void SsSetRotateRightLeftRightErase(SsSetNode* xP);
 
-#include "ssSet_right_nocomments.cpp"
-#include "ssSet_rightright_nocomments.cpp"
-#include "ssSet_rightleft_nocomments.cpp"
-#include "ssSet_rightleftright_nocomments.cpp"
-
 // ssSet_insert.cpp
 static bool SsSetInsertLevel3(ssSet* _this, SsSetNode* insert);
 static bool SsSetInsertLevel2(ssSet* _this, SsSetNode* x);
 
-#include "ssSet_insert_nocomments.cpp"
-
 // ssSet_remove.cpp
 static void SsSetEraseLevel3(ssSet* _this, SsSetNode* x);
 static SsSetNode* SsSetEraseLevel2(ssSet* _this, SsSetNode* z);
-
-#include "ssSet_remove_nocomments.cpp"
 
 // ssSet_traverse.cpp
 static int64_t SsSetDumpLevel2preorder(ssSet* _this, SsSetNode* node, SsSetEvaluate ClientEvaluate);
 static int64_t SsSetDumpLevel2inorder(ssSet* _this, SsSetNode* node, SsSetEvaluate ClientEvaluate);
 static int64_t SsSetDumpLevel2postorder(ssSet* _this, SsSetNode* node, SsSetEvaluate ClientEvaluate);
 static int64_t SsSetDumpLevel2levelorder(ssSet* _this, SsSetNode* node, SsSetEvaluate ClientEvaluate);
-
-#include "ssSet_traverse_nocomments.cpp"
 
 uint32_t SsSetDepthTreeLevel2(SsSetNode* node)
 {
@@ -190,15 +192,6 @@ SsSetNode* SsSetTreeMaximumLevel2(SsSetNode* node)
 // integrated for root sentinel
 SsSetNode* SsSetTreeSearchLevel2(SsSetNode* x, void* objectKey, SsSetCompare lessThan)
 {
-#if 0
-  while(x && !equalTo(objectKey, GETCLIENT(x) ) )
-  {
-    if(lessThan(objectKey, GETCLIENT(x) ) )
-      x = x->left;
-    else
-      x = x->right;
-  }
-#else
   while(x)
   {
     // less than
@@ -223,7 +216,6 @@ SsSetNode* SsSetTreeSearchLevel2(SsSetNode* x, void* objectKey, SsSetCompare les
       break;
     }
   }
-#endif
 
   return x;
 }
@@ -246,7 +238,6 @@ int64_t SsSetGetExtrema(ssSet* _this, bool maximum, void* client)
   // root
   // leaf
   // lessThan
-  // equalTo
   // evaluate
   // allocator
   // stack
@@ -261,7 +252,6 @@ int64_t SsSetGetExtrema(ssSet* _this, bool maximum, void* client)
   // root
   // leaf
   // lessThan
-  // equalTo
   // evaluate
   // allocator
   // stack
@@ -318,7 +308,6 @@ int64_t SsSetFind(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
   // root
   // leaf
   // lessThan
-  // equalTo
   // evaluate
   // allocator
   // stack
@@ -332,7 +321,6 @@ int64_t SsSetFind(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
   // -----
   // root
   // leaf
-  // equalTo
   // evaluate
   // allocator
   // stack
@@ -381,7 +369,6 @@ int64_t SsSetReset(ssSet* _this)
   // root
   // leaf
   // lessThan
-  // equalTo
   // evaluate
   // allocator
   // stack
@@ -395,7 +382,6 @@ int64_t SsSetReset(ssSet* _this)
   // -----
   // leaf
   // lessThan
-  // equalTo
   // evaluate
   // maxStack
   // maxQueue
@@ -441,7 +427,6 @@ int64_t SsSetNum(ssSet* _this)
   // root
   // leaf
   // lessThan
-  // equalTo
   // evaluate
   // allocator
   // stack
@@ -456,7 +441,6 @@ int64_t SsSetNum(ssSet* _this)
   // root
   // leaf
   // lessThan
-  // equalTo
   // evaluate
   // allocator
   // stack
@@ -493,7 +477,6 @@ int64_t SsSetDepthTree(ssSet* _this)
   // root
   // leaf
   // lessThan
-  // equalTo
   // evaluate
   // allocator
   // stack
@@ -508,7 +491,6 @@ int64_t SsSetDepthTree(ssSet* _this)
   // root
   // leaf
   // lessThan
-  // equalTo
   // evaluate
   // allocator
   // stack
@@ -545,7 +527,6 @@ int64_t SsSetMaxStack(ssSet* _this)
   // root
   // leaf
   // lessThan
-  // equalTo
   // evaluate
   // allocator
   // stack
@@ -560,7 +541,6 @@ int64_t SsSetMaxStack(ssSet* _this)
   // root
   // leaf
   // lessThan
-  // equalTo
   // evaluate
   // allocator
   // stack
@@ -597,7 +577,6 @@ int64_t SsSetMaxQueue(ssSet* _this)
   // root
   // leaf
   // lessThan
-  // equalTo
   // evaluate
   // allocator
   // stack
@@ -612,7 +591,6 @@ int64_t SsSetMaxQueue(ssSet* _this)
   // root
   // leaf
   // lessThan
-  // equalTo
   // evaluate
   // allocator
   // stack
@@ -652,7 +630,6 @@ int64_t SsSetDestruct(ssSet* _this)
   // root
   // leaf
   // lessThan
-  // equalTo
   // evaluate
   // allocator
   // stack
@@ -667,7 +644,6 @@ int64_t SsSetDestruct(ssSet* _this)
   // root
   // leaf
   // lessThan
-  // equalTo
   // evaluate
   // maxStack
   // maxQueue
@@ -716,7 +692,6 @@ ssSet* SsSetConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32
   // root
   // leaf
   // lessThan
-  // equalTo
   // evaluate
   // allocator
   // stack
@@ -730,7 +705,6 @@ ssSet* SsSetConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32
   // -----
   // root
   // leaf
-  // equalTo
   // evaluate
   // maxStack
   // maxQueue

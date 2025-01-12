@@ -8,8 +8,6 @@ typedef uint32_t(*SsSetCompare)(void*, void*);
 
 typedef uint32_t(*SsSetEvaluate)(void*);
 
-//typedef uint32_t(*SsSetEquivalence)(void* key, void*);
-
 const int SsSetOk = 0;
 const int SsSetError = -1;
 
