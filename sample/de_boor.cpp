@@ -1,5 +1,5 @@
 //
-// Filename: de_Boor.cpp
+// Filename: de_boor.cpp
 //
 // Start summer session
 //
@@ -74,39 +74,33 @@
 // End summer session
 //
 
-#pragma warning ( push, 3 )
+#pragma warning (push, 3)
 
-#pragma warning ( disable: 4710 )
+#pragma warning (disable: 4710)
 
-#pragma warning ( disable: 4786 )
+#pragma warning (disable: 4786)
 
-#include < cassert  >
-#include < cmath    >
-#include < ctime    >
-#include < cstdarg  >
+#include <cassert>
+#include <cmath>
+#include <ctime>
+#include <cstdarg>
 
-#include < iostream >
-#include < deque    >
-#include < list     >
-#include < queue    >
+#include <iostream>
+#include <deque>
+#include <list>
+#include <queue>
 
 using namespace std;
 
+extern void* operator new(size_t size) throw(bad_alloc);
 
-extern void* operator new( size_t size
-                         ) throw( bad_alloc );
+extern void* operator new[](size_t size) throw(bad_alloc);
 
-extern void* operator new[]( size_t size
-                           ) throw( bad_alloc );
+extern void operator delete(void* ptr) throw();
 
-extern void operator delete( void* ptr
-                           ) throw();
+extern void operator delete[](void* ptr) throw();
 
-extern void operator delete[]( void* ptr
-                             ) throw();
-
-
-class de_Boor
+class de_boor
 {
    // Epsilon:
    //    If num - floor( num ) <= E, then num = floor( num ).
@@ -116,19 +110,14 @@ class de_Boor
    static const double E;
 
    // function convert float to int
-   static __forceinline int fti( double f
-                               )
+   static int fti(double f)
    {
-      return( ( f - floor( f ) <= E )? ( (int) floor( f ) ):
-              ( ( ceil( f ) - f <= E )? ( (int) ceil( f ) ): ( (int) f ) )
-            );
+      return( (f - floor(f) <= E)? (int)floor(f) : ( (ceil(f) - f <= E)? (int)ceil(f): (int)f) );
    }
 
-   static __forceinline int eq( double a,
-                                double b
-                              )
+   static int eq(double a, double b)
    {
-      return fabs( a - b ) <= E;
+      return fabs(a - b) <= E;
    }
 
    // A little 2D point class, makes stuff easier.
@@ -140,17 +129,11 @@ class de_Boor
          double x, y, z;
 
          // Easy way to create a point from 3 doubles
-         point( double _x = 0,
-                double _y = 0,
-                double _z = 1
-              ): x( _x ),
-                 y( _y ),
-                 z( _z )
+         point( double _x = 0, double _y = 0, double _z = 1): x( _x ), y( _y ), z( _z )
          {
          }
 
-         double dist2D( const point &pt
-                      )const
+         double dist2D(const point &pt)const
          {
             if( isProjectable() == true && pt.isProjectable() == true )
             {
@@ -158,9 +141,7 @@ class de_Boor
 
                double _y = y / z - pt.y / pt.z;
 
-               return sqrt( _x * _x +
-                            _y * _y
-                          );
+               return sqrt(_x * _x + _y * _y);
             }
 
             return -3.402823466e+38;
@@ -170,16 +151,15 @@ class de_Boor
          double dist( const point &pt
                     )const
          {
-            return sqrt( ( x - pt.x ) * ( x - pt.x ) +
-                         ( y - pt.y ) * ( y - pt.y ) +
-                         ( z - pt.z ) * ( z - pt.z )
+            return sqrt( (x - pt.x) * (x - pt.x) +
+                         (y - pt.y) * (y - pt.y) +
+                         (z - pt.z) * (z - pt.z)
                        );
          }
 
-         bool isProjectable(
-                           )const
+         bool isProjectable()const
          {
-            if( z > 1 || eq( z, 1 ) )
+            if(z > 1 || eq(z, 1) )
             {
                return true;
             }
@@ -187,75 +167,68 @@ class de_Boor
             return false;
          }
 
-         point projectTo2D(
-                          )const
+         point projectTo2D()const
          {
-            if( eq( z, 0 ) )
+            if( eq(z, 0) )
             {
-               return point( -1, -1, -1 );
+               return point(-1, -1, -1);
             }
 
-            return point( x / z, y / z, 1 );
+            return point(x / z, y / z, 1);
          }
 
          // Easy way to check if two points correspond to the same pixel.
-         bool operator==( const point &pt
-                        )const
+         bool operator==(const point &pt) const
          {
-            return fti( x ) == fti( pt.x ) &&
-                   fti( y ) == fti( pt.y ) &&
-                   fti( z ) == fti( pt.z );
+            return fti(x) == fti(pt.x) &&
+                   fti(y) == fti(pt.y) &&
+                   fti(z) == fti(pt.z);
          }
 
-         bool operator!=( const point &pt
-                        )const
+         bool operator!=(const point &pt) const
          {
-            return fti( x ) != fti( pt.x ) ||
-                   fti( y ) != fti( pt.y ) ||
-                   fti( z ) != fti( pt.z );
+            return fti(x) != fti(pt.x) ||
+                   fti(y) != fti(pt.y) ||
+                   fti(z) != fti(pt.z);
          }
 
-         point operator+( const point & rhs
-                        )const
+         point operator+(const point& rhs) const
          {
-            return point( x + rhs.x,
-                          y + rhs.y,
-                          z + rhs.z
+            return point(x + rhs.x,
+                         y + rhs.y,
+                         z + rhs.z
                         );
          }
 
-         point operator+=( const point & rhs
-                         )
+         point operator+=(const point& rhs)
          {
             *this = *this + rhs;
 
             return *this;
          }
 
-         point operator-( const point & rhs
-                        )const
+         point operator-(const point& rhs) const
          {
-            return point( x - rhs.x,
-                          y - rhs.y,
-                          z - rhs.z
+            return point(x - rhs.x,
+                         y - rhs.y,
+                         z - rhs.z
                         );
          }
 
-         point operator*( const point & rhs
-                        )const
+         point operator*(const point & rhs) const
          {
-            return point( x * rhs.x,
-                          y * rhs.y,
-                          z * rhs.z
+            return point(x * rhs.x,
+                         y * rhs.y,
+                         z * rhs.z
                         );
          }
 
          point operator*( const double rhs
                         )const
          {
-            return point( x * rhs,
-                          y * rhs,
-                          z * rhs
+            return point(x * rhs,
+                         y * rhs,
+                         z * rhs
                         );
          }
 
@@ -263,22 +236,22 @@ class de_Boor
                                  const point & rhs
                                )
          {
-            return point( lhs * rhs.x,
-                          lhs * rhs.y,
-                          lhs * rhs.z
+            return point(lhs * rhs.x,
+                         lhs * rhs.y,
+                         lhs * rhs.z
                         );
          }
    };
 
    friend point;
 
-   typedef pair< point, point > pairQS;
-   typedef queue< pairQS > queueS;
+   typedef pair<point, point> pairQS;
+   typedef queue<pairQS> queueS;
 
-   typedef deque< point > dequeP;
+   typedef deque<point> dequeP;
    typedef dequeP::iterator iteratorDP;
 
-   typedef vector< double > vectorK;
+   typedef vector<double> vectorK;
    typedef vectorK::iterator iterVK;
 
    // This variable t is used to describe F( t ), which is
@@ -289,7 +262,8 @@ class de_Boor
    double t;
 
    // r and s define the affine frame ( r, s ).
-   double r, s;
+   double r;
+   double s;
 
    // This variable tells the program which control point the user is
    // manipulating.  The value can range from 1 to N, N being the current
@@ -358,60 +332,61 @@ class de_Boor
    int colors0[ 100 ];
    int colors1[ 100 ];
 
-   double halfWidth, halfHeight;
+   double halfWidth;
+   double halfHeight;
 
    // The function pointer for capture functions, used when the user is
    // manipulating the curve.
    //
    // Currently valid/used when manipulating either the control points or the t value for F( t ).
-   void ( de_Boor::*captureAction )( );
+   void(de_Boor::*captureAction)();
 
    // A pointer to a client supplied circle drawing function, set in setPrimitiveDrawingFunctions().
-   void ( *circleDrawingPrimitive )( int xCenter, int yCenter, int radius, int color0RGB, int color1RGB );
+   void(*circleDrawingPrimitive)(int xCenter, int yCenter, int radius, int color0RGB, int color1RGB);
 
    // A pointer to a client supplied line segment drawing function, set in setPrimitiveDrawingFunctions().
 
-   void ( *lineDrawingPrimitive )( int x0, int y0, int x1, int y1, int color0RGB, int color1RGB );
+   void(*lineDrawingPrimitive)(int x0, int y0, int x1, int y1, int color0RGB, int color1RGB);
    // A pointer to a client supplied point drawing function, set in setPrimitiveDrawingFunctions().
-   void ( *pointDrawingPrimitive )( int x0, int y0, int color0RGB );
+   void(*pointDrawingPrimitive)(int x0, int y0, int color0RGB);
    // A pointer to a client supplied text drawing function, set in setPrimitiveDrawingFunctions().
-   void ( *textDrawingPrimitive )( int x0, int y0, const char * const, ... );
+   void(*textDrawingPrimitive)(int x0, int y0, const char * const, ...);
 
    public:
 
       // Initialize the de Boor algorithm when the user inputs the
       // first control point.
-      de_Boor( int _degree = 3,
-               int _iterateConstant = 16
-             ): t( 0.5 ),
-                r( 0 ),
-                s( 1 ),
-                capturedControlPt( 0 ),
-                numControlPts( 0 ),
-                iterateConstant( _iterateConstant ),
-                degree( _degree ),
-                dimension( 3 ),
-                shellT( 0 ),
-                shellBl( true ),
-                ctrlBl( true ),
-                dispK( true ),
-                minMaxT( 0 ),
-                shelPt( ),
-                tranPt( ),
-                tempPt( ),
-                knots( ),
-                subdWt( ),
-                inputCur( 0, 0 ),
-                inputPrv( 0, 0 ),
-                minPt( 0, 0 ),
-                maxPt( 0, 0 ),
-                halfWidth( 0.5 ),
-                halfHeight( 0.5 ),
-                captureAction( 0 ),
-                circleDrawingPrimitive( 0 ),
-                lineDrawingPrimitive( 0 ),
-                pointDrawingPrimitive( 0 ),
-                textDrawingPrimitive( 0 )
+      de_Boor(int _degree = 3,
+              int _iterateConstant = 16
+             ): t(0.5 ),
+                r(0 ),
+                s(1 ),
+                capturedControlPt(0),
+                numControlPts(0),
+                iterateConstant(_iterateConstant),
+                degree(_degree),
+                dimension(3),
+                shellT(0),
+                shellBl(true),
+                ctrlBl(true),
+                dispK(true),
+                minMaxT(0),
+                shelPt(),
+                tranPt(),
+                tempPt(),
+                knots(),
+                subdWt(),
+                inputCur(0, 0),
+                inputPrv(0, 0),
+                minPt(0, 0),
+                maxPt(0, 0),
+                halfWidth(0.5),
+                halfHeight(0.5),
+                captureAction(0),
+                circleDrawingPrimitive(0),
+                lineDrawingPrimitive(0),
+                pointDrawingPrimitive(0),
+                textDrawingPrimitive(0)
       {
          if( degree <= 0 )
          {
@@ -2102,21 +2077,19 @@ extern "C" extern int main( int inputEvent,
    return retVal;
 }
 
-extern "C" extern int term(
-                          )
+extern "C" extern int term()
 {
    iteratorDB loop;
 
-   if( deBoorList )
+   if(deBoorList)
    {
       deBoorIter = deBoorList->end();
 
-      for( loop = deBoorList->begin(); loop != deBoorList->end(); loop++ )
+      for(loop = deBoorList->begin(); loop != deBoorList->end(); loop++)
       {
-         if( *loop != 0 )
+         if(*loop)
          {
             delete *loop;
-
             *loop = 0;
          }
       }
@@ -2124,7 +2097,6 @@ extern "C" extern int term(
       deBoorList->clear();
 
       delete deBoorList;
-
       deBoorList = 0;
    }
 
