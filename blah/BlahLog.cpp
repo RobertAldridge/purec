@@ -1,16 +1,25 @@
 
-// BlahAlloc.cpp
+// BlahLog.cpp
 // Robert Aldridge
 
-//#include <cctype>
-//#include <cstdarg>
+#include <cctype>
+#include <cstdarg>
 #include <cstdio>
+#include <cstring>
 
-#if defined(_MSC_VER)
-  #include <windows.h>
-#endif
+using namespace std;
+
+// tolower
+// snprintf
+// strncat_s
+// va_list
+// va_start
+// va_end
+// vsnprintf_s
 
 #include "BlahLog.h"
+
+#include "BlahPlatformLog.h"
 
 void BlahLogLevel2(const char* file, int line, const char* format, ...)
 {
@@ -31,9 +40,8 @@ void BlahLogLevel2(const char* file, int line, const char* format, ...)
 
   strncat_s(destination, countof(destination), source, countof(source) );
 
-#if defined(_MSC_VER)
-  OutputDebugStringA(destination);
-#else
-  printf(destination);
-#endif
+if(BlahPlatformLogIsEnabled() )
+  BlahPlatformLog(destination);
+else
+  printf("%s", destination);
 }

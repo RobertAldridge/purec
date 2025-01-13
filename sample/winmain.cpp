@@ -1,6 +1,4 @@
 
-
-#if 0
 // We want this module to handle all os dependant code
 //
 // 1) Prestep -
@@ -59,6 +57,7 @@ extern "C" extern int main(int inputEvent, double x, double y, double B, double 
 // of the function is not 0.
 extern "C" extern int term();
 
+#if 0
 #ifdef DEBUG
   #undef DEBUG
 #endif
@@ -68,6 +67,7 @@ extern "C" extern int term();
 #endif
 
 #define DEBUG 1
+#endif
 
 #pragma warning (push, 3)
 
@@ -75,20 +75,28 @@ extern "C" extern int term();
 
 #include <windows.h>
 
-#include <ddraw.h>
+//#include <ddraw.h>
+//#include <d3d12.h>
+//#include <d2d1.h>
+//#include <d2d1_1.h>
+
+//#include <crtdbg.h>
 
 #include <cassert>
-#include <crtdbg.h>
-#include <cfloat>
-#include <cmath>
-#include <cstdio>
-#include <ctime>
+//#include <cfloat>
+//#include <cmath>
+//#include <cstdio>
+//#include <ctime>
 
-#include <iostream>
-#include <string>
+//#include <iostream>
+//#include <string>
 #include <queue>
 
-using namespace std;
+//using namespace std;
+
+using std::bad_alloc;
+using std::pair;
+using std::queue;
 
 #include "list object.h"
 #include "list client.h"
@@ -98,6 +106,8 @@ using namespace std;
 #include "particle client.h"
 
 #include "memory.h"
+
+#include "resource_headers.h"
 
 // We do not care about inlining, so turn off the warning
 // that tells us that functions have not been inlined.
@@ -115,6 +125,20 @@ static int InsertHandle(void* handle);
 
 static int RemoveHandle(void* handle);
 
+void* Allocate(size_t Size)
+{
+  return malloc(Size);
+}
+
+extern void DeAllocate(void * Memory)
+{
+  return free(Memory);
+}
+
+void ParticleSystemsInitGraphics(void* backBufferPixelPointer, int backBufferViewPortWidth, int backBufferViewPortHeight, int backBufferBitDepth, int backBufferPitch)
+{
+}
+                 
 static INDEX_TYPE TestObject(CLIENT_POTYPE ClientObject1, CLIENT_POTYPE ClientObject2)
 {
   if( !ClientObject1.object || !ClientObject2.object)
@@ -153,19 +177,19 @@ static int ErrorBox(const char* const errorString)
 
   ++numErrors;
 
-  if(_snprintf(ErrorString1, 512, "Error# : %i\n", numErrors) < 0)
+  if(snprintf(ErrorString1, 512, "Error# : %i\n", numErrors) < 0)
   {
     assert("_snprintf(...) failure -- fatal low level system error" && 0);
     goto label_return;
   }
 
-  if(_snprintf(ErrorString2, 512, "Error : %s\n\n", errorString) < 0)
+  if(snprintf(ErrorString2, 512, "Error : %s\n\n", errorString) < 0)
   {
     assert("_snprintf(...) failure -- fatal low level system error" && 0);
     goto label_return;
   }
 
-  if(MessageBox(0, ErrorString2, ErrorString1, MB_ICONERROR | MB_OK) == 0)
+  if(MessageBoxA(0, ErrorString2, ErrorString1, MB_ICONERROR | MB_OK) == 0)
   {
     assert("MessageBox(...) failure" && 0);
   }
@@ -279,6 +303,13 @@ label_return:
   return result;
 }
 
+enum class GRAPHICS_IMPLEMENTATION
+{
+  GDI = 0,
+  DIRECTDRAW
+
+}GRAPHICS_IMPLEMENTATION;
+
 class Graphics
 {
 
@@ -294,9 +325,11 @@ enum
   GRAPHICS_FULLSCREEN
 };
 
-static BOOL CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+//INT_PTR(CALLBACK* DLGPROC)(HWND, UINT, WPARAM, LPARAM)
 
-static BOOL CALLBACK InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+static INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+
+static INT_PTR CALLBACK InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 
 static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -308,25 +341,20 @@ static void RenderCircle32(int x0, int y0, int r0, int c0, int c1);
 
 private:
 
-typedef enum GRAPHICS_IMPLEMENTATION
-{
-  GDI = 0,
-  DIRECTDRAW
-
-}GRAPHICS_IMPLEMENTATION;
-
 // Here we keep track of the current graphics mode
 // we are in.
 //
 // We will try for Direct Draw, but
 // that never works anyway, so the solid
-// GDI foundation is always there to catch us.
-static Graphics::GRAPHICS_IMPLEMENTATION Implementation;
+// GRAPHICS_IMPLEMENTATION::GDI foundation is always there to catch us.
+static enum GRAPHICS_IMPLEMENTATION Implementation;
 
+#if 0
 static IDirectDraw* ddraw_obj;
 static IDirectDrawClipper* ddraw_screenclipper;
 static IDirectDrawSurface* ddraw_screen;
 static IDirectDrawSurface* ddraw_backbuffer;
+#endif
 
 // If we want to be nice then we won't try to change
 // the bit depth on the user.
@@ -360,7 +388,7 @@ virtual ~Graphics() = 0;
 virtual Graphics& operator=(Graphics& ) = 0;
 //////////////////////////////////////////////////////////////////
 
-static GRAPHICS_IMPLEMENTATION graphicsImplementation()
+static enum GRAPHICS_IMPLEMENTATION graphicsImplementation()
 {
   return Implementation;
 }
@@ -377,7 +405,7 @@ static void graphicsSafeMode()
   widthHeight[0] = (unsigned short)Graphics::oldWidth;
   widthHeight[1] = (unsigned short)Graphics::oldHeight;
 
-  Graphics::Implementation = GDI;
+  Graphics::Implementation = GRAPHICS_IMPLEMENTATION::GDI;
 
   Graphics::WindowProc(Graphics::_hWindow, WM_DISPLAYCHANGE, Graphics::oldBitDepth, *(unsigned long*)widthHeight);
 
@@ -424,14 +452,15 @@ static int graphicsUnlockBackBuffer()
   switch(graphicsImplementation() ) // switch(graphicsImplementation() )
   {
 
-  case GDI: // switch(graphicsImplementation() ) - GDI
+  case GRAPHICS_IMPLEMENTATION::GDI: // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::GDI
   {
     result = GRAPHICS_OK;
   }
-  break; // switch(graphicsImplementation() ) - GDI
+  break; // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::GDI
 
-  case DIRECTDRAW: // switch(graphicsImplementation() ) - DIRECTDRAW
+  case GRAPHICS_IMPLEMENTATION::DIRECTDRAW: // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::DIRECTDRAW
   {
+#if 0
     HRESULT hResult = 0;
 
     hResult = ddraw_backbuffer->Unlock(backbufferArray[0] );
@@ -446,8 +475,9 @@ static int graphicsUnlockBackBuffer()
     }
 
     result = GRAPHICS_OK;
+#endif
   }
-  break; // switch(graphicsImplementation() ) - DIRECTDRAW
+  break; // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::DIRECTDRAW
 
   } // switch(graphicsImplementation() )
 
@@ -467,9 +497,9 @@ static int graphicsLockBackBuffer()
   switch(graphicsImplementation() ) // switch(graphicsImplementation() )
   {
 
-  case GDI: // switch(graphicsImplementation() ) - GDI
+  case GRAPHICS_IMPLEMENTATION::GDI: // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::GDI
   {
-    // Flush GDI before testing the back buffer
+    // Flush GRAPHICS_IMPLEMENTATION::GDI before testing the back buffer
     if( !GdiFlush() )
     {
       Error("GdiFlush(...) function failure");
@@ -479,10 +509,11 @@ static int graphicsLockBackBuffer()
 
     result = GRAPHICS_OK;
   }
-  break; // switch(graphicsImplementation() ) - GDI
+  break; // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::GDI
 
-  case DIRECTDRAW: // switch(graphicsImplementation() ) - DIRECTDRAW
+  case GRAPHICS_IMPLEMENTATION::DIRECTDRAW: // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::DIRECTDRAW
   {
+#if 0
     DDSURFACEDESC ddsd = {0};
 
     HRESULT hResult = 0;
@@ -511,8 +542,9 @@ static int graphicsLockBackBuffer()
     }
 
     result = GRAPHICS_OK;
+#endif
   }
-  break; // switch(graphicsImplementation() ) - DIRECTDRAW
+  break; // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::DIRECTDRAW
 
   } // switch(graphicsImplementation() )
 
@@ -532,7 +564,7 @@ static int graphicsClearBackBuffer()
   switch(graphicsImplementation() ) // switch(graphicsImplementation() )
   {
 
-  case GDI: // switch(graphicsImplementation() ) - GDI
+  case GRAPHICS_IMPLEMENTATION::GDI: // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::GDI
   {
     // Clear back buffer
     if( !BitBlt(backbufferDC, 0, 0, graphicsClientWidth(), graphicsClientHeight(), 0, 0, 0, BLACKNESS) )
@@ -544,10 +576,11 @@ static int graphicsClearBackBuffer()
 
     result = GRAPHICS_OK;
   }
-  break; // switch(graphicsImplementation() ) - GDI
+  break; // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::GDI
 
-  case DIRECTDRAW: // switch(graphicsImplementation() ) - DIRECTDRAW
+  case GRAPHICS_IMPLEMENTATION::DIRECTDRAW: // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::DIRECTDRAW
   {
+#if 0
     DDBLTFX ddfx = {0};
 
     HRESULT hResult = 0;
@@ -568,8 +601,9 @@ static int graphicsClearBackBuffer()
     }
 
     result = GRAPHICS_OK;
+#endif
   }
-  break; // switch(graphicsImplementation() ) - DIRECTDRAW
+  break; // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::DIRECTDRAW
 
   } // switch(graphicsImplementation() )
 
@@ -589,7 +623,7 @@ static int graphicsDrawBackBufferToScreen(HWND hWindow)
   switch(graphicsImplementation() ) // switch(graphicsImplementation() )
   {
 
-  case GDI: // switch(graphicsImplementation() ) - GDI
+  case GRAPHICS_IMPLEMENTATION::GDI: // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::GDI
   {
     HDC screen = 0;
 
@@ -625,10 +659,11 @@ static int graphicsDrawBackBufferToScreen(HWND hWindow)
 
     result = GRAPHICS_OK;
   }
-  break; // switch(graphicsImplementation() ) - GDI
+  break; // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::GDI
 
-  case DIRECTDRAW: // switch(graphicsImplementation() ) - DIRECTDRAW
+  case GRAPHICS_IMPLEMENTATION::DIRECTDRAW: // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::DIRECTDRAW
   {
+#if 0
     RECT rectBackBuffer = {0};
     RECT rectScreen = {0};
 
@@ -662,8 +697,9 @@ static int graphicsDrawBackBufferToScreen(HWND hWindow)
     }
 
     result = GRAPHICS_OK;
+#endif
   }
-  break; // switch(graphicsImplementation() ) - DIRECTDRAW
+  break; // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::DIRECTDRAW
 
   } // switch(graphicsImplementation() )
 
@@ -949,7 +985,7 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
     RemoveHandle(file);
   }
 
-  BltHB = (HBITMAP)LoadImage(0, sourceFileName, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+  BltHB = (HBITMAP)LoadImageA(0, sourceFileName, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 
   InsertHandle(BltHB);
 
@@ -1003,7 +1039,7 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
 
   if(BltDC)
   {
-    // Free all the GDI objects
+    // Free all the GRAPHICS_IMPLEMENTATION::GDI objects
     deviceTempCleanUp = SelectObject(BltDC, CleanUp);
 
     if( !deviceTempCleanUp || (const unsigned long)deviceTempCleanUp == GDI_ERROR)
@@ -1057,7 +1093,7 @@ static int graphicsTermScreenAndBackBufferGDI()
 
   if(backbufferDC)
   {
-    // Free all the GDI objects
+    // Free all the GRAPHICS_IMPLEMENTATION::GDI objects
     TempCleanUp = SelectObject(backbufferDC, backbufferCleanUp);
 
     if( !TempCleanUp || (const unsigned long)TempCleanUp == GDI_ERROR)
@@ -1102,13 +1138,14 @@ static int graphicsTermScreenAndBackBufferGDI()
     result = GRAPHICS_OK;
 
 label_return:
-  return error;
+  return result;
 }
 
 static int graphicsTermScreenAndBackBufferDIRECTDRAW()
 {
   int result = GRAPHICS_ERROR;
 
+#if 0
   bool error = false;
 
   HRESULT hResult = 0;
@@ -1171,9 +1208,10 @@ static int graphicsTermScreenAndBackBufferDIRECTDRAW()
 
   if( !error)
     result = GRAPHICS_OK;
+#endif
 
 label_return:
-  return error;
+  return result;
 }
 
 public:
@@ -1185,7 +1223,7 @@ static int graphicsTermScreenAndBackBuffer()
   switch(graphicsImplementation() ) // switch(graphicsImplementation() )
   {
 
-  case GDI: // switch(graphicsImplementation() ) - GDI
+  case GRAPHICS_IMPLEMENTATION::GDI: // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::GDI
   {
     result = graphicsTermScreenAndBackBufferGDI();
 
@@ -1198,9 +1236,9 @@ static int graphicsTermScreenAndBackBuffer()
       backbufferArray = 0;
     }
   }
-  goto label_return; // switch(graphicsImplementation() ) - GDI
+  goto label_return; // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::GDI
 
-  case DIRECTDRAW: // switch(graphicsImplementation() ) - DIRECTDRAW
+  case GRAPHICS_IMPLEMENTATION::DIRECTDRAW: // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::DIRECTDRAW
   {
     result = graphicsTermScreenAndBackBufferDIRECTDRAW();
 
@@ -1213,7 +1251,7 @@ static int graphicsTermScreenAndBackBuffer()
       backbufferArray = 0;
     }
   }
-  goto label_return; // switch(graphicsImplementation() ) - DIRECTDRAW
+  goto label_return; // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::DIRECTDRAW
 
   } // switch(graphicsImplementation() )
 
@@ -1351,6 +1389,7 @@ static int graphicsInitScreenAndBackBufferDIRECTDRAW(HWND hWindow)
 {
   int result = GRAPHICS_ERROR;
 
+#if 0
   DDSURFACEDESC ddsd = {0};
 
   HRESULT hResult = 0;
@@ -1364,7 +1403,21 @@ static int graphicsInitScreenAndBackBufferDIRECTDRAW(HWND hWindow)
     goto label_return;
   }
 
+  //IDXGIAdapter * pIDXGIAdapter = nullptr;
+//ID3D12Device * pD3D12Device = nullptr;
+//HRESULT hr = ::D3D12CreateDevice(pIDXGIAdapter, D3D_FEATURE_LEVEL_11_0, IID_ID3D12Device, &pD3D12Device);
+
   // Initialize the direct draw interface.
+//HRESULT WINAPI D2D1CreateFactory(D2D1_FACTORY_TYPE factoryType, REFIID riid, CONST D2D1_FACTORY_OPTIONS* pFactoryOptions, void** ppIFactory);
+  D2D1_FACTORY_OPTIONS blahFactoryOptions = {0};
+  void* m_d2dFactory = 0;
+  D2D1CreateFactory(
+            D2D1_FACTORY_TYPE_SINGLE_THREADED,
+            __uuidof(ID2D1Factory1),
+            &blahFactoryOptions,
+            &m_d2dFactory
+            )
+
   hResult = DirectDrawCreate(0, &ddraw_obj, 0);
 
   if(FAILED(hResult) )
@@ -1577,6 +1630,7 @@ static int graphicsInitScreenAndBackBufferDIRECTDRAW(HWND hWindow)
   graphicsDrawBackBufferToScreen(hWindow);
 
   result = GRAPHICS_OK;
+#endif
 
 label_return:
   return result;
@@ -1597,7 +1651,7 @@ static int graphicsInitScreenAndBackBuffer(HWND hWindow)
 
   if(bitDepth != 32)
   {
-    Implementation = GDI;
+    Implementation = GRAPHICS_IMPLEMENTATION::GDI;
   }
 
   if(bitDepth <= 0)
@@ -1618,17 +1672,17 @@ static int graphicsInitScreenAndBackBuffer(HWND hWindow)
   switch(graphicsImplementation() ) // switch(graphicsImplementation() )
   {
 
-  case GDI: // switch(graphicsImplementation() ) - GDI
+  case GRAPHICS_IMPLEMENTATION::GDI: // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::GDI
   {
     return graphicsInitScreenAndBackBufferGDI(hWindow);
   }
-  break; // switch(graphicsImplementation() ) - GDI
+  break; // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::GDI
 
-  case DIRECTDRAW: // switch(graphicsImplementation() ) - DIRECTDRAW
+  case GRAPHICS_IMPLEMENTATION::DIRECTDRAW: // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::DIRECTDRAW
   {
     if(graphicsInitScreenAndBackBufferDIRECTDRAW(hWindow) != 0)
     {
-      Implementation = GDI;
+      Implementation = GRAPHICS_IMPLEMENTATION::GDI;
 
       return graphicsInitScreenAndBackBuffer(hWindow);
     }
@@ -1637,7 +1691,7 @@ static int graphicsInitScreenAndBackBuffer(HWND hWindow)
       return GRAPHICS_OK;
     }
   }
-  break; // switch(graphicsImplementation() ) - DIRECTDRAW
+  break; // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::DIRECTDRAW
 
   } // switch(graphicsImplementation() )
 
@@ -1742,7 +1796,7 @@ static int graphicsCheckIsFullScreen()
 };
 
 // Give the Graphics class static variables default values.
-Graphics::GRAPHICS_IMPLEMENTATION Graphics::Implementation = Graphics::DIRECTDRAW;
+enum GRAPHICS_IMPLEMENTATION Graphics::Implementation = GRAPHICS_IMPLEMENTATION::DIRECTDRAW;
 
 int Graphics::width = 640;
 int Graphics::height = 480;
@@ -1751,6 +1805,7 @@ bool Graphics::beNice = true;
 
 bool Graphics::forceFullScreen = false;
 
+#if 0
 IDirectDraw* Graphics::ddraw_obj = 0;
 
 IDirectDrawClipper* Graphics::ddraw_screenclipper = 0;
@@ -1758,6 +1813,7 @@ IDirectDrawClipper* Graphics::ddraw_screenclipper = 0;
 IDirectDrawSurface* Graphics::ddraw_screen = 0;
 
 IDirectDrawSurface* Graphics::ddraw_backbuffer = 0;
+#endif
 
 bool Graphics::isModeChangeActive = false;
 
@@ -2477,8 +2533,8 @@ static double angleTheta = 0;
 static double angleFee = 0;
 static double velocity = 0;
 
-typedef pair<POINT, int> pairQI;
-typedef queue<pairQI> queueI;
+using pairQI = pair<POINT, int>;
+using queueI = queue<pairQI>;
 
 static queueI* input = 0;
 
@@ -2523,7 +2579,7 @@ enum INPUT_EVENT
   TOGGLE_CONTROL_POINT_TEXT = 16384
 };
 
-BOOL CALLBACK Graphics::AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK Graphics::AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
   switch(msg) // switch(msg)
   {
@@ -2618,7 +2674,7 @@ static void plusDecimal(double& lhs, double rhs)
   }
 }
 
-BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
   char item[256] = {0};
 
@@ -2629,40 +2685,40 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
   {
     isMenuActive = true;
 
-    SetDlgItemText(hDlg, EDITX3_INT, "0");
-    SetDlgItemText(hDlg, EDITX3_DEC, "0");
-    SetDlgItemText(hDlg, EDITX2_INT, "0");
-    SetDlgItemText(hDlg, EDITX2_DEC, "0");
-    SetDlgItemText(hDlg, EDITX1_INT, "0");
-    SetDlgItemText(hDlg, EDITX1_DEC, "0");
-    SetDlgItemText(hDlg, EDITX0_INT, "0");
-    SetDlgItemText(hDlg, EDITX0_DEC, "0");
+    SetDlgItemTextA(hDlg, EDITX3_INT, "0");
+    SetDlgItemTextA(hDlg, EDITX3_DEC, "0");
+    SetDlgItemTextA(hDlg, EDITX2_INT, "0");
+    SetDlgItemTextA(hDlg, EDITX2_DEC, "0");
+    SetDlgItemTextA(hDlg, EDITX1_INT, "0");
+    SetDlgItemTextA(hDlg, EDITX1_DEC, "0");
+    SetDlgItemTextA(hDlg, EDITX0_INT, "0");
+    SetDlgItemTextA(hDlg, EDITX0_DEC, "0");
 
-    SetDlgItemText(hDlg, EDITY3_INT, "0");
-    SetDlgItemText(hDlg, EDITY3_DEC, "0");
-    SetDlgItemText(hDlg, EDITY2_INT, "0");
-    SetDlgItemText(hDlg, EDITY2_DEC, "0");
-    SetDlgItemText(hDlg, EDITY1_INT, "0");
-    SetDlgItemText(hDlg, EDITY1_DEC, "0");
-    SetDlgItemText(hDlg, EDITY0_INT, "0");
-    SetDlgItemText(hDlg, EDITY0_DEC, "0");
+    SetDlgItemTextA(hDlg, EDITY3_INT, "0");
+    SetDlgItemTextA(hDlg, EDITY3_DEC, "0");
+    SetDlgItemTextA(hDlg, EDITY2_INT, "0");
+    SetDlgItemTextA(hDlg, EDITY2_DEC, "0");
+    SetDlgItemTextA(hDlg, EDITY1_INT, "0");
+    SetDlgItemTextA(hDlg, EDITY1_DEC, "0");
+    SetDlgItemTextA(hDlg, EDITY0_INT, "0");
+    SetDlgItemTextA(hDlg, EDITY0_DEC, "0");
 
-    SetDlgItemText(hDlg, EDITZ3_INT, "0");
-    SetDlgItemText(hDlg, EDITZ3_DEC, "0");
-    SetDlgItemText(hDlg, EDITZ2_INT, "0");
-    SetDlgItemText(hDlg, EDITZ2_DEC, "0");
-    SetDlgItemText(hDlg, EDITZ1_INT, "0");
-    SetDlgItemText(hDlg, EDITZ1_DEC, "0");
-    SetDlgItemText(hDlg, EDITZ0_INT, "0");
-    SetDlgItemText(hDlg, EDITZ0_DEC, "0");
+    SetDlgItemTextA(hDlg, EDITZ3_INT, "0");
+    SetDlgItemTextA(hDlg, EDITZ3_DEC, "0");
+    SetDlgItemTextA(hDlg, EDITZ2_INT, "0");
+    SetDlgItemTextA(hDlg, EDITZ2_DEC, "0");
+    SetDlgItemTextA(hDlg, EDITZ1_INT, "0");
+    SetDlgItemTextA(hDlg, EDITZ1_DEC, "0");
+    SetDlgItemTextA(hDlg, EDITZ0_INT, "0");
+    SetDlgItemTextA(hDlg, EDITZ0_DEC, "0");
 
-    SetDlgItemText(hDlg, EDIT_KNOT, "0");
+    SetDlgItemTextA(hDlg, EDIT_KNOT, "0");
 
-    SetDlgItemText(hDlg, EDITR_INT, "0");
-    SetDlgItemText(hDlg, EDITR_DEC, "0");
+    SetDlgItemTextA(hDlg, EDITR_INT, "0");
+    SetDlgItemTextA(hDlg, EDITR_DEC, "0");
 
-    SetDlgItemText(hDlg, EDITS_INT, "1");
-    SetDlgItemText(hDlg, EDITS_DEC, "0");
+    SetDlgItemTextA(hDlg, EDITS_INT, "1");
+    SetDlgItemTextA(hDlg, EDITS_DEC, "0");
   }
   return TRUE; // switch(msg) - WM_INITDIALOG
 
@@ -2677,7 +2733,7 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
 
       //////////////////////////////////////////////////
       memset(item, 0, sizeof(char) * 256);
-      GetDlgItemText(hDlg, EDITX3_INT, item, 255);
+      GetDlgItemTextA(hDlg, EDITX3_INT, item, 255);
 
       if(checkString(item) == false)
       {
@@ -2688,12 +2744,12 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
 
       memset(item, 0, sizeof(char) * 256);
       item[0] = '.';
-      GetDlgItemText(hDlg, EDITX3_DEC, item + 1, 254);
+      GetDlgItemTextA(hDlg, EDITX3_DEC, item + 1, 254);
       plusDecimal(menuArray[4], atof(item) );
 
       //////////////////////////////////////////////////
       memset(item, 0, sizeof(char) * 256);
-      GetDlgItemText(hDlg, EDITX2_INT, item, 255);
+      GetDlgItemTextA(hDlg, EDITX2_INT, item, 255);
 
       if(checkString(item) == false)
       {
@@ -2704,12 +2760,12 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
 
       memset(item, 0, sizeof(char) * 256);
       item[0] = '.';
-      GetDlgItemText(hDlg, EDITX2_DEC, item + 1, 254);
+      GetDlgItemTextA(hDlg, EDITX2_DEC, item + 1, 254);
       plusDecimal(menuArray[3], atof(item) );
 
       //////////////////////////////////////////////////
       memset(item, 0, sizeof(char) * 256);
-      GetDlgItemText(hDlg, EDITX1_INT, item, 255);
+      GetDlgItemTextA(hDlg, EDITX1_INT, item, 255);
 
       if(checkString(item) == false)
       {
@@ -2720,12 +2776,12 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
 
       memset(item, 0, sizeof(char) * 256);
       item[0] = '.';
-      GetDlgItemText(hDlg, EDITX1_DEC, item + 1, 254);
+      GetDlgItemTextA(hDlg, EDITX1_DEC, item + 1, 254);
       plusDecimal(menuArray[2], atof(item) );
 
       //////////////////////////////////////////////////
       memset(item, 0, sizeof(char) * 256);
-      GetDlgItemText(hDlg, EDITX0_INT, item, 255);
+      GetDlgItemTextA(hDlg, EDITX0_INT, item, 255);
 
       if(checkString(item) == false)
       {
@@ -2736,12 +2792,12 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
 
       memset(item, 0, sizeof(char) * 256);
       item[0] = '.';
-      GetDlgItemText(hDlg, EDITX0_DEC, item + 1, 254);
+      GetDlgItemTextA(hDlg, EDITX0_DEC, item + 1, 254);
       plusDecimal(menuArray[1], atof(item) );
 
       //////////////////////////////////////////////////
       memset(item, 0, sizeof(char) * 256);
-      GetDlgItemText(hDlg, EDITY3_INT, item, 255);
+      GetDlgItemTextA(hDlg, EDITY3_INT, item, 255);
 
       if(checkString(item) == false)
       {
@@ -2752,12 +2808,12 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
 
       memset(item, 0, sizeof(char) * 256);
       item[0] = '.';
-      GetDlgItemText(hDlg, EDITY3_DEC, item + 1, 254);
+      GetDlgItemTextA(hDlg, EDITY3_DEC, item + 1, 254);
       plusDecimal(menuArray[8], atof(item) );
 
       //////////////////////////////////////////////////
       memset(item, 0, sizeof(char) * 256);
-      GetDlgItemText(hDlg, EDITY2_INT, item, 255);
+      GetDlgItemTextA(hDlg, EDITY2_INT, item, 255);
 
       if(checkString(item) == false)
       {
@@ -2768,12 +2824,12 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
 
       memset(item, 0, sizeof(char) * 256);
       item[0] = '.';
-      GetDlgItemText(hDlg, EDITY2_DEC, item + 1, 254);
+      GetDlgItemTextA(hDlg, EDITY2_DEC, item + 1, 254);
       plusDecimal(menuArray[7], atof(item) );
 
       //////////////////////////////////////////////////
       memset(item, 0, sizeof(char) * 256);
-      GetDlgItemText(hDlg, EDITY1_INT, item, 255);
+      GetDlgItemTextA(hDlg, EDITY1_INT, item, 255);
 
       if(checkString(item) == false)
       {
@@ -2784,12 +2840,12 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
 
       memset(item, 0, sizeof(char) * 256);
       item[0] = '.';
-      GetDlgItemText(hDlg, EDITY1_DEC, item + 1, 254);
+      GetDlgItemTextA(hDlg, EDITY1_DEC, item + 1, 254);
       plusDecimal(menuArray[6], atof(item) );
 
       //////////////////////////////////////////////////
       memset(item, 0, sizeof(char) * 256);
-      GetDlgItemText(hDlg, EDITY0_INT, item, 255);
+      GetDlgItemTextA(hDlg, EDITY0_INT, item, 255);
 
       if(checkString(item) == false)
       {
@@ -2800,12 +2856,12 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
 
       memset(item, 0, sizeof(char) * 256);
       item[0] = '.';
-      GetDlgItemText(hDlg, EDITY0_DEC, item + 1, 254);
+      GetDlgItemTextA(hDlg, EDITY0_DEC, item + 1, 254);
       plusDecimal(menuArray[5], atof(item) );
 
       //////////////////////////////////////////////////
       memset(item, 0, sizeof(char) * 256);
-      GetDlgItemText(hDlg, EDITZ3_INT, item, 255);
+      GetDlgItemTextA(hDlg, EDITZ3_INT, item, 255);
 
       if(checkString(item) == false)
       {
@@ -2816,12 +2872,12 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
 
       memset(item, 0, sizeof(char) * 256);
       item[0] = '.';
-      GetDlgItemText(hDlg, EDITZ3_DEC, item + 1, 254);
+      GetDlgItemTextA(hDlg, EDITZ3_DEC, item + 1, 254);
       plusDecimal(menuArray[12], atof(item) );
 
       //////////////////////////////////////////////////
       memset(item, 0, sizeof(char) * 256);
-      GetDlgItemText(hDlg, EDITZ2_INT, item, 255);
+      GetDlgItemTextA(hDlg, EDITZ2_INT, item, 255);
 
       if(checkString(item) == false)
       {
@@ -2832,12 +2888,12 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
 
       memset(item, 0, sizeof(char) * 256);
       item[0] = '.';
-      GetDlgItemText(hDlg, EDITZ2_DEC, item + 1, 254);
+      GetDlgItemTextA(hDlg, EDITZ2_DEC, item + 1, 254);
       plusDecimal(menuArray[11], atof(item) );
 
       //////////////////////////////////////////////////
       memset(item, 0, sizeof(char) * 256);
-      GetDlgItemText(hDlg, EDITZ1_INT, item, 255);
+      GetDlgItemTextA(hDlg, EDITZ1_INT, item, 255);
 
       if(checkString(item) == false)
       {
@@ -2848,12 +2904,12 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
 
       memset(item, 0, sizeof(char) * 256);
       item[0] = '.';
-      GetDlgItemText(hDlg, EDITZ1_DEC, item + 1, 254);
+      GetDlgItemTextA(hDlg, EDITZ1_DEC, item + 1, 254);
       plusDecimal(menuArray[10], atof(item) );
 
       //////////////////////////////////////////////////
       memset(item, 0, sizeof(char) * 256);
-      GetDlgItemText(hDlg, EDITZ0_INT, item, 255);
+      GetDlgItemTextA(hDlg, EDITZ0_INT, item, 255);
 
       if(checkString(item) == false)
       {
@@ -2864,12 +2920,12 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
 
       memset(item, 0, sizeof(char) * 256);
       item[0] = '.';
-      GetDlgItemText(hDlg, EDITZ0_DEC, item + 1, 254);
+      GetDlgItemTextA(hDlg, EDITZ0_DEC, item + 1, 254);
       plusDecimal(menuArray[9], atof(item) );
 
       //////////////////////////////////////////////////
       memset(item, 0, sizeof(char) * 256);
-      GetDlgItemText(hDlg, EDITR_INT, item, 255);
+      GetDlgItemTextA(hDlg, EDITR_INT, item, 255);
 
       if(checkString(item) == false)
       {
@@ -2880,12 +2936,12 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
 
       memset(item, 0, sizeof(char) * 256);
       item[0] = '.';
-      GetDlgItemText(hDlg, EDITR_DEC, item + 1, 254);
+      GetDlgItemTextA(hDlg, EDITR_DEC, item + 1, 254);
       plusDecimal(menuArray[9], atof(item) );
 
       //////////////////////////////////////////////////
       memset(item, 0, sizeof(char) * 256);
-      GetDlgItemText(hDlg, EDITS_INT, item, 255);
+      GetDlgItemTextA(hDlg, EDITS_INT, item, 255);
 
       if(checkString(item) == false)
       {
@@ -2896,7 +2952,7 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
 
       memset(item, 0, sizeof(char) * 256);
       item[0] = '.';
-      GetDlgItemText(hDlg, EDITS_DEC, item + 1, 254);
+      GetDlgItemTextA(hDlg, EDITS_DEC, item + 1, 254);
       plusDecimal(menuArray[10], atof(item) );
 
       //////////////////////////////////////////////////
@@ -2918,141 +2974,141 @@ BOOL CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
 
     case IDEX1: // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX1
     {
-      SetDlgItemText(hDlg, EDITX3_INT, "0");
-      SetDlgItemText(hDlg, EDITX3_DEC, "0");
-      SetDlgItemText(hDlg, EDITX2_INT, "0");
-      SetDlgItemText(hDlg, EDITX2_DEC, "0");
-      SetDlgItemText(hDlg, EDITX1_INT, "3");
-      SetDlgItemText(hDlg, EDITX1_DEC, "0");
-      SetDlgItemText(hDlg, EDITX0_INT, "0");
-      SetDlgItemText(hDlg, EDITX0_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITX3_INT, "0");
+      SetDlgItemTextA(hDlg, EDITX3_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITX2_INT, "0");
+      SetDlgItemTextA(hDlg, EDITX2_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITX1_INT, "3");
+      SetDlgItemTextA(hDlg, EDITX1_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITX0_INT, "0");
+      SetDlgItemTextA(hDlg, EDITX0_DEC, "0");
 
-      SetDlgItemText(hDlg, EDITY3_INT, "3");
-      SetDlgItemText(hDlg, EDITY3_DEC, "0");
-      SetDlgItemText(hDlg, EDITY2_INT, "0");
-      SetDlgItemText(hDlg, EDITY2_DEC, "0");
-      SetDlgItemText(hDlg, EDITY1_INT, "-3");
-      SetDlgItemText(hDlg, EDITY1_DEC, "0");
-      SetDlgItemText(hDlg, EDITY0_INT, "0");
-      SetDlgItemText(hDlg, EDITY0_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITY3_INT, "3");
+      SetDlgItemTextA(hDlg, EDITY3_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITY2_INT, "0");
+      SetDlgItemTextA(hDlg, EDITY2_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITY1_INT, "-3");
+      SetDlgItemTextA(hDlg, EDITY1_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITY0_INT, "0");
+      SetDlgItemTextA(hDlg, EDITY0_DEC, "0");
 
-      SetDlgItemText(hDlg, EDITR_INT, "-1");
-      SetDlgItemText(hDlg, EDITR_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITR_INT, "-1");
+      SetDlgItemTextA(hDlg, EDITR_DEC, "0");
 
-      SetDlgItemText(hDlg, EDITS_INT, "1");
-      SetDlgItemText(hDlg, EDITS_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITS_INT, "1");
+      SetDlgItemTextA(hDlg, EDITS_DEC, "0");
     }
     return FALSE; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX1
 
     case IDEX2: // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX2
     {
-      SetDlgItemText(hDlg, EDITX3_INT, "0");
-      SetDlgItemText(hDlg, EDITX3_DEC, "0");
-      SetDlgItemText(hDlg, EDITX2_INT, "3");
-      SetDlgItemText(hDlg, EDITX2_DEC, "0");
-      SetDlgItemText(hDlg, EDITX1_INT, "-6");
-      SetDlgItemText(hDlg, EDITX1_DEC, "0");
-      SetDlgItemText(hDlg, EDITX0_INT, "9");
-      SetDlgItemText(hDlg, EDITX0_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITX3_INT, "0");
+      SetDlgItemTextA(hDlg, EDITX3_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITX2_INT, "3");
+      SetDlgItemTextA(hDlg, EDITX2_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITX1_INT, "-6");
+      SetDlgItemTextA(hDlg, EDITX1_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITX0_INT, "9");
+      SetDlgItemTextA(hDlg, EDITX0_DEC, "0");
 
-      SetDlgItemText(hDlg, EDITY3_INT, "3");
-      SetDlgItemText(hDlg, EDITY3_DEC, "0");
-      SetDlgItemText(hDlg, EDITY2_INT, "-6");
-      SetDlgItemText(hDlg, EDITY2_DEC, "0");
-      SetDlgItemText(hDlg, EDITY1_INT, "9");
-      SetDlgItemText(hDlg, EDITY1_DEC, "0");
-      SetDlgItemText(hDlg, EDITY0_INT, "0");
-      SetDlgItemText(hDlg, EDITY0_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITY3_INT, "3");
+      SetDlgItemTextA(hDlg, EDITY3_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITY2_INT, "-6");
+      SetDlgItemTextA(hDlg, EDITY2_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITY1_INT, "9");
+      SetDlgItemTextA(hDlg, EDITY1_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITY0_INT, "0");
+      SetDlgItemTextA(hDlg, EDITY0_DEC, "0");
 
-      SetDlgItemText(hDlg, EDITR_INT, "0");
-      SetDlgItemText(hDlg, EDITR_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITR_INT, "0");
+      SetDlgItemTextA(hDlg, EDITR_DEC, "0");
 
-      SetDlgItemText(hDlg, EDITS_INT, "1");
-      SetDlgItemText(hDlg, EDITS_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITS_INT, "1");
+      SetDlgItemTextA(hDlg, EDITS_DEC, "0");
     }
     return FALSE; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX2
 
     case IDEX3: // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX3
     {
-      SetDlgItemText(hDlg, EDITX3_INT, "0");
-      SetDlgItemText(hDlg, EDITX3_DEC, "0");
-      SetDlgItemText(hDlg, EDITX2_INT, "3");
-      SetDlgItemText(hDlg, EDITX2_DEC, "0");
-      SetDlgItemText(hDlg, EDITX1_INT, "-12");
-      SetDlgItemText(hDlg, EDITX1_DEC, "0");
-      SetDlgItemText(hDlg, EDITX0_INT, "15");
-      SetDlgItemText(hDlg, EDITX0_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITX3_INT, "0");
+      SetDlgItemTextA(hDlg, EDITX3_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITX2_INT, "3");
+      SetDlgItemTextA(hDlg, EDITX2_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITX1_INT, "-12");
+      SetDlgItemTextA(hDlg, EDITX1_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITX0_INT, "15");
+      SetDlgItemTextA(hDlg, EDITX0_DEC, "0");
 
-      SetDlgItemText(hDlg, EDITY3_INT, "3");
-      SetDlgItemText(hDlg, EDITY3_DEC, "0");
-      SetDlgItemText(hDlg, EDITY2_INT, "-12");
-      SetDlgItemText(hDlg, EDITY2_DEC, "0");
-      SetDlgItemText(hDlg, EDITY1_INT, "15");
-      SetDlgItemText(hDlg, EDITY1_DEC, "0");
-      SetDlgItemText(hDlg, EDITY0_INT, "0");
-      SetDlgItemText(hDlg, EDITY0_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITY3_INT, "3");
+      SetDlgItemTextA(hDlg, EDITY3_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITY2_INT, "-12");
+      SetDlgItemTextA(hDlg, EDITY2_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITY1_INT, "15");
+      SetDlgItemTextA(hDlg, EDITY1_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITY0_INT, "0");
+      SetDlgItemTextA(hDlg, EDITY0_DEC, "0");
 
-      SetDlgItemText(hDlg, EDITR_INT, "0");
-      SetDlgItemText(hDlg, EDITR_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITR_INT, "0");
+      SetDlgItemTextA(hDlg, EDITR_DEC, "0");
 
-      SetDlgItemText(hDlg, EDITS_INT, "2");
-      SetDlgItemText(hDlg, EDITS_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITS_INT, "2");
+      SetDlgItemTextA(hDlg, EDITS_DEC, "0");
     }
     return FALSE; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX3
 
     case IDEX4: // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX4
     {
-      SetDlgItemText(hDlg, EDITX3_INT, "0");
-      SetDlgItemText(hDlg, EDITX3_DEC, "0");
-      SetDlgItemText(hDlg, EDITX2_INT, "3");
-      SetDlgItemText(hDlg, EDITX2_DEC, "0");
-      SetDlgItemText(hDlg, EDITX1_INT, "-6");
-      SetDlgItemText(hDlg, EDITX1_DEC, "0");
-      SetDlgItemText(hDlg, EDITX0_INT, "3");
-      SetDlgItemText(hDlg, EDITX0_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITX3_INT, "0");
+      SetDlgItemTextA(hDlg, EDITX3_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITX2_INT, "3");
+      SetDlgItemTextA(hDlg, EDITX2_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITX1_INT, "-6");
+      SetDlgItemTextA(hDlg, EDITX1_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITX0_INT, "3");
+      SetDlgItemTextA(hDlg, EDITX0_DEC, "0");
 
-      SetDlgItemText(hDlg, EDITY3_INT, "3");
-      SetDlgItemText(hDlg, EDITY3_DEC, "0");
-      SetDlgItemText(hDlg, EDITY2_INT, "-6");
-      SetDlgItemText(hDlg, EDITY2_DEC, "0");
-      SetDlgItemText(hDlg, EDITY1_INT, "3");
-      SetDlgItemText(hDlg, EDITY1_DEC, "0");
-      SetDlgItemText(hDlg, EDITY0_INT, "0");
-      SetDlgItemText(hDlg, EDITY0_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITY3_INT, "3");
+      SetDlgItemTextA(hDlg, EDITY3_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITY2_INT, "-6");
+      SetDlgItemTextA(hDlg, EDITY2_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITY1_INT, "3");
+      SetDlgItemTextA(hDlg, EDITY1_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITY0_INT, "0");
+      SetDlgItemTextA(hDlg, EDITY0_DEC, "0");
 
-      SetDlgItemText(hDlg, EDITR_INT, "0");
-      SetDlgItemText(hDlg, EDITR_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITR_INT, "0");
+      SetDlgItemTextA(hDlg, EDITR_DEC, "0");
 
-      SetDlgItemText(hDlg, EDITS_INT, "2");
-      SetDlgItemText(hDlg, EDITS_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITS_INT, "2");
+      SetDlgItemTextA(hDlg, EDITS_DEC, "0");
     }
     return FALSE; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX4
 
     case IDEX5: // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX5
     {
-      SetDlgItemText(hDlg, EDITX3_INT, "0");
-      SetDlgItemText(hDlg, EDITX3_DEC, "0");
-      SetDlgItemText(hDlg, EDITX2_INT, "0");
-      SetDlgItemText(hDlg, EDITX2_DEC, "75");
-      SetDlgItemText(hDlg, EDITX1_INT, "-1");
-      SetDlgItemText(hDlg, EDITX1_DEC, "5");
-      SetDlgItemText(hDlg, EDITX0_INT, "-2");
-      SetDlgItemText(hDlg, EDITX0_DEC, "25");
+      SetDlgItemTextA(hDlg, EDITX3_INT, "0");
+      SetDlgItemTextA(hDlg, EDITX3_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITX2_INT, "0");
+      SetDlgItemTextA(hDlg, EDITX2_DEC, "75");
+      SetDlgItemTextA(hDlg, EDITX1_INT, "-1");
+      SetDlgItemTextA(hDlg, EDITX1_DEC, "5");
+      SetDlgItemTextA(hDlg, EDITX0_INT, "-2");
+      SetDlgItemTextA(hDlg, EDITX0_DEC, "25");
 
-      SetDlgItemText(hDlg, EDITY3_INT, "0");
-      SetDlgItemText(hDlg, EDITY3_DEC, "75");
-      SetDlgItemText(hDlg, EDITY2_INT, "-1");
-      SetDlgItemText(hDlg, EDITY2_DEC, "5");
-      SetDlgItemText(hDlg, EDITY1_INT, "-2");
-      SetDlgItemText(hDlg, EDITY1_DEC, "25");
-      SetDlgItemText(hDlg, EDITY0_INT, "0");
-      SetDlgItemText(hDlg, EDITY0_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITY3_INT, "0");
+      SetDlgItemTextA(hDlg, EDITY3_DEC, "75");
+      SetDlgItemTextA(hDlg, EDITY2_INT, "-1");
+      SetDlgItemTextA(hDlg, EDITY2_DEC, "5");
+      SetDlgItemTextA(hDlg, EDITY1_INT, "-2");
+      SetDlgItemTextA(hDlg, EDITY1_DEC, "25");
+      SetDlgItemTextA(hDlg, EDITY0_INT, "0");
+      SetDlgItemTextA(hDlg, EDITY0_DEC, "0");
 
-      SetDlgItemText(hDlg, EDITR_INT, "-1");
-      SetDlgItemText(hDlg, EDITR_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITR_INT, "-1");
+      SetDlgItemTextA(hDlg, EDITR_DEC, "0");
 
-      SetDlgItemText(hDlg, EDITS_INT, "3");
-      SetDlgItemText(hDlg, EDITS_DEC, "0");
+      SetDlgItemTextA(hDlg, EDITS_INT, "3");
+      SetDlgItemTextA(hDlg, EDITS_DEC, "0");
     }
     return FALSE; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX5
 
@@ -3300,14 +3356,14 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
         assert(size.x > 0 && size.y > 0 && "size.x > 0 && size.y > 0");
 
-        hWindow = CreateWindow(appClassName, appName, WS_OVERLAPPEDWINDOW, origin.x - menu.left, origin.y - menu.top, size.x + menu.left + menu.right, size.y + menu.top + menu.bottom, 0, 0, hInstance, 0);
+        hWindow = CreateWindowA(appClassName, appName, WS_OVERLAPPEDWINDOW, origin.x - menu.left, origin.y - menu.top, size.x + menu.left + menu.right, size.y + menu.top + menu.bottom, 0, 0, hInstance, 0);
 
         Graphics::width = size.x;
         Graphics::height = size.y;
       }
       else
       {
-        hWindow = CreateWindow(appClassName, appName, WS_POPUP, 0, 0, Graphics::oldWidth, Graphics::oldHeight, 0, 0, hInstance, 0);
+        hWindow = CreateWindowA(appClassName, appName, WS_POPUP, 0, 0, Graphics::oldWidth, Graphics::oldHeight, 0, 0, hInstance, 0);
 
         Graphics::width = Graphics::oldWidth;
         Graphics::height = Graphics::oldHeight;
@@ -3445,7 +3501,10 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
     }
     else if(wParam == VK_F10)
     {
-      DialogBox(hInstance, "ExtraBox", hwnd, AboutDlgProc);
+//DialogBoxParamA(hInstance, lpTemplate, hWndParent, lpDialogFunc, 0L)
+//WINUSERAPI INT_PTR WINAPI DialogBoxParamA(HINSTANCE hInstance, LPCSTR lpTemplateName, HWND hWndParent, DLGPROC lpDialogFunc, LPARAM dwInitParam);
+//typedef INT_PTR(CALLBACK* DLGPROC)(HWND, UINT, WPARAM, LPARAM);
+      DialogBoxA(hInstance, "ExtraBox", hwnd, AboutDlgProc);
 
       // WinExec("de_Casteljau ExtraBox.exe", 0);
 
@@ -3515,7 +3574,7 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
     case VK_F7: // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F7
     {
-      if(DialogBox(hInstance, "InputBox", hwnd, InputDlgProc) == 0)
+      if(DialogBoxA(hInstance, "InputBox", hwnd, InputDlgProc) == 0)
       {
         IsLeftMouseButtonDown = false;
         IsRightMouseButtonDown = false;
@@ -3589,7 +3648,7 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
     case VK_F8: // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F8
     {
-      DialogBox(hInstance, "HelpBox", hwnd, AboutDlgProc);
+      DialogBoxA(hInstance, "HelpBox", hwnd, AboutDlgProc);
 
       /* WinExec("de_Casteljau HelpBox.exe", 0); */
     }
@@ -3597,7 +3656,7 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
     case VK_F9: // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F9
     {
-      DialogBox(hInstance, "AboutBox", hwnd, AboutDlgProc);
+      DialogBoxA(hInstance, "AboutBox", hwnd, AboutDlgProc);
 
       /* WinExec("de_Casteljau AboutBox.exe", 0); */
     }
@@ -4148,7 +4207,7 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
 static HANDLE mutexHandle = 0;
 static HINSTANCE _hInstance = 0;
-static WNDCLASS windowClass = {0};
+static WNDCLASSA windowClass = {0};
 
 // Keep track of how many handles have been opened
 static PLIST_HEAD listOfHandles = 0;
@@ -4401,13 +4460,13 @@ static int mainTerm(HWND hwnd)
   // All window classes that an application registers
   // are unregistered when it terminates!!!!!
   //
-  // UnregisterClass will always fail since the window will
+  // UnregisterClassA will always fail since the window will
   // always still be open.  By the time I have the ability
   // to unregister the class, it has already been done for
   // me by the OS, as is stated in MSDN.
   //
   // Remove the class handle from the list, we do not
-  // need to call UnregisterClass, nor can we.
+  // need to call UnregisterClassA, nor can we.
   //
   // If unregister class works, remove the class handle
   // from the handle list.
@@ -4587,13 +4646,31 @@ static int updateTime()
   return error;
 }
 
+extern "C" extern int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int), void(*_textDrawingPrimitive)(int, int, const char* const, ...) ) // init
+{
+  return 0;
+
+} // init
+
+extern "C" extern int main(int inputEvent, double x, double y, double B, double _halfWidth, double _halfHeight) // main
+{
+  return 0;
+
+} // main
+
+extern "C" extern int term() // term
+{
+  return 0;
+
+} // term
+
 // MSDN
 // hPrevInstance
 //     Handle to the previous instance of the application. For a Win32-based
 //     application, this parameter is always NULL.
 //
 //     If you need to detect whether another instance already exists, create a
-//     uniquely named mutex using the CreateMutex function. CreateMutex will
+//     uniquely named mutex using the CreateMutexA function. CreateMutexA will
 //     succeed even if the mutex already exists, but the GetLastError function
 //     will return ERROR_ALREADY_EXISTS. This indicates that another instance of
 //     your application exists, because it created the mutex first.
@@ -4616,16 +4693,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine
 
   IsApplicationEntry = true;
 
-  // Only allow one instance of the application at a time.  Use CreateMutex
+  // Only allow one instance of the application at a time.  Use CreateMutexA
   // to test if an instance of the application already exists, quit if
-  // another instance exists or if CreateMutex returns NULL.
-  mutexHandle = CreateMutex(0, FALSE, "FunkyLovinNicoleSugarDaddy");
+  // another instance exists or if CreateMutexA returns NULL.
+  mutexHandle = CreateMutexA(0, FALSE, "FunkyLovinNicoleSugarDaddy");
 
   if( !mutexHandle)
   {
     // Use MessageBox until we make sure that this is the only instance
     // of the application.  Then we can set up the log file.
-    ErrorBox("(MutexHandle = CreateMutex(...) ) == NULL");
+    ErrorBox("(MutexHandle = CreateMutexA(...) ) == NULL");
 
     IsApplicationEntry = false;
 
@@ -4739,23 +4816,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine
   InsertHandle(file);
 
   // 7) Create an application with a client area 640 by 480
-  //    using RegisterClass and CreateWindow
+  //    using RegisterClassA and CreateWindowA
   windowClass.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
   windowClass.lpfnWndProc = Graphics::WindowProc;
   windowClass.cbClsExtra = 0;
   windowClass.cbWndExtra = 0;
   windowClass.hInstance = hInstance;
-  windowClass.hIcon = LoadIcon(hInstance, "HELL_ON_EARTH_ICON");
+  windowClass.hIcon = LoadIconA(hInstance, "HELL_ON_EARTH_ICON");
   windowClass.hCursor = LoadCursor(0, IDC_ARROW);
   windowClass.hbrBackground = (HBRUSH) COLOR_WINDOW;
   windowClass.lpszMenuName = 0;
   windowClass.lpszClassName = appClassName;
 
-  if( !RegisterClass( &windowClass) )
+  if( !RegisterClassA( &windowClass) )
   {
     int numberOfObjects = 0;
 
-    Error("RegisterClass(...) == 0");
+    Error("RegisterClassA(...) == 0");
 
     if( !CloseHandle(mutexHandle) )
     {
@@ -4824,9 +4901,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine
 
     Error("graphicsCheckIsFullScreen(...) == GRAPHICS_ERROR");
 
-    if( !UnregisterClass(appClassName, _hInstance) )
+    if( !UnregisterClassA(appClassName, _hInstance) )
     {
-      Error("UnregisterClass(...) failure");
+      Error("UnregisterClassA(...) failure");
     }
     else
     {
@@ -4897,9 +4974,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine
 
     Error("AdjustWindowRect(...) == 0");
 
-    if( !UnregisterClass(appClassName, _hInstance) )
+    if( !UnregisterClassA(appClassName, _hInstance) )
     {
-      Error("UnregisterClass(...) failure");
+      Error("UnregisterClassA(...) failure");
     }
     else
     {
@@ -4965,9 +5042,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine
 
     Error("bad windowRect values");
 
-    if( !UnregisterClass(appClassName, _hInstance) )
+    if( !UnregisterClassA(appClassName, _hInstance) )
     {
-      Error("UnregisterClass(...) failure");
+      Error("UnregisterClassA(...) failure");
     }
     else
     {
@@ -5047,17 +5124,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine
 
 // HWND CreateWindowA(const char* windowClassName, const char* windowsTitleText, unsigned long windowStyle, int windowTopLeftXpos, int windowTopLeftYpos, int windowXwidth, int windowYheight, HWND parentWindow, HMENU childMenu, HINSTANCE currentInstance, void* parameterToWmCreate)
 
-  hWindow = CreateWindow(appClassName, appName, windowType, origin.x, origin.y, windowRect.right, windowRect.bottom, 0, 0, hInstance, 0);
+  hWindow = CreateWindowA(appClassName, appName, windowType, origin.x, origin.y, windowRect.right, windowRect.bottom, 0, 0, hInstance, 0);
 
   if( !hWindow || !input)
   {
     int numberOfObjects = 0;
 
-    Error("(hWindow = CreateWindow(...) ) == NULL");
+    Error("(hWindow = CreateWindowA(...) ) == NULL");
 
-    if( !UnregisterClass(appClassName, _hInstance) )
+    if( !UnregisterClassA(appClassName, _hInstance) )
     {
-      Error("UnregisterClass(...) failure");
+      Error("UnregisterClassA(...) failure");
     }
     else
     {
@@ -5339,11 +5416,11 @@ extern int GetFilesNamed(char* folderPath, int* howManyOutput, PLIST_HEAD fileLi
 
   *howManyOutput = 0;
 
-  Search = FindFirstFile(folderPath, &data);
+  Search = FindFirstFileA(folderPath, &data);
 
   if(Search == INVALID_HANDLE_VALUE)
   {
-    Error("The function FindFirstFile(...) has failed in the function GetFilesNamed(...).");
+    Error("The function FindFirstFileA(...) has failed in the function GetFilesNamed(...).");
 
     return -1;
   }
@@ -5352,18 +5429,18 @@ extern int GetFilesNamed(char* folderPath, int* howManyOutput, PLIST_HEAD fileLi
 
   SetLastError(ERROR_SUCCESS);
 
-  result = FindNextFile(Search, &data);
+  result = FindNextFileA(Search, &data);
 
   while(result && GetLastError() == ERROR_SUCCESS)
   {
     tempStore++;
 
-    result = FindNextFile(Search, &data);
+    result = FindNextFileA(Search, &data);
   }
 
   if(result || GetLastError() != ERROR_NO_MORE_FILES)
   {
-    Error("The function FindNextFile(...) in the function GetFilesNamed(...) has indicated an error.");
+    Error("The function FindNextFileA(...) in the function GetFilesNamed(...) has indicated an error.");
 
     return -1;
   }
@@ -5375,11 +5452,11 @@ extern int GetFilesNamed(char* folderPath, int* howManyOutput, PLIST_HEAD fileLi
     return -1;
   }
 
-  Search = FindFirstFile(folderPath, &data);
+  Search = FindFirstFileA(folderPath, &data);
 
   if(Search == INVALID_HANDLE_VALUE)
   {
-    Error("The function FindFirstFile(...) has failed in the function GetFilesNamed(...).");
+    Error("The function FindFirstFileA(...) has failed in the function GetFilesNamed(...).");
 
     return -1;
   }
@@ -5401,9 +5478,9 @@ extern int GetFilesNamed(char* folderPath, int* howManyOutput, PLIST_HEAD fileLi
 
   for(loop = 1; loop < tempStore; loop++)
   {
-    if( !FindNextFile(Search, &data) )
+    if( !FindNextFileA(Search, &data) )
     {
-      Error("The function FindNextFile(...) has failed in the function GetFilesNamed(...).");
+      Error("The function FindNextFileA(...) has failed in the function GetFilesNamed(...).");
 
       FindClose(Search);
 
@@ -5444,4 +5521,3 @@ extern int GetFilesNamed(char* folderPath, int* howManyOutput, PLIST_HEAD fileLi
 
   return 0;
 }
-#endif

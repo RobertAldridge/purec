@@ -297,7 +297,7 @@ ListGetExtrema
 //  Remark: if the ClientEvaluate function does not return 0, the dump will terminate
 //
 
-void 
+INDEX_TYPE 
 ListDump
 (
 	PLIST_HEAD      Head,

@@ -35,7 +35,7 @@
 static unsigned char
 ClipSpecial( int  *StartX, // input is old dest x, output is new dest x
 			 int  *StartY, // input is old dest y, output is new dest y
-			 int  width,
+			 int  _width,
 			 int  height,
 			 RECT *rect    // input is old source rect, output is new source rect
 		   )
@@ -51,7 +51,7 @@ ClipSpecial( int  *StartX, // input is old dest x, output is new dest x
 	int SourceWidth      = 0;
 	int Xstart           = 0;
 	int Ystart           = 0;
-	int BackBufferWidth  = width  + 1;
+	int BackBufferWidth  = _width  + 1;
 	int BackBufferHeight = height + 1;
 
 	// trivial reject
@@ -136,7 +136,7 @@ static void CopyBitmap( HDC Source,
 		return;
 	}
 
-	BltHB = (HBITMAP) LoadImage( NULL,
+	BltHB = (HBITMAP) LoadImageA( NULL,
 								 "ascii_white.bmp",
 								 IMAGE_BITMAP,
 								 0,

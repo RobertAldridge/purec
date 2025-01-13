@@ -488,7 +488,7 @@ static void DebugFree(uint32_t* data[G1000NUMERATOR] )
 // int64_t SsSetMaxStack(ssSet* _this)
 // int64_t SsSetMaxQueue(ssSet* _this)
 
-bool SsSetTest(blahRandom* /*random*/)
+static bool SsSetTest(blahRandom* /*random*/)
 {
   bool result = false;
 
@@ -974,15 +974,13 @@ label_return:
   return result;
 }
 
-int main()
+static int mainLevel2()
 {
   int result = -1;
 
   blahRandom random = {0};
 
   struct timespec sleep_time = {0};
-
-  BlahEnableAlloc();
 
   if( !BlahRandomConstructDefault( &random) )
     goto label_return;
@@ -1011,20 +1009,24 @@ label_return:
   return result;
 }
 
-int WINAPI WinMain( HINSTANCE    hInstance,        // handle to current instance
-                    HINSTANCE /* hPrevInstance */, // handle to previous instance
-                    char*     /* lpCmdLine     */, // pointer to command line
-                    int          nCmdShow          // show state of window
-                  )
+#if 0
+int WINAPI WinMain
+(
+  HINSTANCE /*hInstance*/, // handle to current instance
+  HINSTANCE /*hPrevInstance*/, // handle to previous instance
+  char* /*lpCmdLine*/, // pointer to command line
+  int /*nCmdShow*/ // show state of window
+)
 {
   int result = -1;
 
   BlahLog("blah %s %i\n", "blah", 1);
 
-  result = main();
+  result = mainLevel2();
 
   return result;
 }
+#endif
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu

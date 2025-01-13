@@ -15,10 +15,11 @@
 #pragma warning(push,3)
 
 	#include <stdio.h>
-	#include <native.h>
+//	#include <native.h>
 	#include <memory.h>
 	#include <malloc.h>
 	#include <assert.h>
+#include <string.h>
 
 	#define ERROR -1
 
@@ -31,8 +32,6 @@
 	#ifndef FALSE
 		#define FALSE 0
 	#endif
-
-#pragma warning(push,4)
 
 #include "client_potype.h"
 
