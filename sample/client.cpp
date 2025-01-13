@@ -106,7 +106,7 @@ ProcessList(
 }
 
 int
-main(
+mainListTest(
     void
     )
 {
