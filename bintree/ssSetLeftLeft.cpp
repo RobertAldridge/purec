@@ -1,5 +1,5 @@
 
-// ssSet_leftleft.cpp
+// ssSetLeftLeft.cpp
 // Ming C. Lin
 // Robert B. Aldridge III
 // Charlie H. Burns III

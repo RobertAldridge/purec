@@ -13,15 +13,15 @@ using std::memcpy;
 using std::printf;
 using std::uint32_t;
 
-#include "blah_alloc.h"
+#include "BlahAlloc.h"
 
 #include "BlahLog.h"
 
-#include "ssMm_nocomments.h"
-#include "ssStack_nocomments.h"
-#include "ssQueue_nocomments.h"
+#include "ssMm.h"
+#include "ssStack.h"
+#include "ssQueue.h"
 
-#include "ssSet_nocomments.h"
+#include "ssSet.h"
 
 struct SsSetNode
 {
@@ -96,67 +96,67 @@ static uint32_t SsSetDepthTreeLevel2(SsSetNode* node);
 static uint32_t SsSetCalculateLogBase2Level2(int64_t number);
 static SsSetNode* SsSetTreeSearchLevel2(SsSetNode* x, void* objectKey, SsSetCompare lessThan);
 
-// ssSet_left.cpp
+// ssSetLeft.cpp
 static void SsSetRotateLeftErase1Level4(SsSetNode* xP);
 static void SsSetRotateLeftErase2Level4(SsSetNode* xP);
 static void SsSetRotateLeftInsertLevel3(SsSetNode* xPP);
 
-// ssSet_leftleft.cpp
+// ssSetLeftLeft.cpp
 static void SsSetRotateLeftLeftEraseLevel4(SsSetNode* xP);
 
-// ssSet_leftright.cpp
+// ssSetLeftRight.cpp
 static void SsSetRotateLeftRightInsertLevel3(SsSetNode* x);
 static void SsSetRotateLeftRightEraseLevel4(SsSetNode* xP);
 
-// ssSet_leftrightleft.cpp
+// ssSetLeftRightLeft.cpp
 static void SsSetRotateLeftRightLeftEraseLevel4(SsSetNode* xP);
 
-// ssSet_right.cpp
+// ssSetRight.cpp
 static void SsSetRotateRightErase1Level4(SsSetNode* xP);
 static void SsSetRotateRightErase2Level4(SsSetNode* xP);
 static void SsSetRotateRightInsertLevel3(SsSetNode* xPP);
 
-// ssSet_rightright.cpp
+// ssSetRightRight.cpp
 static void SsSetRotateRightRightEraseLevel4(SsSetNode* xP);
 
-// ssSet_rightleft.cpp
+// ssSetRightLeft.cpp
 static void SsSetRotateRightLeftInsertLevel3(SsSetNode* x);
 static void SsSetRotateRightLeftEraseLevel4(SsSetNode* xP);
 
-// ssSet_rightleftright.cpp
+// ssSetRightLeftRight.cpp
 static void SsSetRotateRightLeftRightEraseLevel4(SsSetNode* xP);
 
-// ssSet_insert.cpp
+// ssSetInsert.cpp
 static bool SsSetInsertLevel3(ssSet* _this, SsSetNode* insert, SsSetCompare lessThan);
 static bool SsSetInsertLevel2(ssSet* _this, SsSetNode* x, SsSetCompare lessThan);
 
-// ssSet_remove.cpp
+// ssSetErase.cpp
 static void SsSetEraseLevel3(ssSet* _this, SsSetNode* x);
 static SsSetNode* SsSetEraseLevel2(ssSet* _this, SsSetNode* z);
 
-// ssSet_traverse.cpp
+// ssSetDump.cpp
 static int64_t SsSetDumpLevel2preorder(ssSet* _this, SsSetNode* node, SsSetEvaluate ClientEvaluate);
 static int64_t SsSetDumpLevel2inorder(ssSet* _this, SsSetNode* node, SsSetEvaluate ClientEvaluate);
 static int64_t SsSetDumpLevel2postorder(ssSet* _this, SsSetNode* node, SsSetEvaluate ClientEvaluate);
 static int64_t SsSetDumpLevel2levelorder(ssSet* _this, SsSetNode* node, SsSetEvaluate ClientEvaluate);
 
-// ssSet_nocomments.cpp
+// ssSet.cpp
 
-#include "ssSet_left_nocomments.cpp"
-#include "ssSet_leftleft_nocomments.cpp"
-#include "ssSet_leftright_nocomments.cpp"
-#include "ssSet_leftrightleft_nocomments.cpp"
+#include "ssSetLeft.cpp"
+#include "ssSetLeftLeft.cpp"
+#include "ssSetLeftRight.cpp"
+#include "ssSetLeftRightLeft.cpp"
 
-#include "ssSet_right_nocomments.cpp"
-#include "ssSet_rightright_nocomments.cpp"
-#include "ssSet_rightleft_nocomments.cpp"
-#include "ssSet_rightleftright_nocomments.cpp"
+#include "ssSetRight.cpp"
+#include "ssSetRightRight.cpp"
+#include "ssSetRightLeft.cpp"
+#include "ssSetRightLeftRight.cpp"
 
-#include "ssSet_insert_nocomments.cpp"
+#include "ssSetInsert.cpp"
 
-#include "ssSet_remove_nocomments.cpp"
+#include "ssSetErase.cpp"
 
-#include "ssSet_traverse_nocomments.cpp"
+#include "ssSetDump.cpp"
 
 uint32_t SsSetDepthTreeLevel2(SsSetNode* node)
 {

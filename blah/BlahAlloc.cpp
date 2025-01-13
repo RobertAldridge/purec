@@ -1,5 +1,5 @@
 
-// blah_alloc.cpp
+// BlahAlloc.cpp
 // Robert Aldridge
 
 #if defined(_MSC_VER)
@@ -59,7 +59,7 @@ using std::size_t;
 using std::uint32_t;
 //using std::wchar_t;
 
-#include "blah_alloc.h"
+#include "BlahAlloc.h"
 
 #if defined(_MSC_VER)
 //static bool gBlahLargePageSupportEnabled;

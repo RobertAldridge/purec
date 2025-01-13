@@ -22,7 +22,7 @@
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{d27ed493-f293-46e2-9fce-59d962efa5c7}</ProjectGuid>
-    <RootNamespace>console</RootNamespace>
+    <RootNamespace>sample</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -145,58 +145,58 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\bintree\ssSet_insert_nocomments.cpp">
+    <ClCompile Include="..\bintree\ssSetInsert.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\bintree\ssSet_left_nocomments.cpp">
+    <ClCompile Include="..\bintree\ssSetLeft.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\bintree\ssSet_leftleft_nocomments.cpp">
+    <ClCompile Include="..\bintree\ssSetLeftLeft.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\bintree\ssSet_leftright_nocomments.cpp">
+    <ClCompile Include="..\bintree\ssSetLeftRight.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\bintree\ssSet_leftrightleft_nocomments.cpp">
+    <ClCompile Include="..\bintree\ssSetLeftRightLeft.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\bintree\ssSet_nocomments.cpp" />
-    <ClCompile Include="..\bintree\ssSet_remove_nocomments.cpp">
+    <ClCompile Include="..\bintree\ssSet.cpp" />
+    <ClCompile Include="..\bintree\ssSetErase.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\bintree\ssSet_right_nocomments.cpp">
+    <ClCompile Include="..\bintree\ssSetRight.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\bintree\ssSet_rightleft_nocomments.cpp">
+    <ClCompile Include="..\bintree\ssSetRightLeft.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\bintree\ssSet_rightleftright_nocomments.cpp">
+    <ClCompile Include="..\bintree\ssSetRightLeftRight.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\bintree\ssSet_rightright_nocomments.cpp">
+    <ClCompile Include="..\bintree\ssSetRightRight.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\bintree\ssSet_traverse_nocomments.cpp">
+    <ClCompile Include="..\bintree\ssSetDump.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\blah\BlahLog.cpp" />
-    <ClCompile Include="..\ssmm\blah_alloc.cpp" />
-    <ClCompile Include="..\ssmm\ssArray_nocomments.cpp" />
-    <ClCompile Include="..\ssmm\ssMm_nocomments.cpp" />
-    <ClCompile Include="..\ssmm\ssQueue_nocomments.cpp" />
-    <ClCompile Include="..\ssmm\ssStack_nocomments.cpp" />
-    <ClCompile Include="console.cpp" />
+    <ClCompile Include="..\blah\BlahAlloc.cpp" />
+    <ClCompile Include="..\ssmm\ssArray.cpp" />
+    <ClCompile Include="..\ssmm\ssMm.cpp" />
+    <ClCompile Include="..\ssmm\ssQueue.cpp" />
+    <ClCompile Include="..\ssmm\ssStack.cpp" />
+    <ClCompile Include="sample.cpp" />
     <ClCompile Include="winmain.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -206,14 +206,13 @@
     <None Include=".editorconfig" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\bintree\ssSet_nocomments.h" />
-    <ClInclude Include="..\bintree\ssSet_private_nocomments.h" />
+    <ClInclude Include="..\bintree\ssSet.h" />
     <ClInclude Include="..\blah\BlahLog.h" />
-    <ClInclude Include="..\ssmm\blah_alloc.h" />
-    <ClInclude Include="..\ssmm\ssArray_nocomments.h" />
-    <ClInclude Include="..\ssmm\ssMm_nocomments.h" />
-    <ClInclude Include="..\ssmm\ssQueue_nocomments.h" />
-    <ClInclude Include="..\ssmm\ssStack_nocomments.h" />
+    <ClInclude Include="..\blah\BlahAlloc.h" />
+    <ClInclude Include="..\ssmm\ssArray.h" />
+    <ClInclude Include="..\ssmm\ssMm.h" />
+    <ClInclude Include="..\ssmm\ssQueue.h" />
+    <ClInclude Include="..\ssmm\ssStack.h" />
     <ClInclude Include="header.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

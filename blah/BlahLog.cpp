@@ -1,5 +1,5 @@
 
-// blah_alloc.cpp
+// BlahAlloc.cpp
 // Robert Aldridge
 
 //#include <cctype>

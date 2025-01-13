@@ -1,5 +1,5 @@
 
-// blah_alloc.h
+// BlahAlloc.h
 
 void BlahEnableAlloc();
 

@@ -1,5 +1,5 @@
 
-// console.cpp
+// sample.cpp
 
 #include <cstdint>
 #include <cstdio>
@@ -10,18 +10,18 @@
 // int thrd_sleep(const struct timespec* duration, struct timespec* remaining)
 #include <threads.h>
 
-#include "ssMm_nocomments.h"
-#include "ssArray_nocomments.h"
-#include "ssStack_nocomments.h"
-#include "ssQueue_nocomments.h"
+#include "ssMm.h"
+#include "ssArray.h"
+#include "ssStack.h"
+#include "ssQueue.h"
 
-#include "ssSet_nocomments.h"
+#include "ssSet.h"
 
-#include "blah_alloc.h"
+#include "BlahAlloc.h"
 
 #include "BlahLog.h"
 
-#include "windows.h"
+#include <windows.h>
 
 #pragma warning (disable : 4668)
 #pragma warning (disable : 5039)

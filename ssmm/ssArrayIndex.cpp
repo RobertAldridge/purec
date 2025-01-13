@@ -48,7 +48,7 @@ struct ssArray
   int padding;
 };
 
-#include "ssArray_nocomments.h"
+#include "ssArray.h"
 
 #include "blah_aligned_alloc.h"
 

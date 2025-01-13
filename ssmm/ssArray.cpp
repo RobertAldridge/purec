@@ -13,7 +13,7 @@ using std::ptrdiff_t;
 using std::uint32_t;
 using std::uint8_t;
 
-#include "blah_alloc.h"
+#include "BlahAlloc.h"
 
 struct SsArrayPool
 {
@@ -50,7 +50,7 @@ struct ssArray
   uint32_t padding;
 };
 
-#include "ssArray_nocomments.h"
+#include "ssArray.h"
 
 static uint32_t SsArrayAlignedOfValue(uint32_t size)
   { return (size % sizeof(void*) ) ? size + (sizeof(void*) - size % sizeof(void*) ) : size; }

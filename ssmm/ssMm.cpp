@@ -13,7 +13,7 @@ using std::ptrdiff_t;
 using std::uint32_t;
 using std::uint8_t;
 
-#include "blah_alloc.h"
+#include "BlahAlloc.h"
 
 #define BLAH_DEBUG 0
 
@@ -62,7 +62,7 @@ struct ssMm
   uint32_t padding;
 };
 
-#include "ssMm_nocomments.h"
+#include "ssMm.h"
 
 static uint32_t SsMmAlignedOfValue(uint32_t size)
   { return (size % sizeof(void*) ) ? size + (sizeof(void*) - size % sizeof(void*) ) : size; }
