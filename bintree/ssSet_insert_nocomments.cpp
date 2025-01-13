@@ -148,13 +148,13 @@ int64_t SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client
 
   if( !_this || !key)
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 
   if( !lessThan && !_this->lessThan)
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 
@@ -196,7 +196,7 @@ int64_t SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client
 
   if( !x)
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 
@@ -216,7 +216,7 @@ int64_t SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client
   // verify sentinel root right child is null and color is zero
   if(_this->root.right || _this->root.color)
   {
-    _log("insert");
+    BlahLog("insert");
     gSsSetDebug[68]++;
   }
 

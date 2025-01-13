@@ -359,13 +359,13 @@ int64_t SsSetErase(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
 
   if( !_this || !key || !_this->num)
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 
   if( !lessThan && !_this->lessThan)
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 
@@ -415,7 +415,7 @@ int64_t SsSetErase(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
     t = SsSetEraseLevel2(_this, z);
     if( !t)
     {
-      _log("error");
+      BlahLog("error");
       goto label_return;
     }
 
@@ -423,7 +423,7 @@ int64_t SsSetErase(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
 
     if( !SsMmFree(_this->allocator, (void**)&z) )
     {
-      _log("error");
+      BlahLog("error");
       goto label_return;
     }
 
@@ -432,7 +432,7 @@ int64_t SsSetErase(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
     // verify sentinel root right child is null and color is zero
     if(_this->root.right || _this->root.color)
     {
-      _log("erase");
+      BlahLog("erase");
       gSsSetDebug[69]++;
     }
   }

@@ -19,15 +19,12 @@
 
 #include "blah_alloc.h"
 
-#if defined NDEBUG
-  //#define _log(blah) {}
-  #define _log(blah) printf("%s %s %i\n", blah, __FILE__, __LINE__)
-#else
-  //#define _log(blah) {}
-  #define _log(blah) printf("%s %s %li\n", blah, __FILE__, __LINE__)
-#endif
+#include "BlahLog.h"
 
-#define countof(x) (sizeof(x) / sizeof(x[0] ) )
+#include "windows.h"
+
+#pragma warning (disable : 4668)
+#pragma warning (disable : 5039)
 
 #define BLAH_KEEP 0
 
@@ -319,59 +316,6 @@ label_return:
   return result;
 }
 
-static bool SsSetTest(blahRandom* random);
-
-int main();
-
-#include "windows.h"
-
-#pragma warning (disable : 4668)
-#pragma warning (disable : 5039)
-
-int WINAPI WinMain( HINSTANCE    hInstance,        // handle to current instance
-                    HINSTANCE /* hPrevInstance */, // handle to previous instance
-                    char*     /* lpCmdLine     */, // pointer to command line
-                    int          nCmdShow          // show state of window
-                  )
-{
-  return main();
-}
-
-int main()
-{
-  int result = -1;
-
-  blahRandom random = {0};
-
-  struct timespec sleep_time = {0};
-
-  BlahEnableAlloc();
-
-  if( !BlahRandomConstructDefault( &random) )
-    goto label_return;
-
-  if( !BlahRandomIterate( &random) )
-    goto label_return;
-
-  if( !blahTestStack() )
-    goto label_return;
-
-  if( !blahTestQueue() )
-    goto label_return;
-
-  sleep_time.tv_sec = 1;
-
-  thrd_sleep( &sleep_time, 0);
-
-  if( !SsSetTest( &random) )
-    goto label_return;
-
-  BlahRandomDestruct( &random);
-
-label_return:
-  return result;
-}
-
 static const uint32_t myFatalError = 0xFFFFFFFFUL;
 
 //typedef uint32_t(*SsSetCompare)(void*, void*);
@@ -598,7 +542,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
   ssSet* mySet = SsSetConstruct(sizeof(uint32_t), numData <= 5000000 ? numData : 5000000, 4100000000, 10000000, lessThan);
   if( !mySet)
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 
@@ -606,7 +550,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
   uint32_t* datablah[G1000NUMERATOR] = {0};
   if( !DebugAllocate(datablah, numData) )
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 
@@ -681,7 +625,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
 //int64_t SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
     if(SsSetInsert(mySet, &data1, 0, 0) < 0)
     {
-      _log("error");
+      BlahLog("error");
       goto label_return;
     }
 
@@ -689,7 +633,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
     numSet = SsSetNum(mySet);
     if(numSet < 0 || numSet != ( (int64_t)index + 1) )
     {
-      _log("error");
+      BlahLog("error");
       goto label_return;
     }
 
@@ -699,7 +643,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
 
     if(height <= 0 || height > 2 * (int64_t)calculateLogBase2(numSet + 1) )
     {
-      _log("error");
+      BlahLog("error");
       goto label_return;
     }
     else
@@ -715,7 +659,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
     findResult = SsSetFind(mySet, &keyObject, lessThan, &resultObject);
     if(findResult < 0)
     {
-      _log("error");
+      BlahLog("error");
       goto label_return;
     }
     else if( !findResult && resultObject == keyObject)
@@ -728,7 +672,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
     }
     else
     {
-      _log("error");
+      BlahLog("error");
       goto label_return;
     }
 #endif
@@ -738,7 +682,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
   numSet = SsSetNum(mySet);
   if(numSet < 0 || numSet != (int64_t)numData)
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 
@@ -748,7 +692,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
 //int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
   if(SsSetDump(mySet, check, SsSetPreorder) )
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 #if BLAH_KEEP
@@ -761,7 +705,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
 //int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
   if(SsSetDump(mySet, check, SsSetInorder) )
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 #if BLAH_KEEP
@@ -774,7 +718,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
 //int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
   if(SsSetDump(mySet, check, SsSetPostorder) )
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 #if BLAH_KEEP
@@ -787,7 +731,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
 //int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
   if(SsSetDump(mySet, check, SsSetLevelorder) )
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 #if BLAH_KEEP
@@ -801,7 +745,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
 
     if(height <= 0 || height > 2 * (int64_t)calculateLogBase2(numSet + 1) )
     {
-      _log("error");
+      BlahLog("error");
       goto label_return;
     }
     else
@@ -837,7 +781,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
   findResult = SsSetFind(mySet, &keyObject, lessThan, &resultObject);
   if(findResult < 0)
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
   else if( !findResult && resultObject == keyObject)
@@ -854,7 +798,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
   }
   else
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 
@@ -900,7 +844,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
     numSet = SsSetNum(mySet);
     if(numSet < 0 || numSet != ( (int64_t)numData - (int64_t)index) )
     {
-      _log("error");
+      BlahLog("error");
       goto label_return;
     }
 
@@ -910,7 +854,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
 
     if(height <= 0 || height > 2 * (int64_t)calculateLogBase2(numSet + 1) )
     {
-      _log("error");
+      BlahLog("error");
       goto label_return;
     }
     else
@@ -928,7 +872,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
 
     if(eraseResult || resultObject != data1)
     {
-      _log("error");
+      BlahLog("error");
       goto label_return;
     }
 
@@ -940,7 +884,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
 
     if(findResult < 0)
     {
-      _log("error");
+      BlahLog("error");
       goto label_return;
     }
     else if( !findResult && resultObject == keyObject)
@@ -953,7 +897,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
     }
     else
     {
-      _log("error");
+      BlahLog("error");
       goto label_return;
     }
 #endif
@@ -963,7 +907,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
   numSet = SsSetNum(mySet);
   if(numSet)
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 
@@ -973,7 +917,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
     int64_t height = SsSetDepthTree(mySet);
     if(height)
     {
-      _log("error");
+      BlahLog("error");
       goto label_return;
     }
     else
@@ -988,7 +932,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
 //int64_t SsSetDestruct(ssSet* _this)
   if(SsSetDestruct(mySet) < 0)
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 
@@ -1027,6 +971,58 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
   result = true;
 
 label_return:
+  return result;
+}
+
+int main()
+{
+  int result = -1;
+
+  blahRandom random = {0};
+
+  struct timespec sleep_time = {0};
+
+  BlahEnableAlloc();
+
+  if( !BlahRandomConstructDefault( &random) )
+    goto label_return;
+
+  if( !BlahRandomIterate( &random) )
+    goto label_return;
+
+  if( !blahTestStack() )
+    goto label_return;
+
+  if( !blahTestQueue() )
+    goto label_return;
+
+  sleep_time.tv_sec = 1;
+
+  thrd_sleep( &sleep_time, 0);
+
+  if( !SsSetTest( &random) )
+    goto label_return;
+
+  BlahRandomDestruct( &random);
+
+  result = 0;
+
+label_return:
+  return result;
+}
+
+int WINAPI WinMain( HINSTANCE    hInstance,        // handle to current instance
+                    HINSTANCE /* hPrevInstance */, // handle to previous instance
+                    char*     /* lpCmdLine     */, // pointer to command line
+                    int          nCmdShow          // show state of window
+                  )
+{
+  int result = -1;
+
+  BlahLog("blah %s %i\n", "blah", 1);
+
+  result = main();
+
   return result;
 }
 

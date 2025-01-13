@@ -15,6 +15,8 @@ using std::uint32_t;
 
 #include "blah_alloc.h"
 
+#include "BlahLog.h"
+
 #include "ssMm_nocomments.h"
 #include "ssStack_nocomments.h"
 #include "ssQueue_nocomments.h"
@@ -88,14 +90,6 @@ uint64_t gSsSetDebug[83] = {0};
 
 //#define CLIENTEVALUATEWRAPPER(_this, node, evaluate) \
 //  (node == GETSENTINELFROMTREE(_this) ? 0 : evaluate(GETCLIENT(node) ) )
-
-#if defined NDEBUG
-  //#define _log(blah) {}
-  #define _log(blah) printf("%s %s %i\n", blah, __FILE__, __LINE__)
-#else
-  //#define _log(blah) {}
-  #define _log(blah) printf("%s %s %li\n", blah, __FILE__, __LINE__)
-#endif
 
 // ssSet.cpp
 static uint32_t SsSetDepthTreeLevel2(SsSetNode* node);
@@ -243,7 +237,7 @@ int64_t SsSetGetExtrema(ssSet* _this, bool maximum, void* client)
 
   if( !_this)
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 
@@ -315,13 +309,13 @@ int64_t SsSetFind(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
 
   if( !_this || !key)
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 
   if( !lessThan && !_this->lessThan)
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 
@@ -383,7 +377,7 @@ int64_t SsSetReset(ssSet* _this)
 
   if( !_this)
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 
@@ -442,7 +436,7 @@ int64_t SsSetNum(ssSet* _this)
 
   if( !_this)
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 
@@ -492,7 +486,7 @@ int64_t SsSetDepthTree(ssSet* _this)
 
   if( !_this)
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 
@@ -542,7 +536,7 @@ int64_t SsSetMaxStack(ssSet* _this)
 
   if( !_this)
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 
@@ -592,7 +586,7 @@ int64_t SsSetMaxQueue(ssSet* _this)
 
   if( !_this)
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 
@@ -643,7 +637,7 @@ int64_t SsSetDestruct(ssSet* _this)
 
   if( !_this)
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 
@@ -705,7 +699,7 @@ ssSet* SsSetConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32
 
   if( !sizeOf || !minimum || minimum > (uint32_t)maximum || !resize || !lessThan)
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 
@@ -743,7 +737,7 @@ ssSet* SsSetConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32
   _this = (ssSet*)BlahAlloc(sizeof(ssSet), true);
   if( !_this)
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 
@@ -754,7 +748,7 @@ ssSet* SsSetConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32
   _this->allocator = SsMmConstruct(sizeof(SsSetNode) + sizeOf, minimum, maximum, resize);
   if( !_this->allocator)
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 
@@ -765,7 +759,7 @@ ssSet* SsSetConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32
   _this->stack = SsStackConstruct(sizeof(SsSetNode*), stackSize, maximum, resize);
   if( !_this->stack)
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 
@@ -776,7 +770,7 @@ ssSet* SsSetConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32
   _this->queue = SsQueueConstruct(sizeof(SsSetNode*), queueSize, maximum, resize);
   if( !_this->queue)
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 

@@ -1,5 +1,6 @@
 
 
+#if 0
 // We want this module to handle all os dependant code
 //
 // 1) Prestep -
@@ -5443,3 +5444,4 @@ extern int GetFilesNamed(char* folderPath, int* howManyOutput, PLIST_HEAD fileLi
 
   return 0;
 }
+#endif

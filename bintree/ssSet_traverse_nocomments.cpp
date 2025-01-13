@@ -303,13 +303,13 @@ int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
 
   if( !_this || order < SsSetPreorder || order > SsSetLevelorder)
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 
   if( !evaluate && !_this->evaluate)
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 
@@ -357,7 +357,7 @@ int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
 
   if(dump < 0)
   {
-    _log("error");
+    BlahLog("error");
     goto label_return;
   }
 

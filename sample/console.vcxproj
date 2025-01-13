@@ -104,13 +104,14 @@
     <ClCompile>
       <WarningLevel>EnableAllWarnings</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;YDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;YDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS=1;__STDC_LIB_EXT1__=1;__STDC_WANT_LIB_EXT1__=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\business\purec\ssmm;C:\business\purec\bintree;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\business\purec\blah;C:\business\purec\sample;C:\business\purec\ssmm;C:\business\purec\bintree;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <DisableSpecificWarnings>4127;4200;4505;4668;4710;4711;5039;5045;6011;28182</DisableSpecificWarnings>
       <CompileAsManaged>false</CompileAsManaged>
+      <ForcedIncludeFiles>header.h</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -124,15 +125,16 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS=1;__STDC_LIB_EXT1__=1;__STDC_WANT_LIB_EXT1__=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\business\purec\ssmm;C:\business\purec\bintree;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\business\purec\blah;C:\business\purec\sample;C:\business\purec\ssmm;C:\business\purec\bintree;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <DisableSpecificWarnings>4127;4200;4505;4668;4710;4711;5039;5045;6011;28182</DisableSpecificWarnings>
       <CompileAsManaged>false</CompileAsManaged>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <ForcedIncludeFiles>header.h</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -188,13 +190,17 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\blah\BlahLog.cpp" />
     <ClCompile Include="..\ssmm\blah_alloc.cpp" />
     <ClCompile Include="..\ssmm\ssArray_nocomments.cpp" />
     <ClCompile Include="..\ssmm\ssMm_nocomments.cpp" />
     <ClCompile Include="..\ssmm\ssQueue_nocomments.cpp" />
     <ClCompile Include="..\ssmm\ssStack_nocomments.cpp" />
     <ClCompile Include="console.cpp" />
-    <ClCompile Include="winmain.cpp" />
+    <ClCompile Include="winmain.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
@@ -202,11 +208,13 @@
   <ItemGroup>
     <ClInclude Include="..\bintree\ssSet_nocomments.h" />
     <ClInclude Include="..\bintree\ssSet_private_nocomments.h" />
+    <ClInclude Include="..\blah\BlahLog.h" />
     <ClInclude Include="..\ssmm\blah_alloc.h" />
     <ClInclude Include="..\ssmm\ssArray_nocomments.h" />
     <ClInclude Include="..\ssmm\ssMm_nocomments.h" />
     <ClInclude Include="..\ssmm\ssQueue_nocomments.h" />
     <ClInclude Include="..\ssmm\ssStack_nocomments.h" />
+    <ClInclude Include="header.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
