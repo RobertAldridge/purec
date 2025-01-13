@@ -1,0 +1,100 @@
+
+#if 0
+key
+value
+compare(key, key) // lessThan
+compare( <key, value>, <key, value> ) { return compare(lhs.key, rhs.key); }
+lessThan(lhs, rhs) return compare(lhs, rhs)
+greaterThan(lhs, rhs) return compare(rhs, lhs)
+equalTo(lhs, rhs) return !lessThan(lhs, rhs) && !greaterThan(lhs, rhs)
+lessThanOrEqualTo(lhs, rhs) return lessThan(lhs, rhs) || !greaterThan(lhs, rhs)
+greaterThanOrEqualTo(lhs, rhs) return greaterThan(lhs, rhs) || !lessThan(lhs, rhs)
+allocator
+
+map
+multimap
+  iterator rbegin() x
+  iterator rend() x
+  iterator lower_bound(key) o
+  terator lower_bound(?) o
+  iterator upper_bound(key) o
+  iterator upper_bound(?) o
+
+map
+unordered_map
+multimap
+unordered_multimap
+  iterator begin() x
+  iterator end() x
+  bool empty() x
+  int size() x
+
+  // unique
+  iterator insert(iterator, <key, value> ) { return UniqueInsert(iterator, <key, value> ); }
+
+  // equivalent
+  iterator insert(iterator, <key, value> ) { return EquivalentInsert(iterator, <key, value> ); }
+
+  node extract(iterator) o
+  node extract(key) o
+  node extract( <key, value> )
+  iterator insert(iterator, node) o
+  erase(iterator) x
+  erase(key) x
+  erase( <key, value> )
+  clear() x
+  iterator find(key) x
+  iterator find( <key, value> )
+  int count(key) o
+  int count( <key, value> )
+  bool contains(key) x
+  bool contains( <key, value> )
+  <iterator, iterator> equal_range(key)
+  <iterator, iterator> equal_range( <key, value> )
+
+map
+unordered_map
+  value operator[key] { return try_emplace(key).first->second; } x
+
+  value at(key) x
+
+  <iterator, bool> insert( <key, value> ) { return UniqueInsert(0/*null*/, <key, value> ); } // inserts if key is not found
+
+  <iterator, bool, node> insert(node) o
+
+  <iterator, bool> insert_or_assign( <key, value> )
+  {
+    iterator = Replace(0/*null*/, <key, value> );
+
+    if(iterator)
+      insert(iterator, <key, value> );
+  }
+
+  iterator insert_or_assign(iterator, <key, value> )
+  {
+    iterator = Replace(iterator, <key, value> ) )
+
+    if(iterator)
+      insert(iterator, <key, value> );
+  }
+
+multimap
+unordered_multimap
+  iterator insert( <key, value> ) { return EquivalentInsert(0/*null*/, <key, value> ); } // inserts at the end of equivalent keys
+  iterator insert(node) o
+#endif
+
+// if <key, value> is found, value is updated, return is 0/*null*/
+// if <key, value> is not found return is lower_bound(key)
+iterator Replace(iterator, <key, value> );
+
+// if <key, value> is found, return find(key)
+// if <key, value> is not found, return lower_bound(key)
+<iterator, bool> FindFoundLower(iterator, <key, value> );
+
+// if <key, value> is found, return upper_bound(key)
+// if <key, value> is not found, return lower_bound(key)
+<iterator, bool> FindUpperLower(iterator, <key, value> );
+
+iterator UniqueInsert(iterator, <key, value> );
+iterator EquivalentInsert(iterator, <key, value> );

@@ -1,0 +1,578 @@
+
+#if 0
+void rb-insert(BinaryTree* tree, BinaryTreeNode* x)
+{
+  tree-insert(tree, x)
+
+  x->color = red
+
+  while x != tree->root && x->parent->color == red
+  {
+    if x->parent == x->parent->parent->left
+    {
+      BinaryTreeNode* y = x->parent->parent->right;
+
+      // case 1
+      if y->color == red
+      {
+        x->parent->color = black
+        y->color = black
+        x->parent->parent->color = red
+        x = x->parent->parent
+      }
+      else
+      {
+        // case 2
+        if x == x->parent->right
+        {
+          x = x->parent
+          left-rotate(tree, x)
+        }
+
+        // case 3
+        x->parent->color = black
+        x->parent->parent->color = red
+        right-rotate(tree, x->parent->parent)
+      }
+    }
+    else /*if x->parent == x->parent->parent->right*/
+    {
+      BinaryTreeNode* y = x->parent->parent->left;
+
+      // case 1
+      if y->color == red
+      {
+        x->parent->color = black
+        y->color = black
+        x->parent->parent->color = red
+        x = x->parent->parent
+      }
+      else
+      {
+        // case 2
+        if x == x->parent->left
+        {
+          x = x->parent
+          right-rotate(tree, x)
+        }
+
+        // case 3
+        x->parent->color = black
+        x->parent->parent->color = red
+        left-rotate(tree, x->parent->parent)
+      }
+    }
+  }
+}
+#endif
+
+struct BTreeNode
+{
+    // each element is a client key/value pair
+    std::vector<pair<key, value> > keyValuePairs;
+
+    std::vector<BTreeNode*> children;
+};
+
+void traverse-in-order(node, evaluate)
+{
+  if( !node || !evaluate)
+    return;
+
+  // todo if size can change during traversal
+  int numberOfKeyValuePairs = keyValuePairs->size();
+  int numberOfChildren = children->size();
+
+  // numberOfKeyValuePairs is numberOfChildren - 1 except when
+  // numberOfChildren == 0 (in which case we are a leaf node)
+  if(numberOfKeyValuePairs != numberOfChildren - 1)
+  {
+    for(int index = 0; index < numberOfKeyValuePairs; index++)
+    {
+      evaluate(node->keyValuePairs[index] );
+    }
+
+    return;
+  }
+
+  // if we get here then numberOfKeyValuePairs >= 1, numberOfChildren >= 2,
+  // and numberOfKeyValuePairs == numberOfChildren - 1
+
+  for(int index = 0; index < numberOfKeyValuePairs; index++)
+  {
+    traverse(node->children[index], evaluate);
+
+    evaluate(node->keyValuePairs[index] );
+  }
+
+  // purposefully indexing children using numberOfKeyValuePairs
+  traverse(node->children[numberOfKeyValuePairs], evaluate);
+}
+
+#define equivalence(lhs, rhs) \
+  ( !compareLessThan(lhs, rhs) && !compareLessThan(rhs, lhs) )
+
+node find(node, keyValuePair, compareLessThan)
+{
+  if( !node || !compareLessThan)
+    return nil;
+
+  // todo if size can change during traversal
+  int numberOfKeyValuePairs = keyValuePairs->size();
+  int numberOfChildren = children->size();
+
+  // numberOfKeyValuePairs is numberOfChildren - 1 except when
+  // numberOfChildren == 0 (in which case we are a leaf node)
+  if(numberOfKeyValuePairs != numberOfChildren - 1)
+  {
+    for(int index = 0; index < numberOfKeyValuePairs; index++)
+    {
+      if(equivalence(keyValuePair, node->keyValuePairs[index] ) )
+        return node;
+    }
+
+    return nil;
+  }
+
+  // if we get here then numberOfKeyValuePairs >= 1, numberOfChildren >= 2,
+  // and numberOfKeyValuePairs == numberOfChildren - 1
+
+  for(int index = 0; index < numberOfKeyValuePairs; index++)
+  {
+    if(compareLessThan(keyValuePair, node->keyValuePairs[index] )
+      return find(node->children[index], keyValuePair, compareLessThan);
+
+    if(equivalence(keyValuePair, node->keyValuePairs[index] ) )
+      return node;
+  }
+
+  // purposefully indexing children using numberOfKeyValuePairs
+  return find(node->children[numberOfKeyValuePairs], keyValuePair, compareLessThan);
+}
+
+int depthMax(node)
+{
+  if( !node)
+    return 0;
+
+  int left = depthMax(node->left);
+
+  int right = depthMax(node->right);
+
+  if(left >= right)
+    return left + 1;
+  else
+    return right + 1;
+}
+
+size 1 current height 1 stack 1 queue 1 max height 4 100%
+size 2 current height 2 stack 2 queue 1 max height 4 50%
+size 3 current height 2 stack 2 queue 2 max height 6 67%
+size 4 current height 3 stack 3 queue 2 max height 6 50%
+size 5 current height 3 stack 3 queue 2 max height 6 40%
+size 6 current height 4 stack 4 queue 2 max height 6 34%
+size 7 current height 4 stack 4 queue 2 max height 8 29%
+size 8 current height 4 stack 4 queue 3 max height 8 38%
+size 9 current height 4 stack 4 queue 4 max height 8 45%
+size 10 current height 4 stack 4 queue 4 max height 8 40%
+size 100 current height 8 stack 8 queue 40 max height 14 40%
+size 1 000 current height 13 stack 13 queue 288 max height 20 29%
+size 10 000 current height 17 stack 17 queue 2799 max height 28 28%
+size 100 000 current height 20 stack 20 queue 26818 max height 34 27%
+size 1 000 000 current height 27 stack 27 queue 240541 max height 40 25%
+size 10 000 000 current height 33 stack 33 queue 2462138 max height 48 25%
+size 30 000 000 current height 36 stack 36 queue 7335280 max height 50 25%
+
+queue max from 1 to 10 is 100%
+queue max from 10 to 100 is 54%
+queue max from 100 to 1000 is 38%
+queue max from 1000 to 10000 is 34%
+queue max from 10000 to 100000 is 31%
+
+[[10,4],[100,40],[1000,288],[10000,2799],[100000,26818]]
+
+[[1,1],[100,40],[1000,288],[10000,2799],[100000,26818]]
+
+a*x^4 + b*x^3 + c*x^2 + d*x + e
+
+112226943879504905577107972771168032052133912867246854312658567086487985/305225209309492011660157601369349826381429706922361546360011266810963878+
+2498177834445340335454577752247911247157594498781489775282404371411573689/6104504186189840233203152027386996527628594138447230927200225336219277560*x
+-14821086600696612877471899368669894175566903630359428225325355326736789/109881075351417124197656736492965937497314694492050156689604056051946996080*x^2
++81807857309353167248641617864665629661484314906145621933765394901/6104504186189840233203152027386996527628594138447230927200225336219277560*x^3
+-13258805353863179821157926829100655638848147003914100615236351/109881075351417124197656736492965937497314694492050156689604056051946996080*x^4
+
+  // reverse list
+  Pool* prev = 0;
+  Pool* curr = poolHead;
+
+  while(curr)
+  {
+    Pool* next = curr->next;
+    curr->next = prev;
+
+    prev = curr;
+    curr = next;
+  }
+
+  // free pools
+  curr = prev;
+
+
+  // reverse list
+  Pool* next = 0;
+  Pool* current = poolTail;
+
+  while(current)
+  {
+    Pool* previous = current->previous;
+    current->next = previous;
+
+    next = current;
+    current = previous;
+  }
+
+  // end of list (last non-null)
+  /*current = */next;
+
+
+static bool SsmmIsDebug(ssmm* _this);
+static void PoolSetUnaligned(Pool* pool, void* unaligned);
+static void* PoolGetUnaligned(Pool* pool);
+static size_t ALIGNEDOFVALUE(size_t size);
+static size_t MALLOCSIZEPADDED(size_t size);
+static char* MALLOCRETURNALIGN(char* unaligned, ptrdiff_t address);
+static SsmmNode* SSMM_CHUNK_CLIENT_TO_NODE(SsmmNode* client, ssmm_debug debug);
+static SsmmNode* SSMM_CHUNK_NODE_TO_CLIENT(SsmmNode* node, ssmm_debug debug);
+static SsmmNode* SSMM_CHUNK_POOL_TO_FIRSTNODE(SsmmPool* pool);
+static SsmmNode* SSMM_CHUNK_NODE_TO_NODE_SEQUENTIAL(ssmm* _this, SsmmNode* node);
+static void* cstandard_aligned_alloc(size_t size, void** unalignedRef/*unaligned;ptr*/);
+static int SsmmGetSizeOfNode(ssmm_debug debug);
+static int SsmmGetSizeOfPool();
+static int SsmmGetSizeOfSsmm();
+static int SsmmGetSizeOfChunk(int sizeOf, int debug);
+static void SsmmMemset(ssmm* _this);
+static void ChunkMemset(ssmm* _this, SsmmNode* chunk);
+static void PoolMemset(ssmm* _this, SsmmPool* pool, int num, bool header);
+static SsmmPool* PoolListWalk(ssmm* _this, SsmmPool* tail, bool doFree, bool skipLast);
+static bool SsmmFirstPool(ssmm* _this, size_t initialCapacity);
+static bool SsmmSsmm(ssmm* _this, size_t sizeOf, size_t initialCapacity, bool isTentative, ssmm_debug debug);
+// ssmm* SsmmConstruct(int sizeOf, int initialCapacity, bool isTentative, ssmm_debug debug)
+// int SsmmDestruct(ssmm** _thisRef/*_this*/)
+// int SsmmNum(ssmm* _this)
+// bool SsmmSetResize(ssmm* _this, int resize)
+static int SsmmResetOrClear(ssmm* _this, bool freeAppendedPools);
+// int SsmmReset(ssmm* _this)
+// int SsmmClear(ssmm* _this)
+static bool SsmmResize(ssmm* _this);
+// void* SsmmAlloc(ssmm* _this)
+// bool SsmmFree(ssmm* _this, void** memory/*chunk*/)
+static bool SsmmFreeDebugCheckConstant(ssmm* _this, SsmmNode* chunk);
+static bool SsmmFreeDebugCheckLogarithmic(ssmm* _this, SsmmNode* chunk);
+static bool SsmmFreeDebugCheckLinear(ssmm* _this, SsmmNode* chunk);
+
+
+0x20297b03280
++ 16 [0] 16
++ 8 [1] 24
++ 8 [2] 32
++ 8 [3] 40
++ 8 [4] 48
+
+0x20297b03280 + 0x30
+
+0x20297B032B0
+
+null -> [10;A,0] -> null
+null -> [0,9;A,0->A,9] -> null
+1 1 A0[ [A,0][...][A,9] ]
+
+null -> [4;A,0] -> [10;B,0] -> [6;A,4] -> null
+null -> [0,3;A,0->A,3] -> [4,13;B,0->B,9] -> [14,19;A,4->A,9] -> null
+2 3 A0[ [A,0][...][A,3] ] B0[ [B,0][...][B,9] ] A1[ [A,4][...][A,9] ]
+
+null -> [4;A,0] -> [10;B,0] -> [3;A,4] -> [10;C,0] -> [3;A,7] -> null
+null -> [0,3;A,0->A,3] -> [4,13;B,0->B,9] -> [14,16;A,4->A,6] -> [17,26;C,0->C,9] -> [27,29;A,7->A,9] -> null
+3 5 A0[ [A,0][...][A,3] ] B0[ [B,0][...][B,9] ] A1[ [A,4][...][A,6] ] C0[ [C,0][...][C,9] ] A2[ [A,7][...][A,9] ]
+
+null -> [4;A,0] -> [3;B,0] -> [10;D,0] -> [7;B,3] -> [3;A,4] -> [10;C,0] -> [3;A,7] -> null
+null -> [0,3;A,0->A,3] -> [4,6;B,0->B,2] -> [7,16;D,0->D,9] -> [17,23;B,3->B,9] -> [24,26;A,4->A,6] -> [27,36;C,0->C,9] -> [37,39;A,7->A,9] -> null
+4 7 A0[ [A,0][...][A,3] ] B0[ [B,0][...][B,2] ] D0[ [D,0][...][D,9] ] B1[ [B,3][...][B,9] ] A1[ [A,4][...][A,6] ] C0[ [C,0][...][C,9] ] A2[ [A,7][...][A,9] ]
+
+
+top of stack equivalent to back
+                 push_back <- back                   front -> push_front
+null -> [4;A,0] -> [3;B,0] -> [10;D,0] -> [7;B,3] -> [3;A,4] -> [10;C,0] -> [3;A,7] -> null
+null -> [0,3;A,0->A,3] -> [4,6;B,0->B,2] -> [7,16;D,0->D,9] -> [17,23;B,3->B,9] -> [24,26;A,4->A,6] -> [27,36;C,0->C,9] -> [37,39;A,7->A,9] -> null
+4 7 A0[ [A,0][...][A,3] ] B0[ [B,0][...][B,2] ] D0[ [D,0][...][D,9] ] B1[ [B,3][...][B,9] ] A1[ [A,4][...][A,6] ] C0[ [C,0][...][C,9] ] A2[ [A,7][...][A,9] ]
+
+[10;D,0]
+
+front == at index 4 of [10;D,0]
+back == at index 5 of [10;D,0]
+
+back at index 0 of 9; front at index 0 of 9; items in queue 0
+back at index 0 of 9; front at index 0 of 9; items in queue 10
+
+back at index 9 of 9; front at index 0 of 9; items in queue 1
+
+back at index 0 of 9; front at index 1 of 9; items in queue 1
+
+[F F F-> <-B B F F F F F]
+
+     <-B B F F F F F]
+[F F F F->
+
+[B B B B B F F-> <-B B B]
+
+
+back at index 0 of 9; front at index 0 of 9; items in queue 10
+
+
+
+push_back <- back|front -> push_front -> add ->
+
+front -> push_front -> add -> |push_back <- back
+
+
+
+back at index 4 of 9; front at index 4 of 9; items in queue 10
+
+[10;D,0]
+
+split back to front
+
+bool QueueGrow(Queue* queue)
+{
+  bool succeed = false;
+
+  int numberOfBytes = 0;
+
+  int* newData = 0;
+
+  int frontIndexToEndOfArray = 0;
+  int beginningOfArrayToBackIndex = 0;
+
+  numberOfBytes = sizeof(int) * queue->capacity;
+
+  newData = (int*)malloc(2 * numberOfBytes);
+
+  frontIndexToEndOfArray = queue->capacity - queue->front;
+  beginningOfArrayToBackIndex = queue->back;
+
+  memcpy(newData, &queue->data[queue->front], sizeof(int) * frontIndexToEndOfArray);
+  memcpy(&newData[frontIndexToEndOfArray], queue->data, sizeof(int) * beginningOfArrayToBackIndex);
+
+  free(queue->data);
+
+  queue->data = newData;
+
+  queue->front = 0;
+  queue->back = queue->capacity;
+
+  queue->capacity *= 2;
+}
+
+bool QueuePushBack(Queue* queue, int back)
+{
+  queue->data[queue->back] = back;
+
+  queue->back++;
+  queue->back = (queue->back + queue->capacity) % queue->capacity;
+
+  queue->size++;
+}
+
+bool QueuePushFront(Queue* queue, int front)
+{
+  queue->front--;
+  queue->front = (queue->front + queue->capacity) % queue->capacity;
+
+  queue->data[queue->front] = front;
+
+  queue->size++;
+}
+
+bool QueuePopBack(Queue* queue)
+{
+  queue->back--;
+  queue->back = (queue->back + queue->capacity) % queue->capacity;
+
+  queue->data[queue->back] = 0;
+
+  queue->size--;
+}
+
+bool QueuePopFront(Queue* queue)
+{
+  queue->data[queue->front] = 0;
+
+  queue->front++;
+  queue->front = (queue->front + queue->capacity) % queue->capacity;
+
+  queue->size--;
+}
+
+, a = 2862933555777941757, and the addend, b = 3037000493,
+
+back -> new pool -> front
+
+newData->previous = &queue->data[queue->back - 1];
+newData->next = &queue->data[queue->back];
+
+     F       B
+[0 1 2 3 4 5 6 7 8 9]
+     a b c d
+
+queue->front = 2
+
+queue->back = 6
+
+
+     F            B
+[0 1 2 3 4 5] -> [pool] -> [6 7 8 9]
+     a b c d
+
+
+ B
+ F
+[0 1 2 3 4 5 6 7 8 9]
+ a b c d e f g h i j
+
+
+ F                        B         F
+[0 1 2 3 4 5 6 7 8 9] -> [pool] -> [0 1 2 3 4 5 6 7 8 9]
+ a b c d e f g h i j                a b c d e f g h i j
+
+
+           B
+           F
+[0 1 2 3 4 5 6 7 8 9]
+ f g h i j a b c d e
+
+
+                B         F
+[0 1 2 3 4] -> [pool] -> [5 6 7 8 9] -> [0 1 2 3 4]
+ f g h i j                a b c d e      f g h i j
+
+
+front == back
+
+count_previous = index_B
+
+count_next = back.num - count_previous
+
+if(count_previous)
+  two splits
+else// if( !count_previous)
+  one split
+
+  // _this->chunk
+  // _this->current
+  // _this->head
+  // _this->tail
+  // _this->numPools
+  // _this->numChunks
+  // _this->max
+  // _this->counter
+  // _this->resize
+  // _this->capacity
+  // _this->sizeOfRef
+  // _this->sizeOf
+
+growing_rotating_queue_node
+{
+previous
+next
+
+num
+address_of_first_element_of_array
+}
+
+pool_node
+{
+num
+unaligned
+next
+
+growing_rotating_queue_node split1
+growing_rotating_queue_node split2
+}
+
+queue
+{
+growing_rotating_queue_node chunks
+pool_node pools
+
+unaligned
+
+num
+max
+}
+label_return
+binary tree iterator function
+{
+label_traverse_left: // todo
+  if(node->left)
+    node = node->left;
+
+// node->left == null
+label_evaluate: // todo
+  evaluate(node)
+
+  if(node->right)
+  {
+    node = node->right;
+    goto traverseLeftLabel;
+  }
+
+// equivalent node->left == null
+// node->right == null
+label_traverse_parent: // todo
+  if(node->parent)
+  {
+    if(node->parent->left == node)
+    {
+// equivalent node->left == null
+// equivalent node->right == null
+// node == node->parent->left
+      node = node->parent;
+      goto evaluateLabel;
+    }
+
+    if(node->parent->right == node)
+    {
+// equivalent node->left == null
+// equivalent node->right == null
+// node == node->parent->right
+      node = node->parent;
+      goto traverseParentLabel;
+    }
+  }
+
+// equivalent node->left == null
+// equivalent node->right == null
+// node->parent == null
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
