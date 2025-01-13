@@ -196,6 +196,7 @@
     <ClCompile Include="..\ssmm\ssMm.cpp" />
     <ClCompile Include="..\ssmm\ssQueue.cpp" />
     <ClCompile Include="..\ssmm\ssStack.cpp" />
+    <ClCompile Include="deBoor.cpp" />
     <ClCompile Include="sample.cpp" />
     <ClCompile Include="winmain.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

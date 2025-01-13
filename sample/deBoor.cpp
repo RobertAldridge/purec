@@ -1,3 +1,5 @@
+
+#if 0
 //
 // Filename: de_boor.cpp
 //
@@ -2007,3 +2009,4 @@ extern "C" extern int term() // term
   return OK;
 
 } // term
+#endif
