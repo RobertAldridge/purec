@@ -1,0 +1,4 @@
+*.user
+.vs/
+sample/
+x64/
