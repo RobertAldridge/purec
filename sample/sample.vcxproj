@@ -109,7 +109,7 @@
       <AdditionalIncludeDirectories>C:\business\purec\blah;C:\business\purec\sample;C:\business\purec\ssmm;C:\business\purec\bintree;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <DisableSpecificWarnings>4127;4200;4505;4668;4710;4711;5039;5045;6011;28182</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4127;4200;4255;4312;4505;4668;4710;4711;5039;5045;6011;28182</DisableSpecificWarnings>
       <CompileAsManaged>false</CompileAsManaged>
       <ForcedIncludeFiles>header.h</ForcedIncludeFiles>
     </ClCompile>
@@ -131,7 +131,7 @@
       <AdditionalIncludeDirectories>C:\business\purec\blah;C:\business\purec\sample;C:\business\purec\ssmm;C:\business\purec\bintree;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <DisableSpecificWarnings>4127;4200;4505;4668;4710;4711;5039;5045;6011;28182</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4127;4200;4255;4312;4505;4668;4710;4711;5039;5045;6011;28182</DisableSpecificWarnings>
       <CompileAsManaged>false</CompileAsManaged>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -205,6 +205,7 @@
     <ClCompile Include="font_util.cpp" />
     <ClCompile Include="listprv.c" />
     <ClCompile Include="part.c" />
+    <ClCompile Include="part_int.c" />
     <ClCompile Include="sample.cpp" />
     <ClCompile Include="winmain.cpp" />
   </ItemGroup>
@@ -218,6 +219,7 @@
     <ClInclude Include="..\ssmm\ssMm.h" />
     <ClInclude Include="..\ssmm\ssQueue.h" />
     <ClInclude Include="..\ssmm\ssStack.h" />
+    <ClInclude Include="client.h" />
     <ClInclude Include="client_potype.h" />
     <ClInclude Include="font.h" />
     <ClInclude Include="font_util.h" />

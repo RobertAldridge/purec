@@ -5,12 +5,10 @@
 // Charlie H. Burns III
 
 #include <cstdint> // int64_t, uint32_t
-#include <cstdio> // printf
 #include <cstring> // memcpy
 
 using std::int64_t;
 using std::memcpy;
-using std::printf;
 using std::uint32_t;
 
 #include "BlahAlloc.h"
@@ -66,7 +64,7 @@ struct ssSet
 const uint32_t SsSetRed = 1;
 const uint32_t SsSetBlack = 2;
 
-uint64_t gSsSetDebug[83] = {0};
+uint64_t gSsSetDebug[88] = {0};
 
 #define GETCLIENT(node) (void*)(node + 1)
 
@@ -231,7 +229,7 @@ int64_t SsSetGetExtrema(ssSet* _this, bool maximum, void* client)
 {
   bool result = false;
 
-  int empty = 1;
+  int notFound = 1;
 
   SsSetNode* node = 0;
 
@@ -286,7 +284,7 @@ int64_t SsSetGetExtrema(ssSet* _this, bool maximum, void* client)
 
   if(node)
   {
-    empty = 0;
+    notFound = 0;
 
     if(client)
       memcpy(client, GETCLIENT(node), _this->sizeOf);
@@ -295,7 +293,7 @@ int64_t SsSetGetExtrema(ssSet* _this, bool maximum, void* client)
   result = true;
 
 label_return:
-  return result ? empty : SsSetError;
+  return result ? notFound : SsSetError;
 }
 
 // integrated for root sentinel
@@ -303,7 +301,7 @@ int64_t SsSetFind(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
 {
   bool result = false;
 
-  int empty = 1;
+  int notFound = 1;
 
   SsSetNode* node = 0;
 
@@ -356,7 +354,7 @@ int64_t SsSetFind(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
 
   if(node)
   {
-    empty = 0;
+    notFound = 0;
 
     if(client)
       memcpy(client, GETCLIENT(node), _this->sizeOf);
@@ -365,7 +363,7 @@ int64_t SsSetFind(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
   result = true;
 
 label_return:
-  return result ? empty : SsSetError;
+  return result ? notFound : SsSetError;
 }
 
 // integrated for root sentinel

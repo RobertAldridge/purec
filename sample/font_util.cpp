@@ -5,8 +5,7 @@
 // UTILITY FUNCTIONS TO COMPILE LIBRARY
 
 #ifndef NDEBUG
-	static void Error( const s8 * const errorString
-					 )
+  static int Error(const char* const errorString)
 	{
 		if( file )
 		{	
@@ -16,10 +15,11 @@
 
 			fprintf( file, " Error   : %s\n\n", errorString );
 		}
+    
+    return 0;
 	}
 
-	static void Warning( const s8 * const warningString
-					   )
+  static int Warning(const char* const warningString)
 	{
 		if( file )
 		{	
@@ -29,6 +29,8 @@
 
 			fprintf( file, " Warning : %s\n\n", warningString );
 		}
+    
+    return 0;
 	}
 #endif
 
@@ -36,7 +38,7 @@ static unsigned char
 ClipSpecial( int  *StartX, // input is old dest x, output is new dest x
 			 int  *StartY, // input is old dest y, output is new dest y
 			 int  _width,
-			 int  height,
+			 int  _height,
 			 RECT *rect    // input is old source rect, output is new source rect
 		   )
 {
@@ -52,7 +54,7 @@ ClipSpecial( int  *StartX, // input is old dest x, output is new dest x
 	int Xstart           = 0;
 	int Ystart           = 0;
 	int BackBufferWidth  = _width  + 1;
-	int BackBufferHeight = height + 1;
+	int BackBufferHeight = _height + 1;
 
 	// trivial reject
 	if( StartX <= -SrcWidth  || StartX > BackBufferWidth  - 1 ||
@@ -162,7 +164,7 @@ static void CopyBitmap( HDC Source,
 
 	CleanUp = SelectObject( BltDC, BltHB );
 
-	if( CleanUp == NULL || ( (const unsigned long) CleanUp ) == GDI_ERROR )
+	if( CleanUp == NULL || CleanUp == (void*)GDI_ERROR )
 	{
 		#ifndef NDEBUG
 			Error( " ( CleanUp = SelectObject(...) ) == NULL " );
@@ -212,7 +214,7 @@ static void CopyBitmap( HDC Source,
 
 		deviceTempCleanUp = SelectObject( BltDC, CleanUp );
 
-		if( deviceTempCleanUp == NULL || ( (const unsigned long) deviceTempCleanUp ) == GDI_ERROR )
+		if( deviceTempCleanUp == NULL || deviceTempCleanUp == (void*)GDI_ERROR )
 		{
 			#ifndef NDEBUG
 				Error( " ( deviceTempCleanUp = SelectObject(...) ) == NULL " );
@@ -243,7 +245,7 @@ LoadBitmap(
 
 	int        *tempMem =   0;
 
-	BITMAPINFO bInfo    = { 0 };
+	BITMAPINFO bInfo    = { {0}, { {0} } };
 
 	HDC     deviceIndependentDC       = 0;
 
@@ -273,9 +275,9 @@ LoadBitmap(
 
 	/* create bitmap */
 
-	text_white = (char*) malloc( 160 * 224 * 4 );
+	text_white = (uint8_t*) malloc( (size_t)160 * 224 * 4 );
 
-	text_white_array_pointer = (char**) malloc( sizeof(char*) * 224 );
+	text_white_array_pointer = (uint8_t**) malloc( sizeof(uint8_t*) * 224 );
 
 	if( (!text_white) || (!text_white_array_pointer) )
 	{
@@ -355,7 +357,7 @@ LoadBitmap(
 		                                     deviceIndependentBitmapHB
 										   );
 
-	if( deviceIndependentCleanUp == NULL || ( (const unsigned long) deviceIndependentCleanUp ) == GDI_ERROR )
+	if( deviceIndependentCleanUp == NULL || deviceIndependentCleanUp == (void*)GDI_ERROR )
 	{
 		#ifndef NDEBUG
 			Error( " ( deviceIndependentCleanUp = SelectObject(...) ) == NULL " );
@@ -416,7 +418,7 @@ LoadBitmap(
 
 		deviceTempCleanUp = SelectObject( deviceIndependentDC, deviceIndependentCleanUp );
 
-		if( deviceTempCleanUp == NULL || ( (const unsigned long) deviceTempCleanUp ) == GDI_ERROR )
+		if( deviceTempCleanUp == NULL || deviceTempCleanUp == (void*)GDI_ERROR )
 		{
 			#ifndef NDEBUG
 				Error( " ( deviceTempCleanUp = SelectObject(...) ) == NULL " );
@@ -443,14 +445,14 @@ LoadBitmap(
 	}
 }
 
-static void CharAntiAliasColorBlit( char **backbuffer,
-						            char **textbuffer,
+static void CharAntiAliasColorBlit( uint8_t **backbuffer,
+						            uint8_t **textbuffer,
 						            int  xDst,
 						            int  yDst,
 						            RECT *_RectSrc
 						          )
 {
-	unsigned char  *Dst = 0,
+	uint8_t  *Dst = 0,
 				   *Src = 0;
 
 	unsigned long SrcRed, SrcGreen, SrcBlue;
@@ -475,15 +477,15 @@ static void CharAntiAliasColorBlit( char **backbuffer,
 	backbuffer = &backbuffer[ RectDst.top ];
 	textbuffer = &textbuffer[ RectSrc.top ];
 
-	HeightLoop = (unsigned short) ( RectDst.bottom - RectDst.top  );
-	Width      = (unsigned short) ( RectDst.right  - RectDst.left );
+	HeightLoop = (short) ( RectDst.bottom - RectDst.top  );
+	Width      = (short) ( RectDst.right  - RectDst.left );
 
 	do
 	{
 		WidthLoop = Width;
 
-		Dst       = ( (unsigned char*) (*backbuffer) ) + ( RectDst.left << 2 );
-		Src       = ( (unsigned char*) (*textbuffer) ) + ( RectSrc.left << 2 );
+		Dst       = ( (uint8_t*) (*backbuffer) ) + ( RectDst.left << 2 );
+		Src       = ( (uint8_t*) (*textbuffer) ) + ( RectSrc.left << 2 );
 		
 		do
 		{

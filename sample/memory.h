@@ -19,8 +19,7 @@ DeAllocate(
 
 extern
 void
-TermAllocate(
-            );
+TermAllocate();
 
 #ifdef __cplusplus
    }

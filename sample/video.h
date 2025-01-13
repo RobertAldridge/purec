@@ -13,7 +13,7 @@
 	extern "C" {
 #endif
 
-extern void __LinearFrameBufferOSSetBackBuffer( char** ( *backBufferFunction ) ( ),
+extern void __LinearFrameBufferOSSetBackBuffer( uint8_t** ( *backBufferFunction ) ( ),
 											    unsigned short BackBufferViewPortWidth,
 											    unsigned short BackBufferViewPortHeight
 											  );

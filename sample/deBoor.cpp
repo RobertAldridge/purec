@@ -76,12 +76,6 @@
 // End summer session
 //
 
-#pragma warning (push, 3)
-
-#pragma warning (disable: 4710)
-
-#pragma warning (disable: 4786)
-
 #include <cassert>
 #include <cmath>
 #include <ctime>

@@ -45,12 +45,12 @@
 
 #include <cstddef> // size_t, wchar_t
 #include <cstdint> // uint32_t
-#include <cstdio> // printf
 
-using std::printf;
 using std::size_t;
 using std::uint32_t;
 //using std::wchar_t;
+
+#include "BlahLog.h"
 
 #include "BlahPlatformAlloc.h"
 
@@ -145,7 +145,7 @@ bool EnableLargePageSupport()
 
   if( !OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &hToken) )
   {
-    printf("OpenProcessToken failed %lu\n", GetLastError() );
+    BlahLog("OpenProcessToken failed %lu\n", GetLastError() );
     goto label_return;
   }
 
@@ -154,7 +154,7 @@ bool EnableLargePageSupport()
     error = GetLastError();
     if(error != ERROR_INSUFFICIENT_BUFFER)
     {
-      printf("GetTokenInformation failed %lu\n", error);
+      BlahLog("GetTokenInformation failed %lu\n", error);
 
       CloseHandle(hToken);
       hToken = 0;
@@ -163,11 +163,11 @@ bool EnableLargePageSupport()
     }
   }
 
-  tokenUser = (TOKEN_USER*)malloc(dwBufferSize);
+  tokenUser = (TOKEN_USER*)malloc( (size_t)dwBufferSize);
 
   if( !GetTokenInformation(hToken, TokenUser, tokenUser, dwBufferSize, &dwBufferSize) )
   {
-    printf("GetTokenInformation failed %lu\n", GetLastError() );
+    BlahLog("GetTokenInformation failed %lu\n", GetLastError() );
 
     CloseHandle(hToken);
     hToken = 0;
@@ -176,22 +176,22 @@ bool EnableLargePageSupport()
   }
 
   ConvertSidToStringSid(tokenUser->User.Sid, &strsid);
-  printf("User SID: %S\n", strsid);
+  BlahLog("User SID: %S\n", strsid);
 
   CloseHandle(hToken);
   hToken = 0;
 
   status = OpenPolicy(0, POLICY_CREATE_ACCOUNT | POLICY_LOOKUP_NAMES, &policyHandle);
   if(status)
-    printf("OpenPolicy %li\n", status);
+    BlahLog("OpenPolicy %li\n", status);
 
   status = SetPrivilegeOnAccount(policyHandle, tokenUser->User.Sid, (wchar_t*)SE_LOCK_MEMORY_NAME, true);
   if(status)
-    printf("OpenPSetPrivilegeOnAccountolicy %li\n", status);
+    BlahLog("OpenPSetPrivilegeOnAccountolicy %li\n", status);
 
   if( !OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY | TOKEN_ADJUST_PRIVILEGES, &hToken) )
   {
-    printf("OpenProcessToken #2 failed %lu\n", GetLastError() );
+    BlahLog("OpenProcessToken #2 failed %lu\n", GetLastError() );
     goto label_return;
   }
 
@@ -200,7 +200,7 @@ bool EnableLargePageSupport()
 
   if( !LookupPrivilegeValue(0, SE_LOCK_MEMORY_NAME, &tp.Privileges[0].Luid) )
   {
-    printf("LookupPrivilegeValue failed %lu\n", GetLastError() );
+    BlahLog("LookupPrivilegeValue failed %lu\n", GetLastError() );
     goto label_return;
   }
 
@@ -209,7 +209,7 @@ bool EnableLargePageSupport()
 
   if( !privileged || error != ERROR_SUCCESS)
   {
-      printf("AdjustTokenPrivileges failed %lu\n", error);
+      BlahLog("AdjustTokenPrivileges failed %lu\n", error);
       goto label_return;
   }
 
@@ -218,7 +218,7 @@ bool EnableLargePageSupport()
 
   pointer = VirtualAlloc(0, GetLargePageMinimum(), MEM_RESERVE | MEM_COMMIT | MEM_LARGE_PAGES, PAGE_READWRITE);
   if( !pointer)
-    printf("VirtualAlloc failed %lu\n", GetLastError() );
+    BlahLog("VirtualAlloc failed %lu\n", GetLastError() );
 
   VirtualFree(pointer, 0, MEM_RELEASE);
   pointer = 0;

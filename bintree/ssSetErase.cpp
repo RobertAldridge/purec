@@ -320,11 +320,152 @@ SsSetNode* SsSetEraseLevel2(ssSet* _this, SsSetNode* z)
   // x not root sentinel
   // y not root sentinel
   // z not root sentinel
+  
+  if(x == y)
+    gSsSetDebug[86]++;
+  
+  if(x == z)
+    gSsSetDebug[87]++;
 
+  // swap nodes instead of swapping clients.  we have use cases where it's important for the lifetime of the node to
+  // match the lifetime of the client data.  for example if the client is a sentinel.
+  //
+  // since client data can be of arbitrary size it may compromise our BigO guarantee.  swapping nodes instead of
+  // swapping clients avoids the issue
   if(y != z)
   {
+    SsSetNode* blahOld = z;
+    SsSetNode* blahNew = y;
+
+    SsSetNode* parent = blahOld->parent;
+    SsSetNode* left = blahOld->left;
+    SsSetNode* right = blahOld->right;
+
+    if( !parent)
+      gSsSetDebug[83]++;
+
+    if( !left)
+      gSsSetDebug[84]++;
+
+    if( !right)
+      gSsSetDebug[85]++;
+
+    //     parent
+    //      | ^
+    //      | |
+    //      v |
+    //    blahOld
+    //    ^ / \ ^
+    //   / /   \ \
+    //  / v     v \
+    // left     right
+    //
+    // and color
+
+    //     parent
+    //
+    //
+    //
+    //    blahNew
+    //
+    //
+    //
+    // left     right
+
+    if(parent)
+    {
+      if(blahOld == parent->left)
+        parent->left = blahNew;
+      else
+        parent->right = blahNew;
+    }
+    //     parent
+    //      |
+    //      |
+    //      v
+    //    blahNew
+    //
+    //
+    //
+    // left     right
+
+    if(left)
+      left->parent = blahNew;
+    //     parent
+    //      |
+    //      |
+    //      v
+    //    blahNew
+    //    ^
+    //   /
+    //  /
+    // left     right
+
+    if(right)
+      right->parent = blahNew;
+    //     parent
+    //      |
+    //      |
+    //      v
+    //    blahNew
+    //    ^     ^
+    //   /       \
+    //  /         \
+    // left     right
+
+    blahNew->parent = parent;
+    //     parent
+    //      | ^
+    //      | |
+    //      v |
+    //    blahNew
+    //    ^     ^
+    //   /       \
+    //  /         \
+    // left     right
+
+    blahNew->left = left;
+    //     parent
+    //      | ^
+    //      | |
+    //      v |
+    //    blahNew
+    //    ^ /   ^
+    //   / /     \
+    //  / v       \
+    // left     right
+
+    blahNew->right = right;
+    //     parent
+    //      | ^
+    //      | |
+    //      v |
+    //    blahNew
+    //    ^ / \ ^
+    //   / /   \ \
+    //  / v     v \
+    // left     right
+
+    blahNew->color = blahOld->color;
+    //     parent
+    //      | ^
+    //      | |
+    //      v |
+    //    blahNew
+    //    ^ / \ ^
+    //   / /   \ \
+    //  / v     v \
+    // left     right
+    //
+    // and color
+    
+    // y becomes the node to give back to the memory manager
+    y = blahOld;
+
+    // besides the return, y and z are no longer referenced
+
     // copy all fields besides left right parent color
-    memcpy(GETCLIENT(z), GETCLIENT(y), _this->sizeOf); // todo - 2nd copy in delete
+    //memcpy(GETCLIENT(z), GETCLIENT(y), _this->sizeOf);
   }
 
   if(color == SsSetBlack)
@@ -352,10 +493,9 @@ int64_t SsSetErase(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
 {
   bool result = false;
 
-  int empty = 1;
+  int notFound = 1;
 
-  SsSetNode* t = 0;
-  SsSetNode* z = 0;
+  SsSetNode* node = 0;
 
   if( !_this || !key || !_this->num)
   {
@@ -403,25 +543,23 @@ int64_t SsSetErase(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
   if( !lessThan)
     lessThan = _this->lessThan;
 
-  z = SsSetTreeSearchLevel2(GETROOTFROMTREE(_this), key, lessThan);
+  node = SsSetTreeSearchLevel2(GETROOTFROMTREE(_this), key, lessThan);
 
-  if(z)
+  if(node)
   {
-    empty = 0;
+    notFound = 0;
 
     if(client)
-      memcpy(client, GETCLIENT(z), _this->sizeOf);
+      memcpy(client, GETCLIENT(node), _this->sizeOf);
 
-    t = SsSetEraseLevel2(_this, z);
-    if( !t)
+    node = SsSetEraseLevel2(_this, node);
+    if( !node)
     {
       BlahLog("error");
       goto label_return;
     }
 
-    z = t;
-
-    if( !SsMmFree(_this->allocator, (void**)&z) )
+    if( !SsMmFree(_this->allocator, (void**)&node) )
     {
       BlahLog("error");
       goto label_return;
@@ -440,5 +578,5 @@ int64_t SsSetErase(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
   result = true;
 
 label_return:
-  return result ? empty : SsSetError;
+  return result ? notFound : SsSetError;
 }

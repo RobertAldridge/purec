@@ -18,8 +18,7 @@ using std::uint8_t;
 #define BLAH_DEBUG 0
 
 #if BLAH_DEBUG
-#include <cstdio>
-using std::printf;
+  #include "BlahLog.h"
 #endif
 
 struct SsQueueNode
@@ -121,58 +120,58 @@ static void SsQueueDebugShallow(ssQueue* _this)
 {
   int64_t front = 0;
   SsQueueGetFront(_this, &front);
-  printf(" front %lli;", front);
+  BlahLog(" front %lli;", front);
   
   int64_t back = 0;
   SsQueueGetBack(_this, &back);
-  printf(" back %lli\n", back);
+  BlahLog(" back %lli\n", back);
 
-  printf("get at");
+  BlahLog("get at");
   for(uint32_t index = 0; index < _this->numChunks; index++)
   {
     int64_t at = 0;
     SsQueueGetAt(_this, index, &at);
-    printf(" %lli", at);
+    BlahLog(" %lli", at);
   }
-  printf("\n");
+  BlahLog("\n");
 }
 
 static void SsQueueDeepDebug1(ssQueue* _this)
 {
   int64_t queueSize = SsQueueNum(_this);
-  printf("num %lli; ", queueSize);
+  BlahLog("num %lli; ", queueSize);
   
   SsQueueNode* node = _this->front;
 
-  printf("[");
+  BlahLog("[");
   for(uint32_t index = 0; index < node->num; index++)
   {
     uint8_t* chunk = SsQueueNodeToChunkOperatorIndex(_this, node, index);
-    printf("%lli", *(int64_t*)chunk);
+    BlahLog("%lli", *(int64_t*)chunk);
 
     if(index != node->num - 1)
-      printf(" ");
+      BlahLog(" ");
   }
-  printf("]");
+  BlahLog("]");
 
   node = node->next;
 
   while(node != _this->front)
   {
-    printf("[");
+    BlahLog("[");
     for(uint32_t index = 0; index < node->num; index++)
     {
       uint8_t* chunk = SsQueueNodeToChunkOperatorIndex(_this, node, index);
-      printf("%lli", *(int64_t*)chunk);
+      BlahLog("%lli", *(int64_t*)chunk);
 
       if(index != node->num - 1)
-        printf(" ");
+        BlahLog(" ");
     }
-    printf("]");
+    BlahLog("]");
 
     node = node->next;
   }
-  printf("\n");
+  BlahLog("\n");
 }
 
 static void SsQueueDeepDebug2(ssQueue* _this)
@@ -180,7 +179,7 @@ static void SsQueueDeepDebug2(ssQueue* _this)
   uint32_t index = _this->indexFront;
   SsQueueNode* node = _this->front;
 
-  printf("[");
+  BlahLog("[");
   for(uint32_t count = 0; count < _this->numChunks; count++)
   {
     if(index >= node->num)
@@ -188,32 +187,32 @@ static void SsQueueDeepDebug2(ssQueue* _this)
       index -= node->num;
       node = node->next;
 
-      printf("][");
+      BlahLog("][");
     }
 
     uint8_t* chunk = SsQueueNodeToChunkOperatorIndex(_this, node, index);
 
     int64_t client = 0;
     SsQueueMemcpyChunk(_this, &client, chunk);
-    printf("%lli", client);
+    BlahLog("%lli", client);
 
     if(index != (node->num - 1) && count != (_this->numChunks - 1) )
-      printf(" ");
+      BlahLog(" ");
 
     index++;
 
   }
-  printf("]\n\n");
+  BlahLog("]\n\n");
 }
 
 static void SsQueueDebugGrow(const char* _string, ssQueue* _this)
 {
-  printf("%s\n\n", _string);
+  BlahLog("%s\n\n", _string);
 }
 
 static void SsQueueDebug(const char* _string, ssQueue* _this, void* client)
 {
-  printf("%s %lli;", _string, *(int64_t*)client);
+  BlahLog("%s %lli;", _string, *(int64_t*)client);
   SsQueueDebugShallow(_this);
   SsQueueDeepDebug1(_this);
   SsQueueDeepDebug2(_this);

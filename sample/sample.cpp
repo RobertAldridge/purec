@@ -23,9 +23,6 @@
 
 #include <windows.h>
 
-#pragma warning (disable : 4668)
-#pragma warning (disable : 5039)
-
 #define BLAH_KEEP 0
 
 #define G1000ENABLE 0
@@ -34,8 +31,8 @@
 
 // PRIiMAX
 // PRIuMAX
-// printf("%lli\n", signedValue);
-// printf("%llu\n", unsignedValue);
+// BlahLog("%lli\n", signedValue);
+// BlahLog("%llu\n", unsignedValue);
 
 // x_n_plus_1 = a * x_n + c
 
@@ -157,7 +154,7 @@ static bool blahTestStack()
   if( !blahStack)
     goto label_return;
 
-  printf("\n");
+  BlahLog("\n");
 
   for(int64_t index = 1; index <= 5; index++)
   {
@@ -242,7 +239,7 @@ static bool blahTestQueue()
   if( !blahQueue)
     goto label_return;
 
-  printf("\n");
+  BlahLog("\n");
 
   for(int64_t index = 1; index <= 5; index++)
   {
@@ -338,13 +335,13 @@ static uint32_t check(void* lhs)
   uint32_t result = 0;
 
 #if BLAH_KEEP
-  printf("%i ", *(uint32_t*)lhs);
+  BlahLog("%i ", *(uint32_t*)lhs);
 #endif
 
   // return non-zero to terminate traversal
   if( *(uint32_t*)lhs == myFatalError)
   {
-    printf("\ndump - object found %u\n", myFatalError);
+    BlahLog("\ndump - object found %u\n", myFatalError);
 
     result = 1;
   }
@@ -376,7 +373,7 @@ static void swapInt(uint32_t& lhs, uint32_t& rhs)
   rhs = temporary;
 }
 
-extern uint64_t gSsSetDebug[83];
+extern uint64_t gSsSetDebug[88];
 
 #if G1000ENABLE
 static uint32_t g1000fullCount = 0;
@@ -523,7 +520,7 @@ static bool SsSetTest(blahRandom* /*random*/)
 // limit of memory allocation near 30,000,000
 //static const uint32_t numData = 30000000;
 
-//printf("%i\n\n", blah_get_number() );
+//BlahLog("%i\n\n", blah_get_number() );
 //2097152
 
   double queueMaximumPercentage = 0;
@@ -599,23 +596,23 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
   }
 
 #if BLAH_KEEP
-  printf("\ndump original list shuffled before insertion\n");
+  BlahLog("\ndump original list shuffled before insertion\n");
 #endif
   for(uint32_t index = 0; index < numData; index++)
   {
 #if BLAH_KEEP
-    printf("%i ", data[index] );
+    BlahLog("%i ", data[index] );
 #endif
   }
 #if BLAH_KEEP
-  printf("\n\n");
+  BlahLog("\n\n");
 #endif
 
 //int64_t SsSetNum(ssSet* _this)
   int64_t numSet = SsSetNum(mySet);
   if(numSet)
   {
-    printf("blah b\n");
+    BlahLog("blah b\n");
   }
 
   for(uint32_t index = 0; index < numData; index++)
@@ -648,7 +645,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
     }
     else
     {
-      printf("%lli %lli %u\n", numSet, height, 2 * calculateLogBase2(numSet + 1) );
+      BlahLog("%lli %lli %u\n", numSet, height, 2 * calculateLogBase2(numSet + 1) );
     }
 #endif
 
@@ -664,11 +661,11 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
     }
     else if( !findResult && resultObject == keyObject)
     {
-      //printf("find - object found\n");
+      //BlahLog("find - object found\n");
     }
     else if(findResult == SsSetNotFound && resultObject != keyObject)
     {
-      //printf("find - object not found\n");
+      //BlahLog("find - object not found\n");
     }
     else
     {
@@ -687,7 +684,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
   }
 
 #if BLAH_KEEP
-  printf("dump preorder\n");
+  BlahLog("dump preorder\n");
 #endif
 //int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
   if(SsSetDump(mySet, check, SsSetPreorder) )
@@ -696,11 +693,11 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
     goto label_return;
   }
 #if BLAH_KEEP
-  printf("\n\n");
+  BlahLog("\n\n");
 #endif
 
 #if BLAH_KEEP
-  printf("dump inorder\n");
+  BlahLog("dump inorder\n");
 #endif
 //int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
   if(SsSetDump(mySet, check, SsSetInorder) )
@@ -709,11 +706,11 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
     goto label_return;
   }
 #if BLAH_KEEP
-  printf("\n\n");
+  BlahLog("\n\n");
 #endif
 
 #if BLAH_KEEP
-  printf("dump postorder\n");
+  BlahLog("dump postorder\n");
 #endif
 //int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
   if(SsSetDump(mySet, check, SsSetPostorder) )
@@ -722,11 +719,11 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
     goto label_return;
   }
 #if BLAH_KEEP
-  printf("\n\n");
+  BlahLog("\n\n");
 #endif
 
 #if BLAH_KEEP
-  printf("dump levelorder\n");
+  BlahLog("dump levelorder\n");
 #endif
 //int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
   if(SsSetDump(mySet, check, SsSetLevelorder) )
@@ -735,7 +732,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
     goto label_return;
   }
 #if BLAH_KEEP
-  printf("\n\n");
+  BlahLog("\n\n");
 #endif
 
   if(1)
@@ -765,13 +762,13 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
       percentageQueue = (double)maxQueue / (double)numSet;
 
 #if BLAH_KEEP
-      printf("size %lli current height %lli stack %lli queue %lli %f max height %u\n", numSet, height, maxStack, maxQueue, percentageQueue, maxHeight);
+      BlahLog("size %lli current height %lli stack %lli queue %lli %f max height %u\n", numSet, height, maxStack, maxQueue, percentageQueue, maxHeight);
 #endif
 
       if(percentageQueue > queueMaximumPercentage)
         queueMaximumPercentage = percentageQueue;
 
-      //printf("%f\n", percentageQueue);
+      //BlahLog("%f\n", percentageQueue);
     }
   }
 
@@ -787,13 +784,13 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
   else if( !findResult && resultObject == keyObject)
   {
 #if BLAH_KEEP
-    printf("\nfind - object found\n\n");
+    BlahLog("\nfind - object found\n\n");
 #endif
   }
   else if(findResult == SsSetNotFound && resultObject != keyObject)
   {
 #if BLAH_KEEP
-    printf("\nfind - object not found\n\n");
+    BlahLog("\nfind - object not found\n\n");
 #endif
   }
   else
@@ -826,16 +823,16 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
   }
 
 #if BLAH_KEEP
-  printf("dump original list reshuffled before deletion\n");
+  BlahLog("dump original list reshuffled before deletion\n");
 #endif
   for(uint32_t index = 0; index < numData; index++)
   {
 #if BLAH_KEEP
-    printf("%i ", data[index] );
+    BlahLog("%i ", data[index] );
 #endif
   }
 #if BLAH_KEEP
-  printf("\n\n");
+  BlahLog("\n\n");
 #endif
 
   for(uint32_t index = 0; index < numData; index++)
@@ -859,7 +856,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
     }
     else
     {
-      //printf("%lli %lli %u\n", numSet, height, 2 * calculateLogBase2(numSet + 1) );
+      //BlahLog("%lli %lli %u\n", numSet, height, 2 * calculateLogBase2(numSet + 1) );
     }
 #endif
 
@@ -889,11 +886,11 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
     }
     else if( !findResult && resultObject == keyObject)
     {
-      //printf("find - object found\n");
+      //BlahLog("find - object found\n");
     }
     else if(findResult == SsSetNotFound && resultObject != keyObject)
     {
-      //printf("find - object not found\n");
+      //BlahLog("find - object not found\n");
     }
     else
     {
@@ -922,12 +919,12 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
     }
     else
     {
-      //printf("%lli %lli %u\n", numSet, height, 2 * calculateLogBase2(numSet + 1) );
+      //BlahLog("%lli %lli %u\n", numSet, height, 2 * calculateLogBase2(numSet + 1) );
     }
   }
 
-  //printf("log2 %i %u\n", 1048576, calculateLogBase2(1048576) );
-  //printf("log2 %i %u\n", 1048575, calculateLogBase2(1048575) );
+  //BlahLog("log2 %i %u\n", 1048576, calculateLogBase2(1048576) );
+  //BlahLog("log2 %i %u\n", 1048575, calculateLogBase2(1048575) );
 
 //int64_t SsSetDestruct(ssSet* _this)
   if(SsSetDestruct(mySet) < 0)
@@ -942,7 +939,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
   {
     for(uint32_t index = 0; index < countof(gSsSetDebug); index++)
     {
-//printf("debug rotate %u %llu\n", index, gSsSetDebug[index] );
+//BlahLog("debug rotate %u %llu\n", index, gSsSetDebug[index] );
     }
 
     for(uint32_t index = 0; index < countof(gSsSetDebug); index++)
@@ -950,23 +947,23 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
       if(index == 1 || index == 21 || index == 68 || index == 69 || index == 78 || index == 79 || index == 80)
       {
         if(gSsSetDebug[index] )
-          printf("debug rotate %u %llu\n", index, gSsSetDebug[index] );
+          BlahLog("debug rotate %u %llu\n", index, gSsSetDebug[index] );
       }
       else if( !gSsSetDebug[index] )
       {
-        printf("debug rotate %u %llu\n", index, gSsSetDebug[index] );
+        BlahLog("debug rotate %u %llu\n", index, gSsSetDebug[index] );
       }
     }
   }
 
-//printf("queue %u %f\n", numData, percentageQueue);
+//BlahLog("queue %u %f\n", numData, percentageQueue);
 
 #if BLAH_KEEP
-  printf("end\n");
+  BlahLog("end\n");
 #endif
 }
 
-  printf("\nqueue max %f\n", queueMaximumPercentage);
+  BlahLog("\nqueue max %f\n", queueMaximumPercentage);
 
   result = true;
 

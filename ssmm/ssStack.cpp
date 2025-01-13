@@ -18,8 +18,7 @@ using std::uint8_t;
 #define BLAH_DEBUG 0
 
 #if BLAH_DEBUG
-#include <cstdio>
-using std::printf;
+  #include "BlahLog.h"
 #endif
 
 struct SsStackPool
@@ -99,61 +98,61 @@ static void SsStackDebugShallow(ssStack* _this)
 {
   int64_t back = 0;
   SsStackGet(_this, &back);
-  printf(" front %lli\n", back);
+  BlahLog(" front %lli\n", back);
 
-  printf("get at");
+  BlahLog("get at");
   for(uint32_t index = 0; index < _this->numChunks; index++)
   {
     int64_t at = 0;
     SsStackGetAt(_this, index, &at);
-    printf(" %lli", at);
+    BlahLog(" %lli", at);
   }
-  printf("\n");
+  BlahLog("\n");
 }
 
 static void SsStackDeepDebug1(ssStack* _this)
 {
   int64_t stackSize = SsStackNum(_this);
-  printf("num %lli; ", stackSize);
+  BlahLog("num %lli; ", stackSize);
   
   SsStackPool* pool = _this->head;
 
-  printf("[");
+  BlahLog("[");
   for(uint32_t index = 0; index < pool->num; index++)
   {
     uint8_t* chunk = SsStackPoolToChunkOperatorIndex(_this, pool, index);
 
-    printf("%lli", *(int64_t*)chunk);
+    BlahLog("%lli", *(int64_t*)chunk);
 
     if(index != pool->num - 1)
-      printf(" ");
+      BlahLog(" ");
   }
-  printf("]");
+  BlahLog("]");
 
   pool = pool->next;
 
   while(pool)
   {
-    printf("[");
+    BlahLog("[");
     for(uint32_t index = 0; index < pool->num; index++)
     {
       uint8_t* chunk = SsStackPoolToChunkOperatorIndex(_this, pool, index);
 
-      printf("%lli", *(int64_t*)chunk);
+      BlahLog("%lli", *(int64_t*)chunk);
 
       if(index != pool->num - 1)
-        printf(" ");
+        BlahLog(" ");
     }
-    printf("]");
+    BlahLog("]");
 
     pool = pool->next;
   }
-  printf("\n\n");
+  BlahLog("\n\n");
 }
 
 static void SsStackDebug(const char* _string, ssStack* _this, void* client)
 {
-  printf("%s %lli;", _string, *(int64_t*)client);
+  BlahLog("%s %lli;", _string, *(int64_t*)client);
   SsStackDebugShallow(_this);
   SsStackDeepDebug1(_this);
 }

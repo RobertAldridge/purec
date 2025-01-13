@@ -69,13 +69,18 @@ extern "C" extern int term();
 #define DEBUG 1
 #endif
 
-#pragma warning (push, 3)
+#define ENABLE_DIRECTDRAW 0
 
-#pragma warning (disable: 4710)
+#pragma warning (disable : 4365)
+#include <xmemory>
+#pragma warning (default : 4365)
 
 #include <windows.h>
 
+#pragma warning (disable : 4820)
 //#include <ddraw.h>
+#pragma warning (default : 4820)
+
 //#include <d3d12.h>
 //#include <d2d1.h>
 //#include <d2d1_1.h>
@@ -109,10 +114,6 @@ using std::queue;
 
 #include "resource_headers.h"
 
-// We do not care about inlining, so turn off the warning
-// that tells us that functions have not been inlined.
-#pragma warning  disable : 4710)
-
 static int Error(const char* const errorString);
 
 static int mainTerm(HWND hwnd);
@@ -135,7 +136,7 @@ extern void DeAllocate(void * Memory)
   return free(Memory);
 }
 
-void ParticleSystemsInitGraphics(void* backBufferPixelPointer, int backBufferViewPortWidth, int backBufferViewPortHeight, int backBufferBitDepth, int backBufferPitch)
+void ParticleSystemsInitGraphics(void* /*backBufferPixelPointer*/, int /*backBufferViewPortWidth*/, int /*backBufferViewPortHeight*/, int /*backBufferBitDepth*/, int /*backBufferPitch*/)
 {
 }
                  
@@ -349,7 +350,7 @@ private:
 // GRAPHICS_IMPLEMENTATION::GDI foundation is always there to catch us.
 static enum GRAPHICS_IMPLEMENTATION Implementation;
 
-#if 0
+#if ENABLE_DIRECTDRAW
 static IDirectDraw* ddraw_obj;
 static IDirectDrawClipper* ddraw_screenclipper;
 static IDirectDrawSurface* ddraw_screen;
@@ -370,7 +371,7 @@ static int width, height, bitDepth;
 
 static int oldWidth, oldHeight, oldBitDepth;
 
-static char** backbufferArray;
+static uint8_t** backbufferArray;
 
 static HDC backbufferDC;
 static HBITMAP backbufferBitmapHB;
@@ -407,7 +408,7 @@ static void graphicsSafeMode()
 
   Graphics::Implementation = GRAPHICS_IMPLEMENTATION::GDI;
 
-  Graphics::WindowProc(Graphics::_hWindow, WM_DISPLAYCHANGE, Graphics::oldBitDepth, *(unsigned long*)widthHeight);
+  Graphics::WindowProc(Graphics::_hWindow, WM_DISPLAYCHANGE, (WPARAM)Graphics::oldBitDepth, *(unsigned long*)widthHeight);
 
 label_return:
   return;
@@ -440,7 +441,7 @@ static int graphicsClientHeight()
   return height;
 }
 
-static char** graphicsBackBufferFunction()
+static uint8_t** graphicsBackBufferFunction()
 {
   return backbufferArray;
 }
@@ -460,7 +461,7 @@ static int graphicsUnlockBackBuffer()
 
   case GRAPHICS_IMPLEMENTATION::DIRECTDRAW: // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::DIRECTDRAW
   {
-#if 0
+#if ENABLE_DIRECTDRAW
     HRESULT hResult = 0;
 
     hResult = ddraw_backbuffer->Unlock(backbufferArray[0] );
@@ -481,7 +482,9 @@ static int graphicsUnlockBackBuffer()
 
   } // switch(graphicsImplementation() )
 
+#if ENABLE_DIRECTDRAW
 label_return:
+#endif
   if(result == GRAPHICS_ERROR)
   {
     Error("The OS code is using an invalid graphics implementation");
@@ -513,7 +516,7 @@ static int graphicsLockBackBuffer()
 
   case GRAPHICS_IMPLEMENTATION::DIRECTDRAW: // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::DIRECTDRAW
   {
-#if 0
+#if ENABLE_DIRECTDRAW
     DDSURFACEDESC ddsd = {0};
 
     HRESULT hResult = 0;
@@ -531,9 +534,9 @@ static int graphicsLockBackBuffer()
       goto label_return;
     }
 
-    if(backbufferArray[0] != ddsd.lpSurface || backbufferArray[1] != (char*)ddsd.lpSurface + ddsd.lPitch)
+    if(backbufferArray[0] != ddsd.lpSurface || backbufferArray[1] != (uint8_t*)ddsd.lpSurface + ddsd.lPitch)
     {
-      char* surface = (char*)ddsd.lpSurface;
+      uint8_t* surface = (uint8_t*)ddsd.lpSurface;
 
       for(int index = 0; index < graphicsClientHeight(); index++)
       {
@@ -580,7 +583,7 @@ static int graphicsClearBackBuffer()
 
   case GRAPHICS_IMPLEMENTATION::DIRECTDRAW: // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::DIRECTDRAW
   {
-#if 0
+#if ENABLE_DIRECTDRAW
     DDBLTFX ddfx = {0};
 
     HRESULT hResult = 0;
@@ -663,7 +666,7 @@ static int graphicsDrawBackBufferToScreen(HWND hWindow)
 
   case GRAPHICS_IMPLEMENTATION::DIRECTDRAW: // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::DIRECTDRAW
   {
-#if 0
+#if ENABLE_DIRECTDRAW
     RECT rectBackBuffer = {0};
     RECT rectScreen = {0};
 
@@ -763,9 +766,9 @@ static int graphicsRestoreOldMode()
 
   DMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
-  DMode.dmBitsPerPel = oldBitDepth;
-  DMode.dmPelsWidth = oldWidth;
-  DMode.dmPelsHeight = oldHeight;
+  DMode.dmBitsPerPel = (unsigned long)oldBitDepth;
+  DMode.dmPelsWidth = (unsigned long)oldWidth;
+  DMode.dmPelsHeight = (unsigned long)oldHeight;
 
   isModeChangeActive = true;
 
@@ -805,20 +808,20 @@ static int graphicsSetBitDepthTo32()
 
   if(oldWidth <= graphicsWidth() && oldHeight <= graphicsHeight() )
   {
-    DMode.dmPelsWidth  = graphicsWidth();
-    DMode.dmPelsHeight = graphicsHeight();
+    DMode.dmPelsWidth  = (unsigned long)graphicsWidth();
+    DMode.dmPelsHeight = (unsigned long)graphicsHeight();
   }
   else
   {
     if(forceFullScreen == true)
     {
-      DMode.dmPelsWidth  = graphicsWidth();
-      DMode.dmPelsHeight = graphicsHeight();
+      DMode.dmPelsWidth  = (unsigned long)graphicsWidth();
+      DMode.dmPelsHeight = (unsigned long)graphicsHeight();
     }
     else
     {
-      DMode.dmPelsWidth  = oldWidth;
-      DMode.dmPelsHeight = oldHeight;
+      DMode.dmPelsWidth  = (unsigned long)oldWidth;
+      DMode.dmPelsHeight = (unsigned long)oldHeight;
     }
   }
 
@@ -854,10 +857,10 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
   int sourceWidth = 0;
   int sourceHeight = 0;
 
-  FILE* file = 0;
+  FILE* _file = 0;
 
   BITMAPFILEHEADER BHeader = {0};
-  BITMAPINFO BInfo = {0};
+  BITMAPINFO BInfo = { {0}, { {0} } };
 
   HDC BltDC = 0;
   HBITMAP BltHB = 0;
@@ -876,11 +879,11 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
     goto label_return;
   }
 
-  file = fopen(sourceFileName, "rb");
+  _file = fopen(sourceFileName, "rb");
 
-  InsertHandle(file);
+  InsertHandle(_file);
 
-  if( !file)
+  if( !_file)
   {
     Error("(file = fopen(...) ) == NULL");
 
@@ -896,17 +899,17 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
     goto label_return;
   }
 
-  if(fread( &BHeader, sizeof(BITMAPFILEHEADER), 1, file) != 1)
+  if(fread( &BHeader, sizeof(BITMAPFILEHEADER), 1, _file) != 1)
   {
     Error("fread(...) error");
 
-    if(fclose(file) )
+    if(fclose(_file) )
     {
       Error("fclose(...) error");
     }
     else
     {
-      RemoveHandle(file);
+      RemoveHandle(_file);
     }
 
     if( !DeleteDC(BltDC) )
@@ -921,17 +924,17 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
     goto label_return;
   }
 
-  if(fread( &BInfo, sizeof(BITMAPINFO), 1, file) != 1)
+  if(fread( &BInfo, sizeof(BITMAPINFO), 1, _file) != 1)
   {
     Error("fread(...) error");
 
-    if(fclose(file) )
+    if(fclose(_file) )
     {
       Error("fclose(...) error");
     }
     else
     {
-      RemoveHandle(file);
+      RemoveHandle(_file);
     }
 
     if( !DeleteDC(BltDC) )
@@ -953,13 +956,13 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
   {
     Error("fread(...) error");
 
-    if(fclose(file) )
+    if(fclose(_file) )
     {
       Error("fclose(...) error");
     }
     else
     {
-      RemoveHandle(file);
+      RemoveHandle(_file);
     }
 
     if( !DeleteDC(BltDC) )
@@ -974,7 +977,7 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
     goto label_return;
   }
 
-  if(fclose(file) )
+  if(fclose(_file) )
   {
     Error("fclose(...) error");
 
@@ -982,7 +985,7 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
   }
   else
   {
-    RemoveHandle(file);
+    RemoveHandle(_file);
   }
 
   BltHB = (HBITMAP)LoadImageA(0, sourceFileName, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
@@ -1009,7 +1012,7 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
 
   InsertHandle(CleanUp);
 
-  if( !CleanUp || (const unsigned long)CleanUp == GDI_ERROR)
+  if( !CleanUp || CleanUp == (void*)GDI_ERROR)
   {
     Error("(CleanUp = SelectObject(...) ) == NULL");
 
@@ -1042,7 +1045,7 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
     // Free all the GRAPHICS_IMPLEMENTATION::GDI objects
     deviceTempCleanUp = SelectObject(BltDC, CleanUp);
 
-    if( !deviceTempCleanUp || (const unsigned long)deviceTempCleanUp == GDI_ERROR)
+    if( !deviceTempCleanUp || deviceTempCleanUp == (void*)GDI_ERROR)
     {
       Error("(deviceTempCleanUp = SelectObject(...) ) == NULL");
 
@@ -1096,7 +1099,7 @@ static int graphicsTermScreenAndBackBufferGDI()
     // Free all the GRAPHICS_IMPLEMENTATION::GDI objects
     TempCleanUp = SelectObject(backbufferDC, backbufferCleanUp);
 
-    if( !TempCleanUp || (const unsigned long)TempCleanUp == GDI_ERROR)
+    if( !TempCleanUp || TempCleanUp == (void*)GDI_ERROR)
     {
       Error("(TempCleanUp = SelectObject(...) ) == NULL");
 
@@ -1137,7 +1140,7 @@ static int graphicsTermScreenAndBackBufferGDI()
   if( !error)
     result = GRAPHICS_OK;
 
-label_return:
+//label_return:
   return result;
 }
 
@@ -1145,7 +1148,7 @@ static int graphicsTermScreenAndBackBufferDIRECTDRAW()
 {
   int result = GRAPHICS_ERROR;
 
-#if 0
+#if ENABLE_DIRECTDRAW
   bool error = false;
 
   HRESULT hResult = 0;
@@ -1210,7 +1213,9 @@ static int graphicsTermScreenAndBackBufferDIRECTDRAW()
     result = GRAPHICS_OK;
 #endif
 
+#if ENABLE_DIRECTDRAW
 label_return:
+#endif
   return result;
 }
 
@@ -1274,7 +1279,7 @@ static int graphicsInitScreenAndBackBufferGDI(HWND hWindow)
 
   int loop = 0;
 
-  BITMAPINFO bInfo = {0};
+  BITMAPINFO bInfo = { {0}, { {0} } };
 
   if(backbufferDC || backbufferCleanUp || backbufferBitmapHB)
   {
@@ -1329,7 +1334,7 @@ static int graphicsInitScreenAndBackBufferGDI(HWND hWindow)
   // into the container when we take the bitmap out.
   backbufferCleanUp = SelectObject(backbufferDC, backbufferBitmapHB);
 
-  if( !backbufferCleanUp || (const unsigned long)backbufferCleanUp == GDI_ERROR)
+  if( !backbufferCleanUp || backbufferCleanUp == (void*)GDI_ERROR)
   {
     Error("(backbufferCleanUp = SelectObject(...) ) == NULL");
 
@@ -1367,7 +1372,7 @@ static int graphicsInitScreenAndBackBufferGDI(HWND hWindow)
 
   graphicsClearBackBuffer();
 
-  TextOutInitSystem(Graphics::graphicsBackBufferFunction, Graphics::graphicsClientWidth(), Graphics::graphicsClientHeight(), Graphics::graphicsWidth(), Graphics::graphicsHeight() );
+  TextOutInitSystem(Graphics::graphicsBackBufferFunction, (unsigned int)Graphics::graphicsClientWidth(), (unsigned int)Graphics::graphicsClientHeight(), (unsigned int)Graphics::graphicsWidth(), (unsigned int)Graphics::graphicsHeight() );
 
   ParticleSystemsInitGraphics(Graphics::graphicsBackBufferFunction()[0], Graphics::graphicsClientWidth(), Graphics::graphicsClientHeight(), 32, -( (Graphics::graphicsClientWidth() * 4 + 3) & ~3) );
 
@@ -1385,11 +1390,15 @@ label_return:
   return result;
 }
 
+#if ENABLE_DIRECTDRAW
 static int graphicsInitScreenAndBackBufferDIRECTDRAW(HWND hWindow)
+#else
+static int graphicsInitScreenAndBackBufferDIRECTDRAW(HWND /*hWindow*/)
+#endif
 {
   int result = GRAPHICS_ERROR;
 
-#if 0
+#if ENABLE_DIRECTDRAW
   DDSURFACEDESC ddsd = {0};
 
   HRESULT hResult = 0;
@@ -1632,7 +1641,10 @@ static int graphicsInitScreenAndBackBufferDIRECTDRAW(HWND hWindow)
   result = GRAPHICS_OK;
 #endif
 
+#if ENABLE_DIRECTDRAW
 label_return:
+#endif
+
   return result;
 }
 
@@ -1661,7 +1673,7 @@ static int graphicsInitScreenAndBackBuffer(HWND hWindow)
 
   if( !backbufferArray)
   {
-    backbufferArray = (char**)InsertHeapAllocation(sizeof(char*) * graphicsClientHeight() );
+    backbufferArray = (uint8_t**)InsertHeapAllocation(sizeof(uint8_t*) * graphicsClientHeight() );
   }
 
   if( !backbufferArray)
@@ -1739,20 +1751,20 @@ static int graphicsCheckIsFullScreen()
 
     bool modeTest = false;
 
-    DEVMODE DMode = {0};
+    DEVMODEA DMode = {0};
 
-    DMode.dmSize = sizeof(DEVMODE);
+    DMode.dmSize = sizeof(DEVMODEA);
 
     DMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
-    DMode.dmPelsWidth = graphicsWidth();
-    DMode.dmPelsHeight = graphicsHeight();
+    DMode.dmPelsWidth = (unsigned long)graphicsWidth();
+    DMode.dmPelsHeight = (unsigned long)graphicsHeight();
 
     DMode.dmBitsPerPel = 32;
 
     modeTestCounter = -1;
 
-    while(EnumDisplaySettings(0, ++modeTestCounter, &DMode) )
+    while(EnumDisplaySettingsA(0, (unsigned long)(++modeTestCounter), &DMode) )
     {
       if(DMode.dmPelsWidth == (unsigned int)graphicsWidth() && DMode.dmPelsHeight == (unsigned int)graphicsHeight() && DMode.dmBitsPerPel == 32)
       {
@@ -1765,14 +1777,14 @@ static int graphicsCheckIsFullScreen()
       return GRAPHICS_FULLSCREEN;
     }
 
-    DMode.dmPelsWidth  = graphicsWidth();
-    DMode.dmPelsHeight = graphicsHeight();
+    DMode.dmPelsWidth  = (unsigned long)graphicsWidth();
+    DMode.dmPelsHeight = (unsigned long)graphicsHeight();
 
-    DMode.dmBitsPerPel = screenBitDepth;
+    DMode.dmBitsPerPel = (unsigned long)screenBitDepth;
 
     modeTestCounter = -1;
 
-    while(EnumDisplaySettings(0, ++modeTestCounter, &DMode) )
+    while(EnumDisplaySettingsA(0, (unsigned long)(++modeTestCounter), &DMode) )
     {
       if(DMode.dmPelsWidth == (unsigned int)graphicsWidth()  && DMode.dmPelsHeight == (unsigned int)graphicsHeight() && DMode.dmBitsPerPel == (unsigned int)screenBitDepth)
       {
@@ -1805,7 +1817,7 @@ bool Graphics::beNice = true;
 
 bool Graphics::forceFullScreen = false;
 
-#if 0
+#if ENABLE_DIRECTDRAW
 IDirectDraw* Graphics::ddraw_obj = 0;
 
 IDirectDrawClipper* Graphics::ddraw_screenclipper = 0;
@@ -1823,7 +1835,7 @@ int Graphics::oldWidth = -1;
 int Graphics::oldHeight = -1;
 int Graphics::oldBitDepth = -1;
 
-char** Graphics::backbufferArray = 0;
+uint8_t** Graphics::backbufferArray = 0;
 
 HDC Graphics::backbufferDC = 0;
 HBITMAP Graphics::backbufferBitmapHB = 0;
@@ -2190,12 +2202,12 @@ void Graphics::RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
   int* dt = 0; int** bb = 0;
   int local_length = 0; int local_ri = 0; int local_gi = 0; int local_bi = 0;
 
-  int width = 0; int height = 0;
+  int _width = 0; int _height = 0;
 
-  width = Graphics::graphicsClientWidth();
-  height = Graphics::graphicsClientHeight();
+  _width = Graphics::graphicsClientWidth();
+  _height = Graphics::graphicsClientHeight();
 
-  if(xcen + r < 0 || xcen - r >= width || ycen + r < 0 || ycen - r >= height)
+  if(xcen + r < 0 || xcen - r >= _width || ycen + r < 0 || ycen - r >= _height)
   {
     return;
   }
@@ -2271,7 +2283,7 @@ void Graphics::RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
   }
   else if(r == 0)
   {
-    if(xcen >= 0 && ycen >= 0 && xcen < width && ycen < height)
+    if(xcen >= 0 && ycen >= 0 && xcen < _width && ycen < _height)
       *(bb[ycen] + xcen) = r( ( (s2rs / 2) + (s2re / 2) ) ) | g( ( (s2gs / 2) + (s2ge / 2) ) ) | b( ( (s2bs / 2) + (s2be / 2) ) );
 
     return;
@@ -2298,7 +2310,7 @@ void Graphics::RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
       local_bi = (s4be - s4bs) / local_length;
     }
 
-    if(ycen + y >= 0 && ycen + y < height)
+    if(ycen + y >= 0 && ycen + y < _height)
     {
       dt = bb[ycen + y] + xcen - x;
 
@@ -2306,7 +2318,7 @@ void Graphics::RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
 
       while(--local_length > 0)
       {
-        if(c0 >= 0 && c0 < width)
+        if(c0 >= 0 && c0 < _width)
         {
           *dt = r(r_cur) | g(g_cur) | b(b_cur);
         }
@@ -2339,7 +2351,7 @@ void Graphics::RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
       local_bi = (s1be - s1bs) / local_length;
     }
 
-    if(ycen - y >= 0 && ycen - y < height)
+    if(ycen - y >= 0 && ycen - y < _height)
     {
       dt = bb[ycen - y] + xcen - x;
 
@@ -2347,7 +2359,7 @@ void Graphics::RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
 
       while(--local_length > 0)
       {
-        if(c0 >= 0 && c0 < width)
+        if(c0 >= 0 && c0 < _width)
         {
           *dt = r(r_cur) | g(g_cur) | b(b_cur);
         }
@@ -2380,7 +2392,7 @@ void Graphics::RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
       local_bi = (s2be - s2bs) / local_length;
     }
 
-    if(ycen - x >= 0 && ycen - x < height)
+    if(ycen - x >= 0 && ycen - x < _height)
     {
       dt = bb[ycen - x] + xcen - y;
 
@@ -2388,7 +2400,7 @@ void Graphics::RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
 
       while(--local_length > 0)
       {
-        if(c0 >= 0 && c0 < width)
+        if(c0 >= 0 && c0 < _width)
         {
           *dt = r(r_cur) | g(g_cur) | b(b_cur);
         }
@@ -2421,7 +2433,7 @@ void Graphics::RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
       local_bi = (s3be - s3bs) / local_length;
     }
 
-    if(ycen + x >= 0 && ycen + x < height)
+    if(ycen + x >= 0 && ycen + x < _height)
     {
       dt = bb[ycen + x] + xcen - y;
 
@@ -2429,7 +2441,7 @@ void Graphics::RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
 
       while(--local_length > 0)
       {
-        if(c0 >= 0 && c0 < width)
+        if(c0 >= 0 && c0 < _width)
         {
           *dt = r(r_cur) | g(g_cur) | b(b_cur);
         }
@@ -2500,7 +2512,6 @@ static const char appClassName[] = "de Casteljau Algorithm -- Hit F10 for the Ex
 static const char appName[] = "de Casteljau Algorithm -- Hit F10 for the Extra Box! --";
 
 // used to disable the warning when exit(0) is called
-#pragma warning (disable: 4702)
 
 // Boolean variable, set to true when the application is top most,
 // set to false when the application is not top most.
@@ -2579,7 +2590,7 @@ enum INPUT_EVENT
   TOGGLE_CONTROL_POINT_TEXT = 16384
 };
 
-INT_PTR CALLBACK Graphics::AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK Graphics::AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM /*lParam*/)
 {
   switch(msg) // switch(msg)
   {
@@ -2674,7 +2685,7 @@ static void plusDecimal(double& lhs, double rhs)
   }
 }
 
-INT_PTR CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM /*lParam*/)
 {
   char item[256] = {0};
 
@@ -3384,7 +3395,7 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
       IsApplicationMinimized = false;
 
-      WindowProc(hwnd, WM_DISPLAYCHANGE, Graphics::oldBitDepth, *(unsigned long*)widthHeight);
+      WindowProc(hwnd, WM_DISPLAYCHANGE, (WPARAM)Graphics::oldBitDepth, *(unsigned long*)widthHeight);
 
       IsWindowStyleChanging = false;
     }
@@ -3473,7 +3484,7 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
     WindowStyle::setStyle();
 
-    WindowProc(hwnd, WM_CHANGEWINDOWSTYLE, 0, 0);
+    WindowProc(hwnd, (unsigned int)WM_CHANGEWINDOWSTYLE, 0, 0);
   }
   return 0; // switch(msg) - WM_SYSCOMMAND
 
@@ -3487,7 +3498,7 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
     WindowStyle::setStyle();
 
-    WindowProc(hwnd, WM_CHANGEWINDOWSTYLE, 0, 0);
+    WindowProc(hwnd, (unsigned int)WM_CHANGEWINDOWSTYLE, 0, 0);
   }
   return 0; // switch(msg) - WM_NCLBUTTONDBLCLK
 
@@ -3497,7 +3508,7 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
     {
       WindowStyle::setStyle();
 
-      WindowProc(hwnd, WM_CHANGEWINDOWSTYLE, 0, 0);
+      WindowProc(hwnd, (unsigned int)WM_CHANGEWINDOWSTYLE, 0, 0);
     }
     else if(wParam == VK_F10)
     {
@@ -3790,7 +3801,7 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
     {
       POINT trans = {0, 0};
 
-      BOOL returnVal = ClientToScreen(hwnd, &trans);
+      /*BOOL returnVal = */ClientToScreen(hwnd, &trans);
 
       WindowStyle::setOrigin(trans.x, trans.y);
 
@@ -3869,7 +3880,7 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
         IsApplicationMinimized = false;
 
-        WindowProc(hwnd, WM_DISPLAYCHANGE, Graphics::oldBitDepth, *(unsigned long*)widthHeight);
+        WindowProc(hwnd, WM_DISPLAYCHANGE, (WPARAM)Graphics::oldBitDepth, *(unsigned long*)widthHeight);
 
         // we need help from DefWindowProc(...)
         break;
@@ -3974,7 +3985,7 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
           RemoveHeapAllocation(rect);
         }
 
-        WindowProc(hwnd, WM_CHANGEWINDOWSTYLE, 0, 0);
+        WindowProc(hwnd, (unsigned int)WM_CHANGEWINDOWSTYLE, 0, 0);
 
         return 0;
       }
@@ -4055,7 +4066,7 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
     {
       if(IsApplicationMinimized == true)
       {
-        Graphics::oldBitDepth = wParam;
+        Graphics::oldBitDepth = (int)wParam;
         Graphics::oldWidth = LOWORD(lParam);
         Graphics::oldHeight = HIWORD(lParam);
 
@@ -4074,7 +4085,7 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
         }
       }
 
-      Graphics::oldBitDepth = wParam;
+      Graphics::oldBitDepth = (int)wParam;
       Graphics::oldWidth = LOWORD(lParam);
       Graphics::oldHeight = HIWORD(lParam);
 
@@ -4090,7 +4101,7 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
       {
         WindowStyle::setStyle();
 
-        WindowProc(hwnd, WM_CHANGEWINDOWSTYLE, 0, 0);
+        WindowProc(hwnd, (unsigned int)WM_CHANGEWINDOWSTYLE, 0, 0);
 
         return 0;
       }
@@ -4173,7 +4184,7 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
     // the process, and exits with the supplied status code.
     exit(0);
   }
-  return 0; // switch(msg) - WM_DESTROY
+  //return 0; // switch(msg) - WM_DESTROY
 
   // MSDN:
   // The WM_QUIT message indicates a request to terminate an application and
@@ -4187,7 +4198,7 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
   {
     /* nop */
   }
-  return wParam; // switch(msg) - WM_QUIT
+  return (LRESULT)wParam; // switch(msg) - WM_QUIT
 
   } // switch(msg)
 
@@ -4202,8 +4213,6 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
   // processing and depends on the message.
   return DefWindowProc(hwnd, msg, wParam, lParam);
 }
-
-#pragma warning (default: 4702)
 
 static HANDLE mutexHandle = 0;
 static HINSTANCE _hInstance = 0;
@@ -4285,7 +4294,7 @@ static int RemoveHandle(void* handle)
   return 0;
 }
 
-extern void* operator new(size_t size) throw(bad_alloc)
+extern void* operator new(size_t size)
 {
   if(IsApplicationEntry == false)
   {
@@ -4297,7 +4306,7 @@ extern void* operator new(size_t size) throw(bad_alloc)
   return new_memory;
 }
 
-extern void* operator new[](size_t size) throw(bad_alloc)
+extern void* operator new[](size_t size)
 {
   if(IsApplicationEntry == false)
   {
@@ -4309,7 +4318,7 @@ extern void* operator new[](size_t size) throw(bad_alloc)
   return new_memory;
 }
 
-extern void operator delete(void* ptr) throw()
+extern void operator delete(void* ptr)
 {
   if(IsApplicationEntry == false)
   {
@@ -4324,7 +4333,7 @@ extern void operator delete(void* ptr) throw()
   }
 }
 
-extern void operator delete[](void* ptr) throw()
+extern void operator delete[](void* ptr)
 {
   if(IsApplicationEntry == false)
   {
@@ -4593,7 +4602,8 @@ static int initTime()
 {
   int error = 0;
 
-  LARGE_INTEGER temp = {0};
+  LARGE_INTEGER temp;
+  temp.QuadPart = 0;
 
   if( !QueryPerformanceFrequency( &temp) )
   {
@@ -4626,7 +4636,8 @@ static int updateTime()
 
   double previousTime = 0;
 
-  LARGE_INTEGER temp = {0};
+  LARGE_INTEGER temp;
+  temp.QuadPart = 0;
 
   if( !QueryPerformanceCounter( &temp) )
   {
@@ -4646,13 +4657,13 @@ static int updateTime()
   return error;
 }
 
-extern "C" extern int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int), void(*_textDrawingPrimitive)(int, int, const char* const, ...) ) // init
+extern "C" extern int init(double /*_halfWidth*/, double /*_halfHeight*/, void(*/*_circleDrawingPrimitive*/)(int, int, int, int, int), void(*/*_lineDrawingPrimitive*/)(int, int, int, int, int, int), void(*/*_pointDrawingPrimitive*/)(int, int, int), void(*/*_textDrawingPrimitive*/)(int, int, const char* const, ...) ) // init
 {
   return 0;
 
 } // init
 
-extern "C" extern int main(int inputEvent, double x, double y, double B, double _halfWidth, double _halfHeight) // main
+extern "C" extern int main(int /*inputEvent*/, double /*x*/, double /*y*/, double /*B*/, double /*_halfWidth*/, double /*_halfHeight*/) // main
 {
   return 0;
 
@@ -4677,7 +4688,7 @@ extern "C" extern int term() // term
 //
 // int WINAPI WinMain(HINSTANCE currentInstance, HINSTANCE previousInstance, char* commandLine, int showStateOfWindow)
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine, int nCmdShow)
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, char* /*lpCmdLine*/, int nCmdShow)
 {
   int currentFrameNumber = 0;
 
@@ -4886,7 +4897,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine
   // -5-
   InsertHandle( &windowClass);
 
-  Graphics::WindowProc(0, WM_SETWIDTHHEIGHT, 0, 0);
+  Graphics::WindowProc(0, (unsigned int)WM_SETWIDTHHEIGHT, 0, 0);
 
   windowRect.left = 0;
   windowRect.top = 0;
@@ -4968,7 +4979,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine
     windowType = WS_POPUP;
   }
 
-  if( !AdjustWindowRect( &windowRect, windowType, FALSE) )
+  if( !AdjustWindowRect( &windowRect, (unsigned long)windowType, FALSE) )
   {
     int numberOfObjects = 0;
 
@@ -5124,7 +5135,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine
 
 // HWND CreateWindowA(const char* windowClassName, const char* windowsTitleText, unsigned long windowStyle, int windowTopLeftXpos, int windowTopLeftYpos, int windowXwidth, int windowYheight, HWND parentWindow, HMENU childMenu, HINSTANCE currentInstance, void* parameterToWmCreate)
 
-  hWindow = CreateWindowA(appClassName, appName, windowType, origin.x, origin.y, windowRect.right, windowRect.bottom, 0, 0, hInstance, 0);
+  hWindow = CreateWindowA(appClassName, appName, (unsigned long)windowType, origin.x, origin.y, windowRect.right, windowRect.bottom, 0, 0, hInstance, 0);
 
   if( !hWindow || !input)
   {
@@ -5392,7 +5403,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine
 
   IsApplicationEntry = false;
 
-  return Message.wParam;
+  return (int)Message.wParam;
 }
 
 extern int GetFilesNamed(char* folderPath, int* howManyOutput, PLIST_HEAD fileList)

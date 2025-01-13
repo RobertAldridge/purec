@@ -38,7 +38,7 @@
 // during font initialization to match the original aspect ratio of
 // font size to screen size.  All input and output is in the ideal frame of
 // reference.  Coordinate conversion is handled internally by TextOut.
-extern void TextOutInitSystem( char** ( *backBufferFunction ) ( ),
+extern void TextOutInitSystem( uint8_t** ( *backBufferFunction ) ( ),
 							          const unsigned int actual_backbuffer_width,
 							          const unsigned int actual_backbuffer_height,
 							          const unsigned int ideal_backbuffer_width,
@@ -51,7 +51,7 @@ extern void TextOutInitSystem( char** ( *backBufferFunction ) ( ),
 
 // The x and y specify the upper-left corner pixel of the first
 // character being printed.  The format string works just like
-// printf.
+// printf
 //
 // If the type has not been allocated, it will be when TextOut
 // is called.  TextOut will do nothing if TextOutInitSystem

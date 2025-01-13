@@ -6,7 +6,7 @@
 #ifndef __LSTPRIV_H__
 #define __LSTPRIV_H__
 
-#pragma warning( disable : 4200 )
+#pragma warning(disable : 4200)
 
 typedef struct __LIST_HEAD
 {
@@ -28,6 +28,8 @@ typedef struct __LIST_HEAD
 	unsigned char       Sort;
 	//
 
+  unsigned char padding[7];
+
 	CLIENT_EVALUATE		ClientEvaluate;
 
 	CLIENT_EQUIVALENCE	ClientEquality;
@@ -41,4 +43,4 @@ typedef struct __LIST_HEAD
 
 #endif // __LSTPRIV_H__
 
-#pragma warning( default : 4200 )
+#pragma warning(default : 4200)

@@ -2,46 +2,43 @@
 //Robert Aldridge
 //all code by Robert
 
-#pragma warning(push,3)
-
 #include <windowsx.h>
+
+#pragma warning (disable : 4820)
 #include <ddraw.h>
+#pragma warning (default : 4820)
+
 #include <assert.h>
 #include <stdarg.h>
 #include <stdio.h>
-
-#include "stdtypes.h"
+#include <stdint.h>
 
 #include "font.h"
 
 #include "font_util.h"
 
-#pragma warning(push,4)
-
-#define FI __forceinline
-
 //ascii contains source rect of characters on font image
 static RECT ascii[ 256 ];
 //width is screen_width-1, height is screen_height-1
-static s32 font_width, font_height, width, height;
+static int32_t font_width, font_height, width, height;
 
-static s32 actualWidth, actualHeight, idealWidth, idealHeight;
+static int32_t actualWidth, actualHeight, idealWidth, idealHeight;
 
-static s8** backbuffer_array_pointer;
+static uint8_t** backbuffer_array_pointer;
 
-static s8** ( *_backBufferFunction ) ( );
+static uint8_t** ( *_backBufferFunction ) ( );
 
-static s8** text_white_array_pointer;
+static uint8_t** text_white_array_pointer;
 
-static s8*  text_white;
+static uint8_t*  text_white;
 
 // FOR DEBUGGING
 #ifndef NDEBUG
 	static FILE *file       = fopen( "TextOutDebug.txt", "wb" );
 
-	static u32  numErrors   = 0;
+	static uint32_t  numErrors   = 0;
 
-	static u32  numWarnings = 0;
+	static uint32_t  numWarnings = 0;
 #endif
 //
 
@@ -51,17 +48,17 @@ static s8*  text_white;
 
 #undef ROBS_FONT
 
-static FI const u32 GetIdealFontWidth () { return 10; }
-static FI const u32 GetIdealFontHeight() { return 14; }
+static uint32_t GetIdealFontWidth() { return 10; }
+static uint32_t GetIdealFontHeight() { return 14; }
 
-extern "C" extern void TextOutInitSystem( s8** ( *__backBufferFunction ) ( ),
-							              const u32 _width,
-							              const u32 _height,
-							              const u32 _idealWidth,
-							              const u32 _idealHeight
+extern "C" extern void TextOutInitSystem( uint8_t** ( *__backBufferFunction ) ( ),
+							              const uint32_t _width,
+							              const uint32_t _height,
+							              const uint32_t _idealWidth,
+							              const uint32_t _idealHeight
 							            )
 {
-	s32 Column = 0, Row = 0;
+	int32_t Column = 0, Row = 0;
 
 	#ifndef NDEBUG
 		if( !file )
@@ -91,17 +88,17 @@ extern "C" extern void TextOutInitSystem( s8** ( *__backBufferFunction ) ( ),
 
 	backbuffer_array_pointer = _backBufferFunction();
 
-	actualWidth  = _width;
-	actualHeight = _height;
+	actualWidth  = (int32_t)_width;
+	actualHeight = (int32_t)_height;
 
-	idealWidth  = _idealWidth;
-	idealHeight = _idealHeight;
+	idealWidth  = (int32_t)_idealWidth;
+	idealHeight = (int32_t)_idealHeight;
 
-	width  = _width  - 1;
-	height = _height - 1;
+	width  = (int32_t)_width  - 1;
+	height = (int32_t)_height - 1;
 
-	font_width  = ( GetIdealFontWidth()  * actualWidth  ) / idealWidth;
-	font_height = ( GetIdealFontHeight() * actualHeight ) / idealHeight;
+	font_width  = ( (int32_t)GetIdealFontWidth()  * actualWidth  ) / idealWidth;
+	font_height = ( (int32_t)GetIdealFontHeight() * actualHeight ) / idealHeight;
 
 	LoadBitmap();
 
@@ -127,7 +124,7 @@ extern "C" extern void TextOutInitSystem( s8** ( *__backBufferFunction ) ( ),
 	}while( ++Row != 16 );
 }
 
-static const u8 CharTrivialAcceptance( const s32 x, const s32 y )
+static uint8_t CharTrivialAcceptance( const int32_t x, const int32_t y )
 {
 	if( x >= 0 && y >= 0 &&
         x + ( font_width - 1 ) <= width && y + ( font_height - 1 ) <= height
@@ -139,9 +136,9 @@ static const u8 CharTrivialAcceptance( const s32 x, const s32 y )
 	return 0;
 }
 
-static void _TextOut( s32 x, s32 y, const s8 * const dest_buffer )
+static void _TextOut( int32_t x, int32_t y, const char * const dest_buffer )
 {
-	s8 *text = 0;
+	char *text = 0;
 
 	if( !_backBufferFunction )
 	{
@@ -172,7 +169,7 @@ static void _TextOut( s32 x, s32 y, const s8 * const dest_buffer )
 		return;
 	}
 
-	text = (s8*) dest_buffer;
+	text = (char*) dest_buffer;
 
 	while( *text != 0 )
 	{
@@ -206,13 +203,13 @@ static void _TextOut( s32 x, s32 y, const s8 * const dest_buffer )
 								    text_white_array_pointer,
 								    x,
 								    y,
-								    &ascii[ (u8) ( ( (s16) (*text) ) + 128 ) ]
+								    &ascii[ (uint8_t) ( ( (int16_t) (*text) ) + 128 ) ]
 								  );
 		}
 		// clip and blit
 		else
 		{
-			RECT SrcRect = ascii[ (u8) ( ( (s16) (*text) ) + 128 ) ];
+			RECT SrcRect = ascii[ (uint8_t) ( ( (int16_t) (*text) ) + 128 ) ];
 
 			// checks output from CharClip
 			if( CharClip( &x, &y, &SrcRect ) )
@@ -232,12 +229,12 @@ static void _TextOut( s32 x, s32 y, const s8 * const dest_buffer )
 	}
 }
 
-extern "C" extern void TextOut( s32 x,
-					            s32 y,
-					            const s8 * const format,...
+extern "C" extern void TextOut( int32_t x,
+					            int32_t y,
+					            const char * const format,...
 				              )
 {
-	s8      dest_buffer[ 514 ] = { 0 };
+	char      dest_buffer[ 514 ] = { 0 };
 
 	va_list argptr = 0;
 
@@ -268,11 +265,11 @@ extern "C" extern void TextOut( s32 x,
 	_TextOut( x, y, dest_buffer );
 }
 
-static const RECT _TextOutRect( s32 x, s32 y, const s8 * const dest_buffer )
+static const RECT _TextOutRect( int32_t x, int32_t y, const char * const dest_buffer )
 {
-	s8   *text = 0;
+	char   *text = 0;
 
-	u32  num_newline = 1, chars_per_line = 0, max_chars_per_line = 0;
+	uint32_t  num_newline = 1, chars_per_line = 0, max_chars_per_line = 0;
 
 	RECT output_rect = { -1, -1, -1, -1 };
 
@@ -285,7 +282,7 @@ static const RECT _TextOutRect( s32 x, s32 y, const s8 * const dest_buffer )
 		return output_rect;
 	}
 
-	text = (s8*) dest_buffer;
+	text = (char*) dest_buffer;
 
 	while( *text != 0 )
 	{
@@ -308,20 +305,20 @@ static const RECT _TextOutRect( s32 x, s32 y, const s8 * const dest_buffer )
 	if( chars_per_line > max_chars_per_line )
 		max_chars_per_line = chars_per_line;
 
-	output_rect.left   = x;
-	output_rect.top    = y;
-	output_rect.right  = x + font_width  * max_chars_per_line - 1;
-	output_rect.bottom = y + font_height * num_newline        - 1;
+	output_rect.left = x;
+	output_rect.top = y;
+	output_rect.right = (long)(x + font_width * max_chars_per_line - 1);
+	output_rect.bottom = (long)(y + font_height * num_newline - 1);
 
 	return output_rect;
 }
 
-extern "C" extern const RECT TextOutRect( s32 x,
-							              s32 y,
-						                  const s8 * const format,...
+extern "C" extern const RECT TextOutRect( int32_t x,
+							              int32_t y,
+						                  const char * const format,...
 							            )
 {
-	s8      dest_buffer[ 514 ] = { 0 };
+	char dest_buffer[ 514 ] = { 0 };
 
 	va_list argptr = 0;
 

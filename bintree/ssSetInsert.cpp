@@ -144,7 +144,7 @@ int64_t SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client
 
   int duplicate = 0;
 
-  SsSetNode* x = 0;
+  SsSetNode* node = 0;
 
   if( !_this || !key)
   {
@@ -192,24 +192,24 @@ int64_t SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client
   if( !lessThan)
     lessThan = _this->lessThan;
 
-  x = (SsSetNode*)SsMmAlloc(_this->allocator);
+  node = (SsSetNode*)SsMmAlloc(_this->allocator);
 
-  if( !x)
+  if( !node)
   {
     BlahLog("error");
     goto label_return;
   }
 
-  x->left = 0;
-  x->right = 0;
+  node->left = 0;
+  node->right = 0;
 
-  memcpy(GETCLIENT(x), key, _this->sizeOf);
+  memcpy(GETCLIENT(node), key, _this->sizeOf);
 
-  if(SsSetInsertLevel2(_this, x, lessThan) )
+  if(SsSetInsertLevel2(_this, node, lessThan) )
     duplicate = 1;
 
   if(client)
-    memcpy(GETCLIENT(x), client, _this->sizeOf);
+    memcpy(GETCLIENT(node), client, _this->sizeOf);
 
   _this->num++;
 

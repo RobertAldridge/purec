@@ -1,9 +1,9 @@
 
 
 #ifndef NDEBUG
-	static void Error( const s8 * const errorString );
+  static int Error(const char* const errorString);
 
-	static void Warning( const s8 * const warningString );
+  static int Warning(const char* const warningString);
 #endif
 
 static void

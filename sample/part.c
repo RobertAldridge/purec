@@ -5,17 +5,16 @@
 //
 // editor Robert Aldridge
 
-#pragma warning ( push, 3 )
-
+#pragma warning (disable : 4820)
 #include <ddraw.h>
+#pragma warning (default : 4820)
 
 #include <assert.h>
 #include <malloc.h>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "stdtypes.h"
+#include <stdint.h>
 
 #include "part_pub.h"
 #include "part_priv.h"
@@ -23,13 +22,13 @@
 #include "video.h"
 
 // calculates float between -1 and 1
-#define RND() ( ( (f32) rand() ) / ( (f32) ( RAND_MAX >> 1 ) ) -1 )
+#define RND() ( ( (float) rand() ) / ( (float) ( RAND_MAX >> 1 ) ) -1 )
 
 #define ROTATE(PITCH,YAW,DIRECTION)                    \
 do{				                                       \
-	(DIRECTION).x = (f32) ( -sin(YAW)  * cos(PITCH) ); \
-	(DIRECTION).y = (f32) ( sin(PITCH)              ); \
-	(DIRECTION).z = (f32) ( cos(PITCH) * cos(YAW)   ); \
+	(DIRECTION).x = (float) ( -sin(YAW)  * cos(PITCH) ); \
+	(DIRECTION).y = (float) ( sin(PITCH)              ); \
+	(DIRECTION).z = (float) ( cos(PITCH) * cos(YAW)   ); \
 	(DIRECTION).w = 0;                                 \
   }while(0)
 
@@ -38,11 +37,11 @@ do{				                                       \
 #define PHYSICS_BIT       4
 #define REGENERATE_BIT    8
 
-static s32 id;
+static int32_t id;
 
-static __forceinline const u8    __LinearFrameBufferGetBitDepth();
+static __forceinline const uint8_t    __LinearFrameBufferGetBitDepth();
 
-static __forceinline u8 ** const __LinearFrameBufferGetBackBufferArray();
+static __forceinline uint8_t ** const __LinearFrameBufferGetBackBufferArray();
 
 // creates dynamic memory for a particle system structure
 // creates dynamic memory for the particles of that system
@@ -53,27 +52,27 @@ static __forceinline u8 ** const __LinearFrameBufferGetBackBufferArray();
 PEMITTER
 CreateParticleSystem
 (
-	s8        *name,												  // EMITTER NAME
-	f32       currentTime,											  // CURRENT TIME IN SECONDS
-	f32       emitterLife,											  // HOW LONG WILL THE PARTICLE SYSTEM LAST - IN SECONDS
+	char        *name,												  // EMITTER NAME
+	float       currentTime,											  // CURRENT TIME IN SECONDS
+	float       emitterLife,											  // HOW LONG WILL THE PARTICLE SYSTEM LAST - IN SECONDS
 	// TRANSFORMATION INFO
-	f32       posX,           f32 posY,           f32 posZ,			  // XYZ POSITION OF PARTICLE SYSTEM ORIGIN AND VARIATION
-	f32       posVarX,        f32 posVarY,        f32 posVarZ,
-	f32       yaw,            f32 yawVar,							  // YAW AND VARIATION FOR VELOCITY
-	f32       pitch,          f32 pitchVar,							  // PITCH AND VARIATION FOR VELOCITY
-	f32       speed,          f32 speedVar,							  // VELOCITY MAGNITUDE AND VARIATION
+	float       posX,           float posY,           float posZ,			  // XYZ POSITION OF PARTICLE SYSTEM ORIGIN AND VARIATION
+	float       posVarX,        float posVarY,        float posVarZ,
+	float       yaw,            float yawVar,							  // YAW AND VARIATION FOR VELOCITY
+	float       pitch,          float pitchVar,							  // PITCH AND VARIATION FOR VELOCITY
+	float       speed,          float speedVar,							  // VELOCITY MAGNITUDE AND VARIATION
 	// PARTICLE
-	s32       numParticles,											  // TOTAL EMITTED AT ANY TIME
-	s32       emitsPerFrame,  s32 emitVar,							  // EMITS PER FRAME AND VARIATION
-	f32       life,           f32 lifeVar,							  // LIFETIME OF PARTICLES AND VARIATION
+	int32_t       numParticles,											  // TOTAL EMITTED AT ANY TIME
+	int32_t       emitsPerFrame,  int32_t emitVar,							  // EMITS PER FRAME AND VARIATION
+	float       life,           float lifeVar,							  // LIFETIME OF PARTICLES AND VARIATION
 
-	f32       startColorR,    f32 startColorG,    f32 startColorB,    // START COLOR OF PARTICLES AND VARIATION
-	f32       startColorVarR, f32 startColorVarG, f32 startColorVarB,
-	f32       endColorR,      f32 endColorG,      f32 endColorB,      // END COLOR OF PARTICLES AND VARIATION
-	f32		  endColorVarR,   f32 endColorVarG,   f32 endColorVarB,
+	float       startColorR,    float startColorG,    float startColorB,    // START COLOR OF PARTICLES AND VARIATION
+	float       startColorVarR, float startColorVarG, float startColorVarB,
+	float       endColorR,      float endColorG,      float endColorB,      // END COLOR OF PARTICLES AND VARIATION
+	float		  endColorVarR,   float endColorVarG,   float endColorVarB,
 	// PHYSICS
-	f32       gForceX,        f32 gForceY,        f32 gForceZ,        // GLOBAL GRAVITY, WIND, ETC. AND VARIATION
-	f32       gForceVarX,     f32 gForceVarY,     f32 gForceVarZ
+	float       gForceX,        float gForceY,        float gForceZ,        // GLOBAL GRAVITY, WIND, ETC. AND VARIATION
+	float       gForceVarX,     float gForceVarY,     float gForceVarZ
 )
 {
 	PEMITTER particleSystem = calloc( 1, sizeof(EMITTER) );
@@ -159,29 +158,32 @@ CreateParticleSystem
 void
 ActivateParticleSystem(PEMITTER      *_particleSystem, // PREVIOUSLY CREATED PARTICLE SYSTEM
 
-					   f32           currentTime,      // CURRENT TIME IN SECONDS
+					   float           currentTime,      // CURRENT TIME IN SECONDS
 
-					   u8            antiAlias,        // IF NOT SET TO 0, PARTICLES WILL BE SHADED LINES
+					   uint8_t            antiAlias,        // IF NOT SET TO 0, PARTICLES WILL BE SHADED LINES
 													   // IF SET TO 0, PARTICLES WILL BE COLORED POINTS
 
-					   u8            physics,          // IF NOT SET TO 0, ACCELERATION WILL BE INTEGRATED
+					   uint8_t            physics,          // IF NOT SET TO 0, ACCELERATION WILL BE INTEGRATED
 													       // INTO PARTICLES
 											           // IF SET TO 0, ONLY VELOCITY WILL BE TAKEN
 												           // INTO ACCOUNT
 
-					   u8            regeneration      // IF NOT SET TO 0, DEAD PARTICLES WILL BE
+					   uint8_t            regeneration      // IF NOT SET TO 0, DEAD PARTICLES WILL BE
 													       // REGENERATED
 													   // IF SET TO 0, DEAD PARTICLES WILL NOT BE
 												           // REGENERATED
                       )
 {
-	f32       deltaTime;
-	f32       pitch,yaw;
-	f32       speed,speed_y_factor;
-	u32       totalParticles;
-	COLOR     start,end;
-	PEMITTER  particleSystem;
-	PPARTICLE particle;
+	float       deltaTime = 0;
+	float       pitch = 0, yaw = 0;
+	float       speed = 0, speed_y_factor = 0;
+	uint32_t       totalParticles = 0;
+	COLOR     start, end;
+  PEMITTER  particleSystem = {0};
+	PARTICLE* particle = 0;
+
+  memset( &start, 0, sizeof(COLOR) );
+  memset( &end, 0, sizeof(COLOR) );
 
 	if( ! ( _particleSystem && *_particleSystem && (*_particleSystem)->particles ) )
 		return;
@@ -221,7 +223,7 @@ ActivateParticleSystem(PEMITTER      *_particleSystem, // PREVIOUSLY CREATED PAR
 	particle       = particleSystem->particles;
 	totalParticles = particleSystem->totalParticles;
 
-	speed_y_factor = ( (f32) __LinearFrameBufferGetHeight() ) / ( (f32) __LinearFrameBufferGetWidth() );
+	speed_y_factor = ( (float) __LinearFrameBufferGetHeight() ) / ( (float) __LinearFrameBufferGetWidth() );
 
 	do
 	{
@@ -284,21 +286,21 @@ void
 UpdateParticleSystem
 (
 	PEMITTER *_particleSystem,                          // PREVIOUSLY CREATED PARTICLE SYSTEM
-	f32      currentTime,                               // CURRENT TIME IN SECONDS
+	float      currentTime,                               // CURRENT TIME IN SECONDS
 
-	u8       gForce,                                    // IF NOT SET TO 0, THE NEW GFORCE VECTOR WILL BE
+	uint8_t       gForce,                                    // IF NOT SET TO 0, THE NEW GFORCE VECTOR WILL BE
 													        // PERMANENTLY APPLIED TO THE PARTICLE SYSTEM
 													        // IF SET TO 0, NEW GFORCE IS IGNORED
 
-	f32      gForceX,    f32 gForceY,    f32 gForceZ,   // GLOBAL GRAVITY, WIND, ETC. AND VARIATION
-	f32      gForceVarX, f32 gForceVarY, f32 gForceVarZ
+	float      gForceX,    float gForceY,    float gForceZ,   // GLOBAL GRAVITY, WIND, ETC. AND VARIATION
+	float      gForceVarX, float gForceVarY, float gForceVarZ
 )
 {
-	f32       deltaTime;
-	f32       pitch,yaw;
-	f32       speed,speed_y_factor,ax,ay,az,aw,t;
-	u32       totalParticles;
-	s32       emitsPerFrame;
+	float       deltaTime;
+	float       pitch,yaw;
+	float       speed,speed_y_factor,ax,ay,az,aw,t;
+	uint32_t       totalParticles;
+	int32_t       emitsPerFrame;
 	COLOR     start,end;
 	PEMITTER  particleSystem;
 	PPARTICLE particle;
@@ -337,9 +339,9 @@ UpdateParticleSystem
 	particle       = particleSystem->particles;
 	totalParticles = particleSystem->totalParticles;
 
-	emitsPerFrame  = (s32) ( ( (f32) particleSystem->emitsPerFrame ) + ( ( (f32) particleSystem->emitVar ) * RND() ) );
+	emitsPerFrame  = (int32_t) ( ( (float) particleSystem->emitsPerFrame ) + ( ( (float) particleSystem->emitVar ) * RND() ) );
 
-	speed_y_factor = ( (f32) __LinearFrameBufferGetHeight() ) / ( (f32) __LinearFrameBufferGetWidth() );
+	speed_y_factor = ( (float) __LinearFrameBufferGetHeight() ) / ( (float) __LinearFrameBufferGetWidth() );
 
 	ax = particleSystem->gForce.x + ( particleSystem->gForceVar.x * RND() );
 	ay = particleSystem->gForce.y + ( particleSystem->gForceVar.y * RND() );
@@ -363,7 +365,7 @@ UpdateParticleSystem
 			{
 				// INTEGRATE ACCELERATION AND VELOCITY TO FIND NEW POSITION
 				// r(t) = a * t^2 / 2 + v0 * t + r0
-				t  = (f32) ( ( deltaTime * deltaTime ) * 0.5 );
+				t  = (float) ( ( deltaTime * deltaTime ) * 0.5 );
 
 				particle->pos.x += particle->velocity.x * deltaTime + ax * t;
 				particle->pos.y += particle->velocity.y * deltaTime + ay * t;
@@ -480,17 +482,17 @@ UpdateParticleSystem
 		}while( emitsPerFrame > 0 && --totalParticles );
 }
 
-static u8  LFbitDepth = 32, **LFbackBufferArray;
-static u16 LFwidth,LFheight;
+static uint8_t  LFbitDepth = 32, **LFbackBufferArray;
+static uint16_t LFwidth,LFheight;
 
-static u8** ( *_backBufferFunction ) ( );
+static uint8_t** ( *_backBufferFunction ) ( );
 
-extern void __LinearFrameBufferOSSetBackBuffer(s8** ( *__backBufferFunction ) ( ),
-											   u16     BackBufferViewPortWidth,
-											   u16     BackBufferViewPortHeight
+extern void __LinearFrameBufferOSSetBackBuffer(uint8_t** ( *__backBufferFunction ) ( ),
+											   uint16_t     BackBufferViewPortWidth,
+											   uint16_t     BackBufferViewPortHeight
 											  )
 {
-	_backBufferFunction = ( u8** (*) ( ) ) __backBufferFunction;
+	_backBufferFunction = ( uint8_t** (*) ( ) ) __backBufferFunction;
 
 	LFbackBufferArray = _backBufferFunction();
 
@@ -498,51 +500,51 @@ extern void __LinearFrameBufferOSSetBackBuffer(s8** ( *__backBufferFunction ) ( 
 	LFheight       = BackBufferViewPortHeight;
 }
 
-static __forceinline const u8    __LinearFrameBufferGetBitDepth()        { return LFbitDepth;        }
-extern __forceinline const u16   __LinearFrameBufferGetWidth()           { return LFwidth;           }
-extern __forceinline const u16   __LinearFrameBufferGetHeight()          { return LFheight;          }
+static __forceinline const uint8_t    __LinearFrameBufferGetBitDepth()        { return LFbitDepth;        }
+extern __forceinline const uint16_t   __LinearFrameBufferGetWidth()           { return LFwidth;           }
+extern __forceinline const uint16_t   __LinearFrameBufferGetHeight()          { return LFheight;          }
 
-static __forceinline u8 ** const __LinearFrameBufferGetBackBufferArray() { return LFbackBufferArray; }
+static __forceinline uint8_t ** const __LinearFrameBufferGetBackBufferArray() { return LFbackBufferArray; }
 
 // draws the particles of a particle system, does not update them
 //
 // does not check if the particle system has died
 void
 DrawParticleSystem(PEMITTER *_particleSystem, // PREVIOUSLY CREATED PARTICLE SYSTEM
-                   f32      *m                // 4x4 world to camera transformation matrix
+                   float      *m                // 4x4 world to camera transformation matrix
                   )
 {
-	u32       totalParticles;
+	uint32_t       totalParticles;
 	PEMITTER  particleSystem;
 	PPARTICLE particle;
 
 	// FOR BACKBUFFER INFO
-	u8        antiAlias;
-	u8        bitDepth;
-	u8        **bb;
-	u16       width,height;
+	uint8_t        antiAlias;
+	uint8_t        bitDepth;
+	uint8_t        **bb;
+	uint16_t       width,height;
 	//
 
 	// FOR PIXEL DRAWING
-	f32       z;
+	float       z;
 
-	u16       x,y;
+	uint16_t       x,y;
 
-	u32       red,green,blue;
+	uint32_t       red,green,blue;
 	//
 
 	// FOR ANIT_ALIAS
-	f32       dx,dxstep,dxabs,
+	float       dx,dxstep,dxabs,
 		      dy,dystep,dyabs,
 		      xi,yi,
 		      ri,gi,bi;
 
-	f32       x0,y0,z0,x1,y1,z1;
-	f32       r0,g0,b0,r1,g1,b1;
+	float       x0,y0,z0,x1,y1,z1;
+	float       r0,g0,b0,r1,g1,b1;
 
-	f32       t;
+	float       t;
 
-	u32       count;
+	uint32_t       count;
 	//
 
 	LFbackBufferArray = _backBufferFunction();
@@ -560,7 +562,7 @@ DrawParticleSystem(PEMITTER *_particleSystem, // PREVIOUSLY CREATED PARTICLE SYS
 	particle       = particleSystem->particles;
 	totalParticles = particleSystem->totalParticles;
 
-	antiAlias      = (u8) ( ( particleSystem->flags & ANTI_ALIAS_BIT ) == ANTI_ALIAS_BIT );
+	antiAlias      = (uint8_t) ( ( particleSystem->flags & ANTI_ALIAS_BIT ) == ANTI_ALIAS_BIT );
 
 	width          = __LinearFrameBufferGetWidth();
 	height         = __LinearFrameBufferGetHeight();
@@ -584,17 +586,17 @@ DrawParticleSystem(PEMITTER *_particleSystem, // PREVIOUSLY CREATED PARTICLE SYS
 
 				if( m )
 				{
-					f32 tx, ty;
+					float tx, ty;
 
-					tx = (f32) ( m[0] * x0 + m[1] * y0 + m[2]  * z0 + m[3]  );
-					ty = (f32) ( m[4] * x0 + m[5] * y0 + m[6]  * z0 + m[7]  );
-					z0 = (f32) ( m[8] * x0 + m[9] * y0 + m[10] * z0 + m[11] );
+					tx = (float) ( m[0] * x0 + m[1] * y0 + m[2]  * z0 + m[3]  );
+					ty = (float) ( m[4] * x0 + m[5] * y0 + m[6]  * z0 + m[7]  );
+					z0 = (float) ( m[8] * x0 + m[9] * y0 + m[10] * z0 + m[11] );
 
 					x0 = tx; y0 = ty;
 
-					tx = (f32) ( m[0] * x1 + m[1] * y1 + m[2]  * z1 + m[3]  );
-					ty = (f32) ( m[4] * x1 + m[5] * y1 + m[6]  * z1 + m[7]  );
-					z1 = (f32) ( m[8] * x1 + m[9] * y1 + m[10] * z1 + m[11] );
+					tx = (float) ( m[0] * x1 + m[1] * y1 + m[2]  * z1 + m[3]  );
+					ty = (float) ( m[4] * x1 + m[5] * y1 + m[6]  * z1 + m[7]  );
+					z1 = (float) ( m[8] * x1 + m[9] * y1 + m[10] * z1 + m[11] );
 
 					x1 = tx; y1 = ty;
 				}
@@ -628,10 +630,10 @@ DrawParticleSystem(PEMITTER *_particleSystem, // PREVIOUSLY CREATED PARTICLE SYS
 							z = z0;
 
 						// COORDINATES go from [ -1, 1 ] to [ 0, width-1 ]
-						x0 = (f32) ( (    ( x0 / z )   + 1.0 ) * ( ( ( (f32) width  ) - 1.0 ) / 2.0 ) );
+						x0 = (float) ( (    ( x0 / z )   + 1.0 ) * ( ( ( (float) width  ) - 1.0 ) / 2.0 ) );
 
 						// COORDINATES go from [ -1, 1 ] to [ 0, height-1 ]
-						y0 = (f32) ( ( ( -( y0 / z ) ) + 1.0 ) * ( ( ( (f32) height ) - 1.0 ) / 2.0 ) );
+						y0 = (float) ( ( ( -( y0 / z ) ) + 1.0 ) * ( ( ( (float) height ) - 1.0 ) / 2.0 ) );
 
 						if( z1 == 0 )
 							z = .000001f;
@@ -639,52 +641,52 @@ DrawParticleSystem(PEMITTER *_particleSystem, // PREVIOUSLY CREATED PARTICLE SYS
 							z = z1;
 
 						// COORDINATES go from [ -1, 1 ] to [ 0, width-1 ]
-						x1 = (f32) ( (    ( x1 / z )   + 1.0 ) * ( ( ( (f32) width  ) - 1.0 ) / 2.0 ) );
+						x1 = (float) ( (    ( x1 / z )   + 1.0 ) * ( ( ( (float) width  ) - 1.0 ) / 2.0 ) );
 
 						// COORDINATES go from [ -1, 1 ] to [ 0, height-1 ]
-						y1 = (f32) ( ( ( -( y1 / z ) ) + 1.0 ) * ( ( ( (f32) height ) - 1.0 ) / 2.0 ) );
+						y1 = (float) ( ( ( -( y1 / z ) ) + 1.0 ) * ( ( ( (float) height ) - 1.0 ) / 2.0 ) );
 
 						if( r0 <= 0 )
 							r0 = 0;
 						else if( r0 >= 1 )
 							r0 = 255;
 						else
-							r0 = (u8) ( r0 * 255.0 );
+							r0 = (uint8_t) ( r0 * 255.0 );
 
 						if( g0 <= 0 )
 							g0 = 0;
 						else if( g0 >= 1 )
 							g0 = 255;
 						else
-							g0 = (u8) ( g0 * 255.0 );
+							g0 = (uint8_t) ( g0 * 255.0 );
 
 						if( b0 <= 0 )
 							b0 = 0;
 						else if( b0 >= 1 )
 							b0 = 255;
 						else
-							b0 = (u8) ( b0 * 255.0 );
+							b0 = (uint8_t) ( b0 * 255.0 );
 
 						if( r1 <= 0 )
 							r1 = 0;
 						else if( r1 >= 1 )
 							r1 = 255;
 						else
-							r1 = (u8) ( r1 * 255.0 );
+							r1 = (uint8_t) ( r1 * 255.0 );
 
 						if( g1 <= 0 )
 							g1 = 0;
 						else if( g1 >= 1 )
 							g1 = 255;
 						else
-							g1 = (u8) ( g1 * 255.0 );
+							g1 = (uint8_t) ( g1 * 255.0 );
 
 						if( b1 <= 0 )
 							b1 = 0;
 						else if( b1 >= 1 )
 							b1 = 255;
 						else
-							b1 = (u8) ( b1 * 255.0 );
+							b1 = (uint8_t) ( b1 * 255.0 );
 
 						if( x0 >= 0 && x0 <= ( width - 1 ) && y0 >= 0 && y0 <= ( height - 1 ) && z0 >= .000001f && z0 <= 1 &&
 							x1 >= 0 && x1 <= ( width - 1 ) && y1 >= 0 && y1 <= ( height - 1 ) && z1 >= .000001f && z1 <= 1
@@ -778,10 +780,10 @@ DrawParticleSystem(PEMITTER *_particleSystem, // PREVIOUSLY CREATED PARTICLE SYS
 						z = z0;
 
 					// COORDINATES go from [ -1, 1 ] to [ 0, width-1 ]
-					x0 = (f32) ( (    ( x0 / z )   + 1.0 ) * ( ( ( (f32) width  ) - 1.0 ) / 2.0 ) );
+					x0 = (float) ( (    ( x0 / z )   + 1.0 ) * ( ( ( (float) width  ) - 1.0 ) / 2.0 ) );
 
 					// COORDINATES go from [ -1, 1 ] to [ 0, height-1 ]
-					y0 = (f32) ( ( ( -( y0 / z ) ) + 1.0 ) * ( ( ( (f32) height ) - 1.0 ) / 2.0 ) );
+					y0 = (float) ( ( ( -( y0 / z ) ) + 1.0 ) * ( ( ( (float) height ) - 1.0 ) / 2.0 ) );
 
 					if( z1 == 0 )
 						z = .000001f;
@@ -789,10 +791,10 @@ DrawParticleSystem(PEMITTER *_particleSystem, // PREVIOUSLY CREATED PARTICLE SYS
 						z = z1;
 
 					// COORDINATES go from [ -1, 1 ] to [ 0, width-1 ]
-					x1 = (f32) ( (    ( x1 / z )   + 1.0 ) * ( ( ( (f32) width  ) - 1.0 ) / 2.0 ) );
+					x1 = (float) ( (    ( x1 / z )   + 1.0 ) * ( ( ( (float) width  ) - 1.0 ) / 2.0 ) );
 
 					// COORDINATES go from [ -1, 1 ] to [ 0, height-1 ]
-					y1 = (f32) ( ( ( -( y1 / z ) ) + 1.0 ) * ( ( ( (f32) height ) - 1.0 ) / 2.0 ) );
+					y1 = (float) ( ( ( -( y1 / z ) ) + 1.0 ) * ( ( ( (float) height ) - 1.0 ) / 2.0 ) );
 
 					#undef xmin
 					#undef xmax
@@ -800,9 +802,9 @@ DrawParticleSystem(PEMITTER *_particleSystem, // PREVIOUSLY CREATED PARTICLE SYS
 					#undef ymax
 
 					#define xmin 0
-					#define xmax ( (f32) ( width  - 1 ) )
+					#define xmax ( (float) ( width  - 1 ) )
 					#define ymin 0
-					#define ymax ( (f32) ( height - 1 ) )
+					#define ymax ( (float) ( height - 1 ) )
 
 					// LEFT - IN TO OUT
 					if( x0 >= xmin && x1 < xmin )
@@ -963,31 +965,31 @@ DrawParticleSystem(PEMITTER *_particleSystem, // PREVIOUSLY CREATED PARTICLE SYS
 
 					drawline:
 
-					#define i(x) ( (u32) x )
+					#define i(x) ( (uint32_t) x )
 
-					#define copy_x_8()  *(bb[i(y0)]+i(x0))=(u8)((i(r0)+i(g0)+i(b0))/3),r0+=ri,g0+=gi,b0+=bi
-					#define copy_y_8()  *(bb[i(y0)]+i(x0))=(u8)((i(r0)+i(g0)+i(b0))/3),r0+=ri,g0+=gi,b0+=bi
+					#define copy_x_8()  *(bb[i(y0)]+i(x0))=(uint8_t)((i(r0)+i(g0)+i(b0))/3),r0+=ri,g0+=gi,b0+=bi
+					#define copy_y_8()  *(bb[i(y0)]+i(x0))=(uint8_t)((i(r0)+i(g0)+i(b0))/3),r0+=ri,g0+=gi,b0+=bi
 
-					#define copy_x_15() *(((u16*)bb[i(y0)])+i(x0))=(u16)(((i(r0)>>3)<<10)|((i(g0)>>3)<<5)|i(b0)),r0+=ri,g0+=gi,b0+=bi
-					#define copy_y_15() *(((u16*)bb[i(y0)])+i(x0))=(u16)(((i(r0)>>3)<<10)|((i(g0)>>3)<<5)|i(b0)),r0+=ri,g0+=gi,b0+=bi
+					#define copy_x_15() *(((uint16_t*)bb[i(y0)])+i(x0))=(uint16_t)(((i(r0)>>3)<<10)|((i(g0)>>3)<<5)|i(b0)),r0+=ri,g0+=gi,b0+=bi
+					#define copy_y_15() *(((uint16_t*)bb[i(y0)])+i(x0))=(uint16_t)(((i(r0)>>3)<<10)|((i(g0)>>3)<<5)|i(b0)),r0+=ri,g0+=gi,b0+=bi
 
-					#define copy_x_16() *(((u16*)bb[i(y0)])+i(x0))=(u16)(((i(r0)>>3)<<11)|((i(g0)>>2)<<5)|i(b0)),r0+=ri,g0+=gi,b0+=bi
-					#define copy_y_16() *(((u16*)bb[i(y0)])+i(x0))=(u16)(((i(r0)>>3)<<11)|((i(g0)>>2)<<5)|i(b0)),r0+=ri,g0+=gi,b0+=bi
+					#define copy_x_16() *(((uint16_t*)bb[i(y0)])+i(x0))=(uint16_t)(((i(r0)>>3)<<11)|((i(g0)>>2)<<5)|i(b0)),r0+=ri,g0+=gi,b0+=bi
+					#define copy_y_16() *(((uint16_t*)bb[i(y0)])+i(x0))=(uint16_t)(((i(r0)>>3)<<11)|((i(g0)>>2)<<5)|i(b0)),r0+=ri,g0+=gi,b0+=bi
 
 					// 24 bit macro is very unoptimized, I suggest not using line drawing in 24 bit mode
-					#define copy_x_24() *(bb[i(y0)]+i(x0)*3  )=(u8)i(b0),\
-										*(bb[i(y0)]+i(x0)*3+1)=(u8)i(g0),\
-										*(bb[i(y0)]+i(x0)*3+2)=(u8)i(r0),\
+					#define copy_x_24() *(bb[i(y0)]+i(x0)*3  )=(uint8_t)i(b0),\
+										*(bb[i(y0)]+i(x0)*3+1)=(uint8_t)i(g0),\
+										*(bb[i(y0)]+i(x0)*3+2)=(uint8_t)i(r0),\
 										r0+=ri,g0+=gi,b0+=bi
 
 					// 24 bit macro is very unoptimized, I suggest not using line drawing in 24 bit mode
-					#define copy_y_24() *(bb[i(y0)]+i(x0)*3  )=(u8)i(b0),\
-										*(bb[i(y0)]+i(x0)*3+1)=(u8)i(g0),\
-										*(bb[i(y0)]+i(x0)*3+2)=(u8)i(r0),\
+					#define copy_y_24() *(bb[i(y0)]+i(x0)*3  )=(uint8_t)i(b0),\
+										*(bb[i(y0)]+i(x0)*3+1)=(uint8_t)i(g0),\
+										*(bb[i(y0)]+i(x0)*3+2)=(uint8_t)i(r0),\
 										r0+=ri,g0+=gi,b0+=bi
 
-					#define copy_x_32() *(((u32*)bb[i(y0)])+i(x0))=((i(r0)<<16)|(i(g0)<<8)|i(b0)),r0+=ri,g0+=gi,b0+=bi
-					#define copy_y_32() *(((u32*)bb[i(y0)])+i(x0))=((i(r0)<<16)|(i(g0)<<8)|i(b0)),r0+=ri,g0+=gi,b0+=bi
+					#define copy_x_32() *(((uint32_t*)bb[i(y0)])+i(x0))=((i(r0)<<16)|(i(g0)<<8)|i(b0)),r0+=ri,g0+=gi,b0+=bi
+					#define copy_y_32() *(((uint32_t*)bb[i(y0)])+i(x0))=((i(r0)<<16)|(i(g0)<<8)|i(b0)),r0+=ri,g0+=gi,b0+=bi
 
 					dx = x1 - x0;
 					( dx >= 0 )?
@@ -1011,8 +1013,8 @@ DrawParticleSystem(PEMITTER *_particleSystem, // PREVIOUSLY CREATED PARTICLE SYS
 							  bi = ( b1 - b0 ) / dxabs
 							);
 
-						x0    = (f32) floor( x0 );
-						x1    = (f32) floor( x1 );
+						x0    = (float) floor( x0 );
+						x1    = (float) floor( x1 );
 						dxabs = x1 - x0;
 
 						if( dxabs < 0 )
@@ -1051,8 +1053,8 @@ DrawParticleSystem(PEMITTER *_particleSystem, // PREVIOUSLY CREATED PARTICLE SYS
                               bi = ( b1 - b0 ) / dyabs
                             );
 
-						y0    = (f32) floor( y0 );
-						y1    = (f32) floor( y1 );
+						y0    = (float) floor( y0 );
+						y1    = (float) floor( y1 );
 						dyabs = y1 - y0;
 
 						if( dyabs < 0 )
@@ -1087,21 +1089,21 @@ DrawParticleSystem(PEMITTER *_particleSystem, // PREVIOUSLY CREATED PARTICLE SYS
 
 				if( m )
 				{
-					f32 tx = particle->pos.x, ty = particle->pos.y;
+					float tx = particle->pos.x, ty = particle->pos.y;
 
-					particle->pos.x = (f32) ( m[0] * tx + m[1] * ty + m[2]  * z + m[3]  );
-					particle->pos.y = (f32) ( m[4] * tx + m[5] * ty + m[6]  * z + m[7]  );
-					z               = (f32) ( m[8] * tx + m[9] * ty + m[10] * z + m[11] );
+					particle->pos.x = (float) ( m[0] * tx + m[1] * ty + m[2]  * z + m[3]  );
+					particle->pos.y = (float) ( m[4] * tx + m[5] * ty + m[6]  * z + m[7]  );
+					z               = (float) ( m[8] * tx + m[9] * ty + m[10] * z + m[11] );
 				}
 
 				if( z == 0 )
 					z = .000001f;
 
 				// COORDINATES go from [ -1, 1 ] to [ 0, width-1 ]
-				x = (u16) ( (    ( particle->pos.x / z )   + 1.0 ) * ( ( ( (f32) width  ) - 1.0 ) / 2.0 ) );
+				x = (uint16_t) ( (    ( particle->pos.x / z )   + 1.0 ) * ( ( ( (float) width  ) - 1.0 ) / 2.0 ) );
 
 				// COORDINATES go from [ -1, 1 ] to [ 0, height-1 ]
-				y = (u16) ( ( ( -( particle->pos.y / z ) ) + 1.0 ) * ( ( ( (f32) height ) - 1.0 ) / 2.0 ) );
+				y = (uint16_t) ( ( ( -( particle->pos.y / z ) ) + 1.0 ) * ( ( ( (float) height ) - 1.0 ) / 2.0 ) );
 
 				if( x >= 0 && x < width && y >= 0 && y < height && z >= .000001f && z <= 1 )
 				{
@@ -1110,44 +1112,44 @@ DrawParticleSystem(PEMITTER *_particleSystem, // PREVIOUSLY CREATED PARTICLE SYS
 					else if( particle->color.r >= 1 )
 						red = 255;
 					else
-						red = (u8) ( particle->color.r * 255.0 );
+						red = (uint8_t) ( particle->color.r * 255.0 );
 
 					if( particle->color.g <= 0 )
 						green = 0;
 					else if( particle->color.g >= 1 )
 						green = 255;
 					else
-						green = (u8) ( particle->color.g * 255.0 );
+						green = (uint8_t) ( particle->color.g * 255.0 );
 
 					if( particle->color.b <= 0 )
 						blue = 0;
 					else if( particle->color.b >= 1 )
 						blue = 255;
 					else
-						blue = (u8) ( particle->color.b * 255.0 );
+						blue = (uint8_t) ( particle->color.b * 255.0 );
 
 					switch( __LinearFrameBufferGetBitDepth() )
 					{
 						case 8:
 							*( bb[ y ] + x ) =
-								(u8) ( ( ( (u16) red ) + ( (u16) green ) + ( (u16) blue ) ) / 3 );
+								(uint8_t) ( ( ( (uint16_t) red ) + ( (uint16_t) green ) + ( (uint16_t) blue ) ) / 3 );
 							break;
 						case 15:
-							*( ( (u16*) bb[ y ] ) + x ) =
-								(u16) ( ( ( ( (u16) red ) >> 3 )  << 10 ) | ( ( ( (u16) green ) >> 3 ) << 5 ) | ( ( (u16) blue ) >> 3 ) );
+							*( ( (uint16_t*) bb[ y ] ) + x ) =
+								(uint16_t) ( ( ( ( (uint16_t) red ) >> 3 )  << 10 ) | ( ( ( (uint16_t) green ) >> 3 ) << 5 ) | ( ( (uint16_t) blue ) >> 3 ) );
 							break;
 						case 16:
-							*( ( (u16*) bb[ y ] ) + x ) =
-								(u16) ( ( ( ( (u16) red ) >> 3 )  << 11 ) | ( ( ( (u16) green ) >> 2 ) << 5 ) | ( ( (u16) blue ) >> 3 ) );
+							*( ( (uint16_t*) bb[ y ] ) + x ) =
+								(uint16_t) ( ( ( ( (uint16_t) red ) >> 3 )  << 11 ) | ( ( ( (uint16_t) green ) >> 2 ) << 5 ) | ( ( (uint16_t) blue ) >> 3 ) );
 							break;
 						case 24:
-							*( bb[ y ] + x * 3     ) = (u8) blue;
-							*( bb[ y ] + x * 3 + 1 ) = (u8) green;
-							*( bb[ y ] + x * 3 + 2 ) = (u8) red;
+							*( bb[ y ] + x * 3     ) = (uint8_t) blue;
+							*( bb[ y ] + x * 3 + 1 ) = (uint8_t) green;
+							*( bb[ y ] + x * 3 + 2 ) = (uint8_t) red;
 							break;
 						case 32:
-							*( ( (u32*) bb[ y ] ) + x ) =
-								( ( ( (u32) red ) << 16 ) | ( ( (u32) green ) << 8 ) | ( (u32) blue ) );
+							*( ( (uint32_t*) bb[ y ] ) + x ) =
+								( ( ( (uint32_t) red ) << 16 ) | ( ( (uint32_t) green ) << 8 ) | ( (uint32_t) blue ) );
 							break;
 						default:
 							assert( "DrawParticleSystem - unsupported bit depth" && 0 );

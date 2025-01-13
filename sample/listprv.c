@@ -12,8 +12,6 @@
  *
  */
 
-#pragma warning(push,3)
-
 	#include <stdio.h>
 //	#include <native.h>
 	#include <memory.h>

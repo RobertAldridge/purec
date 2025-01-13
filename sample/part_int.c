@@ -1,3 +1,4 @@
+
 // part_int.c
 //
 // particle system interface
@@ -10,16 +11,13 @@
 // ...
 // because of static global variables currentTime and matrix
 
-#pragma warning ( push, 3 )
-
 #include <assert.h>
 #include <malloc.h>
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
-#include "stdtypes.h"
+#include <stdint.h>
 
 #include "part_pub.h"
 
@@ -32,10 +30,10 @@
 #include "video.h"
 
 
-static f32 currentTime;
-static f32 *matrix;
+static float currentTime;
+static float *matrix;
 
-static s32 Dead(CLIENT_POTYPE Obj1,
+static int32_t Dead(CLIENT_POTYPE Obj1,
                 CLIENT_POTYPE Obj2
                )
 {
@@ -45,14 +43,14 @@ static s32 Dead(CLIENT_POTYPE Obj1,
 	return 0;
 }
 
-static s32 Equal(CLIENT_POTYPE Obj1,
+static int32_t Equal(CLIENT_POTYPE Obj1,
                  CLIENT_POTYPE Obj2
                 )
 {
 	return( strcmp( Obj1.name, Obj2.name ) == 0 );
 }
 
-static s32 Activate(CLIENT_PPOTYPE Obj
+static int32_t Activate(CLIENT_PPOTYPE Obj
                    )
 {
 	if( Obj->particleSystem )
@@ -61,7 +59,7 @@ static s32 Activate(CLIENT_PPOTYPE Obj
 	return 0;
 }
 
-static s32 Update(CLIENT_PPOTYPE Obj
+static int32_t Update(CLIENT_PPOTYPE Obj
                  )
 {
 	if( Obj->particleSystem )
@@ -70,7 +68,7 @@ static s32 Update(CLIENT_PPOTYPE Obj
 	return 0;
 }
 
-static s32 Draw(CLIENT_PPOTYPE Obj
+static int32_t Draw(CLIENT_PPOTYPE Obj
                )
 {
 	if( Obj->particleSystem )
@@ -79,7 +77,7 @@ static s32 Draw(CLIENT_PPOTYPE Obj
 	return 0;
 }
 
-static s32 Terminate(CLIENT_PPOTYPE Obj
+static int32_t Terminate(CLIENT_PPOTYPE Obj
                     )
 {
 	if( Obj->particleSystem )
@@ -92,8 +90,8 @@ static void ParticleSystemsInternalLoad(PLIST_HEAD particleSystems,
 										FILE       *file
 									   )
 {
-	f32           fbuffer[64] = {0};
-	s32           ibuffer[16] = {0};
+	float           fbuffer[64] = {0};
+	int32_t           ibuffer[16] = {0};
 	CLIENT_POTYPE Obj         = {0};
 
 	fscanf( file, "%s\n", Obj.name );    // name
@@ -127,15 +125,15 @@ static void ParticleSystemsInternalLoad(PLIST_HEAD particleSystems,
 	// IF FIRST TWO CHARACTERS ARE "OS", THEN NORMALIZE THE INPUT
 	if( Obj.name && Obj.name[0] && Obj.name[1] && Obj.name[0]=='O' && Obj.name[1]=='S' )
 	{
-		f32 halfWidth     = ( (f32) __LinearFrameBufferGetWidth()  ) * 0.5f;
-		f32 halfHeight    = ( (f32) __LinearFrameBufferGetHeight() ) * 0.5f;
+		float halfWidth     = ( (float) __LinearFrameBufferGetWidth()  ) * 0.5f;
+		float halfHeight    = ( (float) __LinearFrameBufferGetHeight() ) * 0.5f;
 
-		f32 invHalfWidth  = 1.0f / halfWidth;
-		f32 invHalfHeight = 1.0f / halfHeight;
+		float invHalfWidth  = 1.0f / halfWidth;
+		float invHalfHeight = 1.0f / halfHeight;
 
-		f32 pi2rad     = 0.01745329f; // pi / 180
+		float pi2rad     = 0.01745329f; // pi / 180
 
-		f32 colorConv  = 0.00392156f; // 1 / 255
+		float colorConv  = 0.00392156f; // 1 / 255
 
 		fbuffer[1]   =   ( fbuffer[1] - halfWidth  ) * invHalfWidth;
 		fbuffer[2]   = - ( fbuffer[2] - halfHeight ) * invHalfHeight;
@@ -197,11 +195,11 @@ static void ParticleSystemsInternalLoad(PLIST_HEAD particleSystems,
 			fbuffer[30], fbuffer[31], fbuffer[32]
 		);
 
-	ActivateParticleSystem( (PEMITTER*) (&Obj.particleSystem), currentTime, (u8) ibuffer[3], (u8) ibuffer[4], (u8) ibuffer[5] );
+	ActivateParticleSystem( (PEMITTER*) (&Obj.particleSystem), currentTime, (uint8_t) ibuffer[3], (uint8_t) ibuffer[4], (uint8_t) ibuffer[5] );
 
-	Obj.arg1 = (u8) ibuffer[3];
-	Obj.arg2 = (u8) ibuffer[4];
-	Obj.arg3 = (u8) ibuffer[5];
+	Obj.arg1 = (uint8_t) ibuffer[3];
+	Obj.arg2 = (uint8_t) ibuffer[4];
+	Obj.arg3 = (uint8_t) ibuffer[5];
 
 	ListInsert( particleSystems, Obj, 0 );
 
@@ -214,11 +212,11 @@ static void ParticleSystemsInternalLoad(PLIST_HEAD particleSystems,
 // does nothing else if filename is NULL
 PPARTICLE_SYSTEMS_HEAD
 	ParticleSystemsLoadFileAndActivate(PPARTICLE_SYSTEMS_HEAD *_particleSystems,
-                                       s8                     *filename,
-									   f32                    _currentTime
+                                       int8_t                     *filename,
+									   float                    _currentTime
                                       )
 {
-	s32        Num = 0;
+	int32_t        Num = 0;
 	FILE       *file;
 	PLIST_HEAD particleSystems;
 
@@ -270,11 +268,11 @@ PPARTICLE_SYSTEMS_HEAD
 // file, does nothing if filename is NULL
 void
 	ParticleSystemsAddFileAndActivate(PPARTICLE_SYSTEMS_HEAD *particleSystems,
-									  s8                     *filename,
-								      f32                    _currentTime
+									  int8_t                     *filename,
+								      float                    _currentTime
                                      )
 {
-	s32  Num = 0;
+	int32_t  Num = 0;
 	FILE *file;
 
 	currentTime = _currentTime;
@@ -340,37 +338,37 @@ void
 	(
 		PPARTICLE_SYSTEMS_HEAD *particleSystems,
 
-		s8        *name,												  // EMITTER NAME
-		f32       _currentTime,											  // CURRENT TIME IN SECONDS
-		f32       emitterLife,											  // HOW LONG WILL THE PARTICLE SYSTEM LAST - IN SECONDS
+		int8_t        *name,												  // EMITTER NAME
+		float       _currentTime,											  // CURRENT TIME IN SECONDS
+		float       emitterLife,											  // HOW LONG WILL THE PARTICLE SYSTEM LAST - IN SECONDS
 		// TRANSFORMATION INFO
-		f32       posX,           f32 posY,           f32 posZ,		      // XYZ POSITION OF PARTICLE SYSTEM ORIGIN AND VARIATION
-		f32       posVarX,        f32 posVarY,        f32 posVarZ,
-		f32       yaw,            f32 yawVar,							  // YAW AND VARIATION FOR VELOCITY
-		f32       pitch,          f32 pitchVar,							  // PITCH AND VARIATION FOR VELOCITY
-		f32       speed,          f32 speedVar,							  // VELOCITY MAGNITUDE AND VARIATION
+		float       posX,           float posY,           float posZ,		      // XYZ POSITION OF PARTICLE SYSTEM ORIGIN AND VARIATION
+		float       posVarX,        float posVarY,        float posVarZ,
+		float       yaw,            float yawVar,							  // YAW AND VARIATION FOR VELOCITY
+		float       pitch,          float pitchVar,							  // PITCH AND VARIATION FOR VELOCITY
+		float       speed,          float speedVar,							  // VELOCITY MAGNITUDE AND VARIATION
 		// PARTICLE
-		s32       numParticles,											  // TOTAL EMITTED AT ANY TIME
-		s32       emitsPerFrame,  s32 emitVar,							  // EMITS PER FRAME AND VARIATION
-		f32       life,           f32 lifeVar,							  // LIFETIME OF PARTICLES AND VARIATION
+		int32_t       numParticles,											  // TOTAL EMITTED AT ANY TIME
+		int32_t       emitsPerFrame,  int32_t emitVar,							  // EMITS PER FRAME AND VARIATION
+		float       life,           float lifeVar,							  // LIFETIME OF PARTICLES AND VARIATION
 
-		f32       startColorR,    f32 startColorG,    f32 startColorB,    // START COLOR OF PARTICLES AND VARIATION
-		f32       startColorVarR, f32 startColorVarG, f32 startColorVarB,
-		f32       endColorR,      f32 endColorG,      f32 endColorB,      // END COLOR OF PARTICLES AND VARIATION
-		f32		  endColorVarR,   f32 endColorVarG,   f32 endColorVarB,
+		float       startColorR,    float startColorG,    float startColorB,    // START COLOR OF PARTICLES AND VARIATION
+		float       startColorVarR, float startColorVarG, float startColorVarB,
+		float       endColorR,      float endColorG,      float endColorB,      // END COLOR OF PARTICLES AND VARIATION
+		float		  endColorVarR,   float endColorVarG,   float endColorVarB,
 		// PHYSICS
-		f32       gForceX,        f32 gForceY,        f32 gForceZ,        // GLOBAL GRAVITY, WIND, ETC. AND VARIATION
-		f32       gForceVarX,     f32 gForceVarY,     f32 gForceVarZ,
+		float       gForceX,        float gForceY,        float gForceZ,        // GLOBAL GRAVITY, WIND, ETC. AND VARIATION
+		float       gForceVarX,     float gForceVarY,     float gForceVarZ,
 
-		u8        antiAlias,											  // IF NOT SET TO 0, PARTICLES WILL BE SHADED LINES
+		uint8_t        antiAlias,											  // IF NOT SET TO 0, PARTICLES WILL BE SHADED LINES
 																		      // IF SET TO 0, PARTICLES WILL BE COLORED POINTS
 
-		u8        physics,												  // IF NOT SET TO 0, ACCELERATION WILL BE INTEGRATED
+		uint8_t        physics,												  // IF NOT SET TO 0, ACCELERATION WILL BE INTEGRATED
 																		      // INTO PARTICLES
 																		      // IF SET TO 0, ONLY VELOCITY WILL BE TAKEN
 																			  // INTO ACCOUNT
 
-		u8        regeneration											  // IF NOT SET TO 0, DEAD PARTICLES WILL BE
+		uint8_t        regeneration											  // IF NOT SET TO 0, DEAD PARTICLES WILL BE
 																			  // REGENERATED
 																		      // IF SET TO 0, DEAD PARTICLES WILL NOT BE
 																			  // REGENERATED
@@ -394,15 +392,15 @@ void
 	// IF FIRST TWO CHARACTERS ARE "OS", THEN NORMALIZE THE INPUT
 	if( name && name[0] && name[1] && name[0]=='O' && name[1]=='S' )
 	{
-		f32 halfWidth     = ( (f32) __LinearFrameBufferGetWidth()  ) * 0.5f;
-		f32 halfHeight    = ( (f32) __LinearFrameBufferGetHeight() ) * 0.5f;
+		float halfWidth     = ( (float) __LinearFrameBufferGetWidth()  ) * 0.5f;
+		float halfHeight    = ( (float) __LinearFrameBufferGetHeight() ) * 0.5f;
 
-		f32 invHalfWidth  = 1.0f / halfWidth;
-		f32 invHalfHeight = 1.0f / halfHeight;
+		float invHalfWidth  = 1.0f / halfWidth;
+		float invHalfHeight = 1.0f / halfHeight;
 
-		f32 pi2rad     = 0.01745329f; // pi / 180
+		float pi2rad     = 0.01745329f; // pi / 180
 
-		f32 colorConv  = 0.00392156f; // 1 / 255
+		float colorConv  = 0.00392156f; // 1 / 255
 
 		posX =   ( posX - halfWidth  ) * invHalfWidth;
 		posY = - ( posY - halfHeight ) * invHalfHeight;
@@ -482,8 +480,8 @@ void
 // systems are reactivated
 void
 	ParticleSystemsReActivate(PPARTICLE_SYSTEMS_HEAD *particleSystems,
-							  s8                     *particleSystemName,
-							  f32                    _currentTime
+							  int8_t                     *particleSystemName,
+							  float                    _currentTime
 							 )
 {
 	CLIENT_POTYPE Obj = {0};
@@ -537,8 +535,8 @@ void
 // systems are updated
 void
 	ParticleSystemsUpdate(PPARTICLE_SYSTEMS_HEAD *particleSystems,
-						  s8                     *particleSystemName,
-						  f32                    _currentTime
+						  int8_t                     *particleSystemName,
+						  float                    _currentTime
 						 )
 {
 	CLIENT_POTYPE Obj = {0};
@@ -592,8 +590,8 @@ void
 // systems are drawn
 void
 	ParticleSystemsDraw(PPARTICLE_SYSTEMS_HEAD *particleSystems,
-						s8                     *particleSystemName,
-                        f32                    *_matrix
+						int8_t                     *particleSystemName,
+                        float                    *_matrix
 					   )
 {
 	CLIENT_POTYPE Obj = {0};
@@ -637,9 +635,9 @@ void
 // systems are updated and drawn
 void
 	ParticleSystemsUpdateAndDraw(PPARTICLE_SYSTEMS_HEAD *particleSystems,
-								 s8                     *particleSystemName,
-							     f32                    *_matrix,
-						         f32                    _currentTime
+								 int8_t                     *particleSystemName,
+							     float                    *_matrix,
+						         float                    _currentTime
 						        )
 {
 	CLIENT_POTYPE Obj = {0};
@@ -697,7 +695,7 @@ void
 // systems are terminated
 void
 	ParticleSystemsTerminate(PPARTICLE_SYSTEMS_HEAD *particleSystems,
-							 s8                     *particleSystemName
+							 int8_t                     *particleSystemName
 							)
 {
 	CLIENT_POTYPE Obj = {0};
