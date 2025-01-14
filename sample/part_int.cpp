@@ -33,9 +33,7 @@
 static float currentTime;
 static float *matrix;
 
-static int32_t Dead(CLIENT_POTYPE Obj1,
-                CLIENT_POTYPE Obj2
-               )
+static int32_t Dead(CLIENT_POTYPE /*Obj1*/, CLIENT_POTYPE Obj2)
 {
 	if( !Obj2.particleSystem )
 		return 1;
@@ -86,41 +84,43 @@ static int32_t Terminate(CLIENT_PPOTYPE Obj
 	return 0;
 }
 
-static void ParticleSystemsInternalLoad(PLIST_HEAD particleSystems,
+static int ParticleSystemsInternalLoad(PLIST_HEAD particleSystems,
 										FILE       *file
 									   )
 {
 	float           fbuffer[64] = {0};
 	int32_t           ibuffer[16] = {0};
 	CLIENT_POTYPE Obj         = {0};
+  
+  int result = 0;
 
-	fscanf( file, "%s\n", Obj.name );    // name
+	result += fscanf( file, "%s\n", Obj.name );    // name
 
-	fscanf( file, "%f\n", &fbuffer[0] ); // emitterLife
+	result += fscanf( file, "%f\n", &fbuffer[0] ); // emitterLife
 
-	fscanf( file, "%f %f %f\n", &fbuffer[1],  &fbuffer[2], &fbuffer[3] ); // posX posY posZ
+	result += fscanf( file, "%f %f %f\n", &fbuffer[1],  &fbuffer[2], &fbuffer[3] ); // posX posY posZ
 
-	fscanf( file, "%f %f %f\n", &fbuffer[4],  &fbuffer[5], &fbuffer[6] ); // posVarX posVarY posVarZ
+	result += fscanf( file, "%f %f %f\n", &fbuffer[4],  &fbuffer[5], &fbuffer[6] ); // posVarX posVarY posVarZ
 
-	fscanf( file, "%f %f\n", &fbuffer[7],  &fbuffer[8]  );  // yaw yawVar
-	fscanf( file, "%f %f\n", &fbuffer[9],  &fbuffer[10] );  // pitch pitchVar
-	fscanf( file, "%f %f\n", &fbuffer[11], &fbuffer[12] );  // speed speedVar
+	result += fscanf( file, "%f %f\n", &fbuffer[7],  &fbuffer[8]  );  // yaw yawVar
+	result += fscanf( file, "%f %f\n", &fbuffer[9],  &fbuffer[10] );  // pitch pitchVar
+	result += fscanf( file, "%f %f\n", &fbuffer[11], &fbuffer[12] );  // speed speedVar
 
-	fscanf( file, "%i\n", &ibuffer[0] );                   // numParticles
+	result += fscanf( file, "%i\n", &ibuffer[0] );                   // numParticles
 
-	fscanf( file, "%i %i\n", &ibuffer[1], &ibuffer[2] );   // emitsPerFrame emitVar
+	result += fscanf( file, "%i %i\n", &ibuffer[1], &ibuffer[2] );   // emitsPerFrame emitVar
 
-	fscanf( file, "%f %f\n", &fbuffer[13], &fbuffer[14] ); // life lifeVar
+	result += fscanf( file, "%f %f\n", &fbuffer[13], &fbuffer[14] ); // life lifeVar
 
-	fscanf( file, "%f %f %f\n", &fbuffer[15], &fbuffer[16], &fbuffer[17] ); // startColorR startColorG startColorB
-	fscanf( file, "%f %f %f\n", &fbuffer[18], &fbuffer[19], &fbuffer[20] ); // startColorVarR startColorVarG startColorVarB
-	fscanf( file, "%f %f %f\n", &fbuffer[21], &fbuffer[22], &fbuffer[23] ); // endColorR endColorG endColorB
-	fscanf( file, "%f %f %f\n", &fbuffer[24], &fbuffer[25], &fbuffer[26] ); // endColorVarR endColorVarG endColorVarB
+	result += fscanf( file, "%f %f %f\n", &fbuffer[15], &fbuffer[16], &fbuffer[17] ); // startColorR startColorG startColorB
+	result += fscanf( file, "%f %f %f\n", &fbuffer[18], &fbuffer[19], &fbuffer[20] ); // startColorVarR startColorVarG startColorVarB
+	result += fscanf( file, "%f %f %f\n", &fbuffer[21], &fbuffer[22], &fbuffer[23] ); // endColorR endColorG endColorB
+	result += fscanf( file, "%f %f %f\n", &fbuffer[24], &fbuffer[25], &fbuffer[26] ); // endColorVarR endColorVarG endColorVarB
 
-	fscanf( file, "%f %f %f\n", &fbuffer[27], &fbuffer[28], &fbuffer[29] ); // gForceX gForceY gForceZ
-	fscanf( file, "%f %f %f\n", &fbuffer[30], &fbuffer[31], &fbuffer[32] ); // gForceVarX gForceVarY gForceVarZ
+	result += fscanf( file, "%f %f %f\n", &fbuffer[27], &fbuffer[28], &fbuffer[29] ); // gForceX gForceY gForceZ
+	result += fscanf( file, "%f %f %f\n", &fbuffer[30], &fbuffer[31], &fbuffer[32] ); // gForceVarX gForceVarY gForceVarZ
 
-	fscanf( file, "%i %i %i", &ibuffer[3],  &ibuffer[4],  &ibuffer[5] );  // antiAlias physics regeneration
+	result += fscanf( file, "%i %i %i", &ibuffer[3],  &ibuffer[4],  &ibuffer[5] );  // antiAlias physics regeneration
 
 	// IF FIRST TWO CHARACTERS ARE "OS", THEN NORMALIZE THE INPUT
 	if( Obj.name && Obj.name[0] && Obj.name[1] && Obj.name[0]=='O' && Obj.name[1]=='S' )
@@ -203,7 +203,9 @@ static void ParticleSystemsInternalLoad(PLIST_HEAD particleSystems,
 
 	ListInsert( particleSystems, Obj, 0 );
 
-	fscanf( file, "\n\n" );
+	result += fscanf( file, "\n\n" );
+  
+  return result;
 }
 
 // loads the particle systems specified in the file
@@ -212,13 +214,15 @@ static void ParticleSystemsInternalLoad(PLIST_HEAD particleSystems,
 // does nothing else if filename is NULL
 PPARTICLE_SYSTEMS_HEAD
 	ParticleSystemsLoadFileAndActivate(PPARTICLE_SYSTEMS_HEAD *_particleSystems,
-                                       int8_t                     *filename,
+                                       char                     *filename,
 									   float                    _currentTime
                                       )
 {
 	int32_t        Num = 0;
 	FILE       *file;
 	PLIST_HEAD particleSystems;
+
+  int result = 0;
 
 	currentTime = _currentTime;
 
@@ -232,7 +236,7 @@ PPARTICLE_SYSTEMS_HEAD
 	if( !file )
 		return 0;
 
-	fscanf( file, "%i\n\n", &Num );  // NUMBER OF PARTICLE SYSTEMS
+	result += fscanf( file, "%i\n\n", &Num );  // NUMBER OF PARTICLE SYSTEMS
 
 	if( Num <= 0 )
 	{
@@ -267,27 +271,31 @@ PPARTICLE_SYSTEMS_HEAD
 // adds a particle system specified in the
 // file, does nothing if filename is NULL
 void
-	ParticleSystemsAddFileAndActivate(PPARTICLE_SYSTEMS_HEAD *particleSystems,
-									  int8_t                     *filename,
+	ParticleSystemsAddFileAndActivate(PPARTICLE_SYSTEMS_HEAD *particleSystemsRef,
+									  char                     *filename,
 								      float                    _currentTime
                                      )
 {
 	int32_t  Num = 0;
-	FILE *file;
+	FILE *file = 0;
+
+  PLIST_HEAD* particleSystems = 0;
+
+  int result = 0;
 
 	currentTime = _currentTime;
 
-	if( !particleSystems || !filename )
+	if( !particleSystemsRef || !filename )
 		return;
-
-	#define particleSystems ( (PLIST_HEAD) (*particleSystems) )
+  
+  particleSystems = (PLIST_HEAD*)particleSystemsRef;
 
 	file = fopen( filename, "rb" );
 
 	if( !file )
 		return;
 
-	fscanf( file, "%i\n\n", &Num );  // NUMBER OF PARTICLE SYSTEMS
+	result += fscanf( file, "%i\n\n", &Num );  // NUMBER OF PARTICLE SYSTEMS
 
 	if( Num <= 0 )
 	{
@@ -296,10 +304,10 @@ void
 		return;
 	}
 
-	if( !particleSystems )
-		particleSystems = ListInit( 0, 16 );
+	if( !particleSystems[0] )
+		particleSystems[0] = ListInit( 0, 16 );
 
-	if( !particleSystems )
+	if( !particleSystems[0] )
 	{
 		fclose ( file );
 
@@ -308,13 +316,11 @@ void
 
 	do
 	{
-		ParticleSystemsInternalLoad( particleSystems, file );
+		ParticleSystemsInternalLoad( particleSystems[0], file );
 
 	}while( --Num );
 
 	fclose ( file );
-
-	#undef particleSystems
 }
 
 // adds a particle system to the list
@@ -336,9 +342,9 @@ void
 void
 	ParticleSystemsAddAndActivate
 	(
-		PPARTICLE_SYSTEMS_HEAD *particleSystems,
+		PPARTICLE_SYSTEMS_HEAD *particleSystemsRef,
 
-		int8_t        *name,												  // EMITTER NAME
+		char        *name,												  // EMITTER NAME
 		float       _currentTime,											  // CURRENT TIME IN SECONDS
 		float       emitterLife,											  // HOW LONG WILL THE PARTICLE SYSTEM LAST - IN SECONDS
 		// TRANSFORMATION INFO
@@ -376,15 +382,17 @@ void
 {
 	CLIENT_POTYPE Obj = {0};
 
-	if( !particleSystems )
+  PLIST_HEAD* particleSystems = 0;
+
+	if( !particleSystemsRef )
 		return;
 
-	#define particleSystems ( (PLIST_HEAD) (*particleSystems) )
+	particleSystems = (PLIST_HEAD*)particleSystemsRef;
 
-	if( !particleSystems )
-		particleSystems = ListInit( 0, 16 );
+	if( !particleSystems[0] )
+		particleSystems[0] = ListInit( 0, 16 );
 
-	if( !particleSystems )
+	if( !particleSystems[0] )
 		return;
 
 	strcpy( Obj.name, name );
@@ -468,9 +476,7 @@ void
 	Obj.arg2 = physics;
 	Obj.arg3 = regeneration;
 
-	ListInsert( particleSystems, Obj, 0 );
-
-	#undef particleSystems
+	ListInsert( particleSystems[0], Obj, 0 );
 }
 
 // reactivates the particle system which has the name
@@ -479,28 +485,30 @@ void
 // if particleSystemName is NULL, all particle
 // systems are reactivated
 void
-	ParticleSystemsReActivate(PPARTICLE_SYSTEMS_HEAD *particleSystems,
-							  int8_t                     *particleSystemName,
+	ParticleSystemsReActivate(PPARTICLE_SYSTEMS_HEAD *particleSystemsRef,
+							  char                     *particleSystemName,
 							  float                    _currentTime
 							 )
 {
 	CLIENT_POTYPE Obj = {0};
+  
+  PLIST_HEAD* particleSystems = 0;
 
 	currentTime = _currentTime;
 
-	if( !particleSystems )
+	if( !particleSystemsRef )
 		return;
 
-	#define particleSystems ( (PLIST_HEAD) (*particleSystems) )
+	particleSystems = (PLIST_HEAD*)particleSystemsRef;
 
-	if( !particleSystems )
+	if( !particleSystems[0] )
 		return;
 
-	if( ListIsEmpty( particleSystems, 0 ) )
+	if( ListIsEmpty( particleSystems[0], 0 ) )
 	{
-		ListTerminate( particleSystems );
+		ListTerminate( particleSystems[0] );
 
-		particleSystems = 0;
+		particleSystems[0] = 0;
 
 		return;
 	}
@@ -509,23 +517,23 @@ void
 	{
 		strcpy( Obj.name, particleSystemName );
 
-		if( ListFind( particleSystems, Equal, &Obj ) == 0 )
+		if( ListFind( particleSystems[0], Equal, &Obj ) == 0 )
 		{
 			Activate( &Obj );
 
 			if( !Obj.particleSystem )
-				ListRemove( particleSystems, Equal, &Obj );
+				ListRemove( particleSystems[0], Equal, &Obj );
 		}
 	}
 	else
 	{
-		ListDump( particleSystems, Activate, 0 );
+		ListDump( particleSystems[0], Activate, 0 );
 
-		while( ListRemove( particleSystems, Dead, &Obj ) == 0 )
-			1;
+		while( ListRemove( particleSystems[0], Dead, &Obj ) == 0 )
+    {
+      /* nop */
+    }
 	}
-
-	#undef particleSystems
 }
 
 // updates the particle system which has the name
@@ -534,28 +542,30 @@ void
 // if particleSystemName is NULL, all particle
 // systems are updated
 void
-	ParticleSystemsUpdate(PPARTICLE_SYSTEMS_HEAD *particleSystems,
-						  int8_t                     *particleSystemName,
+	ParticleSystemsUpdate(PPARTICLE_SYSTEMS_HEAD *particleSystemsRef,
+						  char                     *particleSystemName,
 						  float                    _currentTime
 						 )
 {
 	CLIENT_POTYPE Obj = {0};
+  
+  PLIST_HEAD* particleSystems = 0;
 
 	currentTime = _currentTime;
 
-	if( !particleSystems )
+	if( !particleSystemsRef )
 		return;
 
-	#define particleSystems ( (PLIST_HEAD) (*particleSystems) )
+	particleSystems = (PLIST_HEAD*)particleSystemsRef;
 
-	if( !particleSystems )
+	if( !particleSystems[0] )
 		return;
 
-	if( ListIsEmpty( particleSystems, 0 ) )
+	if( ListIsEmpty( particleSystems[0], 0 ) )
 	{
-		ListTerminate( particleSystems );
+		ListTerminate( particleSystems[0] );
 
-		particleSystems = 0;
+		particleSystems[0] = 0;
 
 		return;
 	}
@@ -564,23 +574,23 @@ void
 	{
 		strcpy( Obj.name, particleSystemName );
 
-		if( ListFind( particleSystems, Equal, &Obj ) == 0 )
+		if( ListFind( particleSystems[0], Equal, &Obj ) == 0 )
 		{
 			Update( &Obj );
 
 			if( !Obj.particleSystem )
-				ListRemove( particleSystems, Equal, &Obj );
+				ListRemove( particleSystems[0], Equal, &Obj );
 		}
 	}
 	else
 	{
-		ListDump( particleSystems, Update, 0 );
+		ListDump( particleSystems[0], Update, 0 );
 
-		while( ListRemove( particleSystems, Dead, &Obj ) == 0 )
-			1;
+		while( ListRemove( particleSystems[0], Dead, &Obj ) == 0 )
+    {
+      /* nop */
+    }
 	}
-
-	#undef particleSystems
 }
 
 // draws the particle system which has the name
@@ -589,28 +599,30 @@ void
 // if particleSystemName is NULL, all particle
 // systems are drawn
 void
-	ParticleSystemsDraw(PPARTICLE_SYSTEMS_HEAD *particleSystems,
-						int8_t                     *particleSystemName,
+	ParticleSystemsDraw(PPARTICLE_SYSTEMS_HEAD *particleSystemsRef,
+						char                     *particleSystemName,
                         float                    *_matrix
 					   )
 {
 	CLIENT_POTYPE Obj = {0};
+  
+  PLIST_HEAD* particleSystems = 0;
 
 	matrix = _matrix;
 
-	if( !particleSystems )
+	if( !particleSystemsRef )
 		return;
 
-	#define particleSystems ( (PLIST_HEAD) (*particleSystems) )
+	particleSystems = (PLIST_HEAD*)particleSystemsRef;
 
-	if( !particleSystems )
+	if( !particleSystems[0] )
 		return;
 
-	if( ListIsEmpty( particleSystems, 0 ) )
+	if( ListIsEmpty( particleSystems[0], 0 ) )
 	{
-		ListTerminate( particleSystems );
+		ListTerminate( particleSystems[0] );
 
-		particleSystems = 0;
+		particleSystems[0] = 0;
 
 		return;
 	}
@@ -619,13 +631,11 @@ void
 	{
 		strcpy( Obj.name, particleSystemName );
 
-		if( ListFind( particleSystems, Equal, &Obj ) == 0 )
+		if( ListFind( particleSystems[0], Equal, &Obj ) == 0 )
 			Draw( &Obj );
 	}
 	else
-		ListDump( particleSystems, Draw, 0 );
-
-	#undef particleSystems
+		ListDump( particleSystems[0], Draw, 0 );
 }
 
 // updates and draws the particle system which has the name
@@ -634,31 +644,33 @@ void
 // if particleSystemName is NULL, all particle
 // systems are updated and drawn
 void
-	ParticleSystemsUpdateAndDraw(PPARTICLE_SYSTEMS_HEAD *particleSystems,
-								 int8_t                     *particleSystemName,
+	ParticleSystemsUpdateAndDraw(PPARTICLE_SYSTEMS_HEAD *particleSystemsRef,
+								 char                     *particleSystemName,
 							     float                    *_matrix,
 						         float                    _currentTime
 						        )
 {
 	CLIENT_POTYPE Obj = {0};
+  
+  PLIST_HEAD* particleSystems = 0;
 
 	matrix      = _matrix;
 
 	currentTime = _currentTime;
 
-	if( !particleSystems )
+	if( !particleSystemsRef )
 		return;
 
-	#define particleSystems ( (PLIST_HEAD) (*particleSystems) )
+	particleSystems = (PLIST_HEAD*)particleSystemsRef;
 
-	if( !particleSystems )
+	if( !particleSystems[0] )
 		return;
 
-	if( ListIsEmpty( particleSystems, 0 ) )
+	if( ListIsEmpty( particleSystems[0], 0 ) )
 	{
-		ListTerminate( particleSystems );
+		ListTerminate( particleSystems[0] );
 
-		particleSystems = 0;
+		particleSystems[0] = 0;
 
 		return;
 	}
@@ -667,25 +679,25 @@ void
 	{
 		strcpy( Obj.name, particleSystemName );
 
-		if( ListFind( particleSystems, Equal, &Obj ) == 0 )
+		if( ListFind( particleSystems[0], Equal, &Obj ) == 0 )
 		{
 			Update( &Obj );
 			Draw  ( &Obj );
 
 			if( !Obj.particleSystem )
-				ListRemove( particleSystems, Equal, &Obj );
+				ListRemove( particleSystems[0], Equal, &Obj );
 		}
 	}
 	else
 	{
-		ListDump( particleSystems, Update, 0 );
-		ListDump( particleSystems, Draw,   0 );
+		ListDump( particleSystems[0], Update, 0 );
+		ListDump( particleSystems[0], Draw,   0 );
 
-		while( ListRemove( particleSystems, Dead, &Obj ) == 0 )
-			1;
+		while( ListRemove( particleSystems[0], Dead, &Obj ) == 0 )
+    {
+      /* nop */
+    }
 	}
-
-	#undef particleSystems
 }
 
 // terminates the particle system which has the name
@@ -694,25 +706,27 @@ void
 // if particleSystemName is NULL, all particle
 // systems are terminated
 void
-	ParticleSystemsTerminate(PPARTICLE_SYSTEMS_HEAD *particleSystems,
-							 int8_t                     *particleSystemName
+	ParticleSystemsTerminate(PPARTICLE_SYSTEMS_HEAD *particleSystemsRef,
+							 char                     *particleSystemName
 							)
 {
 	CLIENT_POTYPE Obj = {0};
+  
+  PLIST_HEAD* particleSystems = 0;
 
-	if( !particleSystems )
+	if( !particleSystemsRef )
 		return;
 
-	#define particleSystems ( (PLIST_HEAD) (*particleSystems) )
+	particleSystems = (PLIST_HEAD*)particleSystemsRef;
 
-	if( !particleSystems )
+	if( !particleSystems[0] )
 		return;
 
-	if( ListIsEmpty( particleSystems, 0 ) )
+	if( ListIsEmpty( particleSystems[0], 0 ) )
 	{
-		ListTerminate( particleSystems );
+		ListTerminate( particleSystems[0] );
 
-		particleSystems = 0;
+		particleSystems[0] = 0;
 
 		return;
 	}
@@ -721,17 +735,15 @@ void
 	{
 		strcpy( Obj.name, particleSystemName );
 
-		if( ListRemove( particleSystems, Equal, &Obj ) == 0 )
+		if( ListRemove( particleSystems[0], Equal, &Obj ) == 0 )
 			Terminate( &Obj );
 	}
 	else
 	{
-		ListDump( particleSystems, Terminate, 0 );
+		ListDump( particleSystems[0], Terminate, 0 );
 
-		ListTerminate( particleSystems );
+		ListTerminate( particleSystems[0] );
 
-		particleSystems = 0;
+		particleSystems[0] = 0;
 	}
-
-	#undef particleSystems
 }

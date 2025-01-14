@@ -10,10 +10,6 @@
 // ...
 // because of static global variable currentTime
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
-
 typedef struct __PARTICLE_SYSTEMS_HEAD * PPARTICLE_SYSTEMS_HEAD;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,7 +52,7 @@ void
 // converts angles from degrees to radians
 // speed is normalized based on BackBufferViewPortWidth
 // force is normalized based on BackBufferViewPortWidth and BackBufferViewPortHeight
-void
+extern void
 	ParticleSystemsAddAndActivate
 	(
 		PPARTICLE_SYSTEMS_HEAD *particleSystems,
@@ -161,7 +157,3 @@ void
 	ParticleSystemsTerminate(PPARTICLE_SYSTEMS_HEAD *particleSystems,
 						     char                   *particleSystemName
 							);
-
-#ifdef __cplusplus
-	}
-#endif

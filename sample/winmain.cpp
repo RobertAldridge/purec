@@ -44,18 +44,18 @@
 // Client functions must always return 0 when succesful. Any
 // other return value will cause initial termination and a
 // warning log.
-extern "C" extern int init(double halfWidth, double halfHeight, void(*circleDrawingPrimitive)(int, int, int, int, int), void(*lineDrawingPrimitive)(int, int, int, int, int, int), void(*pointDrawingPrimitive)(int, int, int), void(*_textDrawingPrimitive)(int, int, const char* const, ...) );
+extern int init(double halfWidth, double halfHeight, void(*circleDrawingPrimitive)(int, int, int, int, int), void(*lineDrawingPrimitive)(int, int, int, int, int, int), void(*pointDrawingPrimitive)(int, int, int), void(*_textDrawingPrimitive)(int, int, const char* const, ...) );
 
 // We want to stick with basic types here,
 // so pass 3 floating points.
-extern "C" extern int main(int inputEvent, double x, double y, double B, double halfWidth, double halfHeight);
+extern int main(int inputEvent, double x, double y, double B, double halfWidth, double halfHeight);
 
 // The return value of term isn't used for much
 // since initial termination must have already taken
 // place for the function to be called.  It will
 // still be logged as a warning if the return value
 // of the function is not 0.
-extern "C" extern int term();
+extern int term();
 
 #if 0
 #ifdef DEBUG
@@ -109,6 +109,7 @@ using std::queue;
 #include "font.h"
 
 #include "particle client.h"
+//#include "part_pub.h"
 
 #include "memory.h"
 
@@ -139,6 +140,11 @@ extern void DeAllocate(void * Memory)
 void ParticleSystemsInitGraphics(void* /*backBufferPixelPointer*/, int /*backBufferViewPortWidth*/, int /*backBufferViewPortHeight*/, int /*backBufferBitDepth*/, int /*backBufferPitch*/)
 {
 }
+
+//void ParticleSystemBlah()
+//{
+// PEMITTER blah = CreateParticleSystem(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+//}
                  
 static INDEX_TYPE TestObject(CLIENT_POTYPE ClientObject1, CLIENT_POTYPE ClientObject2)
 {
@@ -3504,7 +3510,9 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
   case WM_SYSKEYDOWN: // switch(msg) - WM_SYSKEYDOWN
   {
-    if(wParam == VK_RETURN && (lParam & (1 << 29) ) )
+    uint32_t bit = 1 << 29;
+
+    if(wParam == VK_RETURN && (lParam & bit) )
     {
       WindowStyle::setStyle();
 
@@ -4294,60 +4302,6 @@ static int RemoveHandle(void* handle)
   return 0;
 }
 
-extern void* operator new(size_t size)
-{
-  if(IsApplicationEntry == false)
-  {
-    return Allocate(size);
-  }
-
-  void* new_memory = InsertHeapAllocation(size);
-
-  return new_memory;
-}
-
-extern void* operator new[](size_t size)
-{
-  if(IsApplicationEntry == false)
-  {
-    return Allocate(size);
-  }
-
-  void* new_memory = InsertHeapAllocation(size);
-
-  return new_memory;
-}
-
-extern void operator delete(void* ptr)
-{
-  if(IsApplicationEntry == false)
-  {
-    DeAllocate(ptr);
-
-    return;
-  }
-
-  if(ptr)
-  {
-    RemoveHeapAllocation(ptr);
-  }
-}
-
-extern void operator delete[](void* ptr)
-{
-  if(IsApplicationEntry == false)
-  {
-    DeAllocate(ptr);
-
-    return;
-  }
-
-  if(ptr)
-  {
-    RemoveHeapAllocation(ptr);
-  }
-}
-
 const unsigned int HEAP_ALLOCATION_ERROR = 0xffffffff;
 
 static void* InsertHeapAllocation(size_t numBytesToAllocate)
@@ -4603,7 +4557,7 @@ static int initTime()
   int error = 0;
 
   LARGE_INTEGER temp;
-  temp.QuadPart = 0;
+  memset( &temp, 0, sizeof(LARGE_INTEGER) );
 
   if( !QueryPerformanceFrequency( &temp) )
   {
@@ -4637,7 +4591,7 @@ static int updateTime()
   double previousTime = 0;
 
   LARGE_INTEGER temp;
-  temp.QuadPart = 0;
+  memset( &temp, 0, sizeof(LARGE_INTEGER) );
 
   if( !QueryPerformanceCounter( &temp) )
   {
@@ -4657,19 +4611,19 @@ static int updateTime()
   return error;
 }
 
-extern "C" extern int init(double /*_halfWidth*/, double /*_halfHeight*/, void(*/*_circleDrawingPrimitive*/)(int, int, int, int, int), void(*/*_lineDrawingPrimitive*/)(int, int, int, int, int, int), void(*/*_pointDrawingPrimitive*/)(int, int, int), void(*/*_textDrawingPrimitive*/)(int, int, const char* const, ...) ) // init
+extern int init(double /*_halfWidth*/, double /*_halfHeight*/, void(*/*_circleDrawingPrimitive*/)(int, int, int, int, int), void(*/*_lineDrawingPrimitive*/)(int, int, int, int, int, int), void(*/*_pointDrawingPrimitive*/)(int, int, int), void(*/*_textDrawingPrimitive*/)(int, int, const char* const, ...) ) // init
 {
   return 0;
 
 } // init
 
-extern "C" extern int main(int /*inputEvent*/, double /*x*/, double /*y*/, double /*B*/, double /*_halfWidth*/, double /*_halfHeight*/) // main
+extern int main(int /*inputEvent*/, double /*x*/, double /*y*/, double /*B*/, double /*_halfWidth*/, double /*_halfHeight*/) // main
 {
   return 0;
 
 } // main
 
-extern "C" extern int term() // term
+extern int term() // term
 {
   return 0;
 

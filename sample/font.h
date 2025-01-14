@@ -4,10 +4,6 @@
 #undef TextOut
 #define TextOut RobsTextOut
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
-
 // Creates a white font
 // when TextOutInitSystem is first called.
 //
@@ -83,7 +79,3 @@ extern const RECT TextOutRect( int x,
 // All released fonts will be reloaded on the next call to TextOutInitSystem
 extern void TextOutTermSystem(
 							        );
-
-#ifdef __cplusplus
-	}
-#endif

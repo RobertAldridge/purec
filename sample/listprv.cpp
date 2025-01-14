@@ -72,11 +72,11 @@ ListInit
 	if(MaxNumberOfObjects<0)
 		return 0;
 
-	Head=calloc(1,sizeof(LIST_HEAD));
+	Head=(PLIST_HEAD)calloc(1,sizeof(LIST_HEAD));
 
 	if(Head)
 	{
-		Head->ObjectArray=calloc(1,sizeof(CLIENT_POTYPE)*MaxNumberOfObjects*2);
+		Head->ObjectArray=(CLIENT_POTYPE*)calloc(1,sizeof(CLIENT_POTYPE)*MaxNumberOfObjects*2);
 
 		if(!Head->ObjectArray)
 		{
@@ -188,7 +188,7 @@ ListInsert
 			return ERROR;
 		}
 
-		GrowArray=calloc(1,sizeof(CLIENT_POTYPE)*Head->MaxNumberOfObjects*4);
+		GrowArray=(CLIENT_POTYPE*)calloc(1,sizeof(CLIENT_POTYPE)*Head->MaxNumberOfObjects*4);
 
 		if(!GrowArray)
 			return ERROR;

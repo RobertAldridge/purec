@@ -5,10 +5,6 @@
 //
 // editor Robert Aldridge
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 typedef struct __EMITTER *PEMITTER;
 
 // creates dynamic memory for a particle system structure
@@ -17,7 +13,7 @@ typedef struct __EMITTER *PEMITTER;
 // if emitterLife <= 0 then the lifetime of the particle system is infinite
 //
 // initializes and returns the dynamically allocated particle system
-PEMITTER
+extern PEMITTER
 CreateParticleSystem
 (
 	char        *name,														// EMITTER NAME
@@ -48,7 +44,7 @@ CreateParticleSystem
 // if the particles have already been activated, they are reset
 //
 // if the particle system has died, it will be destroyed and nulled out
-void
+extern void
 ActivateParticleSystem(PEMITTER     *particleSystem, // PREVIOUSLY CREATED PARTICLE SYSTEM
 
 					   float         currentTime,    // CURRENT TIME IN SECONDS
@@ -70,7 +66,7 @@ ActivateParticleSystem(PEMITTER     *particleSystem, // PREVIOUSLY CREATED PARTI
 // updates the particles of a particle system
 //
 // if the particle system has died, it will be destroyed and nulled out
-void
+extern void
 UpdateParticleSystem
 (
 	PEMITTER      *particleSystem,								 // PREVIOUSLY CREATED PARTICLE SYSTEM
@@ -99,7 +95,3 @@ DrawParticleSystem(PEMITTER *particleSystem,     // PREVIOUSLY CREATED PARTICLE 
 void
 TerminateParticleSystem(PEMITTER *particleSystem // PREVIOUSLY CREATED PARTICLE SYSTEM
                        );
-
-#ifdef __cplusplus
-}
-#endif

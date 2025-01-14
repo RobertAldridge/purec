@@ -1833,7 +1833,7 @@ enum
   OK = 0
 };
 
-extern "C" extern int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int), void(*_textDrawingPrimitive)(int, int, const char* const, ...) ) // init
+extern int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int), void(*_textDrawingPrimitive)(int, int, const char* const, ...) ) // init
 {
   // Initialize the random number generator.
   srand(time(0) );
@@ -1873,7 +1873,7 @@ extern "C" extern int init(double _halfWidth, double _halfHeight, void(*_circleD
 
 } // init
 
-extern "C" extern int main(int inputEvent, double x, double y, double B, double _halfWidth, double _halfHeight) // main
+extern int main(int inputEvent, double x, double y, double B, double _halfWidth, double _halfHeight) // main
 {
   if( !deBoorList || deBoorList->size() == 0)
   {
@@ -1977,7 +1977,7 @@ extern "C" extern int main(int inputEvent, double x, double y, double B, double 
 
 } // main
 
-extern "C" extern int term() // term
+extern int term() // term
 {
   iteratorDB loop;
 

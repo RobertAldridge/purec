@@ -5,10 +5,6 @@
 //
 // editor Robert Aldridge
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 // Vectors in homogeneous space...
 typedef struct __VECTOR
 {
@@ -92,7 +88,3 @@ typedef struct __EMITTER // STRUCT FOR PARTICLE SYSTEM
 	VECTOR    gForce,gForceVar;				 // GLOBAL GRAVITY, WIND, ETC. AND VARIATION
 
 }EMITTER,*PEMITTER;
-
-#ifdef __cplusplus
-}
-#endif

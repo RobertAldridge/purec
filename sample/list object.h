@@ -2,8 +2,6 @@
 // client_potype.h
 // POTYPE FOR LIST FUNCTIONS
 
-#pragma warning(disable : 4201)
-
 typedef union __CLIENT_POTYPE
 {
 	int           integer;
@@ -23,5 +21,3 @@ typedef union __CLIENT_POTYPE
   void *object;
 
 }CLIENT_POTYPE,*CLIENT_PPOTYPE;
-
-#pragma warning(default : 4201)

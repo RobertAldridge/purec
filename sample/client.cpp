@@ -7,18 +7,14 @@
  *
  */
 
-#pragma warning(push,3)
+#include <windows.h>
+#include <winbase.h>
 
-	#include <windows.h>
-	#include <winbase.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <time.h>
 
-	#include <stdlib.h>
-	#include <stdio.h>
-	#include <time.h>
-
-	#include <crtdbg.h>
-
-#pragma warning(push,4)
+#include <crtdbg.h>
 
 #include "client_potype.h"
 #include "listpub.h"
@@ -27,10 +23,10 @@
 
 int
 Evaluate(
-    CLIENT_POTYPE  Object
+    CLIENT_POTYPE*  Object
     )
 {
-    printf("This object is %d\n", Object.integer);
+    printf("This object is %d\n", Object->integer);
 	return 0;
 }
 
@@ -66,7 +62,7 @@ void
 ProcessList(
     PLIST_HEAD    ListHead,
     CLIENT_POTYPE InputArray[NUMBER],
-    char     *    IdentifierString
+    const char     *    IdentifierString
     )
 {
     unsigned int    count;
@@ -96,12 +92,12 @@ ProcessList(
 
     ListDump(ListHead, Evaluate, 0);
 
-    printf("InsertTime taken is %d microseconds for %s \n",
-           insertTime,
+    printf("InsertTime taken is %i microseconds for %s \n",
+           (int)insertTime,
            IdentifierString);
 
-    printf("SortTime taken is %d microseconds for %s\n",
-            sortTime,
+    printf("SortTime taken is %i microseconds for %s\n",
+            (int)sortTime,
             IdentifierString);
 }
 
@@ -135,7 +131,7 @@ mainListTest(
         ListRemove(listHead, AreEqual, &(input[count]));
 
     for(count = 0; count < NUMBER; ++count)
-        input[count].integer = (2*count + (input[count].integer/16385))/2;
+        input[count].integer = (int) ( (2 * count + (input[count].integer / 16385) ) / 2);
 
     ProcessList(listHead, input, "QuasiInverse input");
 

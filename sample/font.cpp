@@ -51,7 +51,7 @@ static uint8_t*  text_white;
 static uint32_t GetIdealFontWidth() { return 10; }
 static uint32_t GetIdealFontHeight() { return 14; }
 
-extern "C" extern void TextOutInitSystem( uint8_t** ( *__backBufferFunction ) ( ),
+extern void TextOutInitSystem( uint8_t** ( *__backBufferFunction ) ( ),
 							              const uint32_t _width,
 							              const uint32_t _height,
 							              const uint32_t _idealWidth,
@@ -229,7 +229,7 @@ static void _TextOut( int32_t x, int32_t y, const char * const dest_buffer )
 	}
 }
 
-extern "C" extern void TextOut( int32_t x,
+extern void TextOut( int32_t x,
 					            int32_t y,
 					            const char * const format,...
 				              )
@@ -313,7 +313,7 @@ static const RECT _TextOutRect( int32_t x, int32_t y, const char * const dest_bu
 	return output_rect;
 }
 
-extern "C" extern const RECT TextOutRect( int32_t x,
+extern const RECT TextOutRect( int32_t x,
 							              int32_t y,
 						                  const char * const format,...
 							            )
@@ -370,7 +370,7 @@ extern "C" extern const RECT TextOutRect( int32_t x,
 	return output_rect;
 }
 
-extern "C" extern void TextOutTermSystem(
+extern void TextOutTermSystem(
 							            )
 {
 	if( text_white_array_pointer )

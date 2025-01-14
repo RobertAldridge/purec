@@ -98,3 +98,57 @@ iterator Replace(iterator, <key, value> );
 
 iterator UniqueInsert(iterator, <key, value> );
 iterator EquivalentInsert(iterator, <key, value> );
+
+extern void* operator new(size_t size)
+{
+  if(IsApplicationEntry == false)
+  {
+    return Allocate(size);
+  }
+
+  void* new_memory = InsertHeapAllocation(size);
+
+  return new_memory;
+}
+
+extern void* operator new[](size_t size)
+{
+  if(IsApplicationEntry == false)
+  {
+    return Allocate(size);
+  }
+
+  void* new_memory = InsertHeapAllocation(size);
+
+  return new_memory;
+}
+
+extern void operator delete(void* ptr)
+{
+  if(IsApplicationEntry == false)
+  {
+    DeAllocate(ptr);
+
+    return;
+  }
+
+  if(ptr)
+  {
+    RemoveHeapAllocation(ptr);
+  }
+}
+
+extern void operator delete[](void* ptr)
+{
+  if(IsApplicationEntry == false)
+  {
+    DeAllocate(ptr);
+
+    return;
+  }
+
+  if(ptr)
+  {
+    RemoveHeapAllocation(ptr);
+  }
+}

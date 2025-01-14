@@ -1,10 +1,6 @@
 
 // File Name: memory.h
 
-#ifdef __cplusplus
-   extern "C" {
-#endif
-
 extern
 void *
 Allocate(
@@ -20,7 +16,3 @@ DeAllocate(
 extern
 void
 TermAllocate();
-
-#ifdef __cplusplus
-   }
-#endif

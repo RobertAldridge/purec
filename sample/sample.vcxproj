@@ -109,7 +109,7 @@
       <AdditionalIncludeDirectories>C:\business\purec\blah;C:\business\purec\sample;C:\business\purec\ssmm;C:\business\purec\bintree;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <DisableSpecificWarnings>4127;4200;4255;4312;4505;4668;4710;4711;5039;5045;6011;28182</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4127;4200;4201;4255;4312;4505;4668;4710;4711;5039;5045;6001;6011;28182</DisableSpecificWarnings>
       <CompileAsManaged>false</CompileAsManaged>
       <ForcedIncludeFiles>header.h</ForcedIncludeFiles>
     </ClCompile>
@@ -131,7 +131,7 @@
       <AdditionalIncludeDirectories>C:\business\purec\blah;C:\business\purec\sample;C:\business\purec\ssmm;C:\business\purec\bintree;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <DisableSpecificWarnings>4127;4200;4255;4312;4505;4668;4710;4711;5039;5045;6011;28182</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4127;4200;4201;4255;4312;4505;4668;4710;4711;5039;5045;6001;6011;28182</DisableSpecificWarnings>
       <CompileAsManaged>false</CompileAsManaged>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -200,12 +200,13 @@
     <ClCompile Include="..\ssmm\ssMm.cpp" />
     <ClCompile Include="..\ssmm\ssQueue.cpp" />
     <ClCompile Include="..\ssmm\ssStack.cpp" />
+    <ClCompile Include="client.cpp" />
     <ClCompile Include="deBoor.cpp" />
     <ClCompile Include="font.cpp" />
     <ClCompile Include="font_util.cpp" />
-    <ClCompile Include="listprv.c" />
-    <ClCompile Include="part.c" />
-    <ClCompile Include="part_int.c" />
+    <ClCompile Include="listprv.cpp" />
+    <ClCompile Include="part.cpp" />
+    <ClCompile Include="part_int.cpp" />
     <ClCompile Include="sample.cpp" />
     <ClCompile Include="winmain.cpp" />
   </ItemGroup>
@@ -230,6 +231,7 @@
     <ClInclude Include="listpub.h" />
     <ClInclude Include="memory.h" />
     <ClInclude Include="particle client.h" />
+    <ClInclude Include="partpub.h" />
     <ClInclude Include="part_priv.h" />
     <ClInclude Include="part_pub.h" />
     <ClInclude Include="resource_headers.h" />

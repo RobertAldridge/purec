@@ -39,9 +39,9 @@ do{				                                       \
 
 static int32_t id;
 
-static __forceinline const uint8_t    __LinearFrameBufferGetBitDepth();
+static uint8_t __LinearFrameBufferGetBitDepth();
 
-static __forceinline uint8_t ** const __LinearFrameBufferGetBackBufferArray();
+static uint8_t** __LinearFrameBufferGetBackBufferArray();
 
 // creates dynamic memory for a particle system structure
 // creates dynamic memory for the particles of that system
@@ -75,11 +75,11 @@ CreateParticleSystem
 	float       gForceVarX,     float gForceVarY,     float gForceVarZ
 )
 {
-	PEMITTER particleSystem = calloc( 1, sizeof(EMITTER) );
+	PEMITTER particleSystem = (PEMITTER)calloc( 1, sizeof(EMITTER) );
 
 	if( particleSystem )
 	{
-		particleSystem->particles = calloc( 1, sizeof(PARTICLE) * numParticles );
+		particleSystem->particles = (PPARTICLE)calloc( 1, sizeof(PARTICLE) * numParticles );
 
 		if( !particleSystem->particles )
 		{
@@ -221,7 +221,7 @@ ActivateParticleSystem(PEMITTER      *_particleSystem, // PREVIOUSLY CREATED PAR
 		particleSystem->flags &= ~REGENERATE_BIT;
 
 	particle       = particleSystem->particles;
-	totalParticles = particleSystem->totalParticles;
+	totalParticles = (uint32_t)particleSystem->totalParticles;
 
 	speed_y_factor = ( (float) __LinearFrameBufferGetHeight() ) / ( (float) __LinearFrameBufferGetWidth() );
 
@@ -282,7 +282,7 @@ ActivateParticleSystem(PEMITTER      *_particleSystem, // PREVIOUSLY CREATED PAR
 // updates the particles of a particle system
 //
 // if the particle system has died, it will be destroyed and nulled out
-void
+extern void
 UpdateParticleSystem
 (
 	PEMITTER *_particleSystem,                          // PREVIOUSLY CREATED PARTICLE SYSTEM
@@ -304,6 +304,9 @@ UpdateParticleSystem
 	COLOR     start,end;
 	PEMITTER  particleSystem;
 	PPARTICLE particle;
+
+  memset( &start, 0, sizeof(COLOR) );
+  memset( &end, 0, sizeof(COLOR) );
 
 	if( ! ( _particleSystem && *_particleSystem && (*_particleSystem)->particles ) )
 		return;
@@ -337,7 +340,7 @@ UpdateParticleSystem
 	}
 
 	particle       = particleSystem->particles;
-	totalParticles = particleSystem->totalParticles;
+	totalParticles = (uint32_t)particleSystem->totalParticles;
 
 	emitsPerFrame  = (int32_t) ( ( (float) particleSystem->emitsPerFrame ) + ( ( (float) particleSystem->emitVar ) * RND() ) );
 
@@ -463,7 +466,7 @@ UpdateParticleSystem
 	}while( --totalParticles );
 
 	particle       = particleSystem->particles;
-	totalParticles = particleSystem->totalParticles;
+	totalParticles = (uint32_t)particleSystem->totalParticles;
 
 	if( emitsPerFrame > 0 )
 		do
@@ -486,8 +489,8 @@ static uint8_t  LFbitDepth = 32, **LFbackBufferArray;
 static uint16_t LFwidth,LFheight;
 
 static uint8_t** ( *_backBufferFunction ) ( );
-
-extern void __LinearFrameBufferOSSetBackBuffer(uint8_t** ( *__backBufferFunction ) ( ),
+                        
+void __LinearFrameBufferOSSetBackBuffer(uint8_t** ( *__backBufferFunction ) ( ),
 											   uint16_t     BackBufferViewPortWidth,
 											   uint16_t     BackBufferViewPortHeight
 											  )
@@ -500,11 +503,11 @@ extern void __LinearFrameBufferOSSetBackBuffer(uint8_t** ( *__backBufferFunction
 	LFheight       = BackBufferViewPortHeight;
 }
 
-static __forceinline const uint8_t    __LinearFrameBufferGetBitDepth()        { return LFbitDepth;        }
-extern __forceinline const uint16_t   __LinearFrameBufferGetWidth()           { return LFwidth;           }
-extern __forceinline const uint16_t   __LinearFrameBufferGetHeight()          { return LFheight;          }
+static uint8_t    __LinearFrameBufferGetBitDepth()        { return LFbitDepth;        }
+extern uint16_t   __LinearFrameBufferGetWidth()           { return LFwidth;           }
+extern uint16_t   __LinearFrameBufferGetHeight()          { return LFheight;          }
 
-static __forceinline uint8_t ** const __LinearFrameBufferGetBackBufferArray() { return LFbackBufferArray; }
+static uint8_t ** __LinearFrameBufferGetBackBufferArray() { return LFbackBufferArray; }
 
 // draws the particles of a particle system, does not update them
 //
@@ -560,7 +563,7 @@ DrawParticleSystem(PEMITTER *_particleSystem, // PREVIOUSLY CREATED PARTICLE SYS
 	particleSystem = *_particleSystem;
 
 	particle       = particleSystem->particles;
-	totalParticles = particleSystem->totalParticles;
+	totalParticles = (uint32_t)particleSystem->totalParticles;
 
 	antiAlias      = (uint8_t) ( ( particleSystem->flags & ANTI_ALIAS_BIT ) == ANTI_ALIAS_BIT );
 
@@ -688,8 +691,8 @@ DrawParticleSystem(PEMITTER *_particleSystem, // PREVIOUSLY CREATED PARTICLE SYS
 						else
 							b1 = (uint8_t) ( b1 * 255.0 );
 
-						if( x0 >= 0 && x0 <= ( width - 1 ) && y0 >= 0 && y0 <= ( height - 1 ) && z0 >= .000001f && z0 <= 1 &&
-							x1 >= 0 && x1 <= ( width - 1 ) && y1 >= 0 && y1 <= ( height - 1 ) && z1 >= .000001f && z1 <= 1
+						if( x0 >= 0 && (double)x0 <= ( width - 1 ) && y0 >= 0 && (double)y0 <= ( height - 1 ) && z0 >= .000001 && z0 <= 1 &&
+							x1 >= 0 && (double)x1 <= ( width - 1 ) && y1 >= 0 && (double)y1 <= ( height - 1 ) && z1 >= .000001 && z1 <= 1
                           )
 							goto drawline;
 						else
@@ -954,8 +957,8 @@ DrawParticleSystem(PEMITTER *_particleSystem, // PREVIOUSLY CREATED PARTICLE SYS
 						b0 += ( b0 - b1 ) * t;
 					}
 
-					if( ! ( x0 >= 0 && x0 <= ( width - 1 ) && y0 >= 0 && y0 <= ( height - 1 ) && z0 >= .000001f && z0 <= 1 &&
-							x1 >= 0 && x1 <= ( width - 1 ) && y1 >= 0 && y1 <= ( height - 1 ) && z1 >= .000001f && z1 <= 1 )
+					if( ! ( x0 >= 0 && (double)x0 <= ( width - 1 ) && y0 >= 0 && (double)y0 <= ( height - 1 ) && z0 >= .000001 && z0 <= 1 &&
+							x1 >= 0 && (double)x1 <= ( width - 1 ) && y1 >= 0 && (double)y1 <= ( height - 1 ) && z1 >= .000001 && z1 <= 1 )
                       )
 					{
 						++particle;

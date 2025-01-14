@@ -34,10 +34,6 @@
  *
  */
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
-
 ///////////////////////////////////////////////////////////////
 //
 //  Typedef the index
@@ -389,7 +385,3 @@ ListDump
 	CLIENT_EVALUATE ClientEvaluate,
 	INDEX_TYPE      Reverse
 );
-
-#ifdef __cplusplus
-	}
-#endif

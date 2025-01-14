@@ -13,10 +13,6 @@
 // Many thanks to the Jeff Lander article:
 // The Ocean Spray in Your Face (July 1998 Game Developer)
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
-
 // ALWAYS CALL ParticleSystemsInitGraphics AT START OF PROGRAM
 // AND WHEN RELOADING BETWEEN SCREEN MODES
 //
@@ -72,7 +68,7 @@ void
 // converts angles from degrees to radians
 // speed is normalized based on BackBufferViewPortWidth
 // force is normalized based on BackBufferViewPortWidth and BackBufferViewPortHeight
-void
+extern void
 	ParticleSystemsAddAndActivate
 	(
 		PPARTICLE_SYSTEMS_HEAD *particleSystems,
@@ -175,7 +171,3 @@ void
 	ParticleSystemsTerminate( PPARTICLE_SYSTEMS_HEAD *particleSystems,
 						      char                   *particleSystemName
 							);
-
-#ifdef __cplusplus
-	}
-#endif
