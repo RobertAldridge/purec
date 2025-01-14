@@ -8,7 +8,7 @@
 #include <ctime>
 
 // int thrd_sleep(const struct timespec* duration, struct timespec* remaining)
-#include <threads.h>
+//#include <threads.h>
 
 #include "ssMm.h"
 #include "ssArray.h"
@@ -993,7 +993,7 @@ static int mainLevel2()
 
   sleep_time.tv_sec = 1;
 
-  thrd_sleep( &sleep_time, 0);
+//thrd_sleep( &sleep_time, 0);
 
   if( !SsSetTest( &random) )
     goto label_return;

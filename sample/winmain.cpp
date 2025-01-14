@@ -140,11 +140,6 @@ extern void DeAllocate(void * Memory)
 void ParticleSystemsInitGraphics(void* /*backBufferPixelPointer*/, int /*backBufferViewPortWidth*/, int /*backBufferViewPortHeight*/, int /*backBufferBitDepth*/, int /*backBufferPitch*/)
 {
 }
-
-//void ParticleSystemBlah()
-//{
-// PEMITTER blah = CreateParticleSystem(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-//}
                  
 static INDEX_TYPE TestObject(CLIENT_POTYPE ClientObject1, CLIENT_POTYPE ClientObject2)
 {
@@ -3308,6 +3303,60 @@ static HWND hWindow = 0;
 
 static bool IsApplicationEntry = false;
 
+extern void* operator new(size_t size)
+{
+  if(IsApplicationEntry == false)
+  {
+    return Allocate(size);
+  }
+
+  void* new_memory = InsertHeapAllocation(size);
+
+  return new_memory;
+}
+
+extern void* operator new[](size_t size)
+{
+  if(IsApplicationEntry == false)
+  {
+    return Allocate(size);
+  }
+
+  void* new_memory = InsertHeapAllocation(size);
+
+  return new_memory;
+}
+
+extern void operator delete(void* ptr)
+{
+  if(IsApplicationEntry == false)
+  {
+    DeAllocate(ptr);
+
+    return;
+  }
+
+  if(ptr)
+  {
+    RemoveHeapAllocation(ptr);
+  }
+}
+
+extern void operator delete[](void* ptr)
+{
+  if(IsApplicationEntry == false)
+  {
+    DeAllocate(ptr);
+
+    return;
+  }
+
+  if(ptr)
+  {
+    RemoveHeapAllocation(ptr);
+  }
+}
+
 LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
   POINT mousePt = {0, 0};
@@ -4610,24 +4659,6 @@ static int updateTime()
 
   return error;
 }
-
-extern int init(double /*_halfWidth*/, double /*_halfHeight*/, void(*/*_circleDrawingPrimitive*/)(int, int, int, int, int), void(*/*_lineDrawingPrimitive*/)(int, int, int, int, int, int), void(*/*_pointDrawingPrimitive*/)(int, int, int), void(*/*_textDrawingPrimitive*/)(int, int, const char* const, ...) ) // init
-{
-  return 0;
-
-} // init
-
-extern int main(int /*inputEvent*/, double /*x*/, double /*y*/, double /*B*/, double /*_halfWidth*/, double /*_halfHeight*/) // main
-{
-  return 0;
-
-} // main
-
-extern int term() // term
-{
-  return 0;
-
-} // term
 
 // MSDN
 // hPrevInstance

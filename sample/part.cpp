@@ -9,12 +9,11 @@
 #include <ddraw.h>
 #pragma warning (default : 4820)
 
-#include <assert.h>
-#include <malloc.h>
-#include <math.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdint.h>
+#include <cassert>
+#include <cmath>
+#include <cstdlib>
+#include <cstring>
+#include <cstdint>
 
 #include "part_pub.h"
 #include "part_priv.h"

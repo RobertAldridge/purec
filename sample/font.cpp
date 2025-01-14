@@ -8,10 +8,10 @@
 #include <ddraw.h>
 #pragma warning (default : 4820)
 
-#include <assert.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdint.h>
+#include <cassert>
+#include <cstdarg>
+#include <cstdio>
+#include <cstdint>
 
 #include "font.h"
 
@@ -257,7 +257,7 @@ extern void TextOut( int32_t x,
 	va_start( argptr, format );
 
 	// convert format string and argument list into one string
-	_vsnprintf( dest_buffer, 512, format, argptr );
+	vsnprintf( dest_buffer, 512, format, argptr );
 
 	x = ( x * actualWidth  ) / idealWidth;
 	y = ( y * actualHeight ) / idealHeight;

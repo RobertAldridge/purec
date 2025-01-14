@@ -109,7 +109,7 @@
       <AdditionalIncludeDirectories>C:\business\purec\blah;C:\business\purec\sample;C:\business\purec\ssmm;C:\business\purec\bintree;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <DisableSpecificWarnings>4127;4200;4201;4255;4312;4505;4668;4710;4711;5039;5045;6001;6011;28182</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4127;4200;4201;4255;4312;4505;4668;4710;4711;5039;5045;6001;6011;28182;28251</DisableSpecificWarnings>
       <CompileAsManaged>false</CompileAsManaged>
       <ForcedIncludeFiles>header.h</ForcedIncludeFiles>
     </ClCompile>
@@ -118,6 +118,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LargeAddressAware>true</LargeAddressAware>
       <ImportLibrary>ddraw.lib dxguid.lib uuid.lib</ImportLibrary>
+      <ForceSymbolReferences>
+      </ForceSymbolReferences>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -131,7 +133,7 @@
       <AdditionalIncludeDirectories>C:\business\purec\blah;C:\business\purec\sample;C:\business\purec\ssmm;C:\business\purec\bintree;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <DisableSpecificWarnings>4127;4200;4201;4255;4312;4505;4668;4710;4711;5039;5045;6001;6011;28182</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4127;4200;4201;4255;4312;4505;4668;4710;4711;5039;5045;6001;6011;28182;28251</DisableSpecificWarnings>
       <CompileAsManaged>false</CompileAsManaged>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -144,6 +146,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LargeAddressAware>true</LargeAddressAware>
       <ImportLibrary>ddraw.lib dxguid.lib uuid.lib</ImportLibrary>
+      <ForceSymbolReferences>
+      </ForceSymbolReferences>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

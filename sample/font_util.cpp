@@ -483,9 +483,12 @@ static void CharAntiAliasColorBlit( uint8_t **backbuffer,
 	do
 	{
 		WidthLoop = Width;
+    
+    int rectDstLeft = RectDst.left << 2;
+    int rectSrcLeft = RectSrc.left << 2;
 
-		Dst       = ( (uint8_t*) (*backbuffer) ) + ( RectDst.left << 2 );
-		Src       = ( (uint8_t*) (*textbuffer) ) + ( RectSrc.left << 2 );
+		Dst       = ( (uint8_t*) (*backbuffer) ) + rectDstLeft;
+		Src       = ( (uint8_t*) (*textbuffer) ) + rectSrcLeft;
 		
 		do
 		{

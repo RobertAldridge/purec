@@ -1,7 +1,6 @@
 
-#if 0
 //
-// Filename: de_boor.cpp
+// Filename: deBoor.cpp
 //
 // Start summer session
 //
@@ -76,6 +75,11 @@
 // End summer session
 //
 
+#pragma warning (disable : 4365)
+#include <atomic>
+#include <xmemory>
+#pragma warning (default : 4365)
+
 #include <cassert>
 #include <cmath>
 #include <ctime>
@@ -88,15 +92,15 @@
 
 using namespace std;
 
-extern void* operator new(size_t size) throw(bad_alloc);
+extern void* operator new(size_t size);
 
-extern void* operator new[](size_t size) throw(bad_alloc);
+extern void* operator new[](size_t size);
 
-extern void operator delete(void* ptr) throw();
+extern void operator delete(void* ptr);
 
-extern void operator delete[](void* ptr) throw();
+extern void operator delete[](void* ptr);
 
-class de_boor // de_boor
+class deBoor // deBoor
 {
 
 // Epsilon:
@@ -107,17 +111,17 @@ class de_boor // de_boor
 static const double E;
 
 // function convert float to int
-static int fti(double f) // de_boor::fti
+static int fti(double f) // deBoor::fti
 {
   return (f - floor(f) <= E)? (int)floor(f) : ( (ceil(f) - f <= E)? (int)ceil(f) : (int)f);
 
-} // de_boor::fti
+} // deBoor::fti
 
-static int eq(double a, double b) // de_boor::eq
+static int eq(double a, double b) // deBoor::eq
 {
   return fabs(a - b) <= E;
 
-} // de_boor::eq
+} // deBoor::eq
 
 // A little 2D point class, makes stuff easier.
 class point // point
@@ -137,6 +141,7 @@ point(double _x = 0, double _y = 0, double _z = 1): x(_x), y(_y), z(_z) // point
 
 } // point::point
 
+#if 0
 double dist2D(const point &pt) const // point::dist2D
 {
   if(isProjectable() == true && pt.isProjectable() == true)
@@ -151,6 +156,7 @@ double dist2D(const point &pt) const // point::dist2D
   return -3.402823466e+38;
 
 } // point::dist2D
+#endif
 
 // Easy way to calculate the Euclidean distance between two points.
 double dist(const point &pt) const // point::dist
@@ -214,11 +220,13 @@ point operator-(const point& rhs) const // point::operator-
 
 } // point::operator-
 
+#if 0
 point operator*(const point& rhs) const // point::operator*(point, point)
 {
   return point(x * rhs.x, y * rhs.y, z * rhs.z);
 
 } // point::operator*(point, point)
+#endif
 
 point operator*(const double rhs) const // point::operator*(point, double)
 {
@@ -253,8 +261,8 @@ typedef vectorK::iterator iterVK;
 double t;
 
 // r and s define the affine frame (r, s).
-double r;
-double s;
+double frameR;
+double frameS;
 
 // This variable tells the program which control point the user is
 // manipulating.  The value can range from 1 to N, N being the current
@@ -270,7 +278,7 @@ int numControlPts;
 int iterateConstant;
 
 // The maximum degree of each piece-wise polynomial curve.
-int degree;
+int blahDegree;
 
 // The maximum dimension of the space that the spline curve lives in (currently forced to 3).
 int dimension;
@@ -288,6 +296,8 @@ bool ctrlBl;
 // If the knot values are displayed next to the control points,
 // then this variable is set to true.
 bool dispK;
+
+uint8_t padding[5];
 
 // A marker, used to tell the subdivision algorithm which part of
 // the curve to render next.  Most importantly, this variable is
@@ -336,7 +346,7 @@ double halfHeight;
 // manipulating the curve.
 //
 // Currently valid/used when manipulating either the control points or the t value for F(t).
-void(de_Boor::*captureAction)();
+void(deBoor::*captureAction)();
 
 // A pointer to a client supplied circle drawing function, set in setPrimitiveDrawingFunctions().
 void(*circleDrawingPrimitive)(int xCenter, int yCenter, int radius, int color0RGB, int color1RGB);
@@ -355,8 +365,10 @@ public:
 
 // Initialize the de Boor algorithm when the user inputs the
 // first control point.
-de_Boor(int _degree = 3, int _iterateConstant = 16): t(0.5), r(0), s(1), capturedControlPt(0), numControlPts(0), iterateConstant(_iterateConstant), degree(_degree), dimension(3), shellT(0), shellBl(true), ctrlBl(true), dispK(true), minMaxT(0), shelPt(), tranPt(), tempPt(), knots(), subdWt(), inputCur(0, 0), inputPrv(0, 0), minPt(0, 0), maxPt(0, 0), halfWidth(0.5), halfHeight(0.5), captureAction(0), circleDrawingPrimitive(0), lineDrawingPrimitive(0), pointDrawingPrimitive(0), textDrawingPrimitive(0) // de_Boor::de_Boor
+deBoor(int _degree = 3, int _iterateConstant = 16): t(0.5), frameR(0), frameS(1), capturedControlPt(0), numControlPts(0), iterateConstant(_iterateConstant), blahDegree(_degree), dimension(3), shellT(0), shellBl(true), ctrlBl(true), dispK(true), padding{0}, minMaxT(0), shelPt(), tranPt(), tempPt(), knots(), subdWt(), inputCur(0, 0), inputPrv(0, 0), minPt(0, 0), maxPt(0, 0), halfWidth(0.5), halfHeight(0.5), captureAction(0), circleDrawingPrimitive(0), lineDrawingPrimitive(0), pointDrawingPrimitive(0), textDrawingPrimitive(0) // deBoor::deBoor
 {
+  int degree = blahDegree;
+
   if(degree <= 0)
   {
     degree = 1;
@@ -391,10 +403,10 @@ de_Boor(int _degree = 3, int _iterateConstant = 16): t(0.5), r(0), s(1), capture
 
   colors1[0] = colors0[0];
 
-} // de_Boor::de_Boor
+} // deBoor::deBoor
 
 // Free dynamic memory allocations when destroying the algorithm instance.
-~de_Boor() // de_Boor::~de_Boor
+~deBoor() // deBoor::~deBoor
 {
   while( !shelPt.empty() )
   {
@@ -421,11 +433,11 @@ de_Boor(int _degree = 3, int _iterateConstant = 16): t(0.5), r(0), s(1), capture
     subdWt.pop();
   }
 
-} // de_Boor::~de_Boor
+} // deBoor::~deBoor
 
 // This function must be called by the client in order for the algorithm to
 // visually output the curve F(x), the control points, and the shells for F(t).
-void setPrimitiveDrawingFunctions(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int), void(*_textDrawingPrimitive)(int, int, const char* const, ...) ) // de_boor::setPrimitiveDrawingFunctions(double, double, void(*)(int, int, int, int, int), void(*)(int, int, int, int, int, int), void(*)(int, int, int), void(*)(int, int, const char* const, ...) )
+void setPrimitiveDrawingFunctions(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int), void(*_textDrawingPrimitive)(int, int, const char* const, ...) ) // deBoor::setPrimitiveDrawingFunctions(double, double, void(*)(int, int, int, int, int), void(*)(int, int, int, int, int, int), void(*)(int, int, int), void(*)(int, int, const char* const, ...) )
 {
   halfWidth = _halfWidth;
   halfHeight = _halfHeight;
@@ -450,9 +462,9 @@ void setPrimitiveDrawingFunctions(double _halfWidth, double _halfHeight, void(*_
     textDrawingPrimitive = _textDrawingPrimitive;
   }
 
-} // de_boor::setPrimitiveDrawingFunctions(double, double, void(*)(int, int, int, int, int), void(*)(int, int, int, int, int, int), void(*)(int, int, int), void(*)(int, int, const char* const, ...) )
+} // deBoor::setPrimitiveDrawingFunctions(double, double, void(*)(int, int, int, int, int), void(*)(int, int, int, int, int, int), void(*)(int, int, int), void(*)(int, int, const char* const, ...) )
 
-void setPrimitiveDrawingFunctions(de_Boor& rhs) // de_boor::setPrimitiveDrawingFunctions(de_Boor)
+void setPrimitiveDrawingFunctions(deBoor& rhs) // deBoor::setPrimitiveDrawingFunctions(deBoor)
 {
   halfWidth = rhs.halfWidth;
   halfHeight = rhs.halfHeight;
@@ -477,9 +489,9 @@ void setPrimitiveDrawingFunctions(de_Boor& rhs) // de_boor::setPrimitiveDrawingF
     textDrawingPrimitive   = rhs.textDrawingPrimitive;
   }
 
-} // de_boor::setPrimitiveDrawingFunctions(de_Boor)
+} // deBoor::setPrimitiveDrawingFunctions(deBoor)
 
-enum INPUT_EVENT // de_boor::INPUT_EVENT
+enum INPUT_EVENT // deBoor::INPUT_EVENT
 {
   // When there are no commands being sent to the algorithm,
   // make sure at the very least UPDATE_INPUT is sent with
@@ -491,7 +503,7 @@ enum INPUT_EVENT // de_boor::INPUT_EVENT
   //
   // Whatever means the client uses for the algorithm input
   // works just fine, as long as the corresponding messages
-  // are sent to the de_Boor::updateInput() function.
+  // are sent to the deBoor::updateInput() function.
 
   // For F1 mouse commands
   CAPTURE_CONTROL_POINT = 8, // For the F1 mouse left click
@@ -536,22 +548,22 @@ enum INPUT_EVENT // de_boor::INPUT_EVENT
   DECREASE_ITERATION_CONSTANT = 1024,
 
   // The #4 undocumented numpad 2 command
-  ADD_DE_BOOR_CURVE = 2048,
+  ADD_deBoor_CURVE = 2048,
 
   // The #5 undocumented numpad 3 command
-  REMOVE_DE_BOOR_CURVE = 4096,
+  REMOVE_deBoor_CURVE = 4096,
 
   // The #6 undocumented numpad 4 command
-  TRAVERSE_DE_BOOR_CURVE_LIST = 8192,
+  TRAVERSE_deBoor_CURVE_LIST = 8192,
 
   // The #7 undocumented numpad 5 command
   TOGGLE_CONTROL_POINT_TEXT = 16384
 
-}; // de_boor::INPUT_EVENT
+}; // deBoor::INPUT_EVENT
 
 // Call this function whenever there is input,
 // to update the de Boor algorithm.
-int updateInput(int inputEvent, double xB, double yB, double B) // de_boor::updateInput
+int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updateInput
 {
   int retVal = 0;
 
@@ -617,7 +629,7 @@ int updateInput(int inputEvent, double xB, double yB, double B) // de_boor::upda
   {
     retVal = 1;
     dumpAllCaptures();
-    captureAction = dragTranslate;
+    captureAction = &deBoor::dragTranslate;
   }
   break; // switch(inputEvent) - CAPTURE_TRANSLATE
 
@@ -625,7 +637,7 @@ int updateInput(int inputEvent, double xB, double yB, double B) // de_boor::upda
   {
     retVal = 1;
     dumpAllCaptures();
-    captureAction = dragScale;
+    captureAction = &deBoor::dragScale;
   }
   break; // switch(inputEvent) - CAPTURE_SCALE
 
@@ -634,7 +646,7 @@ int updateInput(int inputEvent, double xB, double yB, double B) // de_boor::upda
   {
     retVal = 1;
     dumpAllCaptures();
-    captureAction = dragRotate;
+    captureAction = &deBoor::dragRotate;
   }
   break; // switch(inputEvent) - CAPTURE_ROTATE
 
@@ -733,12 +745,12 @@ int updateInput(int inputEvent, double xB, double yB, double B) // de_boor::upda
       break;
     }
 
-    r = p[15];
-    s = p[16];
+    frameR = p[15];
+    frameS = p[16];
 
     double* _knotList = * ( (double**) &p[13] );
 
-    int _numKnots = p[14];
+    int _numKnots = (int)(p[14] + 0.5); // cast todo
 
     if(_knotList && _numKnots > 0)
     {
@@ -794,7 +806,7 @@ int updateInput(int inputEvent, double xB, double yB, double B) // de_boor::upda
       knots.push_back(knots.back() + 1);
     }
 
-    t = knots[degree] + (knots.back() - knots[degree] ) * 0.5;
+    t = knots[ (uint32_t)degree] + (knots.back() - knots[ (uint32_t)degree] ) * 0.5;
 
     inputPrv = inputCur;
 
@@ -834,11 +846,11 @@ int updateInput(int inputEvent, double xB, double yB, double B) // de_boor::upda
       // p0 = (fx(r), fy(r) )
       // p1 = (fx(s), fy(s) )
 
-      inputCur = point(blossom(1, p[2], p[1], r), -blossom(1, p[6], p[5], r), blossom(1, p[10], p[9], r) );
+      inputCur = point(blossom(1, p[2], p[1], frameR), -blossom(1, p[6], p[5], frameR), blossom(1, p[10], p[9], frameR) );
 
       addControlPoint();
 
-      inputCur = point(blossom(1, p[2],  p[1], s), -blossom(1, p[6],  p[5], s), blossom(1, p[10], p[9], s) );
+      inputCur = point(blossom(1, p[2],  p[1], frameS), -blossom(1, p[6],  p[5], frameS), blossom(1, p[10], p[9], frameS) );
 
       addControlPoint();
 
@@ -858,15 +870,15 @@ int updateInput(int inputEvent, double xB, double yB, double B) // de_boor::upda
       // p1 = (fx(r, s), fy(r, s) )
       // p2 = (fx(s, s), fy(s, s) )
 
-      inputCur = point(blossom(2, p[3], p[2], p[1], r, r), -blossom(2, p[7], p[6], p[5], r, r), blossom(2, p[11], p[10], p[9], r, r) );
+      inputCur = point(blossom(2, p[3], p[2], p[1], frameR, frameR), -blossom(2, p[7], p[6], p[5], frameR, frameR), blossom(2, p[11], p[10], p[9], frameR, frameR) );
 
       addControlPoint();
 
-      inputCur = point(blossom(2, p[3], p[2], p[1], r, s), -blossom(2, p[7], p[6], p[5], r, s), blossom(2, p[11], p[10], p[9], r, s) );
+      inputCur = point(blossom(2, p[3], p[2], p[1], frameR, frameS), -blossom(2, p[7], p[6], p[5], frameR, frameS), blossom(2, p[11], p[10], p[9], frameR, frameS) );
 
       addControlPoint();
 
-      inputCur = point(blossom(2, p[3], p[2], p[1], s, s), -blossom(2, p[7], p[6], p[5], s, s), blossom(2, p[11], p[10], p[9], s, s)
+      inputCur = point(blossom(2, p[3], p[2], p[1], frameS, frameS), -blossom(2, p[7], p[6], p[5], frameS, frameS), blossom(2, p[11], p[10], p[9], frameS, frameS)
       );
 
       addControlPoint();
@@ -894,19 +906,19 @@ int updateInput(int inputEvent, double xB, double yB, double B) // de_boor::upda
       // p2 = (fx(r, s, s), fy(r, s, s) )
       // p3 = (fx(s, s, s), fy(s, s, s) )
 
-      inputCur = point(blossom(3, p[4], p[3], p[2], p[1], r, r, r), -blossom(3, p[8], p[7], p[6], p[5], r, r, r), blossom(3, p[8], p[7], p[6], p[5], r, r, r) );
+      inputCur = point(blossom(3, p[4], p[3], p[2], p[1], frameR, frameR, frameR), -blossom(3, p[8], p[7], p[6], p[5], frameR, frameR, frameR), blossom(3, p[8], p[7], p[6], p[5], frameR, frameR, frameR) );
 
       addControlPoint();
 
-      inputCur = point(blossom(3, p[4], p[3], p[2], p[1], r, r, s), -blossom(3, p[8], p[7], p[6], p[5], r, r, s), blossom(3, p[12], p[11], p[10], p[9], r, r, s) );
+      inputCur = point(blossom(3, p[4], p[3], p[2], p[1], frameR, frameR, frameS), -blossom(3, p[8], p[7], p[6], p[5], frameR, frameR, frameS), blossom(3, p[12], p[11], p[10], p[9], frameR, frameR, frameS) );
 
       addControlPoint();
 
-      inputCur = point(blossom(3, p[4], p[3], p[2], p[1], r, s, s), -blossom(3, p[8], p[7], p[6], p[5], r, s, s), blossom(3, p[12], p[11], p[10], p[9], r, s, s) );
+      inputCur = point(blossom(3, p[4], p[3], p[2], p[1], frameR, frameS, frameS), -blossom(3, p[8], p[7], p[6], p[5], frameR, frameS, frameS), blossom(3, p[12], p[11], p[10], p[9], frameR, frameS, frameS) );
 
       addControlPoint();
 
-      inputCur = point(blossom(3, p[4], p[3], p[2], p[1], s, s, s), -blossom(3, p[8], p[7], p[6], p[5], s, s, s), blossom(3, p[12], p[11], p[10], p[9], s, s, s)
+      inputCur = point(blossom(3, p[4], p[3], p[2], p[1], frameS, frameS, frameS), -blossom(3, p[8], p[7], p[6], p[5], frameS, frameS, frameS), blossom(3, p[12], p[11], p[10], p[9], frameS, frameS, frameS)
       );
 
       addControlPoint();
@@ -1010,16 +1022,20 @@ int updateInput(int inputEvent, double xB, double yB, double B) // de_boor::upda
 
   return retVal;
 
-} // de_boor::updateInput
+} // deBoor::updateInput
 
 // Call every program loop to draw F(x), the control points,
 // F(t), and the shells for F(t).
-void updateDraw() // de_boor::updateDraw
+void updateDraw() // deBoor::updateDraw
 {
+  int degree = 0;
+
   if(numControlPts == 0)
   {
     return;
   }
+  
+  degree = blahDegree;
 
   //////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////
@@ -1033,7 +1049,7 @@ void updateDraw() // de_boor::updateDraw
 
       for(int loop = 0; loop < numControlPts; loop++)
       {
-        _temp = tranPt[loop];
+        _temp = tranPt[ (uint32_t)loop];
 
         drawCircle(_temp, (loop == (capturedControlPt - 1) )? 15: 10, loop + 1);
 
@@ -1041,11 +1057,11 @@ void updateDraw() // de_boor::updateDraw
         {
           _temp = _temp.projectTo2D();
 
-          textDrawingPrimitive(_temp.x, _temp.y, "d0,%i", (int)loop);
+          textDrawingPrimitive( (int)(_temp.x + 0.5)/*cast todo*/, (int)(_temp.y + 0.5)/*cast todo*/, "d0,%i", (int)loop);
 
           _temp.y += 14.0;
 
-          textDrawingPrimitive(_temp.x, _temp.y, "%i", (int)knots[loop + 1] );
+          textDrawingPrimitive( (int)(_temp.x + 0.5)/*cast todo*/, (int)(_temp.y + 0.5)/*cast todo*/, "%i", (int)knots[ (uint32_t)(loop + 1) ] );
 
           int loopDegree = 0;
 
@@ -1053,7 +1069,7 @@ void updateDraw() // de_boor::updateDraw
           {
             _temp.y += 14.0;
 
-            textDrawingPrimitive(_temp.x, _temp.y, "%i", (int)knots[loop + loopDegree + 1] );
+            textDrawingPrimitive( (int)(_temp.x + 0.5)/*cast todo*/, (int)(_temp.y + 0.5)/*cast todo*/, "%i", (int)knots[ (uint32_t)(loop + loopDegree + 1) ] );
           }
         }
       }
@@ -1076,11 +1092,11 @@ void updateDraw() // de_boor::updateDraw
       subdWt.pop();
     }
 
-    double weight = (knots.back() - knots[degree] ) * 0.5;
+    double blah/*weight*/ = (knots.back() - knots[ (uint32_t)degree] ) * 0.5;
 
-    p1 = do_de_Boor(knots[degree] + weight);
+    p1 = do_deBoor(knots[ (uint32_t)degree] + blah);
 
-    subdWt.push(pairQS(p1, point(knots[degree] + weight, weight) ) );
+    subdWt.push(pairQS(p1, point(knots[ (uint32_t)degree] + blah, blah) ) );
 
     minMaxT = 1;
   }
@@ -1106,7 +1122,7 @@ void updateDraw() // de_boor::updateDraw
     // tree for further branching.
 
     // Left Child's weight == weight.x - weight.y * 0.5.
-    p1 = do_de_Boor(weight.x - weight.y * 0.5);
+    p1 = do_deBoor(weight.x - weight.y * 0.5);
 
     // Check if the left child is the same point as the parent
     if(p0 == p1)
@@ -1120,7 +1136,7 @@ void updateDraw() // de_boor::updateDraw
     }
 
     // Right Child's weight == weight.x + weight.y * 0.5.
-    p1 = do_de_Boor(weight.x + weight.y * 0.5);
+    p1 = do_deBoor(weight.x + weight.y * 0.5);
 
     // Check if the right child is the same point as the parent
     if(p0 == p1)
@@ -1152,22 +1168,22 @@ void updateDraw() // de_boor::updateDraw
 
       for(int d = 0; d < numControlPts - 1; d++)
       {
-        d0 = tranPt[d];
+        d0 = tranPt[ (uint32_t)d];
 
-        d1 = tranPt[d + 1];
+        d1 = tranPt[ (uint32_t)(d + 1) ];
 
         u1 = d + degree + 1;
 
-        if(u1 >= knots.size() )
+        if(u1 >= (int)knots.size() )
         {
-          u1 = knots.size() - 1;
+          u1 = (int)knots.size() - 1;
         }
 
         for(int u = d + 1; u < u1; u++)
         {
-          if(u + 1 < knots.size() && !eq(knots[u], knots[u + 1] ) )
+          if(u + 1 < (int)knots.size() && !eq(knots[ (uint32_t)u], knots[ (uint32_t)(u + 1) ] ) )
           {
-            drawLine(d0 + (d1 - d0) * ( (knots[u] - knots[d + 1] ) / (knots[u1] - knots[d + 1] ) ), d0 + (d1 - d0) * ( (knots[u + 1] - knots[d + 1] ) / (knots[u1] - knots[d + 1] ) ), u);
+            drawLine(d0 + (d1 - d0) * ( (knots[ (uint32_t)u] - knots[ (uint32_t)(d + 1) ] ) / (knots[ (uint32_t)u1] - knots[ (uint32_t)(d + 1) ] ) ), d0 + (d1 - d0) * ( (knots[ (uint32_t)(u + 1) ] - knots[ (uint32_t)(d + 1) ] ) / (knots[ (uint32_t)u1] - knots[ (uint32_t)(d + 1) ] ) ), u);
           }
         }
       }
@@ -1179,7 +1195,7 @@ void updateDraw() // de_boor::updateDraw
 
       for(int currentPtIndex = 0; currentPtIndex < numControlPts; currentPtIndex++)
       {
-        _temp = tranPt[currentPtIndex];
+        _temp = tranPt[ (uint32_t)currentPtIndex];
 
         drawCircle(_temp, (currentPtIndex == (capturedControlPt - 1) )? 15 : 10, currentPtIndex + 1);
 
@@ -1187,11 +1203,11 @@ void updateDraw() // de_boor::updateDraw
         {
           _temp = _temp.projectTo2D();
 
-          textDrawingPrimitive(_temp.x, _temp.y, "d0,%i", (int)currentPtIndex);
+          textDrawingPrimitive( (int)(_temp.x + 0.5)/*cast todo*/, (int)(_temp.y + 0.5)/*cast todo*/, "d0,%i", (int)currentPtIndex);
 
           _temp.y += 14.0;
 
-          textDrawingPrimitive(_temp.x, _temp.y, "%i", (int)knots[currentPtIndex + 1] );
+          textDrawingPrimitive( (int)(_temp.x + 0.5)/*cast todo*/, (int)(_temp.y + 0.5)/*cast todo*/, "%i", (int)knots[ (uint32_t)(currentPtIndex + 1) ] );
 
           int loopDegree = 0;
 
@@ -1199,17 +1215,17 @@ void updateDraw() // de_boor::updateDraw
           {
             _temp.y += 14.0;
 
-            textDrawingPrimitive(_temp.x, _temp.y, "%i", (int)knots[currentPtIndex + loopDegree + 1] );
+            textDrawingPrimitive( (int)(_temp.x + 0.5)/*cast todo*/, (int)(_temp.y + 0.5)/*cast todo*/, "%i", (int)knots[ (uint32_t)(currentPtIndex + loopDegree + 1) ] );
           }
         }
       }
     }
 
     // Calculate/draw shells and F(t) (for F(t) from the user-inputted t).
-    do_de_Boor(t, true);
+    do_deBoor(t, true);
   }
 
-} // de_boor::updateDraw
+} // deBoor::updateDraw
 
 private:
 
@@ -1220,7 +1236,7 @@ private:
 // blossom(1, c, d, t1);
 // blossom(2, b, c, d, t1, t2);
 // blossom(3, a, b, c, d, t1, t2, t3);
-double blossom(int degree, ...) // de_boor::blossom
+double blossom(int degree, ...) // deBoor::blossom
 {
   double a = 0;
   double b = 0;
@@ -1296,10 +1312,12 @@ double blossom(int degree, ...) // de_boor::blossom
 
   return 0;
 
-} // de_boor::blossom
+} // deBoor::blossom
 
-point do_de_Boor(double dt, bool draw = false) // de_boor::do_de_Boor
+point do_deBoor(double dt, bool draw = false) // deBoor::do_deBoor
 {
+  int degree = blahDegree;
+
   point temp(-1, -1);
 
   if(dt < knots.front() || dt > knots.back() || eq(dt, knots.back() ) )
@@ -1307,7 +1325,7 @@ point do_de_Boor(double dt, bool draw = false) // de_boor::do_de_Boor
     return temp;
   }
 
-  if(knots.size() < degree + 1 || tranPt.size() < degree + 1)
+  if( (int)knots.size() < degree + 1 || (int)tranPt.size() < degree + 1)
   {
     return temp;
   }
@@ -1318,21 +1336,21 @@ point do_de_Boor(double dt, bool draw = false) // de_boor::do_de_Boor
 
   // binary search, i is left, j is right, k is middle
   int i = 0;
-  int j = knots.size() - 1;
+  int j = (int)knots.size() - 1;
   int k = 0;
 
   while(j >= i)
   {
     k = (i + j) / 2;
 
-    if( (knots[k] < dt || eq(knots[k], dt) ) && dt < knots[k + 1] )
+    if( (knots[ (uint32_t)k] < dt || eq(knots[ (uint32_t)k], dt) ) && dt < knots[ (uint32_t)(k + 1) ] )
     {
       I = k;
 
       break;
     }
 
-    if(dt < knots[k] )
+    if(dt < knots[ (uint32_t)k] )
     {
       j = k - 1;
     }
@@ -1349,7 +1367,7 @@ point do_de_Boor(double dt, bool draw = false) // de_boor::do_de_Boor
 
   int r = 0;
 
-  if(eq(dt, knots[I] ) )
+  if(eq(dt, knots[ (uint32_t)I] ) )
   {
     // get the multiplicity of the knot
     r = 1;
@@ -1360,7 +1378,7 @@ point do_de_Boor(double dt, bool draw = false) // de_boor::do_de_Boor
 
       while(i >= 0)
       {
-        if(eq(dt, knots[i] ) )
+        if(eq(dt, knots[ (uint32_t)i] ) )
         {
           r++;
         }
@@ -1373,13 +1391,13 @@ point do_de_Boor(double dt, bool draw = false) // de_boor::do_de_Boor
       }
     }
 
-    if(knots.size() > I + 1)
+    if( (int)knots.size() > I + 1)
     {
       j = I + 1;
 
-      while(knots.size() > j)
+      while( (int)knots.size() > j)
       {
-        if(eq(dt, knots[j] ) )
+        if(eq(dt, knots[ (uint32_t)j] ) )
         {
           r++;
         }
@@ -1400,21 +1418,21 @@ point do_de_Boor(double dt, bool draw = false) // de_boor::do_de_Boor
 
   for(i = I - degree, j = 0; i <= I - r; i++, j++)
   {
-    tempPt[j] = tranPt[i];
+    tempPt[ (uint32_t)j] = tranPt[ (uint32_t)i];
   }
 
   for(j = 1; j <= degree - r; j++)
   {
     for(i = I - degree + j, k = 0; i <= I - r; i++, k++)
     {
-      tempPt[k] = ( (knots[degree + i - j + 1] - dt) / (knots[degree + i - j + 1] - knots[i] ) ) * tempPt[k] + ( (dt - knots[i] ) / (knots[degree + i - j + 1] - knots[i] ) ) * tempPt[k + 1];
+      tempPt[ (uint32_t)k] = ( (knots[ (uint32_t)(degree + i - j + 1) ] - dt) / (knots[ (uint32_t)(degree + i - j + 1) ] - knots[ (uint32_t)i] ) ) * tempPt[ (uint32_t)k] + ( (dt - knots[ (uint32_t)i] ) / (knots[ (uint32_t)(degree + i - j + 1) ] - knots[ (uint32_t)i] ) ) * tempPt[ (uint32_t)(k + 1) ];
     }
 
     if(draw == true)
     {
       for(i = I - degree + j, k = 0; i <= I - r - 1; i++, k++)
       {
-        drawLine(tempPt[k], tempPt[k + 1], I);
+        drawLine(tempPt[ (uint32_t)k], tempPt[ (uint32_t)(k + 1) ], I);
       }
     }
   }
@@ -1432,10 +1450,10 @@ point do_de_Boor(double dt, bool draw = false) // de_boor::do_de_Boor
 
   return temp;
 
-} // de_boor::do_de_Boor
+} // deBoor::do_deBoor
 
 // Wrapper for easily calling circleDrawingPrimitive().
-void drawCircle(point center, int radius, int knotIndex) // de_boor::drawCircle
+void drawCircle(point center, int radius, int knotIndex) // deBoor::drawCircle
 {
   if(circleDrawingPrimitive)
   {
@@ -1448,14 +1466,14 @@ void drawCircle(point center, int radius, int knotIndex) // de_boor::drawCircle
     {
       center = center.projectTo2D();
 
-      circleDrawingPrimitive(fti(center.x), fti(center.y), radius, colors0[ (int)knots[knotIndex % 100] % 100], colors0[ (int)knots[knotIndex % 100] % 100] );
+      circleDrawingPrimitive(fti(center.x), fti(center.y), radius, colors0[ (int)knots[ (uint32_t)(knotIndex % 100) ] % 100], colors0[ (int)knots[ (uint32_t)(knotIndex % 100) ] % 100] );
     }
   }
 
-} // de_boor::drawCircle
+} // deBoor::drawCircle
 
 // Wrapper for easily calling lineDrawingPrimitive().
-void drawLine(point start, point end, int knotIndex) // de_boor::drawLine
+void drawLine(point start, point end, int knotIndex) // deBoor::drawLine
 {
   if(lineDrawingPrimitive)
   {
@@ -1470,14 +1488,14 @@ void drawLine(point start, point end, int knotIndex) // de_boor::drawLine
 
       end = end.projectTo2D();
 
-      lineDrawingPrimitive(fti(start.x), fti(start.y), fti(end.x), fti(end.y), colors0[ (int)knots[knotIndex % 100] % 100], colors0[ (int)knots[knotIndex % 100] % 100] );
+      lineDrawingPrimitive(fti(start.x), fti(start.y), fti(end.x), fti(end.y), colors0[ (int)knots[ (uint32_t)(knotIndex % 100) ] % 100], colors0[ (int)knots[ (uint32_t)(knotIndex % 100) ] % 100] );
     }
   }
 
-} // de_boor::drawLine
+} // deBoor::drawLine
 
 // Wrapper for easily calling pointDrawingPrimitive().
-void drawPoint(point center, int knotIndex) // de_boor::drawPoint
+void drawPoint(point center, int knotIndex) // deBoor::drawPoint
 {
   if(pointDrawingPrimitive)
   {
@@ -1490,26 +1508,28 @@ void drawPoint(point center, int knotIndex) // de_boor::drawPoint
     {
       center = center.projectTo2D();
 
-      pointDrawingPrimitive(fti(center.x), fti(center.y), colors0[ (int)knots[knotIndex % 100] % 100] );
+      pointDrawingPrimitive(fti(center.x), fti(center.y), colors0[ (int)knots[ (uint32_t)(knotIndex % 100) ] % 100] );
     }
   }
 
-} // de_boor::drawPoint
+} // deBoor::drawPoint
 
 // When the user adds another control point, add that control point in the
 // list right after the previous control point.
 //
 // Also add an extra point to the end of the list, used as temporary storage
 // while evaluating the de Boor algorithm.
-void addControlPoint() // de_boor::addControlPoint
+void addControlPoint() // deBoor::addControlPoint
 {
+  int loop = 0;
+  
+  int degree = blahDegree;
+  
   // Add the new control point to the list.
   numControlPts++;
 
   shelPt.push_back(inputCur);
   tranPt.push_back(inputCur);
-
-  int loop = 0;
 
   if(numControlPts > degree + 1)
   {
@@ -1538,10 +1558,10 @@ void addControlPoint() // de_boor::addControlPoint
     }
   }
 
-} // de_boor::addControlPoint
+} // deBoor::addControlPoint
 
 // Captures the closest control point, for user manipulation.
-void captureControlPoint() // de_boor::captureControlPoint
+void captureControlPoint() // deBoor::captureControlPoint
 {
   double distMin = 0;
 
@@ -1553,13 +1573,13 @@ void captureControlPoint() // de_boor::captureControlPoint
   // and the captureAction() function is activated to point to the dragControlPoint()
   // function.
   capturedControlPt = 0;
-  distMin = inputCur.dist(tranPt[capturedControlPt] );
+  distMin = inputCur.dist(tranPt[ (uint32_t)capturedControlPt] );
 
   for(int currentPtIndex = 1; currentPtIndex < numControlPts; currentPtIndex++)
   {
-    if(distMin > inputCur.dist(tranPt[currentPtIndex] ) )
+    if(distMin > inputCur.dist(tranPt[ (uint32_t)currentPtIndex] ) )
     {
-      distMin = inputCur.dist(tranPt[currentPtIndex] );
+      distMin = inputCur.dist(tranPt[ (uint32_t)currentPtIndex] );
 
       capturedControlPt = currentPtIndex;
     }
@@ -1567,12 +1587,12 @@ void captureControlPoint() // de_boor::captureControlPoint
 
   capturedControlPt++;
 
-  captureAction = dragControlPoint;
+  captureAction = &deBoor::dragControlPoint;
 
-} // de_boor::captureControlPoint
+} // deBoor::captureControlPoint
 
 // Captures t of F(t)
-void capture_t_of_F_of_t() // de_boor::capture_t_of_F_of_t
+void capture_t_of_F_of_t() // deBoor::capture_t_of_F_of_t
 {
   // Find the minimum and maximum values of the coordinate pts,
   // which are needed to normalize input.
@@ -1581,14 +1601,14 @@ void capture_t_of_F_of_t() // de_boor::capture_t_of_F_of_t
 
   for(int currentPtIndex = 1; currentPtIndex < numControlPts; currentPtIndex++)
   {
-    if(minPt.x > tranPt[currentPtIndex].x)
+    if(minPt.x > tranPt[ (uint32_t)currentPtIndex].x)
     {
-      minPt.x = tranPt[currentPtIndex].x;
+      minPt.x = tranPt[ (uint32_t)currentPtIndex].x;
     }
 
-    if(maxPt.x < tranPt[currentPtIndex].x)
+    if(maxPt.x < tranPt[ (uint32_t)currentPtIndex].x)
     {
-      maxPt.x = tranPt[currentPtIndex].x;
+      maxPt.x = tranPt[ (uint32_t)currentPtIndex].x;
     }
   }
 
@@ -1596,13 +1616,13 @@ void capture_t_of_F_of_t() // de_boor::capture_t_of_F_of_t
   // point to the drag_t_of_F_of_t() function.
   //
   // The new t will be calculated in the drag_t_of_F_of_t() function.
-  captureAction = drag_t_of_F_of_t;
+  captureAction = &deBoor::drag_t_of_F_of_t;
 
-} // de_boor::capture_t_of_F_of_t
+} // deBoor::capture_t_of_F_of_t
 
 // When the user chooses to clear all ctrl pts, to start a new curve,
 // erase all elements in the control point list.
-void clearAllControlPoint() // de_boor::clearAllControlPoint
+void clearAllControlPoint() // deBoor::clearAllControlPoint
 {
   shelPt.clear();
   tranPt.clear();
@@ -1616,12 +1636,14 @@ void clearAllControlPoint() // de_boor::clearAllControlPoint
 
   numControlPts = 0;
 
-} // de_boor::clearAllControlPoint
+} // deBoor::clearAllControlPoint
 
 // This function is called thru the captureAction() function, when the user wants
 // to manipulate t of F(t).
-void drag_t_of_F_of_t() // de_boor::drag_t_of_F_of_t
+void drag_t_of_F_of_t() // deBoor::drag_t_of_F_of_t
 {
+  int degree = blahDegree;
+  
   if(inputCur.x <= minPt.x)
   {
     inputCur.x = minPt.x + 1;
@@ -1635,26 +1657,26 @@ void drag_t_of_F_of_t() // de_boor::drag_t_of_F_of_t
   t = (inputCur.x - minPt.x) / fabs(maxPt.x - minPt.x);
 
   // Scale the t value to the magnitude of the knot sequence values.
-  t *= (knots.back() - knots[degree] );
+  t *= (knots.back() - knots[ (uint32_t)degree] );
 
   // Translate t to start at the smallest knot value.
-  t += knots[degree];
+  t += knots[ (uint32_t)degree];
 
-} // de_boor::drag_t_of_F_of_t
+} // deBoor::drag_t_of_F_of_t
 
 // This function is called thru the captureAction() function, when the user wants
 // to manipulate a control pt.
-void dragControlPoint() // de_boor::dragControlPoint
+void dragControlPoint() // deBoor::dragControlPoint
 {
   // Drag the captured ctrl pt relative to input movement between
   // the current input pt and the previous input pt.
-  tranPt[capturedControlPt - 1] += inputCur - inputPrv;
+  tranPt[ (uint32_t)(capturedControlPt - 1) ] += inputCur - inputPrv;
 
-} // de_boor::dragControlPoint
+} // deBoor::dragControlPoint
 
 // When a new user request has occured, flush any older user requests
 // currently being processed.
-void dumpAllCaptures() // de_boor::dumpAllCaptures
+void dumpAllCaptures() // deBoor::dumpAllCaptures
 {
   capturedControlPt = 0;
   captureAction = 0;
@@ -1662,9 +1684,9 @@ void dumpAllCaptures() // de_boor::dumpAllCaptures
   minMaxT = 0;
   shellT = 0;
 
-} // de_boor::dumpAllCaptures
+} // deBoor::dumpAllCaptures
 
-void dragTranslate() // de_boor::dragTranslate
+void dragTranslate() // deBoor::dragTranslate
 {
   point p; // init todo
 
@@ -1679,14 +1701,14 @@ void dragTranslate() // de_boor::dragTranslate
     a->z = p.z;
   }
 
-} // de_boor::dragTranslate
+} // deBoor::dragTranslate
 
-void dragScale() // de_boor::dragScale
+void dragScale() // deBoor::dragScale
 {
-  double s = 1.0 + (inputCur.y - inputPrv.y) / (halfWidth * 2);
+  double scale = 1.0 + (inputCur.y - inputPrv.y) / (halfWidth * 2);
 
-  double tx = (1 - s) * halfWidth;
-  double ty = (1 - s) * halfHeight;
+  double tx = (1 - scale) * halfWidth;
+  double ty = (1 - scale) * halfHeight;
 
   point p; // init todo
 
@@ -1696,19 +1718,19 @@ void dragScale() // de_boor::dragScale
   {
     p = *a;
 
-    a->x = p.x * s + tx;
-    a->y = p.y * s + ty;
+    a->x = p.x * scale + tx;
+    a->y = p.y * scale + ty;
     a->z = p.z;
   }
 
-} // de_boor::dragScale
+} // deBoor::dragScale
 
-void dragRotate() // de_boor::dragRotate
+void dragRotate() // deBoor::dragRotate
 {
   double angle = (inputCur.x - inputPrv.x) / 180.0;
 
-  double c = cos(angle);
-  double s = sin(angle);
+  double cosine = cos(angle);
+  double sine = sin(angle);
 
   double tx = halfWidth;
   double ty = halfHeight;
@@ -1721,14 +1743,14 @@ void dragRotate() // de_boor::dragRotate
   {
     p = *a;
 
-    a->x = s * (-p.y + ty) + c * (p.x - tx) + tx;
-    a->y = s * (p.x - tx) + c * (p.y - ty) + ty;
+    a->x = sine * (-p.y + ty) + cosine * (p.x - tx) + tx;
+    a->y = sine * (p.x - tx) + cosine * (p.y - ty) + ty;
     a->z = p.z;
   }
 
-} // de_boor::dragRotate
+} // deBoor::dragRotate
 
-void removeControlPoint() // de_boor::removeControlPoint
+void removeControlPoint() // deBoor::removeControlPoint
 {
   int ctrlPt = 0;
 
@@ -1739,13 +1761,13 @@ void removeControlPoint() // de_boor::removeControlPoint
   //
   // The ctrl pt that is closest to the input pt is the pt that is deleted.
   ctrlPt = 0;
-  distMin = inputCur.dist(tranPt[ctrlPt] );
+  distMin = inputCur.dist(tranPt[ (uint32_t)ctrlPt] );
 
   for(int currentPtIndex = 1; currentPtIndex < numControlPts; currentPtIndex++)
   {
-    if(distMin > inputCur.dist(tranPt[currentPtIndex] ) )
+    if(distMin > inputCur.dist(tranPt[ (uint32_t)currentPtIndex] ) )
     {
-      distMin = inputCur.dist(tranPt[currentPtIndex] );
+      distMin = inputCur.dist(tranPt[ (uint32_t)currentPtIndex] );
 
       ctrlPt = currentPtIndex;
     }
@@ -1793,11 +1815,11 @@ void removeControlPoint() // de_boor::removeControlPoint
   // 0      0      2=1+1    3=2+1    3=2+1    4=3+1    5=4+1    6=5+1    7=6+1
   // u0'=u0 u1'=u1 u2'=u3+1 u3'=u4+1 u4'=u5+1 u5'=u6+1 u6'=u6+1 u7'=u8+1 u8'=u9+1
   //                        d0'=d0   d1'=d1   d2'=d3   d3'=d4   d4'=d5   d5'=d6...
-  if(ctrlPt > 0 && eq(knots[ctrlPt - 1], knots[ctrlPt] ) )
+  if(ctrlPt > 0 && eq(knots[  (uint32_t)(ctrlPt - 1) ], knots[  (uint32_t)ctrlPt] ) )
   {
     // Just remove the knot ui since the multiplicity is greater than one.
   }
-  else if(knots.size() > ctrlPt + 1 && eq(knots[ctrlPt], knots[ctrlPt + 1] ) )
+  else if( (int)knots.size() > ctrlPt + 1 && eq(knots[  (uint32_t)ctrlPt], knots[  (uint32_t)(ctrlPt + 1) ] ) )
   {
     // Just remove the knot ui since the multiplicity is greater than one.
   }
@@ -1815,13 +1837,13 @@ void removeControlPoint() // de_boor::removeControlPoint
 
   knots.erase(knots.begin() + ctrlPt);
 
-} // de_boor::removeControlPoint
+} // deBoor::removeControlPoint
 
-}; // de_boor
+}; // deBoor
 
-const double de_Boor::E = 0.000001;
+const double deBoor::E = 0.000001;
 
-typedef deque< de_Boor* > dequeB;
+typedef deque< deBoor* > dequeB;
 typedef dequeB::iterator iteratorDB;
 
 static dequeB* deBoorList = 0;
@@ -1833,10 +1855,10 @@ enum
   OK = 0
 };
 
-extern int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int), void(*_textDrawingPrimitive)(int, int, const char* const, ...) ) // init
+int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int), void(*_textDrawingPrimitive)(int, int, const char* const, ...) ) // init
 {
   // Initialize the random number generator.
-  srand(time(0) );
+  srand( (uint32_t)time(0) );
 
   if( !deBoorList)
   {
@@ -1852,7 +1874,7 @@ extern int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimi
       return ERROR;
     }
 
-    deBoorList->push_back(new de_Boor);
+    deBoorList->push_back(new deBoor);
 
     if( !(*deBoorList)[0] )
     {
@@ -1873,7 +1895,7 @@ extern int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimi
 
 } // init
 
-extern int main(int inputEvent, double x, double y, double B, double _halfWidth, double _halfHeight) // main
+int main(int inputEvent, double x, double y, double B, double _halfWidth, double _halfHeight) // main
 {
   if( !deBoorList || deBoorList->size() == 0)
   {
@@ -1894,14 +1916,14 @@ extern int main(int inputEvent, double x, double y, double B, double _halfWidth,
 
   iteratorDB temp; // init todo
 
-  de_Boor* curve = 0;
+  deBoor* curve = 0;
 
   switch(inputEvent) // switch(inputEvent)
   {
 
-  case de_Boor::ADD_DE_BOOR_CURVE: // switch(inputEvent) - de_Boor::ADD_DE_BOOR_CURVE
+  case deBoor::ADD_deBoor_CURVE: // switch(inputEvent) - deBoor::ADD_deBoor_CURVE
   {
-    curve = new de_Boor;
+    curve = new deBoor;
 
     if( !curve)
     {
@@ -1914,13 +1936,13 @@ extern int main(int inputEvent, double x, double y, double B, double _halfWidth,
 
     deBoorIter = deBoorList->end() - 1;
   }
-  break; // switch(inputEvent) - de_Boor::ADD_DE_BOOR_CURVE
+  break; // switch(inputEvent) - deBoor::ADD_deBoor_CURVE
 
-  case de_Boor::REMOVE_DE_BOOR_CURVE: // switch(inputEvent) - de_Boor::REMOVE_DE_BOOR_CURVE
+  case deBoor::REMOVE_deBoor_CURVE: // switch(inputEvent) - deBoor::REMOVE_deBoor_CURVE
   {
     if(deBoorList->size() == 1)
     {
-      inputEvent = de_Boor::DUMP_ALL_CONTROL_POINTS;
+      inputEvent = deBoor::DUMP_ALL_CONTROL_POINTS;
     }
     else
     {
@@ -1932,12 +1954,12 @@ extern int main(int inputEvent, double x, double y, double B, double _halfWidth,
 
       retVal |= 1;
 
-      inputEvent = de_Boor::DUMP_ALL_CAPTURES;
+      inputEvent = deBoor::DUMP_ALL_CAPTURES;
     }
   }
-  break; // switch(inputEvent) - de_Boor::REMOVE_DE_BOOR_CURVE
+  break; // switch(inputEvent) - deBoor::REMOVE_deBoor_CURVE
 
-  case de_Boor::TRAVERSE_DE_BOOR_CURVE_LIST: // switch(inputEvent) - de_Boor::TRAVERSE_DE_BOOR_CURVE_LIST
+  case deBoor::TRAVERSE_deBoor_CURVE_LIST: // switch(inputEvent) - deBoor::TRAVERSE_deBoor_CURVE_LIST
   {
     ++deBoorIter;
 
@@ -1946,7 +1968,7 @@ extern int main(int inputEvent, double x, double y, double B, double _halfWidth,
       deBoorIter = deBoorList->begin();
     }
   }
-  break; // switch(inputEvent) - de_Boor::TRAVERSE_DE_BOOR_CURVE_LIST
+  break; // switch(inputEvent) - deBoor::TRAVERSE_deBoor_CURVE_LIST
 
   } // switch(inputEvent)
 
@@ -1967,9 +1989,9 @@ extern int main(int inputEvent, double x, double y, double B, double _halfWidth,
       (*loop)->updateDraw();
     }
 
-    if( (retVal != 0 || inputEvent == de_Boor::DUMP_ALL_CAPTURES) && loop != deBoorIter)
+    if( (retVal != 0 || inputEvent == deBoor::DUMP_ALL_CAPTURES) && loop != deBoorIter)
     {
-      retVal |= (*loop)->updateInput(de_Boor::DUMP_ALL_CAPTURES, x * B, y * B, B);
+      retVal |= (*loop)->updateInput(deBoor::DUMP_ALL_CAPTURES, x * B, y * B, B);
     }
   }
 
@@ -1977,7 +1999,7 @@ extern int main(int inputEvent, double x, double y, double B, double _halfWidth,
 
 } // main
 
-extern int term() // term
+int term() // term
 {
   iteratorDB loop;
 
@@ -2003,4 +2025,3 @@ extern int term() // term
   return OK;
 
 } // term
-#endif

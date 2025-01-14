@@ -12,12 +12,11 @@
  *
  */
 
-	#include <stdio.h>
-//	#include <native.h>
-	#include <memory.h>
-	#include <malloc.h>
-	#include <assert.h>
-#include <string.h>
+#include <cstdio>
+//#include <native.h>
+#include <cstdlib>
+#include <cassert>
+#include <cstring>
 
 	#define ERROR -1
 

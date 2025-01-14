@@ -8,20 +8,20 @@
  */
 
 #include <windows.h>
-#include <winbase.h>
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
+#include <cstdint>
+#include <cstdlib>
+#include <cstdio>
+#include <ctime>
 
-#include <crtdbg.h>
+//#include <crtdbg.h>
 
 #include "client_potype.h"
 #include "listpub.h"
 
 #define WIN32_LEAN_AND_MEAN
 
-int
+static int
 Evaluate(
     CLIENT_POTYPE*  Object
     )
@@ -30,7 +30,7 @@ Evaluate(
 	return 0;
 }
 
-int
+static int
 LessThan(
     CLIENT_POTYPE  Arg1,
     CLIENT_POTYPE  Arg2
@@ -39,7 +39,7 @@ LessThan(
     return (Arg1.integer > Arg2.integer);
 }
 
-int
+static int
 GreaterThan(
     CLIENT_POTYPE  Arg1,
     CLIENT_POTYPE  Arg2
@@ -48,17 +48,18 @@ GreaterThan(
     return (Arg1.integer > Arg2.integer);
 }
 
-int AreEqual(CLIENT_POTYPE Arg1, CLIENT_POTYPE Arg2)
+static int AreEqual(CLIENT_POTYPE Arg1, CLIENT_POTYPE Arg2)
 {
 	return(Arg1.integer == Arg2.integer);
 }
 
 //#define NUMBER 16384
-#define NUMBER 1024
+//#define NUMBER 1024
+#define NUMBER 1
 
 
 
-void
+static void
 ProcessList(
     PLIST_HEAD    ListHead,
     CLIENT_POTYPE InputArray[NUMBER],
@@ -67,28 +68,28 @@ ProcessList(
 {
     unsigned int    count;
     unsigned long   insertTime, sortTime;
-    LARGE_INTEGER   t0, t1;
+    uint64_t   t0 = 0, t1 = 0;
 
     //
     //  Time insertions
     //
 
-    QueryPerformanceCounter(&t0);
+    QueryPerformanceCounter( (LARGE_INTEGER*)&t0);
     for(count = 0; count < NUMBER; ++count)
         ListInsert(ListHead, InputArray[count], LessThan);
 
-    QueryPerformanceCounter(&t1);
+    QueryPerformanceCounter( (LARGE_INTEGER*)&t1);
 
-    insertTime = t1.LowPart - t0.LowPart;
+    insertTime = (uint32_t)t1 - (uint32_t)t0;
 
     //
     //  Time sorting
     //
 
-    QueryPerformanceCounter(&t0);
+    QueryPerformanceCounter( (LARGE_INTEGER*)&t0);
     ListSort(ListHead, GreaterThan);
-    QueryPerformanceCounter(&t1);
-    sortTime = t1.LowPart - t0.LowPart;
+    QueryPerformanceCounter( (LARGE_INTEGER*)&t1);
+    sortTime = (uint32_t)t1 - (uint32_t)t0;
 
     ListDump(ListHead, Evaluate, 0);
 
@@ -101,21 +102,23 @@ ProcessList(
             IdentifierString);
 }
 
-int
+static int
 mainListTest(
     void
     )
 {
-	long          OldValue;
+//long          OldValue;
     unsigned int  count;
 	PLIST_HEAD    listHead;
     CLIENT_POTYPE input[NUMBER];
 
+    memset( &input, 0, countof(input) );
+
 	#ifndef NDEBUG
-		OldValue = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
-		_CrtSetDbgFlag(OldValue|_CRTDBG_LEAK_CHECK_DF);
+	//OldValue = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
+//_CrtSetDbgFlag(OldValue|_CRTDBG_LEAK_CHECK_DF);
 	#else
-		OldValue = OldValue;
+//OldValue = OldValue;
 	#endif
 
     listHead = ListInit(LessThan, NUMBER);

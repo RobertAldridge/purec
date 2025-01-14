@@ -99,6 +99,14 @@ iterator Replace(iterator, <key, value> );
 iterator UniqueInsert(iterator, <key, value> );
 iterator EquivalentInsert(iterator, <key, value> );
 
+extern void* operator new(size_t size) throw(bad_alloc);
+
+extern void* operator new[](size_t size) throw(bad_alloc);
+
+extern void operator delete(void* ptr) throw();
+
+extern void operator delete[](void* ptr) throw();
+
 extern void* operator new(size_t size)
 {
   if(IsApplicationEntry == false)

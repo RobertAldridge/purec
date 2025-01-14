@@ -11,13 +11,12 @@
 // ...
 // because of static global variables currentTime and matrix
 
-#include <assert.h>
-#include <malloc.h>
-#include <math.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdint.h>
+#include <cassert>
+#include <cmath>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <cstdint>
 
 #include "part_pub.h"
 
