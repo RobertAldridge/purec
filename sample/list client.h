@@ -65,15 +65,15 @@ typedef
 INDEX_TYPE
 (*CLIENT_EVALUATE)
 (
-	CLIENT_PPOTYPE ClientObject1
+  CLIENT_PPOTYPE ClientObject1
 );
 
 typedef
 INDEX_TYPE
 (*CLIENT_EQUIVALENCE)
 (
-	CLIENT_POTYPE ClientObject1,
-	CLIENT_POTYPE ClientObject2
+  CLIENT_POTYPE ClientObject1,
+  CLIENT_POTYPE ClientObject2
 );
 
 //
@@ -91,9 +91,9 @@ INDEX_TYPE
 //      in this list interface. It will be NULL if the memory cannot
 //      be allocated for the list.
 //
-//	Implementation Details:
-//		O ( N ) - Upper bounds on runtime proportional to the guessed maximum number
-//		of objects because of memory allocation and zeroing the memory out.
+//  Implementation Details:
+//    O ( N ) - Upper bounds on runtime proportional to the guessed maximum number
+//    of objects because of memory allocation and zeroing the memory out.
 //
 //
 //
@@ -101,8 +101,8 @@ INDEX_TYPE
 PLIST_HEAD
 ListInit
 (
-	CLIENT_COMPARE ClientCompare,
-	INDEX_TYPE     MaxNumberOfObjects
+  CLIENT_COMPARE ClientCompare,
+  INDEX_TYPE     MaxNumberOfObjects
 );
 
 //
@@ -119,9 +119,9 @@ ListInit
 //  Returns:
 //      1 if list is empty, 0 otherwise.
 //
-//	Implementation Details:
-//		O ( C ) - Upper bounds on runtime constant because the number of
-//		calculations are the same no matter the size of the list.
+//  Implementation Details:
+//    O ( C ) - Upper bounds on runtime constant because the number of
+//    calculations are the same no matter the size of the list.
 //
 //
 //
@@ -129,8 +129,8 @@ ListInit
 INDEX_TYPE
 ListIsEmpty
 (
-	PLIST_HEAD Head,
-	INDEX_TYPE *NumberOfClientObjects
+  PLIST_HEAD Head,
+  INDEX_TYPE *NumberOfClientObjects
 );
 
 //
@@ -147,18 +147,18 @@ ListIsEmpty
 //  Returns:
 //      0 if successful, nonzero otherwise.
 //
-//	Implementation Details:
-//		O ( C ) - Upper bounds on runtime constant because the number of
-//		calculations are the same no matter the size of the list.
+//  Implementation Details:
+//    O ( C ) - Upper bounds on runtime constant because the number of
+//    calculations are the same no matter the size of the list.
 //
-//	    O ( N ) - If extra memory allocation is required, upper bounds on runtime
-//		proportional to the number of objects currently in the list because of memory
-//		allocation, and zeroing the memory out, and copying it over. Only happens when
+//      O ( N ) - If extra memory allocation is required, upper bounds on runtime
+//    proportional to the number of objects currently in the list because of memory
+//    allocation, and zeroing the memory out, and copying it over. Only happens when
 //      the number of items in the list is equal to the guessed maximum number passed
 //      into ListInit, in which case the guessed maximum number will be doubled.
-//		After that the runtime will only be O( N ) every time the array doubles its size.
-//		Since this only happens every time the array doubles, O( lg N ) is the upper
-//		bounds on the amount of times this will happen.
+//    After that the runtime will only be O( N ) every time the array doubles its size.
+//    Since this only happens every time the array doubles, O( lg N ) is the upper
+//    bounds on the amount of times this will happen.
 //
 //
 //
@@ -166,9 +166,9 @@ ListIsEmpty
 INDEX_TYPE
 ListInsert
 (
-	PLIST_HEAD     Head,
-	CLIENT_POTYPE  ClientObject,
-	CLIENT_COMPARE ClientCompare
+  PLIST_HEAD     Head,
+  CLIENT_POTYPE  ClientObject,
+  CLIENT_COMPARE ClientCompare
 );
 
 //
@@ -189,9 +189,9 @@ ListInsert
 //  Returns:
 //      0 if successful, nonzero otherwise.
 //
-//	Implementation Details:
-//		O ( N ) - Upper bounds on runtime proportional to the number of objects currently
-//		in the list because of list traversal.
+//  Implementation Details:
+//    O ( N ) - Upper bounds on runtime proportional to the number of objects currently
+//    in the list because of list traversal.
 //
 //  Note: ListGetNext is reset automatically when ListRemove returns successfully.
 //
@@ -201,9 +201,9 @@ ListInsert
 INDEX_TYPE
 ListRemove
 (
-	PLIST_HEAD         Head,
-	CLIENT_EQUIVALENCE ClientEquality,
-	CLIENT_PPOTYPE     ClientObject
+  PLIST_HEAD         Head,
+  CLIENT_EQUIVALENCE ClientEquality,
+  CLIENT_PPOTYPE     ClientObject
 );
 
 //
@@ -224,9 +224,9 @@ ListRemove
 //  Returns:
 //      0 if successful, nonzero otherwise.
 //
-//	Implementation Details:
-//		O ( N ) - Upper bounds on runtime proportional to the number of objects currently
-//		in the list because of list traversal.
+//  Implementation Details:
+//    O ( N ) - Upper bounds on runtime proportional to the number of objects currently
+//    in the list because of list traversal.
 //
 //
 //
@@ -234,9 +234,9 @@ ListRemove
 INDEX_TYPE
 ListFind
 (
-	PLIST_HEAD         Head,
-	CLIENT_EQUIVALENCE ClientEquality,
-	CLIENT_PPOTYPE     ClientObject
+  PLIST_HEAD         Head,
+  CLIENT_EQUIVALENCE ClientEquality,
+  CLIENT_PPOTYPE     ClientObject
 );
 
 //
@@ -254,9 +254,9 @@ ListFind
 //  Returns:
 //      0 if successful, nonzero otherwise.
 //
-//	Implementation Details:
-//		O ( C ) - Upper bounds on runtime constant because the number of
-//		calculations are the same no matter the size of the list.
+//  Implementation Details:
+//    O ( C ) - Upper bounds on runtime constant because the number of
+//    calculations are the same no matter the size of the list.
 //
 //  Note: ListGetNext is reset automatically when ListRemove returns successfully.
 //
@@ -266,9 +266,9 @@ ListFind
 INDEX_TYPE
 ListGetNext
 (
-	PLIST_HEAD     Head,
-	CLIENT_PPOTYPE ClientObject,
-	INDEX_TYPE     Reset
+  PLIST_HEAD     Head,
+  CLIENT_PPOTYPE ClientObject,
+  INDEX_TYPE     Reset
 );
 
 //
@@ -281,9 +281,9 @@ ListGetNext
 //  Returns:
 //      void
 //
-//	Implementation Details:
-//		O ( C ) - Upper bounds on runtime constant because the number of
-//		calculations are the same no matter the size of the list.
+//  Implementation Details:
+//    O ( C ) - Upper bounds on runtime constant because the number of
+//    calculations are the same no matter the size of the list.
 //
 //
 //
@@ -291,7 +291,7 @@ ListGetNext
 void
 ListTerminate
 (
-	PLIST_HEAD Head
+  PLIST_HEAD Head
 );
 
 //
@@ -309,17 +309,17 @@ ListTerminate
 //      void.
 //
 //  Implementation Details:
-//		O( N lg N ) - This sorts the list using an algorithm whose upper bounds
-//		on runtime is proportional to the number of objects currently
-//		in the list times the log base 2 of the number of objects currently
-//		in the list.
+//    O( N lg N ) - This sorts the list using an algorithm whose upper bounds
+//    on runtime is proportional to the number of objects currently
+//    in the list times the log base 2 of the number of objects currently
+//    in the list.
 //
 
 void
 ListSort
 (
-	PLIST_HEAD     Head,
-	CLIENT_COMPARE ClientCompare
+  PLIST_HEAD     Head,
+  CLIENT_COMPARE ClientCompare
 );
 
 //
@@ -338,9 +338,9 @@ ListSort
 //  Returns:
 //      POTYPE.
 //
-//	Implementation Details:
-//		O ( N ) - Upper bounds on runtime proportional to the number of objects currently
-//		in the list because of list traversal.
+//  Implementation Details:
+//    O ( N ) - Upper bounds on runtime proportional to the number of objects currently
+//    in the list because of list traversal.
 //
 //
 //
@@ -348,9 +348,9 @@ ListSort
 CLIENT_POTYPE
 ListGetExtrema
 (
-	PLIST_HEAD     Head,
-	CLIENT_COMPARE ClientCompare,
-	INDEX_TYPE     GetGreatest
+  PLIST_HEAD     Head,
+  CLIENT_COMPARE ClientCompare,
+  INDEX_TYPE     GetGreatest
 );
 
 //
@@ -366,14 +366,14 @@ ListGetExtrema
 //
 //  Returns:
 //      0 if successful and there was a full dump,
-//      1 if successful	and the dump was abruptly terminated,
+//      1 if successful and the dump was abruptly terminated,
 //      nonzero and nonone otherwise.
 //
 //  Remark: if the ClientEvaluate function does not return 0, the dump will abruptly terminate
 //
-//	Implementation Details:
-//		O ( N ) - Upper bounds on runtime proportional to the number of objects currently
-//		in the list because of list traversal.
+//  Implementation Details:
+//    O ( N ) - Upper bounds on runtime proportional to the number of objects currently
+//    in the list because of list traversal.
 //
 //
 //
@@ -381,7 +381,7 @@ ListGetExtrema
 INDEX_TYPE
 ListDump
 (
-	PLIST_HEAD      Head,
-	CLIENT_EVALUATE ClientEvaluate,
-	INDEX_TYPE      Reverse
+  PLIST_HEAD      Head,
+  CLIENT_EVALUATE ClientEvaluate,
+  INDEX_TYPE      Reverse
 );

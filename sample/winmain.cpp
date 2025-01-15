@@ -771,7 +771,7 @@ static int graphicsRestoreOldMode()
   int result = GRAPHICS_ERROR;
 
   long changeDisplaySettingsResult = 0;
-  
+
   long index = 0;
 
   DEVMODEA DMode = {0};
@@ -783,13 +783,13 @@ static int graphicsRestoreOldMode()
   //DMode.dmBitsPerPel = (unsigned long)oldBitDepth;
   //DMode.dmPelsWidth = (unsigned long)oldWidth;
   //DMode.dmPelsHeight = (unsigned long)oldHeight;
-  
+
   //DMode.dmBitsPerPel = 32;
-  
+
   //DMode.dmDisplayFrequency = 60;
 
   isModeChangeActive = true;
-  
+
   index = -2;
 
   for(BOOL sdfgdfg = 1; sdfgdfg; index++)
@@ -4588,11 +4588,11 @@ static int mainTerm(HWND hwnd)
   {
     input->pop();
   }
-  
+
   BlahLog2("destroy input before\n");
 
   delete input;
-  
+
   BlahLog2("destroy input after\n");
 
   input = 0;
@@ -5260,9 +5260,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, char* /*lpC
   WindowStyle::setOrigin(origin.x + WindowStyle::getMenuRect().left, origin.y + WindowStyle::getMenuRect().top);
 
   BlahLog2("create input before\n");
-  
+
   input = new queueI;
-  
+
   BlahLog2("create input after\n");
 
 // HWND CreateWindowA(const char* windowClassName, const char* windowsTitleText, unsigned long windowStyle, int windowTopLeftXpos, int windowTopLeftYpos, int windowXwidth, int windowYheight, HWND parentWindow, HMENU childMenu, HINSTANCE currentInstance, void* parameterToWmCreate)

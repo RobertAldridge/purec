@@ -1354,7 +1354,7 @@ ptrtrack::reset
       return RETURN_OK;
    }
 
-	// BinTreeReset(...) bad params
+  // BinTreeReset(...) bad params
    _log( "error" );
    return RETURN_ERROR;
 }

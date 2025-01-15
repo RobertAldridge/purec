@@ -79,8 +79,8 @@ ListInit
 		if(!Head->ObjectArray)
 		{
 			free(Head);
-			return 0;
-		}
+      return 0;
+    }
 
 		Head->ClientCompare     =ClientCompare;
 		Head->MaxNumberOfObjects=MaxNumberOfObjects;

@@ -619,19 +619,19 @@ struct ssQueue
     if(count_back) // todo
     {
       // split
-      
+
       // new pool; becomes new back
       SsQueueNode* node = &pool->back;
       node->chunk = SSQUEUE_POOL_TO_CHUNK_OPERATOR_INDEX(_this, pool, 0);
       node->num = pool->num;
-      
+
       // new front split; becomes new front (next from new pool)
       //
       // splits the old front node, starting at old front node index, to end of old front node chunk
       SsQueueNode* newFrontSplit = &pool->front;
       newFrontSplit->chunk = SSQUEUE_NODE_TO_CHUNK_OPERATOR_INDEX(_this, _this->front, _this->indexFront);
       newFrontSplit->num = count_front;
-      
+
       // new split (previous from new pool)
       //
       // splits the old back node (though it will no longer be the back node after the split)
@@ -640,13 +640,13 @@ struct ssQueue
       SsQueueNode* oldBackSplit = _this->back;
       //oldBackSplit->chunk = _this->back->chunk;
       oldBackSplit->num = count_back;
-      
+
       oldBackSplit->next = node;
       node->previous = oldBackSplit;
-      
+
       node->next = newFrontSplit;
       newFrontSplit->previous = node;
-      
+
       _this->back = node;
       _this->front = newFrontSplit;
 

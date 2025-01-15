@@ -453,7 +453,7 @@ FontUtilLoadBitmap(FontBlah* _this
 	for( loop = 224 - 2; loop >= 0; loop-- )
 	{
 		_this->text_white_array_pointer[ loop ] =
-			_this->text_white_array_pointer[ loop + 1 ] + 160 * 4;
+      _this->text_white_array_pointer[ loop + 1 ] + 160 * 4;
 	}
 
 	HGDIOBJ deviceTempCleanUp = 0;

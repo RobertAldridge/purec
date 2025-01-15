@@ -46,15 +46,15 @@ typedef
 INDEX_TYPE
 (*CLIENT_EVALUATE)
 (
-	CLIENT_PPOTYPE ClientObject1
+  CLIENT_PPOTYPE ClientObject1
 );
 
 typedef
 INDEX_TYPE
 (*CLIENT_EQUIVALENCE)
 (
-	CLIENT_POTYPE ClientObject1,
-	CLIENT_POTYPE ClientObject2
+  CLIENT_POTYPE ClientObject1,
+  CLIENT_POTYPE ClientObject2
 );
 
 //
@@ -77,8 +77,8 @@ INDEX_TYPE
 PLIST_HEAD
 ListInit
 (
-	CLIENT_COMPARE ClientCompare,
-	INDEX_TYPE     MaxNumberOfObjects
+  CLIENT_COMPARE ClientCompare,
+  INDEX_TYPE     MaxNumberOfObjects
 );
 
 //
@@ -101,8 +101,8 @@ ListInit
 INDEX_TYPE
 ListIsEmpty
 (
-	PLIST_HEAD Head,
-	INDEX_TYPE *NumberOfClientObjects
+  PLIST_HEAD Head,
+  INDEX_TYPE *NumberOfClientObjects
 );
 
 //
@@ -125,9 +125,9 @@ ListIsEmpty
 INDEX_TYPE
 ListInsert
 (
-	PLIST_HEAD     Head,
-	CLIENT_POTYPE  ClientObject,
-	CLIENT_COMPARE ClientCompare
+  PLIST_HEAD     Head,
+  CLIENT_POTYPE  ClientObject,
+  CLIENT_COMPARE ClientCompare
 );
 
 //
@@ -154,9 +154,9 @@ ListInsert
 INDEX_TYPE
 ListRemove
 (
-	PLIST_HEAD         Head,
-	CLIENT_EQUIVALENCE ClientEquality,
-	CLIENT_PPOTYPE     ClientObject
+  PLIST_HEAD         Head,
+  CLIENT_EQUIVALENCE ClientEquality,
+  CLIENT_PPOTYPE     ClientObject
 );
 
 //
@@ -183,9 +183,9 @@ ListRemove
 INDEX_TYPE
 ListFind
 (
-	PLIST_HEAD         Head,
-	CLIENT_EQUIVALENCE ClientEquality,
-	CLIENT_PPOTYPE     ClientObject
+  PLIST_HEAD         Head,
+  CLIENT_EQUIVALENCE ClientEquality,
+  CLIENT_PPOTYPE     ClientObject
 );
 
 //
@@ -209,9 +209,9 @@ ListFind
 INDEX_TYPE
 ListGetNext
 (
-	PLIST_HEAD     Head,
-	CLIENT_PPOTYPE ClientObject,
-	INDEX_TYPE     Reset
+  PLIST_HEAD     Head,
+  CLIENT_PPOTYPE ClientObject,
+  INDEX_TYPE     Reset
 );
 
 //
@@ -228,7 +228,7 @@ ListGetNext
 void
 ListTerminate
 (
-	PLIST_HEAD Head
+  PLIST_HEAD Head
 );
 
 //
@@ -251,8 +251,8 @@ ListTerminate
 void
 ListSort
 (
-	PLIST_HEAD     Head,
-	CLIENT_COMPARE ClientCompare
+  PLIST_HEAD     Head,
+  CLIENT_COMPARE ClientCompare
 );
 
 //
@@ -275,9 +275,9 @@ ListSort
 CLIENT_POTYPE
 ListGetExtrema
 (
-	PLIST_HEAD     Head,
-	CLIENT_COMPARE ClientCompare,
-	INDEX_TYPE     GetGreatest
+  PLIST_HEAD     Head,
+  CLIENT_COMPARE ClientCompare,
+  INDEX_TYPE     GetGreatest
 );
 
 //
@@ -297,10 +297,10 @@ ListGetExtrema
 //  Remark: if the ClientEvaluate function does not return 0, the dump will terminate
 //
 
-INDEX_TYPE 
+INDEX_TYPE
 ListDump
 (
-	PLIST_HEAD      Head,
-	CLIENT_EVALUATE ClientEvaluate,
-	INDEX_TYPE      Reverse
+  PLIST_HEAD      Head,
+  CLIENT_EVALUATE ClientEvaluate,
+  INDEX_TYPE      Reverse
 );

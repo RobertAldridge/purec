@@ -320,10 +320,10 @@ SsSetNode* SsSetEraseLevel2(ssSet* _this, SsSetNode* z)
   // x not root sentinel
   // y not root sentinel
   // z not root sentinel
-  
+
   if(x == y)
     gSsSetDebug[86]++;
-  
+
   if(x == z)
     gSsSetDebug[87]++;
 
@@ -458,7 +458,7 @@ SsSetNode* SsSetEraseLevel2(ssSet* _this, SsSetNode* z)
     // left     right
     //
     // and color
-    
+
     // y becomes the node to give back to the memory manager
     y = blahOld;
 

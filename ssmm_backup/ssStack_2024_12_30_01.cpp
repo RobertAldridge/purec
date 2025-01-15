@@ -637,7 +637,7 @@ void* SsmmStackPush(ssmm* _this, void* memory/*chunk*/)
   }
 
   _this->num++;
- 
+
   //memcpy(chunk, memory, SSMM_GET_SIZEOF(_this) );
   *(void**)chunk = memory;
 

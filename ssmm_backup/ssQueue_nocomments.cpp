@@ -122,7 +122,7 @@ static void SsQueueDebugShallow(ssQueue* _this)
   int64_t front = 0;
   SsQueueGetFront(_this, &front);
   printf(" front %lli;", front);
-  
+
   int64_t back = 0;
   SsQueueGetBack(_this, &back);
   printf(" back %lli\n", back);
@@ -141,7 +141,7 @@ static void SsQueueDeepDebug1(ssQueue* _this)
 {
   int64_t queueSize = SsQueueNum(_this);
   printf("num %lli; ", queueSize);
-  
+
   SsQueueNode* node = _this->front;
 
   printf("[");

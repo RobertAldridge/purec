@@ -27,7 +27,7 @@ Evaluate(
     )
 {
     printf("This object is %d\n", Object->integer);
-	return 0;
+  return 0;
 }
 
 static int
@@ -50,7 +50,7 @@ GreaterThan(
 
 static int AreEqual(CLIENT_POTYPE Arg1, CLIENT_POTYPE Arg2)
 {
-	return(Arg1.integer == Arg2.integer);
+  return(Arg1.integer == Arg2.integer);
 }
 
 //#define NUMBER 16384
@@ -109,17 +109,17 @@ mainListTest(
 {
 //long          OldValue;
     unsigned int  count;
-	PLIST_HEAD    listHead;
+  PLIST_HEAD    listHead;
     CLIENT_POTYPE input[NUMBER];
 
     memset( &input, 0, countof(input) );
 
-	#ifndef NDEBUG
-	//OldValue = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
+  #ifndef NDEBUG
+  //OldValue = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
 //_CrtSetDbgFlag(OldValue|_CRTDBG_LEAK_CHECK_DF);
-	#else
+  #else
 //OldValue = OldValue;
-	#endif
+  #endif
 
     listHead = ListInit(LessThan, NUMBER);
 

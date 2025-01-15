@@ -394,7 +394,7 @@ int64_t SsSetReset(ssSet* _this)
   // no change
   // -----
   // leaf
-  
+
   // lessThan
   // evaluate
   // maxStack

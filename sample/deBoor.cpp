@@ -1043,7 +1043,7 @@ void updateDraw() // deBoor::updateDraw
   {
     return;
   }
-  
+
   degree = blahDegree;
 
   //////////////////////////////////////////////////////////////////
@@ -1531,9 +1531,9 @@ void drawPoint(point center, int knotIndex) // deBoor::drawPoint
 void addControlPoint() // deBoor::addControlPoint
 {
   int loop = 0;
-  
+
   int degree = blahDegree;
-  
+
   // Add the new control point to the list.
   numControlPts++;
 
@@ -1652,7 +1652,7 @@ void clearAllControlPoint() // deBoor::clearAllControlPoint
 void drag_t_of_F_of_t() // deBoor::drag_t_of_F_of_t
 {
   int degree = blahDegree;
-  
+
   if(inputCur.x <= minPt.x)
   {
     inputCur.x = minPt.x + 1;
@@ -1924,7 +1924,7 @@ int main(int inputEvent, double x, double y, double B, double _halfWidth, double
   {
     return ERROR;
   }
-  
+
   (*deBoorIter)->setPrimitiveDrawingFunctions(_halfWidth, _halfHeight, 0, 0, 0, 0, _font);
 
   int retVal = 0;

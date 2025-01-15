@@ -73,7 +73,7 @@ void IterativePreorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binar
         //*StackTraverseArrayCurrentTop++ = RightChild;
         if( !SsmmStackPush(tree->stackAllocator, RightChild) )
           break;
-        
+
         //ptrdiff_t stackSize = StackTraverseArrayCurrentTop - StackTraverseArrayStart;
         ptrdiff_t stackSize = SsmmNum(tree->stackAllocator);
         if(stackSize >= 0 && stackSize > tree->maxStack)
@@ -158,7 +158,7 @@ void IterativeInorderTreeTraverse(BinaryTree* tree, BinaryTreeNode* node, binary
 
       node = node->left;
     }
-    
+
     //ptrdiff_t stackSize = StackTraverseArrayCurrentTop - StackTraverseArrayStart;
     ptrdiff_t stackSize = SsmmNum(tree->stackAllocator);
     if(stackSize >= 0 && stackSize > tree->maxStack)

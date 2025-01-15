@@ -17,14 +17,14 @@
 // AND WHEN RELOADING BETWEEN SCREEN MODES
 //
 // Call it every program loop if necessary!
-      
+
 void
-	ParticleSystemsInitGraphics( void * backBufferPixelPointer,
-								 int    backBufferViewPortWidth,
-								 int    backBufferViewPortHeight,
-								 int    backBufferBitDepth,
-								 int    backBufferPitch
-							   );
+  ParticleSystemsInitGraphics( void * backBufferPixelPointer,
+                 int    backBufferViewPortWidth,
+                 int    backBufferViewPortHeight,
+                 int    backBufferBitDepth,
+                 int    backBufferPitch
+                 );
 
 typedef struct __PARTICLE_SYSTEMS_HEAD * PPARTICLE_SYSTEMS_HEAD;
 
@@ -35,9 +35,9 @@ typedef struct __PARTICLE_SYSTEMS_HEAD * PPARTICLE_SYSTEMS_HEAD;
 // return new particle system
 // does nothing else if filename is NULL
 PPARTICLE_SYSTEMS_HEAD
-	ParticleSystemsLoadFileAndActivate( PPARTICLE_SYSTEMS_HEAD *particleSystems,
-									    char                   *filename,
-									    float                  currentTime
+  ParticleSystemsLoadFileAndActivate( PPARTICLE_SYSTEMS_HEAD *particleSystems,
+                      char                   *filename,
+                      float                  currentTime
                                       );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -45,9 +45,9 @@ PPARTICLE_SYSTEMS_HEAD
 // adds a particle system specified in the
 // file, does nothing if filename is NULL
 void
-	ParticleSystemsAddFileAndActivate( PPARTICLE_SYSTEMS_HEAD *particleSystems,
-									   char                   *filename,
-								       float                  currentTime
+  ParticleSystemsAddFileAndActivate( PPARTICLE_SYSTEMS_HEAD *particleSystems,
+                     char                   *filename,
+                       float                  currentTime
                                      );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -69,44 +69,44 @@ void
 // speed is normalized based on BackBufferViewPortWidth
 // force is normalized based on BackBufferViewPortWidth and BackBufferViewPortHeight
 extern void
-	ParticleSystemsAddAndActivate
-	(
-		PPARTICLE_SYSTEMS_HEAD *particleSystems,
+  ParticleSystemsAddAndActivate
+  (
+    PPARTICLE_SYSTEMS_HEAD *particleSystems,
 
-		char          *name,													  // EMITTER NAME
-		float         currentTime,												  // CURRENT TIME IN SECONDS
-		float         emitterLife,												  // HOW LONG WILL THE PARTICLE SYSTEM LAST - IN SECONDS
-		// TRANSFORMATION INFO
-		float         posX,           float posY,           float posZ,			  // XYZ POSITION OF PARTICLE SYSTEM ORIGIN AND VARIATION
-		float         posVarX,        float posVarY,        float posVarZ,
-		float         yaw,            float yawVar,								  // YAW AND VARIATION FOR VELOCITY
-		float         pitch,          float pitchVar,							  // PITCH AND VARIATION FOR VELOCITY
-		float         speed,          float speedVar,							  // VELOCITY MAGNITUDE AND VARIATION
-		// PARTICLE
-		int           numParticles,												  // TOTAL EMITTED AT ANY TIME
-		int           emitsPerFrame,  int   emitVar,							  // EMITS PER FRAME AND VARIATION
-		float         life,           float lifeVar,							  // LIFETIME OF PARTICLES AND VARIATION
+    char          *name,                            // EMITTER NAME
+    float         currentTime,                          // CURRENT TIME IN SECONDS
+    float         emitterLife,                          // HOW LONG WILL THE PARTICLE SYSTEM LAST - IN SECONDS
+    // TRANSFORMATION INFO
+    float         posX,           float posY,           float posZ,       // XYZ POSITION OF PARTICLE SYSTEM ORIGIN AND VARIATION
+    float         posVarX,        float posVarY,        float posVarZ,
+    float         yaw,            float yawVar,                 // YAW AND VARIATION FOR VELOCITY
+    float         pitch,          float pitchVar,               // PITCH AND VARIATION FOR VELOCITY
+    float         speed,          float speedVar,               // VELOCITY MAGNITUDE AND VARIATION
+    // PARTICLE
+    int           numParticles,                         // TOTAL EMITTED AT ANY TIME
+    int           emitsPerFrame,  int   emitVar,                // EMITS PER FRAME AND VARIATION
+    float         life,           float lifeVar,                // LIFETIME OF PARTICLES AND VARIATION
 
-		float         startColorR,    float startColorG,    float startColorB,    // START COLOR OF PARTICLES AND VARIATION
-		float         startColorVarR, float startColorVarG, float startColorVarB,
-		float         endColorR,      float endColorG,      float endColorB,      // END COLOR OF PARTICLES AND VARIATION
-		float		  endColorVarR,   float endColorVarG,   float endColorVarB,
-		// PHYSICS
-		float         gForceX,        float gForceY,        float gForceZ,        // GLOBAL GRAVITY, WIND, ETC. AND VARIATION
-		float         gForceVarX,     float gForceVarY,     float gForceVarZ,
+    float         startColorR,    float startColorG,    float startColorB,    // START COLOR OF PARTICLES AND VARIATION
+    float         startColorVarR, float startColorVarG, float startColorVarB,
+    float         endColorR,      float endColorG,      float endColorB,      // END COLOR OF PARTICLES AND VARIATION
+    float     endColorVarR,   float endColorVarG,   float endColorVarB,
+    // PHYSICS
+    float         gForceX,        float gForceY,        float gForceZ,        // GLOBAL GRAVITY, WIND, ETC. AND VARIATION
+    float         gForceVarX,     float gForceVarY,     float gForceVarZ,
 
-		unsigned char antiAlias,												  // IF NOT SET TO 0, PARTICLES WILL BE SHADED LINES
-																				      // IF SET TO 0, PARTICLES WILL BE COLORED POINTS
+    unsigned char antiAlias,                          // IF NOT SET TO 0, PARTICLES WILL BE SHADED LINES
+                                              // IF SET TO 0, PARTICLES WILL BE COLORED POINTS
 
-		unsigned char physics,													  // IF NOT SET TO 0, ACCELERATION WILL BE INTEGRATED
-																				      // INTO PARTICLES
-																				      // IF SET TO 0, ONLY VELOCITY WILL BE TAKEN
-																			          // INTO ACCOUNT
+    unsigned char physics,                            // IF NOT SET TO 0, ACCELERATION WILL BE INTEGRATED
+                                              // INTO PARTICLES
+                                              // IF SET TO 0, ONLY VELOCITY WILL BE TAKEN
+                                                // INTO ACCOUNT
 
-		unsigned char regeneration												  // IF NOT SET TO 0, DEAD PARTICLES WILL BE
-																				      // REGENERATED
-																				      // IF SET TO 0, DEAD PARTICLES WILL NOT BE
-																				      // REGENERATED
+    unsigned char regeneration                          // IF NOT SET TO 0, DEAD PARTICLES WILL BE
+                                              // REGENERATED
+                                              // IF SET TO 0, DEAD PARTICLES WILL NOT BE
+                                              // REGENERATED
      );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -117,10 +117,10 @@ extern void
 // if particleSystemName is NULL, all particle
 // systems are reactivated
 void
-	ParticleSystemsReActivate( PPARTICLE_SYSTEMS_HEAD *particleSystems,
-						       char                   *particleSystemName,
-							   float                  currentTime
-							 );
+  ParticleSystemsReActivate( PPARTICLE_SYSTEMS_HEAD *particleSystems,
+                   char                   *particleSystemName,
+                 float                  currentTime
+               );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -130,10 +130,10 @@ void
 // if particleSystemName is NULL, all particle
 // systems are updated
 void
-	ParticleSystemsUpdate( PPARTICLE_SYSTEMS_HEAD *particleSystems,
-						   char                   *particleSystemName,
-						   float                  currentTime
-						 );
+  ParticleSystemsUpdate( PPARTICLE_SYSTEMS_HEAD *particleSystems,
+               char                   *particleSystemName,
+               float                  currentTime
+             );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -143,9 +143,9 @@ void
 // if particleSystemName is NULL, all particle
 // systems are drawn
 void
-	ParticleSystemsDraw( PPARTICLE_SYSTEMS_HEAD *particleSystems,
-						 char                   *particleSystemName
-					   );
+  ParticleSystemsDraw( PPARTICLE_SYSTEMS_HEAD *particleSystems,
+             char                   *particleSystemName
+             );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -155,10 +155,10 @@ void
 // if particleSystemName is NULL, all particle
 // systems are updated and drawn
 void
-	ParticleSystemsUpdateAndDraw( PPARTICLE_SYSTEMS_HEAD *particleSystems,
-						          char                   *particleSystemName,
-						          float                  currentTime
-						        );
+  ParticleSystemsUpdateAndDraw( PPARTICLE_SYSTEMS_HEAD *particleSystems,
+                      char                   *particleSystemName,
+                      float                  currentTime
+                    );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -168,6 +168,6 @@ void
 // if particleSystemName is NULL, all particle
 // systems are terminated
 void
-	ParticleSystemsTerminate( PPARTICLE_SYSTEMS_HEAD *particleSystems,
-						      char                   *particleSystemName
-							);
+  ParticleSystemsTerminate( PPARTICLE_SYSTEMS_HEAD *particleSystems,
+                  char                   *particleSystemName
+              );

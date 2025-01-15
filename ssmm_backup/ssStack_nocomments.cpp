@@ -115,7 +115,7 @@ static void SsStackDeepDebug1(ssStack* _this)
 {
   int64_t stackSize = SsStackNum(_this);
   printf("num %lli; ", stackSize);
-  
+
   SsStackPool* pool = _this->head;
 
   printf("[");

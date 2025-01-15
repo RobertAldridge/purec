@@ -551,7 +551,7 @@ bool SsStackPush(ssStack* _this, void* memory/*chunk*/) // todo
     if( !SsStackResize(_this, 0) )
       goto error;
   }
-  
+
   if(_this->numChunks == _this->max)
     goto error;
 
