@@ -43,11 +43,11 @@ struct rect
 // font size to screen size.  All input and output is in the ideal frame of
 // reference.  Coordinate conversion is handled internally by RobsTextOut.
 extern FontBlah* RobsTextOutInitSystem( uint8_t** ( *backBufferFunction ) ( ),
-							          const unsigned int actual_backbuffer_width,
-							          const unsigned int actual_backbuffer_height,
-							          const unsigned int ideal_backbuffer_width,
-							          const unsigned int ideal_backbuffer_height
-							        );
+                        const unsigned int actual_backbuffer_width,
+                        const unsigned int actual_backbuffer_height,
+                        const unsigned int ideal_backbuffer_width,
+                        const unsigned int ideal_backbuffer_height
+                      );
 
 // The main RobsTextOut function prints clipped characters
 // to the backbuffer.  Characters do not wrap to the next line.
@@ -62,9 +62,9 @@ extern FontBlah* RobsTextOutInitSystem( uint8_t** ( *backBufferFunction ) ( ),
 // has not been called.
 extern void RobsTextOut(void* _this,
                 int x,
-					      int y,
-					      const char * const format,...
-				       );
+                int y,
+                const char * const format,...
+               );
 
 // Returns a rect with the upper left and lower right pixel coordinates
 // that contain the text which would be printed if RobsTextOut were called
@@ -80,12 +80,12 @@ extern void RobsTextOut(void* _this,
 // has not been called.
 extern const rect RobsTextOutRect( FontBlah* _this,
                         int x,
-							          int y,
-						             const char * const format,...
-							        );
+                        int y,
+                         const char * const format,...
+                      );
 
 // Terminates the font system and releases all allocated fonts.
 //
 // All released fonts will be reloaded on the next call to RobsTextOutInitSystem
 extern void RobsTextOutTermSystem(FontBlah** _this
-							        );
+                      );

@@ -55,7 +55,7 @@ bool BlahFree(void* pointer, uint32_t sizeOf, bool zero)
 
   if( !pointer || !sizeOf)
     goto label_return;
-  
+
   if(zero)
     memset(pointer, 0, sizeOf);
 

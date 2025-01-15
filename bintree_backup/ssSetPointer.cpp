@@ -708,8 +708,8 @@ BinInsert
                x = x->LeftChild;
             }
             else
-            {            
-               xP->Color = BLACK;   
+            {
+               xP->Color = BLACK;
 
                RightRotate( T, xP->Parent );
             }
@@ -1314,7 +1314,7 @@ ptrtrack::find
    {
       return 1;
    }
-   
+
    return RETURN_OK;
 }
 
@@ -1350,7 +1350,7 @@ ptrtrack::reset
       }
 
       Head->Root = 0;
-      
+
       return RETURN_OK;
    }
 
@@ -1395,7 +1395,7 @@ ptrtrack::isEmpty
       _log( "error" );
       return RETURN_ERROR;
    }
-   
+
    return Head->NumberOfNodes;
 }
 

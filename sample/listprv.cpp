@@ -17,17 +17,17 @@
 #include <cassert>
 #include <cstring>
 
-	#define ERROR -1
+  #define ERROR -1
 
-	#ifndef TRUE
-		#define TRUE 1
-	#endif
+  #ifndef TRUE
+    #define TRUE 1
+  #endif
 
-	#define NO_ERROR 0
+  #define NO_ERROR 0
 
-	#ifndef FALSE
-		#define FALSE 0
-	#endif
+  #ifndef FALSE
+    #define FALSE 0
+  #endif
 
 #include "client_potype.h"
 
@@ -50,9 +50,9 @@
 //      in this list interface. It will be NULL if the memory cannot
 //      be allocated for the list.
 //
-//	Implementation Details:
-//		O ( N ) - Upper bounds on runtime proportional to the guessed maximum number
-//		of objects because of memory allocation and zeroing the memory out.
+//  Implementation Details:
+//    O ( N ) - Upper bounds on runtime proportional to the guessed maximum number
+//    of objects because of memory allocation and zeroing the memory out.
 //
 //
 //
@@ -60,35 +60,35 @@
 PLIST_HEAD
 ListInit
 (
-	CLIENT_COMPARE ClientCompare,
-	INDEX_TYPE     MaxNumberOfObjects
+  CLIENT_COMPARE ClientCompare,
+  INDEX_TYPE     MaxNumberOfObjects
 )
 {
-	// times 2 for the buffer for the sorting routine
-	PLIST_HEAD Head;
+  // times 2 for the buffer for the sorting routine
+  PLIST_HEAD Head;
 
-	if(MaxNumberOfObjects<0)
-		return 0;
+  if(MaxNumberOfObjects<0)
+    return 0;
 
-	Head=(PLIST_HEAD)calloc(1,sizeof(LIST_HEAD));
+  Head=(PLIST_HEAD)calloc(1,sizeof(LIST_HEAD));
 
-	if(Head)
-	{
-		Head->ObjectArray=(CLIENT_POTYPE*)calloc(1,sizeof(CLIENT_POTYPE)*MaxNumberOfObjects*2);
+  if(Head)
+  {
+    Head->ObjectArray=(CLIENT_POTYPE*)calloc(1,sizeof(CLIENT_POTYPE)*MaxNumberOfObjects*2);
 
-		if(!Head->ObjectArray)
-		{
-			free(Head);
+    if(!Head->ObjectArray)
+    {
+      free(Head);
       return 0;
     }
 
-		Head->ClientCompare     =ClientCompare;
-		Head->MaxNumberOfObjects=MaxNumberOfObjects;
+    Head->ClientCompare     =ClientCompare;
+    Head->MaxNumberOfObjects=MaxNumberOfObjects;
 
-		return Head;
-	}
+    return Head;
+  }
 
-	return 0;
+  return 0;
 }
 
 //
@@ -105,9 +105,9 @@ ListInit
 //  Returns:
 //      1 if list is empty, 0 otherwise.
 //
-//	Implementation Details:
-//		O ( C ) - Upper bounds on runtime constant because the number of
-//		calculations are the same no matter the size of the list.
+//  Implementation Details:
+//    O ( C ) - Upper bounds on runtime constant because the number of
+//    calculations are the same no matter the size of the list.
 //
 //
 //
@@ -115,17 +115,17 @@ ListInit
 INDEX_TYPE
 ListIsEmpty
 (
-	PLIST_HEAD Head,
-	INDEX_TYPE *NumberOfClientObjects
+  PLIST_HEAD Head,
+  INDEX_TYPE *NumberOfClientObjects
 )
 {
-	if( !Head || !Head->ObjectArray )
-		return 0;
+  if( !Head || !Head->ObjectArray )
+    return 0;
 
-	if(NumberOfClientObjects)
-		*NumberOfClientObjects=Head->CurrentIndex;
+  if(NumberOfClientObjects)
+    *NumberOfClientObjects=Head->CurrentIndex;
 
-	return(!Head->CurrentIndex);
+  return(!Head->CurrentIndex);
 }
 
 //
@@ -142,18 +142,18 @@ ListIsEmpty
 //  Returns:
 //      0 if successful, nonzero otherwise.
 //
-//	Implementation Details:
-//		O ( C ) - Upper bounds on runtime constant because the number of
-//		calculations are the same no matter the size of the list.
+//  Implementation Details:
+//    O ( C ) - Upper bounds on runtime constant because the number of
+//    calculations are the same no matter the size of the list.
 //
-//	    O ( N ) - If extra memory allocation is required, upper bounds on runtime
-//		proportional to the number of objects currently in the list because of memory
-//		allocation, and zeroing the memory out, and copying it over. Only happens when
+//      O ( N ) - If extra memory allocation is required, upper bounds on runtime
+//    proportional to the number of objects currently in the list because of memory
+//    allocation, and zeroing the memory out, and copying it over. Only happens when
 //      the number of items in the list is equal to the guessed maximum number passed
 //      into ListInit, in which case the guessed maximum number will be doubled.
-//		After that the runtime will only be O( N ) every time the array doubles its size.
-//		Since this only happens every time the array doubles, O( lg N ) is the upper
-//		bounds on the amount of times this will happen.
+//    After that the runtime will only be O( N ) every time the array doubles its size.
+//    Since this only happens every time the array doubles, O( lg N ) is the upper
+//    bounds on the amount of times this will happen.
 //
 //
 //
@@ -161,48 +161,48 @@ ListIsEmpty
 INDEX_TYPE
 ListInsert
 (
-	PLIST_HEAD     Head,
-	CLIENT_POTYPE  ClientObject,
-	CLIENT_COMPARE ClientCompare
+  PLIST_HEAD     Head,
+  CLIENT_POTYPE  ClientObject,
+  CLIENT_COMPARE ClientCompare
 )
 {
-	CLIENT_PPOTYPE GrowArray;
+  CLIENT_PPOTYPE GrowArray;
 
-	if( !Head || !Head->ObjectArray || Head->Sort || Head->Remove )
-		return ERROR;
+  if( !Head || !Head->ObjectArray || Head->Sort || Head->Remove )
+    return ERROR;
 
-	if(ClientCompare)
-		Head->ClientCompare=ClientCompare;
+  if(ClientCompare)
+    Head->ClientCompare=ClientCompare;
 
-	if( Head->CurrentIndex >= (Head->MaxNumberOfObjects-1) )
-	{
-		if( Head->Dump || Head->GetExtrema || Head->Find )
-		{
-			// If assert is triggered the client needs to increase the
-			// guessed maximum passed into ListInit, or call
-			// ListInsert outside of a list traversal routine.
-			assert( "ListInsert is trying to grow from within a list traversal routine." && 0 );
+  if( Head->CurrentIndex >= (Head->MaxNumberOfObjects-1) )
+  {
+    if( Head->Dump || Head->GetExtrema || Head->Find )
+    {
+      // If assert is triggered the client needs to increase the
+      // guessed maximum passed into ListInit, or call
+      // ListInsert outside of a list traversal routine.
+      assert( "ListInsert is trying to grow from within a list traversal routine." && 0 );
 
-			return ERROR;
-		}
+      return ERROR;
+    }
 
-		GrowArray=(CLIENT_POTYPE*)calloc(1,sizeof(CLIENT_POTYPE)*Head->MaxNumberOfObjects*4);
+    GrowArray=(CLIENT_POTYPE*)calloc(1,sizeof(CLIENT_POTYPE)*Head->MaxNumberOfObjects*4);
 
-		if(!GrowArray)
-			return ERROR;
+    if(!GrowArray)
+      return ERROR;
 
-		memcpy(GrowArray,Head->ObjectArray,sizeof(CLIENT_POTYPE)*Head->CurrentIndex);
+    memcpy(GrowArray,Head->ObjectArray,sizeof(CLIENT_POTYPE)*Head->CurrentIndex);
 
-		Head->MaxNumberOfObjects+=Head->MaxNumberOfObjects;
+    Head->MaxNumberOfObjects+=Head->MaxNumberOfObjects;
 
-		free(Head->ObjectArray);
+    free(Head->ObjectArray);
 
-		Head->ObjectArray=GrowArray;
-	}
+    Head->ObjectArray=GrowArray;
+  }
 
-	Head->ObjectArray[Head->CurrentIndex++]=ClientObject;
+  Head->ObjectArray[Head->CurrentIndex++]=ClientObject;
 
-	return NO_ERROR;
+  return NO_ERROR;
 }
 
 //
@@ -223,9 +223,9 @@ ListInsert
 //  Returns:
 //      0 if successful, nonzero otherwise.
 //
-//	Implementation Details:
-//		O ( N ) - Upper bounds on runtime proportional to the number of objects currently
-//		in the list because of list traversal.
+//  Implementation Details:
+//    O ( N ) - Upper bounds on runtime proportional to the number of objects currently
+//    in the list because of list traversal.
 //
 //
 //
@@ -233,63 +233,63 @@ ListInsert
 INDEX_TYPE
 ListRemove
 (
-	PLIST_HEAD         Head,
-	CLIENT_EQUIVALENCE ClientEquality,
-	CLIENT_PPOTYPE     ClientObject
+  PLIST_HEAD         Head,
+  CLIENT_EQUIVALENCE ClientEquality,
+  CLIENT_PPOTYPE     ClientObject
 )
 {
-	int loop=0,Num;
+  int loop=0,Num;
 
-	if( !Head || !Head->ObjectArray || !ClientObject || Head->Remove || Head->Sort || Head->Dump || Head->GetExtrema || Head->Find )
-		return ERROR;
+  if( !Head || !Head->ObjectArray || !ClientObject || Head->Remove || Head->Sort || Head->Dump || Head->GetExtrema || Head->Find )
+    return ERROR;
 
-	Num=Head->CurrentIndex;
+  Num=Head->CurrentIndex;
 
-	if(ClientEquality)
-		Head->ClientEquality=ClientEquality;
+  if(ClientEquality)
+    Head->ClientEquality=ClientEquality;
 
-	if(Num<1)
-		return ERROR;
+  if(Num<1)
+    return ERROR;
 
-	if(!ClientEquality)
-	{
-		*ClientObject=Head->ObjectArray[0];
-		
-		if(--Head->CurrentIndex>0)
-			memcpy(&Head->ObjectArray[0],&Head->ObjectArray[1],sizeof(CLIENT_POTYPE)*Head->CurrentIndex);
+  if(!ClientEquality)
+  {
+    *ClientObject=Head->ObjectArray[0];
 
-		memset(&Head->ObjectArray[Head->CurrentIndex],0,sizeof(CLIENT_POTYPE));
+    if(--Head->CurrentIndex>0)
+      memcpy(&Head->ObjectArray[0],&Head->ObjectArray[1],sizeof(CLIENT_POTYPE)*Head->CurrentIndex);
 
-		Head->CurrentTraverseIndex=0;
+    memset(&Head->ObjectArray[Head->CurrentIndex],0,sizeof(CLIENT_POTYPE));
 
-		return NO_ERROR;
-	}
+    Head->CurrentTraverseIndex=0;
 
-	do
-	{
-		Head->Remove=1;
+    return NO_ERROR;
+  }
 
-		if(ClientEquality(*ClientObject,Head->ObjectArray[loop])!=0)
-		{
-			memcpy(ClientObject,&Head->ObjectArray[loop],sizeof(CLIENT_POTYPE));
-		
-			if(--Head->CurrentIndex>0)
-				memcpy(&Head->ObjectArray[loop],&Head->ObjectArray[loop+1],sizeof(CLIENT_POTYPE)*(Head->CurrentIndex-loop));
+  do
+  {
+    Head->Remove=1;
 
-			memset(&Head->ObjectArray[Head->CurrentIndex],0,sizeof(CLIENT_POTYPE));
+    if(ClientEquality(*ClientObject,Head->ObjectArray[loop])!=0)
+    {
+      memcpy(ClientObject,&Head->ObjectArray[loop],sizeof(CLIENT_POTYPE));
 
-			Head->CurrentTraverseIndex=0;
+      if(--Head->CurrentIndex>0)
+        memcpy(&Head->ObjectArray[loop],&Head->ObjectArray[loop+1],sizeof(CLIENT_POTYPE)*(Head->CurrentIndex-loop));
 
-			Head->Remove=0;
+      memset(&Head->ObjectArray[Head->CurrentIndex],0,sizeof(CLIENT_POTYPE));
 
-			return NO_ERROR;
-		}
+      Head->CurrentTraverseIndex=0;
 
-	}while(++loop!=Num);
+      Head->Remove=0;
 
-	Head->Remove=0;
+      return NO_ERROR;
+    }
 
-	return ERROR;
+  }while(++loop!=Num);
+
+  Head->Remove=0;
+
+  return ERROR;
 }
 
 //
@@ -310,9 +310,9 @@ ListRemove
 //  Returns:
 //      0 if successful, nonzero otherwise.
 //
-//	Implementation Details:
-//		O ( N ) - Upper bounds on runtime proportional to the number of objects currently
-//		in the list because of list traversal.
+//  Implementation Details:
+//    O ( N ) - Upper bounds on runtime proportional to the number of objects currently
+//    in the list because of list traversal.
 //
 //
 //
@@ -320,51 +320,51 @@ ListRemove
 INDEX_TYPE
 ListFind
 (
-	PLIST_HEAD         Head,
-	CLIENT_EQUIVALENCE ClientEquality,
-	CLIENT_PPOTYPE     ClientObject
+  PLIST_HEAD         Head,
+  CLIENT_EQUIVALENCE ClientEquality,
+  CLIENT_PPOTYPE     ClientObject
 )
 {
-	int loop=0,Num;
+  int loop=0,Num;
 
-	if( !Head || !Head->ObjectArray || !ClientObject || Head->Find || Head->Sort )
-		return ERROR;
+  if( !Head || !Head->ObjectArray || !ClientObject || Head->Find || Head->Sort )
+    return ERROR;
 
-	Num=Head->CurrentIndex;
+  Num=Head->CurrentIndex;
 
-	if(ClientEquality)
-		Head->ClientEquality=ClientEquality;
+  if(ClientEquality)
+    Head->ClientEquality=ClientEquality;
 
-	if(Num<1)
-		return ERROR;
+  if(Num<1)
+    return ERROR;
 
-	if(!ClientEquality)
-	{
-		*ClientObject=Head->ObjectArray[0];
-		return NO_ERROR;
-	}
+  if(!ClientEquality)
+  {
+    *ClientObject=Head->ObjectArray[0];
+    return NO_ERROR;
+  }
 
-	do
-	{
-		if( Head->Dump || Head->GetExtrema || Head->Remove )
-			return ERROR;
+  do
+  {
+    if( Head->Dump || Head->GetExtrema || Head->Remove )
+      return ERROR;
 
-		Head->Find=1;
+    Head->Find=1;
 
-		if(ClientEquality(*ClientObject,Head->ObjectArray[loop])!=0)
-		{
-			*ClientObject=Head->ObjectArray[loop];
+    if(ClientEquality(*ClientObject,Head->ObjectArray[loop])!=0)
+    {
+      *ClientObject=Head->ObjectArray[loop];
 
-			Head->Find=0;
+      Head->Find=0;
 
-			return NO_ERROR;
-		}
+      return NO_ERROR;
+    }
 
-	}while(++loop!=Num);
+  }while(++loop!=Num);
 
-	Head->Find=0;
+  Head->Find=0;
 
-	return ERROR;
+  return ERROR;
 }
 
 //
@@ -382,9 +382,9 @@ ListFind
 //  Returns:
 //      0 if successful, nonzero otherwise.
 //
-//	Implementation Details:
-//		O ( C ) - Upper bounds on runtime constant because the number of
-//		calculations are the same no matter the size of the list.
+//  Implementation Details:
+//    O ( C ) - Upper bounds on runtime constant because the number of
+//    calculations are the same no matter the size of the list.
 //
 //
 //
@@ -392,26 +392,26 @@ ListFind
 INDEX_TYPE
 ListGetNext
 (
-	PLIST_HEAD     Head,
-	CLIENT_PPOTYPE ClientObject,
-	INDEX_TYPE     Reset
+  PLIST_HEAD     Head,
+  CLIENT_PPOTYPE ClientObject,
+  INDEX_TYPE     Reset
 )
 {
-	if( !Head || !Head->ObjectArray || !ClientObject )
-		return ERROR;
+  if( !Head || !Head->ObjectArray || !ClientObject )
+    return ERROR;
 
-	if(Reset==TRUE)
-		Head->CurrentTraverseIndex=0;
+  if(Reset==TRUE)
+    Head->CurrentTraverseIndex=0;
 
-	if(Head->CurrentIndex < 1 ||
-	   (!ClientObject)		  ||
-	   Head->CurrentTraverseIndex >= (Head->MaxNumberOfObjects-1)
-	  )
-		return ERROR;
+  if(Head->CurrentIndex < 1 ||
+     (!ClientObject)      ||
+     Head->CurrentTraverseIndex >= (Head->MaxNumberOfObjects-1)
+    )
+    return ERROR;
 
-	*ClientObject=Head->ObjectArray[Head->CurrentTraverseIndex++];
+  *ClientObject=Head->ObjectArray[Head->CurrentTraverseIndex++];
 
-	return NO_ERROR;
+  return NO_ERROR;
 }
 
 //
@@ -424,9 +424,9 @@ ListGetNext
 //  Returns:
 //      void
 //
-//	Implementation Details:
-//		O ( C ) - Upper bounds on runtime constant because the number of
-//		calculations are the same no matter the size of the list.
+//  Implementation Details:
+//    O ( C ) - Upper bounds on runtime constant because the number of
+//    calculations are the same no matter the size of the list.
 //
 //
 //
@@ -434,16 +434,16 @@ ListGetNext
 void
 ListTerminate
 (
-	PLIST_HEAD Head
+  PLIST_HEAD Head
 )
 {
-	if( Head && !Head->Dump && !Head->GetExtrema && !Head->Find && !Head->Remove && !Head->Sort )
-	{
-		if(Head->ObjectArray)
-			free(Head->ObjectArray);
+  if( Head && !Head->Dump && !Head->GetExtrema && !Head->Find && !Head->Remove && !Head->Sort )
+  {
+    if(Head->ObjectArray)
+      free(Head->ObjectArray);
 
-		free(Head);
-	}
+    free(Head);
+  }
 }
 
 //
@@ -461,10 +461,10 @@ ListTerminate
 //      void.
 //
 //  Implementation Details:
-//		O( N lg N ) - This sorts the list using an algorithm whose upper bounds
-//		on runtime is proportional to the number of objects currently
-//		in the list times the log base 2 of the number of objects currently
-//		in the list.
+//    O( N lg N ) - This sorts the list using an algorithm whose upper bounds
+//    on runtime is proportional to the number of objects currently
+//    in the list times the log base 2 of the number of objects currently
+//    in the list.
 //
 
 // local function used in ListSort
@@ -472,118 +472,118 @@ ListTerminate
 static void
 insertion
 (
-	CLIENT_POTYPE  *ObjectArray,
-	INDEX_TYPE     StartIndex,
-	INDEX_TYPE     EndIndex,
-	CLIENT_COMPARE ClientCompare
+  CLIENT_POTYPE  *ObjectArray,
+  INDEX_TYPE     StartIndex,
+  INDEX_TYPE     EndIndex,
+  CLIENT_COMPARE ClientCompare
 )
 {
     INDEX_TYPE    outerCount,innerCount;
-	CLIENT_POTYPE sentinel,tmp;
+  CLIENT_POTYPE sentinel,tmp;
 
     //
     //  Put the smallest element in the entire array in the zeroth slot.
     //
 
     for(outerCount = StartIndex + 1; outerCount <= EndIndex; ++outerCount)
-	{
-		if(
-			ClientCompare(ObjectArray[outerCount],
-			              ObjectArray[StartIndex]
-						 )!=0
-		  )
-		{
-			tmp=ObjectArray[outerCount];
+  {
+    if(
+      ClientCompare(ObjectArray[outerCount],
+                    ObjectArray[StartIndex]
+             )!=0
+      )
+    {
+      tmp=ObjectArray[outerCount];
 
-			ObjectArray[outerCount]=ObjectArray[StartIndex];
-			ObjectArray[StartIndex]=tmp;
-		}
-	}
+      ObjectArray[outerCount]=ObjectArray[StartIndex];
+      ObjectArray[StartIndex]=tmp;
+    }
+  }
 
     for(outerCount = StartIndex + 2; outerCount <= EndIndex; ++outerCount)
         {
-			//
-			//  Set aside the item at the start+1 of the unsorted subarray.
-			//
+      //
+      //  Set aside the item at the start+1 of the unsorted subarray.
+      //
 
-			sentinel   = ObjectArray[outerCount];
+      sentinel   = ObjectArray[outerCount];
 
-			innerCount = outerCount;
+      innerCount = outerCount;
 
-			//
-			//  While the sentinel is less than other entries, transpose
-			//  these other entries. At some point, the index will take
-			//  the comparisons into the sorted subarray every element
-			//  of which is less than the sentinel, so the condition will
-			//  fail.
-			//
+      //
+      //  While the sentinel is less than other entries, transpose
+      //  these other entries. At some point, the index will take
+      //  the comparisons into the sorted subarray every element
+      //  of which is less than the sentinel, so the condition will
+      //  fail.
+      //
 
-			while
-			(
-				ClientCompare
-				(
-					sentinel,
-					ObjectArray[innerCount-1]
-				)!=0
-			)
-			{
+      while
+      (
+        ClientCompare
+        (
+          sentinel,
+          ObjectArray[innerCount-1]
+        )!=0
+      )
+      {
 
-				//
-				//  Move the items to the right.
-				//
+        //
+        //  Move the items to the right.
+        //
 
-				ObjectArray[innerCount] =
-				ObjectArray[innerCount-1];
+        ObjectArray[innerCount] =
+        ObjectArray[innerCount-1];
 
-				--innerCount;
-			}
+        --innerCount;
+      }
 
-			//
-			//  Now the smallest item of those covered is in the left most slot.
-			//  So the sub array to the left is sorted.
-			//
+      //
+      //  Now the smallest item of those covered is in the left most slot.
+      //  So the sub array to the left is sorted.
+      //
 
-			ObjectArray[innerCount] = sentinel;
+      ObjectArray[innerCount] = sentinel;
 
-			//
-			//  For this implementation, the number of comparisons is n*(n+1)/4.
-			//
+      //
+      //  For this implementation, the number of comparisons is n*(n+1)/4.
+      //
         }
 }
 
 // local function used in ListSort
 // from SedgeWick
-static void 
+static void
 mergeAB
 (
-	CLIENT_POTYPE  *c,
-	CLIENT_POTYPE  *a,
-	INDEX_TYPE     N,
-	CLIENT_POTYPE  *b,
-	INDEX_TYPE     M,
-	CLIENT_COMPARE ClientCompare
+  CLIENT_POTYPE  *c,
+  CLIENT_POTYPE  *a,
+  INDEX_TYPE     N,
+  CLIENT_POTYPE  *b,
+  INDEX_TYPE     M,
+  CLIENT_COMPARE ClientCompare
 )
 {
-	INDEX_TYPE i,j,k;
+  INDEX_TYPE i,j,k;
 
-	for(i=0,j=0,k=0;k<N+M;k++)
-	{
-		if(i==N)
-		{
-			c[k]=b[j++];
-			continue;
-		}
+  for(i=0,j=0,k=0;k<N+M;k++)
+  {
+    if(i==N)
+    {
+      c[k]=b[j++];
+      continue;
+    }
 
-		if(j==M)
-		{
-			c[k]=a[i++];
-			continue;
-		}
+    if(j==M)
+    {
+      c[k]=a[i++];
+      continue;
+    }
 
-		c[k]=(ClientCompare(a[i],b[j])!=0)?
-				a[i++]:
-				b[j++];
-	}
+    c[k]=(ClientCompare(a[i],b[j])!=0)?
+        a[i++]:
+        b[j++];
+  }
 }
 
 // local function used in ListSort
@@ -591,25 +591,25 @@ mergeAB
 static void
 mergesortABr
 (
-	CLIENT_POTYPE  *a,
-	CLIENT_POTYPE  *b,
-	INDEX_TYPE     l,
-	INDEX_TYPE     r,
-	CLIENT_POTYPE  *aux,
-	CLIENT_COMPARE ClientCompare
+  CLIENT_POTYPE  *a,
+  CLIENT_POTYPE  *b,
+  INDEX_TYPE     l,
+  INDEX_TYPE     r,
+  CLIENT_POTYPE  *aux,
+  CLIENT_COMPARE ClientCompare
 )
 {
-	INDEX_TYPE m=(l+r)/2;
+  INDEX_TYPE m=(l+r)/2;
 
-	if(r-l<=10)
-	{
-		insertion(a,l,r,ClientCompare);
-		return;
-	}
+  if(r-l<=10)
+  {
+    insertion(a,l,r,ClientCompare);
+    return;
+  }
 
-	mergesortABr(b,  a,  l,    m,    aux,ClientCompare);
-	mergesortABr(b,  a,  m+1,  r,    aux,ClientCompare);
-	mergeAB(     a+1,b+1,m-l+1,b+m+1,r-m,ClientCompare);
+  mergesortABr(b,  a,  l,    m,    aux,ClientCompare);
+  mergesortABr(b,  a,  m+1,  r,    aux,ClientCompare);
+  mergeAB(     a+1,b+1,m-l+1,b+m+1,r-m,ClientCompare);
 }
 
 // local function used in ListSort
@@ -617,52 +617,52 @@ mergesortABr
 static void
 mergesortAB
 (
-	PLIST_HEAD Head,
-	INDEX_TYPE l,
-	INDEX_TYPE r
+  PLIST_HEAD Head,
+  INDEX_TYPE l,
+  INDEX_TYPE r
 )
 {
-	INDEX_TYPE    i;
-	CLIENT_POTYPE *a  =Head->ObjectArray;
-	CLIENT_POTYPE *aux=a+Head->MaxNumberOfObjects;
+  INDEX_TYPE    i;
+  CLIENT_POTYPE *a  =Head->ObjectArray;
+  CLIENT_POTYPE *aux=a+Head->MaxNumberOfObjects;
 
-	for(i=l;i<=r;i++)
-		aux[i]=a[i];
+  for(i=l;i<=r;i++)
+    aux[i]=a[i];
 
-	mergesortABr(a,aux,l,r,aux,Head->ClientCompare);
+  mergesortABr(a,aux,l,r,aux,Head->ClientCompare);
 }
 
 void
 ListSort
 (
-	PLIST_HEAD     Head,
-	CLIENT_COMPARE ClientCompare
+  PLIST_HEAD     Head,
+  CLIENT_COMPARE ClientCompare
 )
 {
-	CLIENT_COMPARE TempClientCompare;
+  CLIENT_COMPARE TempClientCompare;
 
-	if( !Head || !Head->ObjectArray || Head->Dump || Head->Find || Head->GetExtrema || Head->Remove || Head->Sort )
-		return;
+  if( !Head || !Head->ObjectArray || Head->Dump || Head->Find || Head->GetExtrema || Head->Remove || Head->Sort )
+    return;
 
-	TempClientCompare=Head->ClientCompare;
+  TempClientCompare=Head->ClientCompare;
 
-	if(ClientCompare)
-		Head->ClientCompare=ClientCompare;
+  if(ClientCompare)
+    Head->ClientCompare=ClientCompare;
 
-	if(!Head->ClientCompare||Head->CurrentIndex<2)
-	{
-		Head->ClientCompare=TempClientCompare;
+  if(!Head->ClientCompare||Head->CurrentIndex<2)
+  {
+    Head->ClientCompare=TempClientCompare;
 
-		return;
-	}
+    return;
+  }
 
-	Head->Sort=1;
+  Head->Sort=1;
 
-	mergesortAB(Head,0,Head->CurrentIndex-1);
+  mergesortAB(Head,0,Head->CurrentIndex-1);
 
-	Head->ClientCompare=TempClientCompare;
+  Head->ClientCompare=TempClientCompare;
 
-	Head->Sort=0;
+  Head->Sort=0;
 }
 
 //
@@ -681,9 +681,9 @@ ListSort
 //  Returns:
 //      POTYPE.
 //
-//	Implementation Details:
-//		O ( N ) - Upper bounds on runtime proportional to the number of objects currently
-//		in the list because of list traversal.
+//  Implementation Details:
+//    O ( N ) - Upper bounds on runtime proportional to the number of objects currently
+//    in the list because of list traversal.
 //
 //
 //
@@ -691,54 +691,54 @@ ListSort
 CLIENT_POTYPE
 ListGetExtrema
 (
-	PLIST_HEAD     Head,
-	CLIENT_COMPARE ClientCompare,
-	INDEX_TYPE     GetGreatest
+  PLIST_HEAD     Head,
+  CLIENT_COMPARE ClientCompare,
+  INDEX_TYPE     GetGreatest
 )
 {
-	int           loop=0,Num;
-	CLIENT_POTYPE temp={0};
+  int           loop=0,Num;
+  CLIENT_POTYPE temp={0};
 
-	if( !Head || !Head->ObjectArray || Head->Dump || Head->Find || Head->GetExtrema || Head->Remove || Head->Sort )
-		return temp;
+  if( !Head || !Head->ObjectArray || Head->Dump || Head->Find || Head->GetExtrema || Head->Remove || Head->Sort )
+    return temp;
 
-	Num=Head->CurrentIndex;
+  Num=Head->CurrentIndex;
 
-	if(Num<1)
-		return temp;
+  if(Num<1)
+    return temp;
 
-	if(!ClientCompare)
-		ClientCompare=Head->ClientCompare;
+  if(!ClientCompare)
+    ClientCompare=Head->ClientCompare;
 
-	if(!ClientCompare)
-		return temp;
+  if(!ClientCompare)
+    return temp;
 
-	temp=Head->ObjectArray[loop++];
+  temp=Head->ObjectArray[loop++];
 
-	Head->GetExtrema=1;
+  Head->GetExtrema=1;
 
-	if(GetGreatest==TRUE)
-	{
-		do
-		{
-			if(ClientCompare(temp,Head->ObjectArray[loop])==0)
-				temp=Head->ObjectArray[loop];
+  if(GetGreatest==TRUE)
+  {
+    do
+    {
+      if(ClientCompare(temp,Head->ObjectArray[loop])==0)
+        temp=Head->ObjectArray[loop];
 
-		}while(++loop!=Num);
-	}
-	else
-	{
-		do
-		{
-			if(ClientCompare(temp,Head->ObjectArray[loop])!=0)
-				temp=Head->ObjectArray[loop];
+    }while(++loop!=Num);
+  }
+  else
+  {
+    do
+    {
+      if(ClientCompare(temp,Head->ObjectArray[loop])!=0)
+        temp=Head->ObjectArray[loop];
 
-		}while(++loop!=Num);
-	}
+    }while(++loop!=Num);
+  }
 
-	Head->GetExtrema=0;
+  Head->GetExtrema=0;
 
-	return temp;
+  return temp;
 }
 
 //
@@ -754,14 +754,14 @@ ListGetExtrema
 //
 //  Returns:
 //      0 if successful and there was a full dump,
-//      1 if successful	and the dump was abruptly terminated,
+//      1 if successful and the dump was abruptly terminated,
 //      nonzero and nonone otherwise.
 //
 //  Remark: if the ClientEvaluate function does not return 0, the dump will abruptly terminate
 //
-//	Implementation Details:
-//		O ( N ) - Upper bounds on runtime proportional to the number of objects currently
-//		in the list because of list traversal.
+//  Implementation Details:
+//    O ( N ) - Upper bounds on runtime proportional to the number of objects currently
+//    in the list because of list traversal.
 //
 //
 //
@@ -769,65 +769,65 @@ ListGetExtrema
 INDEX_TYPE
 ListDump
 (
-	PLIST_HEAD      Head,
-	CLIENT_EVALUATE ClientEvaluate,
-	INDEX_TYPE      Reverse
+  PLIST_HEAD      Head,
+  CLIENT_EVALUATE ClientEvaluate,
+  INDEX_TYPE      Reverse
 )
 {
-	int loop=0,Num;
+  int loop=0,Num;
 
-	if( !Head || !Head->ObjectArray || Head->Dump || Head->Find || Head->GetExtrema || Head->Remove || Head->Sort )
-		return ERROR;
+  if( !Head || !Head->ObjectArray || Head->Dump || Head->Find || Head->GetExtrema || Head->Remove || Head->Sort )
+    return ERROR;
 
-	Num=Head->CurrentIndex;
+  Num=Head->CurrentIndex;
 
-	if(Num<1)
-		return ERROR;
+  if(Num<1)
+    return ERROR;
 
-	if(ClientEvaluate)
-		Head->ClientEvaluate=ClientEvaluate;
-	else
-		ClientEvaluate=Head->ClientEvaluate;
+  if(ClientEvaluate)
+    Head->ClientEvaluate=ClientEvaluate;
+  else
+    ClientEvaluate=Head->ClientEvaluate;
 
-	if(!ClientEvaluate)
-		return ERROR;
+  if(!ClientEvaluate)
+    return ERROR;
 
-	Head->Dump=1;
+  Head->Dump=1;
 
-	if(Reverse==TRUE)
-	{
-		--Num;
+  if(Reverse==TRUE)
+  {
+    --Num;
 
-		do
-		{
-			if(ClientEvaluate(&Head->ObjectArray[Num])!=0)
-			{
-				Head->Dump=0;
+    do
+    {
+      if(ClientEvaluate(&Head->ObjectArray[Num])!=0)
+      {
+        Head->Dump=0;
 
-				// return TRUE if there is no error but
-				// the client wants to abruptly stop dump
-				return TRUE;
-			}
+        // return TRUE if there is no error but
+        // the client wants to abruptly stop dump
+        return TRUE;
+      }
 
-		}while(Num--);
-	}
-	else
-	{
-		do
-		{
-			if(ClientEvaluate(&Head->ObjectArray[loop])!=0)
-			{
-				Head->Dump=0;
+    }while(Num--);
+  }
+  else
+  {
+    do
+    {
+      if(ClientEvaluate(&Head->ObjectArray[loop])!=0)
+      {
+        Head->Dump=0;
 
-				// return TRUE if there is no error but
-				// the client wants to abruptly stop dump
-				return TRUE;
-			}
+        // return TRUE if there is no error but
+        // the client wants to abruptly stop dump
+        return TRUE;
+      }
 
-		}while(++loop!=Num);
-	}
+    }while(++loop!=Num);
+  }
 
-	Head->Dump=0;
+  Head->Dump=0;
 
-	return NO_ERROR;
+  return NO_ERROR;
 }
