@@ -28,7 +28,6 @@
 
 #include "video.h"
 
-
 static float currentTime;
 static float *matrix;
 

@@ -1,6 +1,7 @@
 cs250_os_debug.txt
 TextOutDebug.txt
-*.user
+sample.exe
+sample.vcxproj.user
 .vs/
 sample/
 x64/

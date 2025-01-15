@@ -15,6 +15,8 @@ using std::uint32_t;
 
 #include "BlahPlatformAlloc.h"
 
+#include "BlahLog.h"
+
 uint32_t BlahAlignedOfValue(uint32_t alignmentOf, uint32_t sizeOf)
 {
   return (sizeOf % alignmentOf) ? sizeOf + (alignmentOf - sizeOf % alignmentOf) : sizeOf;
@@ -40,6 +42,8 @@ void* BlahAlloc(uint32_t sizeOf, bool zero)
     if(zero)
       memset(pointer, 0, sizeOf);
   }
+
+BlahLog2("1 %i %llu\n", (int)BlahAlignedOfValue(sizeof(void*), sizeOf), (uint64_t)pointer);
 
 label_return:
   return pointer;

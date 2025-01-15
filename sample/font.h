@@ -1,25 +1,33 @@
 // font.h
 // Robert Aldridge
 
-#undef TextOut
-#define TextOut RobsTextOut
+struct FontBlah;
+
+struct rect
+{
+  int left;
+  int top;
+  int right;
+  int bottom;
+
+};
 
 // Creates a white font
-// when TextOutInitSystem is first called.
+// when RobsTextOutInitSystem is first called.
 //
 // Currently works for 32 bit ARGB only.
 
 
-// None of the TextOut functions handle tabs.
+// None of the RobsTextOut functions handle tabs.
 
 // The maximum string length that will be handled is always
 // 512.  Longer strings will be truncated.
 
 // Initializes the font system.
 //
-// By default, TextOutInitSystem does not load any fonts.
+// By default, RobsTextOutInitSystem does not load any fonts.
 //
-// Any fonts which were released by a previous call to TextOutTermSystem
+// Any fonts which were released by a previous call to RobsTextOutTermSystem
 // will be allocated again.
 //
 // The ideal_backbuffer_width and ideal_backbuffer_height specify
@@ -33,15 +41,15 @@
 // When the actual and ideal do not match, the font images will be scaled
 // during font initialization to match the original aspect ratio of
 // font size to screen size.  All input and output is in the ideal frame of
-// reference.  Coordinate conversion is handled internally by TextOut.
-extern void TextOutInitSystem( uint8_t** ( *backBufferFunction ) ( ),
+// reference.  Coordinate conversion is handled internally by RobsTextOut.
+extern FontBlah* RobsTextOutInitSystem( uint8_t** ( *backBufferFunction ) ( ),
 							          const unsigned int actual_backbuffer_width,
 							          const unsigned int actual_backbuffer_height,
 							          const unsigned int ideal_backbuffer_width,
 							          const unsigned int ideal_backbuffer_height
 							        );
 
-// The main TextOut function prints clipped characters
+// The main RobsTextOut function prints clipped characters
 // to the backbuffer.  Characters do not wrap to the next line.
 // Use newline for that.
 
@@ -49,33 +57,35 @@ extern void TextOutInitSystem( uint8_t** ( *backBufferFunction ) ( ),
 // character being printed.  The format string works just like
 // printf
 //
-// If the type has not been allocated, it will be when TextOut
-// is called.  TextOut will do nothing if TextOutInitSystem
+// If the type has not been allocated, it will be when RobsTextOut
+// is called.  RobsTextOut will do nothing if RobsTextOutInitSystem
 // has not been called.
-extern void TextOut( int x,
+extern void RobsTextOut(void* _this,
+                int x,
 					      int y,
 					      const char * const format,...
 				       );
 
-// Returns a RECT with the upper left and lower right pixel coordinates
-// that contain the text which would be printed if TextOut were called
+// Returns a rect with the upper left and lower right pixel coordinates
+// that contain the text which would be printed if RobsTextOut were called
 // with the same arguments.
 //
-// The RECT is in pixel coordinates, so a 10 by 10 at (100,100)
+// The rect is in pixel coordinates, so a 10 by 10 at (100,100)
 // would be {100,100,109,109}
 //
-// To get the current font's width and height, call rect = TextOutRect(0,0," ").
+// To get the current font's width and height, call rect = RobsTextOutRect(0,0," ").
 // Then the contents of the rect will be {0,0,currentFontWidth-1,currentFontHeight-1}.
 //
-// TextOutRect will return {-1,-1,-1,-1} if TextOutInitSystem
+// RobsTextOutRect will return {-1,-1,-1,-1} if RobsTextOutInitSystem
 // has not been called.
-extern const RECT TextOutRect( int x,
+extern const rect RobsTextOutRect( FontBlah* _this,
+                        int x,
 							          int y,
 						             const char * const format,...
 							        );
 
 // Terminates the font system and releases all allocated fonts.
 //
-// All released fonts will be reloaded on the next call to TextOutInitSystem
-extern void TextOutTermSystem(
+// All released fonts will be reloaded on the next call to RobsTextOutInitSystem
+extern void RobsTextOutTermSystem(FontBlah** _this
 							        );

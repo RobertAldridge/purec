@@ -1,21 +1,21 @@
 
+// font_util.h
+
+typedef struct HDC__* HDC;
 
 #ifndef NDEBUG
-  static int Error(const char* const errorString);
+int FontUtilError(FontBlah* _this, const char* const errorString);
 
-  static int Warning(const char* const warningString);
+int FontUtilWarning(FontBlah* _this, const char* const warningString);
 #endif
 
-static void
-LoadBitmap(
-		  );
+// StartX; input is old dest x, output is new dest x
+// StartY; input is old dest y, output is new dest y
+// rect; input is old source rect, output is new source rect
+unsigned char FontUtilClipSpecial(int* StartX, int* StartY, int _width, int _height, rect* rect);
 
-static unsigned char
-ClipSpecial( int  *StartX, // input is old dest x, output is new dest x
-			 int  *StartY, // input is old dest y, output is new dest y
-		     int  width,
-			 int  height,
-			 RECT *rect    // input is old source rect, output is new source rect
-		   );
+void FontUtilCopyBitmap(FontBlah* _this, HDC Source, int sourceWidth, int sourceHeight);
 
-#define CharClip(x,y,rect) ClipSpecial( x, y, width, height, rect )
+void FontUtilLoadBitmap(FontBlah* _this);
+
+void FontUtilCharAntiAliasColorBlit(uint8_t** backbuffer, uint8_t** textbuffer, int xDst, int yDst, rect* _RectSrc);

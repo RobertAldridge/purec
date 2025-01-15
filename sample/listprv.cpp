@@ -13,7 +13,6 @@
  */
 
 #include <cstdio>
-//#include <native.h>
 #include <cstdlib>
 #include <cassert>
 #include <cstring>

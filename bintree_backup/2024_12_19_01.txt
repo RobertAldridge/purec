@@ -160,3 +160,50 @@ extern void operator delete[](void* ptr)
     RemoveHeapAllocation(ptr);
   }
 }
+
+C:\Program Files\Adobe\Adobe Creative Cloud Experience\CCXProcess.exe
+C:\Program Files\Adobe\Adobe Creative Cloud Experience\libs\node.exe
+C:\Program Files\Adobe\Adobe Photoshop 2024\PhotoshopPrefsManager.exe
+C:\Program Files\Adobe\Adobe Photoshop 2024\pngquant.exe
+C:\Program Files\Adobe\Adobe Photoshop 2024\LogTransport2.exe
+C:\Program Files\Adobe\Adobe Photoshop 2024\Photoshop.exe
+C:\Program Files\Adobe\Adobe Photoshop 2024\flitetranscoder.exe
+C:\Program Files\Adobe\Adobe Photoshop 2024\node.exe
+C:\Program Files\Adobe\Adobe Photoshop 2024\sniffer.exe
+C:\Program Files\Adobe\Adobe Photoshop 2024\Adobe Crash Processor.exe
+C:\Program Files\Adobe\Adobe Photoshop 2024\CRWindowsClientService.exe
+C:\Program Files\Adobe\Adobe Photoshop 2024\CRLogTransport.exe
+C:\Program Files\Adobe\Adobe Photoshop 2024\convert.exe
+C:\Program Files\Adobe\Adobe Photoshop 2024\Required\Droplet Template.exe
+C:\Program Files\Adobe\Adobe Photoshop 2024\Required\CEP\CEPHtmlEngine\CEPHtmlEngine.exe
+C:\Program Files\Adobe\Adobe Photoshop 2024\Required\DynamicLinkMediaServer\dynamiclinkmanager.exe
+C:\Program Files\Adobe\Adobe Photoshop 2024\Required\DynamicLinkMediaServer\amecommand.exe
+C:\Program Files\Adobe\Adobe Photoshop 2024\Required\DynamicLinkMediaServer\ImporterREDServer.exe
+C:\Program Files\Adobe\Adobe Photoshop 2024\Required\DynamicLinkMediaServer\dynamiclinkmediaserver.exe
+
+C:\Program Files (x86)\Common Files\Adobe\Adobe Desktop Common\ADS\CRLogTransport.exe
+C:\Program Files (x86)\Common Files\Adobe\Adobe Desktop Common\ADS\CRWindowsClientService.exe
+C:\Program Files (x86)\Common Files\Adobe\Adobe Desktop Common\ADS\Adobe Desktop Service.exe
+C:\Program Files (x86)\Common Files\Adobe\Adobe Desktop Common\ADS\customHook\ADSCustomHook.exe
+C:\Program Files (x86)\Common Files\Adobe\Adobe Desktop Common\HDBox\CRWindowsClientService.exe
+C:\Program Files (x86)\Common Files\Adobe\Adobe Desktop Common\HDBox\CRLogTransport.exe
+C:\Program Files (x86)\Common Files\Adobe\Adobe Desktop Common\HDBox\HDHelper.exe
+C:\Program Files (x86)\Common Files\Adobe\Adobe Desktop Common\HDBox\TokenResolverx64.exe
+C:\Program Files (x86)\Common Files\Adobe\Adobe Desktop Common\HDBox\Uninstaller.exe
+C:\Program Files (x86)\Common Files\Adobe\Adobe Desktop Common\HDBox\Setup.exe
+C:\Program Files (x86)\Common Files\Adobe\Adobe Desktop Common\HDBox\Set-up.exe
+C:\Program Files (x86)\Common Files\Adobe\Adobe Desktop Common\HDBox\Adobe Update Helper.exe
+C:\Program Files (x86)\Common Files\Adobe\Adobe Desktop Common\HDBox\customhook\HDCoreCustomHook.exe
+C:\Program Files (x86)\Common Files\Adobe\Adobe Desktop Common\IPCBox\AdobeIPCBroker.exe
+C:\Program Files (x86)\Common Files\Adobe\Adobe Desktop Common\IPCBox\CRWindowsClientService.exe
+C:\Program Files (x86)\Common Files\Adobe\Adobe Desktop Common\IPCBox\CRLogTransport.exe
+C:\Program Files (x86)\Common Files\Adobe\Adobe Desktop Common\IPCBox\customhook\AdobeIPCBrokerCustomHook.exe
+C:\Program Files (x86)\Common Files\Adobe\Adobe Desktop Common\LCC\adobe_licensing_helper.exe
+C:\Program Files (x86)\Common Files\Adobe\Adobe Desktop Common\Runtime\customhook\RuntimeCustomHook.exe
+C:\Program Files (x86)\Common Files\Adobe\Adobe Desktop Common\Runtime\customhook\vc13\32bit\vcredist_x86.exe
+C:\Program Files (x86)\Common Files\Adobe\Adobe Desktop Common\Runtime\customhook\vc13\64bit\vcredist_x64.exe
+C:\Program Files (x86)\Common Files\Adobe\Adobe Desktop Common\Runtime\customhook\vc14\32bit\vcredist_x86.exe
+C:\Program Files (x86)\Common Files\Adobe\Adobe Desktop Common\Runtime\customhook\vc14\64bit\vcredist_x64.exe
+C:\Program Files (x86)\Common Files\Adobe\CoreSyncExtension\customhook\CoreSyncCustomHook.exe
+C:\Program Files (x86)\Common Files\Adobe\OOBE\PDApp\IPC\AdobeIPCBroker.exe
+C:\Program Files (x86)\Common Files\Adobe\OOBE\PDApp\IPC\customhook\AdobeIPCBrokerCustomHook.exe

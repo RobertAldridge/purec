@@ -183,11 +183,21 @@ bool EnableLargePageSupport()
 
   status = OpenPolicy(0, POLICY_CREATE_ACCOUNT | POLICY_LOOKUP_NAMES, &policyHandle);
   if(status)
+  {
     BlahLog("OpenPolicy %li\n", status);
+
+    //free(tokenUser);
+    //tokenUser = 0;
+
+    goto label_return;
+  }
 
   status = SetPrivilegeOnAccount(policyHandle, tokenUser->User.Sid, (wchar_t*)SE_LOCK_MEMORY_NAME, true);
   if(status)
+  {
     BlahLog("OpenPSetPrivilegeOnAccountolicy %li\n", status);
+    goto label_return;
+  }
 
   if( !OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY | TOKEN_ADJUST_PRIVILEGES, &hToken) )
   {
@@ -226,6 +236,12 @@ bool EnableLargePageSupport()
   result = true;
 
 label_return:
+  if(tokenUser)
+  {
+    free(tokenUser);
+    tokenUser = 0;
+  }
+
   return result;
 }
 

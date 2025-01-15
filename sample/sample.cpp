@@ -21,7 +21,7 @@
 
 #include "BlahLog.h"
 
-#include <windows.h>
+//#include <windows.h>
 
 #define BLAH_KEEP 0
 

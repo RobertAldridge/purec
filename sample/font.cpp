@@ -1,107 +1,122 @@
-//font.cpp
-//Robert Aldridge
-//all code by Robert
 
-#include <windowsx.h>
+// font.cpp
+// Robert Aldridge
+// all code by Robert
 
-#pragma warning (disable : 4820)
-#include <ddraw.h>
-#pragma warning (default : 4820)
+//#include <windowsx.h>
+
+//#pragma warning (disable : 4820)
+//#include <ddraw.h>
+//#pragma warning (default : 4820)
 
 #include <cassert>
 #include <cstdarg>
 #include <cstdio>
 #include <cstdint>
+#include <cstring>
 
 #include "font.h"
 
 #include "font_util.h"
 
+#include "BlahAlloc.h"
+
+struct FontBlah
+{
+
 //ascii contains source rect of characters on font image
-static RECT ascii[ 256 ];
+rect ascii[ 256 ];
 //width is screen_width-1, height is screen_height-1
-static int32_t font_width, font_height, width, height;
+int32_t font_width, font_height, width, height;
 
-static int32_t actualWidth, actualHeight, idealWidth, idealHeight;
+int32_t actualWidth, actualHeight, idealWidth, idealHeight;
 
-static uint8_t** backbuffer_array_pointer;
+uint8_t** backbuffer_array_pointer;
 
-static uint8_t** ( *_backBufferFunction ) ( );
+uint8_t** ( *_backBufferFunction ) ( );
 
-static uint8_t** text_white_array_pointer;
+uint8_t** text_white_array_pointer;
 
-static uint8_t*  text_white;
+uint8_t*  text_white;
 
 // FOR DEBUGGING
 #ifndef NDEBUG
-	static FILE *file       = fopen( "TextOutDebug.txt", "wb" );
+	FILE* file;
 
-	static uint32_t  numErrors   = 0;
+	uint32_t  numErrors;
 
-	static uint32_t  numWarnings = 0;
+	uint32_t  numWarnings;
 #endif
 //
 
-#define ROBS_FONT
-
-#include "font_util.cpp"
-
-#undef ROBS_FONT
+};
 
 static uint32_t GetIdealFontWidth() { return 10; }
 static uint32_t GetIdealFontHeight() { return 14; }
 
-extern void TextOutInitSystem( uint8_t** ( *__backBufferFunction ) ( ),
+extern FontBlah* RobsTextOutInitSystem( uint8_t** ( *__backBufferFunction ) ( ),
 							              const uint32_t _width,
 							              const uint32_t _height,
 							              const uint32_t _idealWidth,
 							              const uint32_t _idealHeight
 							            )
 {
-	int32_t Column = 0, Row = 0;
+	int32_t Column = 0;
+  int32_t Row = 0;
 
-	#ifndef NDEBUG
-		if( !file )
-			return;
+  FontBlah* _this = 0;
+  
+  _this = (FontBlah*)BlahAlloc(sizeof(FontBlah), true);
+  if( !_this)
+    goto label_error;
 
-		if( (!__backBufferFunction) )
-		{
-			Error( " TextOutInitSystem -> !__backBufferFunction " );
-			return;
-		}
-		if( _width <= 0 )
-		{
-			Error( " TextOutInitSystem -> _width <= 0 " );
-			return;
-		}
-		if( _height <= 0 )
-		{
-			Error( " TextOutInitSystem -> _height <= 0 " );
-			return;
-		}
-	#else
-		if( (!__backBufferFunction) || _width <= 0 || _height <= 0 )
-			return;
-	#endif
+#ifndef NDEBUG
+  _this->file = fopen( "TextOutDebug.txt", "wb" );
+  if( !_this->file )
+    goto label_error;
+#endif
 
-	_backBufferFunction = __backBufferFunction;
+  if( (!__backBufferFunction) )
+  {
+#ifndef NDEBUG
+    FontUtilError(_this, " TextOutInitSystem -> !__backBufferFunction " );
+#endif
+    goto label_error;
+  }
 
-	backbuffer_array_pointer = _backBufferFunction();
+  if( _width <= 0 )
+  {
+#ifndef NDEBUG
+    FontUtilError(_this, " TextOutInitSystem -> _width <= 0 " );
+#endif
+    goto label_error;
+  }
 
-	actualWidth  = (int32_t)_width;
-	actualHeight = (int32_t)_height;
+  if( _height <= 0 )
+  {
+#ifndef NDEBUG
+    FontUtilError(_this, " TextOutInitSystem -> _height <= 0 " );
+#endif
+    goto label_error;
+  }
 
-	idealWidth  = (int32_t)_idealWidth;
-	idealHeight = (int32_t)_idealHeight;
+	_this->_backBufferFunction = __backBufferFunction;
 
-	width  = (int32_t)_width  - 1;
-	height = (int32_t)_height - 1;
+	_this->backbuffer_array_pointer = _this->_backBufferFunction();
 
-	font_width  = ( (int32_t)GetIdealFontWidth()  * actualWidth  ) / idealWidth;
-	font_height = ( (int32_t)GetIdealFontHeight() * actualHeight ) / idealHeight;
+	_this->actualWidth  = (int32_t)_width;
+	_this->actualHeight = (int32_t)_height;
 
-	LoadBitmap();
+	_this->idealWidth  = (int32_t)_idealWidth;
+	_this->idealHeight = (int32_t)_idealHeight;
 
+	_this->width  = (int32_t)_width  - 1;
+	_this->height = (int32_t)_height - 1;
+
+	_this->font_width  = ( (int32_t)GetIdealFontWidth()  * _this->actualWidth  ) / _this->idealWidth;
+	_this->font_height = ( (int32_t)GetIdealFontHeight() * _this->actualHeight ) / _this->idealHeight;
+
+	FontUtilLoadBitmap(_this);
 
 	Row = 0;
 
@@ -111,23 +126,46 @@ extern void TextOutInitSystem( uint8_t** ( *__backBufferFunction ) ( ),
 
 		do
 		{
-			ascii[ Row * 16 + Column ].left   = Column * font_width;
+			_this->ascii[ Row * 16 + Column ].left   = Column * _this->font_width;
 
-			ascii[ Row * 16 + Column ].top    = Row    * font_height;
+			_this->ascii[ Row * 16 + Column ].top    = Row    * _this->font_height;
 
-			ascii[ Row * 16 + Column ].right  = Column * font_width  + font_width;
+			_this->ascii[ Row * 16 + Column ].right  = Column * _this->font_width  + _this->font_width;
 
-			ascii[ Row * 16 + Column ].bottom = Row    * font_height + font_height;
+			_this->ascii[ Row * 16 + Column ].bottom = Row    * _this->font_height + _this->font_height;
 
 		}while( ++Column != 16 );
 
 	}while( ++Row != 16 );
+
+  goto label_return;
+  
+label_error:
+  if(_this)
+  {
+#ifndef NDEBUG
+    if(_this->file)
+    {
+      fclose(_this->file);
+      _this->file = 0;
+    }
+#endif
+
+    //BlahFree(_this, sizeof(FontBlah), true);
+    _this = 0;
+  }
+
+label_return:
+  return _this;
 }
 
-static uint8_t CharTrivialAcceptance( const int32_t x, const int32_t y )
+static uint8_t CharTrivialAcceptance( FontBlah* _this, const int32_t x, const int32_t y )
 {
+  if( !_this)
+    return 0;
+  
 	if( x >= 0 && y >= 0 &&
-        x + ( font_width - 1 ) <= width && y + ( font_height - 1 ) <= height
+        x + ( _this->font_width - 1 ) <= _this->width && y + ( _this->font_height - 1 ) <= _this->height
       )
 	{
 		return 1;
@@ -136,34 +174,37 @@ static uint8_t CharTrivialAcceptance( const int32_t x, const int32_t y )
 	return 0;
 }
 
-static void _TextOut( int32_t x, int32_t y, const char * const dest_buffer )
+static void _RobsTextOut(FontBlah* _this, int32_t x, int32_t y, const char * const dest_buffer )
 {
 	char *text = 0;
+  
+  if( !_this)
+    return;
 
-	if( !_backBufferFunction )
+	if( !_this->_backBufferFunction )
 	{
 		#ifndef NDEBUG
-			Error( " TextOutLightGray -> !_backBufferFunction() " );
+			FontUtilError(_this, " TextOutLightGray -> !_backBufferFunction() " );
 		#endif
 
 		return;
 	}
 
-	backbuffer_array_pointer = _backBufferFunction();
+	_this->backbuffer_array_pointer = _this->_backBufferFunction();
 
-	if( (!backbuffer_array_pointer) || ( !(*backbuffer_array_pointer) ) )
+	if( (!_this->backbuffer_array_pointer) || ( !(*_this->backbuffer_array_pointer) ) )
 	{
 		#ifndef NDEBUG
-			Error( " TextOutLightGray -> !GetBackBuffer() " );
+			FontUtilError(_this, " TextOutLightGray -> !GetBackBuffer() " );
 		#endif
 
 		return;
 	}
 
-	if( (!text_white) || (!text_white_array_pointer) || ( !(*text_white_array_pointer) ) )
+	if( (!_this->text_white) || (!_this->text_white_array_pointer) || ( !(*_this->text_white_array_pointer) ) )
 	{
 		#ifndef NDEBUG
-			Error( " TextOutLightGray -> !GetTextLightGrayBuffer() " );
+			FontUtilError(_this, " TextOutLightGray -> !GetTextLightGrayBuffer() " );
 		#endif
 
 		return;
@@ -178,44 +219,44 @@ static void _TextOut( int32_t x, int32_t y, const char * const dest_buffer )
 		{
 			x = 0;
 
-			y += font_height;
+			y += _this->font_height;
 
 			++text;
 
 			continue;
 		}
 		// trivial rejection
-		if( y > height )
+		if( y > _this->height )
 			return;
 		// trivial rejection
-		if( x > width || x + ( font_width - 1 ) < 0 || y + ( font_height - 1 ) < 0 )
+		if( x > _this->width || x + ( _this->font_width - 1 ) < 0 || y + ( _this->font_height - 1 ) < 0 )
 		{
-			x += font_width;
+			x += _this->font_width;
 
 			++text;
 
 			continue;
 		}
 		// trivial acceptance and blit
-		else if( CharTrivialAcceptance( x, y ) )
+		else if( CharTrivialAcceptance( _this, x, y ) )
 		{
-			CharAntiAliasColorBlit( backbuffer_array_pointer,
-								    text_white_array_pointer,
+			FontUtilCharAntiAliasColorBlit( _this->backbuffer_array_pointer,
+								    _this->text_white_array_pointer,
 								    x,
 								    y,
-								    &ascii[ (uint8_t) ( ( (int16_t) (*text) ) + 128 ) ]
+								    &_this->ascii[ (uint8_t) ( ( (int16_t) (*text) ) + 128 ) ]
 								  );
 		}
 		// clip and blit
 		else
 		{
-			RECT SrcRect = ascii[ (uint8_t) ( ( (int16_t) (*text) ) + 128 ) ];
+			rect SrcRect = _this->ascii[ (uint8_t) ( ( (int16_t) (*text) ) + 128 ) ];
 
-			// checks output from CharClip
-			if( CharClip( &x, &y, &SrcRect ) )
+			// checks output from FontUtilClipSpecial
+			if(FontUtilClipSpecial( &x, &y, _this->width, _this->height, &SrcRect) )
 			{
-				CharAntiAliasColorBlit( backbuffer_array_pointer,
-									    text_white_array_pointer,
+				FontUtilCharAntiAliasColorBlit( _this->backbuffer_array_pointer,
+									    _this->text_white_array_pointer,
 										x,
 										y,
 										&SrcRect
@@ -223,30 +264,35 @@ static void _TextOut( int32_t x, int32_t y, const char * const dest_buffer )
 			}
 		}
 
-		x += font_width;
+		x += _this->font_width;
 
 		++text;
 	}
 }
 
-extern void TextOut( int32_t x,
+extern void RobsTextOut(void* reference, int32_t x,
 					            int32_t y,
 					            const char * const format,...
 				              )
 {
-	char      dest_buffer[ 514 ] = { 0 };
+  FontBlah* _this = (FontBlah*)reference;
+  
+  if( !_this)
+    return;
+
+	char dest_buffer[514] = {0};
 
 	va_list argptr = 0;
 
 	#ifndef NDEBUG
 		if( !format )
 		{
-			Error( " TextOut -> !format " );
+			FontUtilError(_this, " TextOut -> !format " );
 			return;
 		}
 		if( !(*format) )
 		{
-			Warning( " TextOut -> !(*format) " );
+			FontUtilWarning(_this, " TextOut -> !(*format) " );
 			return;
 		}
 	#else
@@ -259,24 +305,27 @@ extern void TextOut( int32_t x,
 	// convert format string and argument list into one string
 	vsnprintf( dest_buffer, 512, format, argptr );
 
-	x = ( x * actualWidth  ) / idealWidth;
-	y = ( y * actualHeight ) / idealHeight;
+	x = ( x * _this->actualWidth  ) / _this->idealWidth;
+	y = ( y * _this->actualHeight ) / _this->idealHeight;
 
-	_TextOut( x, y, dest_buffer );
+	_RobsTextOut( _this, x, y, dest_buffer );
 }
 
-static const RECT _TextOutRect( int32_t x, int32_t y, const char * const dest_buffer )
+static const rect _RobsTextOutRect( FontBlah* _this, int32_t x, int32_t y, const char * const dest_buffer )
 {
 	char   *text = 0;
 
 	uint32_t  num_newline = 1, chars_per_line = 0, max_chars_per_line = 0;
 
-	RECT output_rect = { -1, -1, -1, -1 };
+	rect output_rect = { -1, -1, -1, -1 };
+  
+  if( !_this)
+    return output_rect;
 
-	if( !backbuffer_array_pointer )
+	if( !_this->backbuffer_array_pointer )
 	{
 		#ifndef NDEBUG
-			Error( " _TextOutRect -> !GetBackBuffer() " );
+			FontUtilError(_this, " _TextOutRect -> !GetBackBuffer() " );
 		#endif
 
 		return output_rect;
@@ -307,13 +356,13 @@ static const RECT _TextOutRect( int32_t x, int32_t y, const char * const dest_bu
 
 	output_rect.left = x;
 	output_rect.top = y;
-	output_rect.right = (long)(x + font_width * max_chars_per_line - 1);
-	output_rect.bottom = (long)(y + font_height * num_newline - 1);
+	output_rect.right = (long)(x + _this->font_width * max_chars_per_line - 1);
+	output_rect.bottom = (long)(y + _this->font_height * num_newline - 1);
 
 	return output_rect;
 }
 
-extern const RECT TextOutRect( int32_t x,
+extern const rect RobsTextOutRect( FontBlah* _this, int32_t x,
 							              int32_t y,
 						                  const char * const format,...
 							            )
@@ -322,17 +371,20 @@ extern const RECT TextOutRect( int32_t x,
 
 	va_list argptr = 0;
 
-	RECT    output_rect = { -1, -1, -1, -1 };
+	rect    output_rect = { -1, -1, -1, -1 };
+  
+  if( !_this)
+    return output_rect;
 
 	#ifndef NDEBUG
 		if( !format )
 		{
-			Error( " TextOutRect -> !format " );
+			FontUtilError(_this, " TextOutRect -> !format " );
 			return output_rect;
 		}
 		if( !(*format) )
 		{
-			Warning( " TextOutRect -> !(*format) " );
+			FontUtilWarning(_this, " TextOutRect -> !(*format) " );
 			return output_rect;
 		}
 	#else
@@ -345,63 +397,89 @@ extern const RECT TextOutRect( int32_t x,
 	// convert format string and argument list into one string
 	_vsnprintf( dest_buffer, 512, format, argptr );
 
-	x = ( x * actualWidth  ) / idealWidth;
-	y = ( y * actualHeight ) / idealHeight;
+	x = ( x * _this->actualWidth  ) / _this->idealWidth;
+	y = ( y * _this->actualHeight ) / _this->idealHeight;
 
-	output_rect = _TextOutRect( x, y, dest_buffer );
+	output_rect = _RobsTextOutRect( _this, x, y, dest_buffer );
 
 	if( output_rect.left  == -1 && output_rect.top    == -1 &&
 	    output_rect.right == -1 && output_rect.bottom == -1
       )
 	{
 		#ifndef NDEBUG
-			Warning( " TextOutRect -> output_rect == {-1,-1,-1,-1} ( output_rect is off screen ) " );
+			FontUtilWarning(_this, " TextOutRect -> output_rect == {-1,-1,-1,-1} ( output_rect is off screen ) " );
 		#endif
 
 		return output_rect;
 	}
 
-	output_rect.left  = ( output_rect.left  * idealWidth ) / actualWidth;
-	output_rect.right = ( output_rect.right * idealWidth ) / actualWidth;
+	output_rect.left  = ( output_rect.left  * _this->idealWidth ) / _this->actualWidth;
+	output_rect.right = ( output_rect.right * _this->idealWidth ) / _this->actualWidth;
 
-	output_rect.top    = ( output_rect.top    * idealHeight ) / actualHeight;
-	output_rect.bottom = ( output_rect.bottom * idealHeight ) / actualHeight;
+	output_rect.top    = ( output_rect.top    * _this->idealHeight ) / _this->actualHeight;
+	output_rect.bottom = ( output_rect.bottom * _this->idealHeight ) / _this->actualHeight;
 
 	return output_rect;
 }
 
-extern void TextOutTermSystem(
+extern void RobsTextOutTermSystem(FontBlah** reference
 							            )
 {
-	if( text_white_array_pointer )
+  FontBlah* _this = 0;
+  
+  if( !reference)
+    return;
+  
+  _this = reference[0];
+  
+  if( !_this)
+    return;
+  
+	if( _this->text_white_array_pointer )
 	{
-		free( text_white_array_pointer );
-
-		text_white_array_pointer = 0;
+    BlahFree(_this->text_white_array_pointer, sizeof(uint8_t*) * 224, true);
+		_this->text_white_array_pointer = 0;
 	}
 	#ifndef NDEBUG
-		else
-			Error( " TextOutTermSystem -> text_white_array_pointer == NULL " );
+  else
+  {
+    FontUtilError(_this, " TextOutTermSystem -> text_white_array_pointer == NULL " );
+  }
 	#endif
 
-	if( text_white )
+	if( _this->text_white )
 	{
-		free( text_white );
-
-		text_white = 0;
+    BlahFree(_this->text_white, sizeof(uint8_t) * 160 * 224 * 4, true);
+		_this->text_white = 0;
 	}
 	#ifndef NDEBUG
-		else
-			Error( " TextOutTermSystem -> text_white == NULL " );
+  else
+  {
+    FontUtilError(_this, " TextOutTermSystem -> text_white == NULL " );
+  }
 	#endif
 
-	if( backbuffer_array_pointer )
+	if( _this->backbuffer_array_pointer )
 	{
-	    backbuffer_array_pointer = 0;
+	    _this->backbuffer_array_pointer = 0;
 	}
 	#ifndef NDEBUG
-		else
-			Error( " TextOutTermSystem -> backbuffer_array_pointer == NULL " );
+  else
+  {
+    FontUtilError(_this, " TextOutTermSystem -> backbuffer_array_pointer == NULL " );
+  }
 	#endif
 	
+  #ifndef NDEBUG
+  if(_this->file)
+  {
+    fclose(_this->file);
+    _this->file = 0;
+  }
+  #endif
+  
+  BlahFree(_this, sizeof(FontBlah), true);
+  _this = 0;
+  
+  reference[0] = 0;
 }

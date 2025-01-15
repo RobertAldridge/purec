@@ -1,45 +1,89 @@
 
+// font_util.cpp
 
-#ifdef ROBS_FONT
+#include <windowsx.h>
 
-// UTILITY FUNCTIONS TO COMPILE LIBRARY
+#pragma warning (disable : 4820)
+#include <ddraw.h>
+#pragma warning (default : 4820)
+
+#include <cassert>
+#include <cstdarg>
+#include <cstdio>
+#include <cstdint>
+
+#include "font.h"
+
+#include "font_util.h"
+
+#include "BlahAlloc.h"
+
+struct FontBlah
+{
+
+//ascii contains source rect of characters on font image
+rect ascii[ 256 ];
+//width is screen_width-1, height is screen_height-1
+int32_t font_width, font_height, width, height;
+
+int32_t actualWidth, actualHeight, idealWidth, idealHeight;
+
+uint8_t** backbuffer_array_pointer;
+
+uint8_t** ( *_backBufferFunction ) ( );
+
+uint8_t** text_white_array_pointer;
+
+uint8_t*  text_white;
+
+// FOR DEBUGGING
+#ifndef NDEBUG
+	FILE* file;
+
+	uint32_t  numErrors;
+
+	uint32_t  numWarnings;
+#endif
+//
+
+};
 
 #ifndef NDEBUG
-  static int Error(const char* const errorString)
-	{
-		if( file )
-		{	
-			++numErrors;
+int FontUtilError(FontBlah* _this, const char* const errorString)
+{
+	if( _this && _this->file )
+	{	
+		++_this->numErrors;
 			
-			fprintf( file, " Error#  : %i\n",   numErrors );
+		fprintf( _this->file, " FontUtilError#  : %i\n",   _this->numErrors );
 
-			fprintf( file, " Error   : %s\n\n", errorString );
-		}
-    
-    return 0;
+		fprintf( _this->file, " FontUtilError   : %s\n\n", errorString );
 	}
+    
+  return 0;
+}
 
-  static int Warning(const char* const warningString)
-	{
-		if( file )
-		{	
-			++numWarnings;
+int FontUtilWarning(FontBlah* _this, const char* const warningString)
+{
+	if( _this && _this->file )
+	{	
+		++_this->numWarnings;
 			
-			fprintf( file, " Warning#: %i\n",   numWarnings   );
+		fprintf( _this->file, " FontUtilWarning#: %i\n",   _this->numWarnings   );
 
-			fprintf( file, " Warning : %s\n\n", warningString );
-		}
-    
-    return 0;
+		fprintf( _this->file, " FontUtilWarning : %s\n\n", warningString );
 	}
+    
+  return 0;
+}
 #endif
 
-static unsigned char
-ClipSpecial( int  *StartX, // input is old dest x, output is new dest x
+unsigned char
+FontUtilClipSpecial( int  *StartX, // input is old dest x, output is new dest x
 			 int  *StartY, // input is old dest y, output is new dest y
 			 int  _width,
 			 int  _height,
-			 RECT *rect    // input is old source rect, output is new source rect
+			 rect *rect    // input is old source rect, output is new source rect
 		   )
 {
 	#define StartX (*StartX)
@@ -116,7 +160,7 @@ ClipSpecial( int  *StartX, // input is old dest x, output is new dest x
 	return TRUE;
 }
 
-static void CopyBitmap( HDC Source,
+void FontUtilCopyBitmap(FontBlah* _this, HDC Source,
 	                    int sourceWidth,
 	                    int sourceHeight
                       )
@@ -126,13 +170,16 @@ static void CopyBitmap( HDC Source,
 	HBITMAP BltHB;
 
 	HGDIOBJ CleanUp;
+  
+  if( !_this)
+    return;
 
 	BltDC = CreateCompatibleDC( 0 );
 
 	if( BltDC == NULL )
 	{
 		#ifndef NDEBUG
-			Error( " ( BltDC = CreateCompatibleDC(...) ) == NULL " );
+			FontUtilError(_this, " ( BltDC = CreateCompatibleDC(...) ) == NULL " );
 		#endif
 
 		return;
@@ -149,13 +196,13 @@ static void CopyBitmap( HDC Source,
 	if( BltHB == NULL )
 	{
 		#ifndef NDEBUG
-			Error( " ( BltHB = LoadImage(...) ) == NULL " );
+			FontUtilError(_this, " ( BltHB = LoadImage(...) ) == NULL " );
 		#endif
 
 		if( !DeleteDC( BltDC ) )
 		{
 			#ifndef NDEBUG
-				Error( " DeleteDC(...) function failure " );
+				FontUtilError(_this, " DeleteDC(...) function failure " );
 			#endif
 		}
 
@@ -167,20 +214,20 @@ static void CopyBitmap( HDC Source,
 	if( CleanUp == NULL || CleanUp == (void*)GDI_ERROR )
 	{
 		#ifndef NDEBUG
-			Error( " ( CleanUp = SelectObject(...) ) == NULL " );
+			FontUtilError(_this, " ( CleanUp = SelectObject(...) ) == NULL " );
 		#endif
 
 		if( !DeleteObject( BltHB ) )
 		{
 			#ifndef NDEBUG
-				Error( " DeleteObject(..) function failure " );
+				FontUtilError(_this, " DeleteObject(..) function failure " );
 			#endif
 		}
 
 		if( !DeleteDC( BltDC ) )
 		{
 			#ifndef NDEBUG
-				Error( " DeleteDC(...) function failure " );
+				FontUtilError(_this, " DeleteDC(...) function failure " );
 			#endif
 		}
 
@@ -202,7 +249,7 @@ static void CopyBitmap( HDC Source,
 	  )
 	{
 		#ifndef NDEBUG
-			Error( " BitBlt failure " );
+			FontUtilError(_this, " BitBlt failure " );
 		#endif
 	}
 
@@ -217,28 +264,28 @@ static void CopyBitmap( HDC Source,
 		if( deviceTempCleanUp == NULL || deviceTempCleanUp == (void*)GDI_ERROR )
 		{
 			#ifndef NDEBUG
-				Error( " ( deviceTempCleanUp = SelectObject(...) ) == NULL " );
+				FontUtilError(_this, " ( deviceTempCleanUp = SelectObject(...) ) == NULL " );
 			#endif
 		}
 
 		if( !DeleteObject( BltHB ) )
 		{
 			#ifndef NDEBUG	
-				Error( " DeleteObject(..) function failure " );
+				FontUtilError(_this, " DeleteObject(..) function failure " );
 			#endif
 		}
 
 		if( !DeleteDC( BltDC ) )
 		{
 			#ifndef NDEBUG
-				Error( " DeleteDC(...) function failure " );
+				FontUtilError(_this, " DeleteDC(...) function failure " );
 			#endif
 		}
 	}	
 }
 
-static void
-LoadBitmap(
+void
+FontUtilLoadBitmap(FontBlah* _this
 		  )
 {
 	int        loop     =   0;
@@ -252,6 +299,9 @@ LoadBitmap(
 	HBITMAP deviceIndependentBitmapHB = 0;
 
 	HGDIOBJ deviceIndependentCleanUp  = 0;
+  
+  if( !_this)
+    return;
 
 	bInfo.bmiHeader.biBitCount	  = 32;
 	bInfo.bmiHeader.biWidth		  = 160;
@@ -267,7 +317,7 @@ LoadBitmap(
 	if( deviceIndependentDC == NULL )
 	{
 		#ifndef NDEBUG
-			Error( " ( deviceIndependentDC = CreateCompatibleDC(...) ) == NULL " );
+			FontUtilError(_this, " ( deviceIndependentDC = CreateCompatibleDC(...) ) == NULL " );
 		#endif
 
 		return;
@@ -275,35 +325,35 @@ LoadBitmap(
 
 	/* create bitmap */
 
-	text_white = (uint8_t*) malloc( (size_t)160 * 224 * 4 );
+  if( !_this->text_white)
+	  _this->text_white = (uint8_t*)BlahAlloc(sizeof(uint8_t) * 160 * 224 * 4, true);
 
-	text_white_array_pointer = (uint8_t**) malloc( sizeof(uint8_t*) * 224 );
+  if( !_this->text_white_array_pointer)
+	  _this->text_white_array_pointer = (uint8_t**)BlahAlloc(sizeof(uint8_t*) * 224, true);
 
-	if( (!text_white) || (!text_white_array_pointer) )
+	if( (!_this->text_white) || (!_this->text_white_array_pointer) )
 	{
 		#ifndef NDEBUG
-			Error( " malloc(...) == NULL " );
+			FontUtilError(_this, " malloc(...) == NULL " );
 		#endif
 
 		if( !DeleteDC( deviceIndependentDC ) )
 		{
 			#ifndef NDEBUG
-				Error( " DeleteDC(...) function failure " );
+				FontUtilError(_this, " DeleteDC(...) function failure " );
 			#endif
 		}
 
-		if( text_white )
+		if( _this->text_white )
 		{
-			free( text_white );
-
-			text_white = 0;
+			BlahFree(_this->text_white, sizeof(uint8_t) * 160 * 224 * 4, true);
+			_this->text_white = 0;
 		}
 
-		if( text_white_array_pointer )
+		if( _this->text_white_array_pointer )
 		{
-			free( text_white_array_pointer );
-
-			text_white_array_pointer = 0;
+			BlahFree(_this->text_white_array_pointer, sizeof(uint8_t*) * 224, true);
+			_this->text_white_array_pointer = 0;
 		}
 
 		deviceIndependentDC = 0;
@@ -322,28 +372,26 @@ LoadBitmap(
 	if( deviceIndependentBitmapHB == NULL || tempMem == NULL )
 	{
 		#ifndef NDEBUG
-			Error( " ( deviceIndependentBitmapHB = CreateDIBSection(...) ) == NULL " );
+			FontUtilError(_this, " ( deviceIndependentBitmapHB = CreateDIBSection(...) ) == NULL " );
 		#endif
 
 		if( !DeleteDC( deviceIndependentDC ) )
 		{
 			#ifndef NDEBUG
-				Error( " DeleteDC(...) function failure " );
+				FontUtilError(_this, " DeleteDC(...) function failure " );
 			#endif
 		}
 
-		if( text_white )
+		if( _this->text_white )
 		{
-			free( text_white );
-
-			text_white = 0;
+			BlahFree(_this->text_white, sizeof(uint8_t) * 160 * 224 * 4, true);
+			_this->text_white = 0;
 		}
 
-		if( text_white_array_pointer )
+		if( _this->text_white_array_pointer )
 		{
-			free( text_white_array_pointer );
-
-			text_white_array_pointer = 0;
+			BlahFree(_this->text_white_array_pointer, sizeof(uint8_t*) * 224, true);
+			_this->text_white_array_pointer = 0;
 		}
 
 		deviceIndependentDC = 0;
@@ -360,35 +408,33 @@ LoadBitmap(
 	if( deviceIndependentCleanUp == NULL || deviceIndependentCleanUp == (void*)GDI_ERROR )
 	{
 		#ifndef NDEBUG
-			Error( " ( deviceIndependentCleanUp = SelectObject(...) ) == NULL " );
+			FontUtilError(_this, " ( deviceIndependentCleanUp = SelectObject(...) ) == NULL " );
 		#endif
 
 		if( !DeleteObject( deviceIndependentBitmapHB ) )
 		{
 			#ifndef NDEBUG
-				Error( " DeleteObject(..) function failure " );
+				FontUtilError(_this, " DeleteObject(..) function failure " );
 			#endif
 		}
 
 		if( !DeleteDC( deviceIndependentDC ) )
 		{
 			#ifndef NDEBUG
-				Error( " DeleteDC(...) function failure " );
+				FontUtilError(_this, " DeleteDC(...) function failure " );
 			#endif
 		}
 
-		if( text_white )
+		if( _this->text_white )
 		{
-			free( text_white );
-
-			text_white = 0;
+			BlahFree(_this->text_white, sizeof(uint8_t) * 160 * 224 * 4, true);
+			_this->text_white = 0;
 		}
 
-		if( text_white_array_pointer )
+		if( _this->text_white_array_pointer )
 		{
-			free( text_white_array_pointer );
-
-			text_white_array_pointer = 0;
+			BlahFree(_this->text_white_array_pointer, sizeof(uint8_t*) * 224, true);
+			_this->text_white_array_pointer = 0;
 		}
 
 		deviceIndependentDC       = 0;
@@ -397,17 +443,17 @@ LoadBitmap(
 		return;
 	}
 
-	CopyBitmap( deviceIndependentDC, 160, 224 );
+	FontUtilCopyBitmap( _this, deviceIndependentDC, 160, 224 );
 
-	memcpy( text_white, tempMem, 160 * 224 * 4 );
+	memcpy( _this->text_white, tempMem, 160 * 224 * 4 );
 
-	text_white_array_pointer[ 223 ] = text_white;
+	_this->text_white_array_pointer[ 223 ] = _this->text_white;
 
 	// Set up the text buffer pointer array.
 	for( loop = 224 - 2; loop >= 0; loop-- )
 	{
-		text_white_array_pointer[ loop ] =
-			text_white_array_pointer[ loop + 1 ] + 160 * 4;
+		_this->text_white_array_pointer[ loop ] =
+			_this->text_white_array_pointer[ loop + 1 ] + 160 * 4;
 	}
 
 	HGDIOBJ deviceTempCleanUp = 0;
@@ -421,21 +467,21 @@ LoadBitmap(
 		if( deviceTempCleanUp == NULL || deviceTempCleanUp == (void*)GDI_ERROR )
 		{
 			#ifndef NDEBUG
-				Error( " ( deviceTempCleanUp = SelectObject(...) ) == NULL " );
+				FontUtilError(_this, " ( deviceTempCleanUp = SelectObject(...) ) == NULL " );
 			#endif
 		}
 
 		if( !DeleteObject( deviceIndependentBitmapHB ) )
 		{
 			#ifndef NDEBUG	
-				Error( " DeleteObject(..) function failure " );
+				FontUtilError(_this, " DeleteObject(..) function failure " );
 			#endif
 		}
 
 		if( !DeleteDC( deviceIndependentDC ) )
 		{
 			#ifndef NDEBUG
-				Error( " DeleteDC(...) function failure " );
+				FontUtilError(_this, " DeleteDC(...) function failure " );
 			#endif
 		}
 
@@ -445,11 +491,11 @@ LoadBitmap(
 	}
 }
 
-static void CharAntiAliasColorBlit( uint8_t **backbuffer,
+void FontUtilCharAntiAliasColorBlit( uint8_t **backbuffer,
 						            uint8_t **textbuffer,
 						            int  xDst,
 						            int  yDst,
-						            RECT *_RectSrc
+						            rect *_RectSrc
 						          )
 {
 	uint8_t  *Dst = 0,
@@ -464,7 +510,7 @@ static void CharAntiAliasColorBlit( uint8_t **backbuffer,
 		           Width,
 		           WidthLoop;
 
-	RECT           RectDst,
+	rect           RectDst,
 				   RectSrc;
 
 	RectSrc = *_RectSrc;
@@ -533,5 +579,3 @@ static void CharAntiAliasColorBlit( uint8_t **backbuffer,
 
 	}while( --HeightLoop > 0 );
 }
-
-#endif

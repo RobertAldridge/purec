@@ -5,10 +5,6 @@
 //
 // editor Robert Aldridge
 
-#pragma warning (disable : 4820)
-#include <ddraw.h>
-#pragma warning (default : 4820)
-
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
