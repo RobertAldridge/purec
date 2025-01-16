@@ -1,5 +1,5 @@
 
-// BlahAlloc.cpp
+// BlahPlatformLog.cpp
 // Robert Aldridge
 
 #if defined(_MSC_VER)

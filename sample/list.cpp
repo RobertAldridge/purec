@@ -1,5 +1,6 @@
+
 /*
- *  File:       listprv.c
+ *  File:       list.c
  *
  *  Function:   Holds private interface definitions for a First Class
  *              ADT list package.

@@ -204,11 +204,11 @@
     <ClCompile Include="..\ssmm\ssMm.cpp" />
     <ClCompile Include="..\ssmm\ssQueue.cpp" />
     <ClCompile Include="..\ssmm\ssStack.cpp" />
-    <ClCompile Include="client.cpp" />
     <ClCompile Include="deBoor.cpp" />
     <ClCompile Include="font.cpp" />
     <ClCompile Include="font_util.cpp" />
     <ClCompile Include="emitter.cpp" />
+    <ClCompile Include="list client.cpp" />
     <ClCompile Include="list.cpp" />
     <ClCompile Include="particle.cpp" />
     <ClCompile Include="sample.cpp" />

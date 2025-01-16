@@ -1,4 +1,5 @@
-// part.c
+
+// emitter.c
 //
 // particle system from Jeff Lander article
 // The Ocean Spray in Your Face July 1998 Game Developer

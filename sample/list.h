@@ -1,5 +1,6 @@
+
 /*
- *  File:       list client.h
+ *  File:       list.h
  *
  *  Function:   Holds public interface definitions for a First Class
  *              ADT list package.

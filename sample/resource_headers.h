@@ -1,3 +1,6 @@
+
+// resource_headers.h
+
 //{{NO_DEPENDENCIES}}
 // Microsoft Developer Studio generated include file.
 // Used by AboutBox.rc
