@@ -109,12 +109,11 @@ using std::pair;
 using std::queue;
 
 #include "list object.h"
-#include "list client.h"
+#include "list.h"
 
 #include "font.h"
 
-#include "particle client.h"
-//#include "part_pub.h"
+#include "particle.h"
 
 #include "memory.h"
 

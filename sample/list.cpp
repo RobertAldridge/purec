@@ -29,10 +29,41 @@
     #define FALSE 0
   #endif
 
-#include "list object.h"
-#include "list client.h"
+#include "list.h"
 
-#include "listprv.h"
+#include "list object.h"
+
+struct LIST_HEAD
+{
+  int CurrentIndex;
+
+  int CurrentTraverseIndex;
+
+  int MaxNumberOfObjects;
+
+  // Recursion test variables
+  unsigned char Dump;
+
+  unsigned char Find;
+
+  unsigned char GetExtrema;
+
+  unsigned char Remove;
+
+  unsigned char Sort;
+  //
+
+  unsigned char padding[7];
+
+  CLIENT_EVALUATE ClientEvaluate;
+
+  CLIENT_EQUIVALENCE ClientEquality;
+
+  CLIENT_COMPARE ClientCompare;
+
+  // NEEDS TO BE A SEPERATE ALLOCATION FOR DYNAMIC GROWTH
+  CLIENT_POTYPE* ObjectArray;
+};
 
 //
 //  The initialization routine.

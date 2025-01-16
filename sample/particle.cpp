@@ -1,5 +1,5 @@
 
-// part_int.c
+// particle.c
 //
 // particle system interface
 //
@@ -18,14 +18,14 @@
 #include <cstring>
 #include <cstdint>
 
-#include "part_pub.h"
-
 #include "list object.h"
-#include "list client.h"
-
-#include "particle client.h"
+#include "list.h"
 
 #include "video.h"
+
+#include "emitter.h"
+
+#include "particle.h"
 
 static float currentTime;
 static float *matrix;

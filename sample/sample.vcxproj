@@ -208,9 +208,9 @@
     <ClCompile Include="deBoor.cpp" />
     <ClCompile Include="font.cpp" />
     <ClCompile Include="font_util.cpp" />
-    <ClCompile Include="listprv.cpp" />
-    <ClCompile Include="part.cpp" />
-    <ClCompile Include="part_int.cpp" />
+    <ClCompile Include="emitter.cpp" />
+    <ClCompile Include="list.cpp" />
+    <ClCompile Include="particle.cpp" />
     <ClCompile Include="sample.cpp" />
     <ClCompile Include="winmain.cpp" />
   </ItemGroup>
@@ -227,13 +227,11 @@
     <ClInclude Include="font.h" />
     <ClInclude Include="font_util.h" />
     <ClInclude Include="header.h" />
-    <ClInclude Include="list client.h" />
     <ClInclude Include="list object.h" />
-    <ClInclude Include="listprv.h" />
+    <ClInclude Include="list.h" />
     <ClInclude Include="memory.h" />
-    <ClInclude Include="particle client.h" />
-    <ClInclude Include="part_priv.h" />
-    <ClInclude Include="part_pub.h" />
+    <ClInclude Include="emitter.h" />
+    <ClInclude Include="particle.h" />
     <ClInclude Include="resource_headers.h" />
     <ClInclude Include="video.h" />
   </ItemGroup>

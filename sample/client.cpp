@@ -17,7 +17,7 @@
 //#include <crtdbg.h>
 
 #include "list object.h"
-#include "list client.h"
+#include "list.h"
 
 #define WIN32_LEAN_AND_MEAN
 
