@@ -518,7 +518,7 @@ static bool SsSetTest(blahRandom* /*random*/)
 #endif
 
 // limit of memory allocation near 30,000,000
-//static const uint32_t numData = 30000000;
+//uint32_t numData = 30000000;
 
 //BlahLog("%i\n\n", blah_get_number() );
 //2097152

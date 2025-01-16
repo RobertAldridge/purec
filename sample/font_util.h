@@ -12,7 +12,7 @@ int FontUtilWarning(FontBlah* _this, const char* const warningString);
 // StartX; input is old dest x, output is new dest x
 // StartY; input is old dest y, output is new dest y
 // rect; input is old source rect, output is new source rect
-unsigned char FontUtilClipSpecial(int* StartX, int* StartY, int _width, int _height, rect* rect);
+unsigned char FontUtilClipSpecial(int* StartX, int* StartY, int _width, int _height, rect* _rect);
 
 void FontUtilCopyBitmap(FontBlah* _this, HDC Source, int sourceWidth, int sourceHeight);
 

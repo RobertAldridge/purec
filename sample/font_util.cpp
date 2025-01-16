@@ -52,28 +52,28 @@ uint8_t*  text_white;
 int FontUtilError(FontBlah* _this, const char* const errorString)
 {
   if( _this && _this->file )
-  { 
+  {
     ++_this->numErrors;
-      
+
     fprintf( _this->file, " FontUtilError#  : %i\n",   _this->numErrors );
 
     fprintf( _this->file, " FontUtilError   : %s\n\n", errorString );
   }
-    
+
   return 0;
 }
 
 int FontUtilWarning(FontBlah* _this, const char* const warningString)
 {
   if( _this && _this->file )
-  { 
+  {
     ++_this->numWarnings;
-      
+
     fprintf( _this->file, " FontUtilWarning#: %i\n",   _this->numWarnings   );
 
     fprintf( _this->file, " FontUtilWarning : %s\n\n", warningString );
   }
-    
+
   return 0;
 }
 #endif
@@ -83,14 +83,14 @@ FontUtilClipSpecial( int  *StartX, // input is old dest x, output is new dest x
        int  *StartY, // input is old dest y, output is new dest y
        int  _width,
        int  _height,
-       rect *rect    // input is old source rect, output is new source rect
+       rect *_rect    // input is old source rect, output is new source rect
        )
 {
   #define StartX (*StartX)
   #define StartY (*StartY)
 
-  int SrcWidth         = rect->right  - rect->left + 1;
-  int SrcHeight        = rect->bottom - rect->top  + 1;
+  int SrcWidth         = _rect->right  - _rect->left + 1;
+  int SrcHeight        = _rect->bottom - _rect->top  + 1;
   //
   int DestWidth        = SrcWidth;
   int DestHeight       = SrcHeight;
@@ -107,15 +107,15 @@ FontUtilClipSpecial( int  *StartX, // input is old dest x, output is new dest x
   {
     StartX       = -1;
     StartY       = -1;
-    rect->left   = -1;
-    rect->top    = -1;
-    rect->right  = -1;
-    rect->bottom = -1;
+    _rect->left   = -1;
+    _rect->top    = -1;
+    _rect->right  = -1;
+    _rect->bottom = -1;
 
     return FALSE;
   }
 
-  if (StartX < 0) 
+  if (StartX < 0)
   {
     Xstart     = -StartX;
     DestWidth -=  Xstart;
@@ -126,7 +126,7 @@ FontUtilClipSpecial( int  *StartX, // input is old dest x, output is new dest x
     Ystart      = -StartY;
     DestHeight -=  Ystart;
   }
-  
+
   if( SrcWidth + StartX > BackBufferWidth )
   {
     DestWidth   -= ( SrcWidth + StartX ) - BackBufferWidth;
@@ -151,11 +151,11 @@ FontUtilClipSpecial( int  *StartX, // input is old dest x, output is new dest x
   #undef StartY
   #undef StartX
 
-  rect->left += Xstart;
-  rect->top  += Ystart;
+  _rect->left += Xstart;
+  _rect->top  += Ystart;
 
-  rect->right  = rect->left + DestWidth  - 1;
-  rect->bottom = rect->top  + DestHeight - 1;
+  _rect->right  = _rect->left + DestWidth  - 1;
+  _rect->bottom = _rect->top  + DestHeight - 1;
 
   return TRUE;
 }
@@ -170,7 +170,7 @@ void FontUtilCopyBitmap(FontBlah* _this, HDC Source,
   HBITMAP BltHB;
 
   HGDIOBJ CleanUp;
-  
+
   if( !_this)
     return;
 
@@ -270,7 +270,7 @@ void FontUtilCopyBitmap(FontBlah* _this, HDC Source,
 
     if( !DeleteObject( BltHB ) )
     {
-      #ifndef NDEBUG  
+      #ifndef NDEBUG
         FontUtilError(_this, " DeleteObject(..) function failure " );
       #endif
     }
@@ -281,7 +281,7 @@ void FontUtilCopyBitmap(FontBlah* _this, HDC Source,
         FontUtilError(_this, " DeleteDC(...) function failure " );
       #endif
     }
-  } 
+  }
 }
 
 void
@@ -299,7 +299,7 @@ FontUtilLoadBitmap(FontBlah* _this
   HBITMAP deviceIndependentBitmapHB = 0;
 
   HGDIOBJ deviceIndependentCleanUp  = 0;
-  
+
   if( !_this)
     return;
 
@@ -361,7 +361,7 @@ FontUtilLoadBitmap(FontBlah* _this
     return;
   }
 
-  deviceIndependentBitmapHB = CreateDIBSection( deviceIndependentDC, 
+  deviceIndependentBitmapHB = CreateDIBSection( deviceIndependentDC,
                           &bInfo,
                           DIB_RGB_COLORS,
                           (void**) &tempMem,
@@ -473,7 +473,7 @@ FontUtilLoadBitmap(FontBlah* _this
 
     if( !DeleteObject( deviceIndependentBitmapHB ) )
     {
-      #ifndef NDEBUG  
+      #ifndef NDEBUG
         FontUtilError(_this, " DeleteObject(..) function failure " );
       #endif
     }
@@ -529,13 +529,13 @@ void FontUtilCharAntiAliasColorBlit( uint8_t **backbuffer,
   do
   {
     WidthLoop = Width;
-    
+
     int rectDstLeft = RectDst.left << 2;
     int rectSrcLeft = RectSrc.left << 2;
 
     Dst       = ( (uint8_t*) (*backbuffer) ) + rectDstLeft;
     Src       = ( (uint8_t*) (*textbuffer) ) + rectSrcLeft;
-    
+
     do
     {
       SrcRatio = ( *( (unsigned long*) Src ) ) & 0xff;

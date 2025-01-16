@@ -20,11 +20,10 @@
 
 #include "part_pub.h"
 
-#include "client.h"
+#include "list object.h"
+#include "list client.h"
 
-#include "listpub.h"
-
-#include "partpub.h"
+#include "particle client.h"
 
 #include "video.h"
 
@@ -46,43 +45,43 @@ static int32_t Equal(CLIENT_POTYPE Obj1,
   return( strcmp( Obj1.name, Obj2.name ) == 0 );
 }
 
-static int32_t Activate(CLIENT_PPOTYPE Obj
+static int32_t Activate(CLIENT_POTYPE* Obj
                    )
 {
   if( Obj->particleSystem )
-    ActivateParticleSystem( (PEMITTER*) (&Obj->particleSystem), currentTime, Obj->arg1, Obj->arg2, Obj->arg3 );
+    ActivateParticleSystem( (EMITTER**) &Obj->particleSystem, currentTime, Obj->arg1, Obj->arg2, Obj->arg3 );
 
   return 0;
 }
 
-static int32_t Update(CLIENT_PPOTYPE Obj
+static int32_t Update(CLIENT_POTYPE* Obj
                  )
 {
   if( Obj->particleSystem )
-    UPDATE_PARTICLE_SYSTEM( (PEMITTER*) (&Obj->particleSystem), currentTime );
+    UPDATE_PARTICLE_SYSTEM( (EMITTER**) &Obj->particleSystem, currentTime );
 
   return 0;
 }
 
-static int32_t Draw(CLIENT_PPOTYPE Obj
+static int32_t Draw(CLIENT_POTYPE* Obj
                )
 {
   if( Obj->particleSystem )
-    DrawParticleSystem( (PEMITTER*) (&Obj->particleSystem), matrix );
+    DrawParticleSystem( (EMITTER**) &Obj->particleSystem, matrix );
 
   return 0;
 }
 
-static int32_t Terminate(CLIENT_PPOTYPE Obj
+static int32_t Terminate(CLIENT_POTYPE* Obj
                     )
 {
   if( Obj->particleSystem )
-    TerminateParticleSystem( (PEMITTER*) (&Obj->particleSystem) );
+    TerminateParticleSystem( (EMITTER**) &Obj->particleSystem);
 
   return 0;
 }
 
-static int ParticleSystemsInternalLoad(PLIST_HEAD particleSystems,
+static int ParticleSystemsInternalLoad(LIST_HEAD* particleSystems,
                     FILE       *file
                      )
 {
@@ -193,7 +192,7 @@ static int ParticleSystemsInternalLoad(PLIST_HEAD particleSystems,
       fbuffer[30], fbuffer[31], fbuffer[32]
     );
 
-  ActivateParticleSystem( (PEMITTER*) (&Obj.particleSystem), currentTime, (uint8_t) ibuffer[3], (uint8_t) ibuffer[4], (uint8_t) ibuffer[5] );
+  ActivateParticleSystem( (EMITTER**) &Obj.particleSystem, currentTime, (uint8_t) ibuffer[3], (uint8_t) ibuffer[4], (uint8_t) ibuffer[5] );
 
   Obj.arg1 = (uint8_t) ibuffer[3];
   Obj.arg2 = (uint8_t) ibuffer[4];
@@ -210,15 +209,15 @@ static int ParticleSystemsInternalLoad(PLIST_HEAD particleSystems,
 // destroys existing particle system if not NULL
 // return new particle system
 // does nothing else if filename is NULL
-PPARTICLE_SYSTEMS_HEAD
-  ParticleSystemsLoadFileAndActivate(PPARTICLE_SYSTEMS_HEAD *_particleSystems,
+PARTICLE_SYSTEMS_HEAD*
+  ParticleSystemsLoadFileAndActivate(PARTICLE_SYSTEMS_HEAD** _particleSystems,
                                        char                     *filename,
                      float                    _currentTime
                                       )
 {
   int32_t        Num = 0;
   FILE       *file;
-  PLIST_HEAD particleSystems;
+  LIST_HEAD* particleSystems;
 
   int result = 0;
 
@@ -263,13 +262,13 @@ PPARTICLE_SYSTEMS_HEAD
 
   fclose ( file );
 
-  return (PPARTICLE_SYSTEMS_HEAD) particleSystems;
+  return (PARTICLE_SYSTEMS_HEAD*)particleSystems;
 }
 
 // adds a particle system specified in the
 // file, does nothing if filename is NULL
 void
-  ParticleSystemsAddFileAndActivate(PPARTICLE_SYSTEMS_HEAD *particleSystemsRef,
+  ParticleSystemsAddFileAndActivate(PARTICLE_SYSTEMS_HEAD** particleSystemsRef,
                     char                     *filename,
                       float                    _currentTime
                                      )
@@ -277,7 +276,7 @@ void
   int32_t  Num = 0;
   FILE *file = 0;
 
-  PLIST_HEAD* particleSystems = 0;
+  LIST_HEAD** particleSystems = 0;
 
   int result = 0;
 
@@ -286,7 +285,7 @@ void
   if( !particleSystemsRef || !filename )
     return;
 
-  particleSystems = (PLIST_HEAD*)particleSystemsRef;
+  particleSystems = (LIST_HEAD**)particleSystemsRef;
 
   file = fopen( filename, "rb" );
 
@@ -340,7 +339,7 @@ void
 void
   ParticleSystemsAddAndActivate
   (
-    PPARTICLE_SYSTEMS_HEAD *particleSystemsRef,
+    PARTICLE_SYSTEMS_HEAD** particleSystemsRef,
 
     char        *name,                          // EMITTER NAME
     float       _currentTime,                       // CURRENT TIME IN SECONDS
@@ -380,12 +379,12 @@ void
 {
   CLIENT_POTYPE Obj = {0};
 
-  PLIST_HEAD* particleSystems = 0;
+  LIST_HEAD** particleSystems = 0;
 
   if( !particleSystemsRef )
     return;
 
-  particleSystems = (PLIST_HEAD*)particleSystemsRef;
+  particleSystems = (LIST_HEAD**)particleSystemsRef;
 
   if( !particleSystems[0] )
     particleSystems[0] = ListInit( 0, 16 );
@@ -468,7 +467,7 @@ void
       gForceVarX,     gForceVarY,     gForceVarZ
     );
 
-  ActivateParticleSystem( (PEMITTER*) (&Obj.particleSystem), _currentTime, antiAlias, physics, regeneration );
+  ActivateParticleSystem( (EMITTER**) &Obj.particleSystem, _currentTime, antiAlias, physics, regeneration );
 
   Obj.arg1 = antiAlias;
   Obj.arg2 = physics;
@@ -483,21 +482,21 @@ void
 // if particleSystemName is NULL, all particle
 // systems are reactivated
 void
-  ParticleSystemsReActivate(PPARTICLE_SYSTEMS_HEAD *particleSystemsRef,
+  ParticleSystemsReActivate(PARTICLE_SYSTEMS_HEAD** particleSystemsRef,
                 char                     *particleSystemName,
                 float                    _currentTime
                )
 {
   CLIENT_POTYPE Obj = {0};
 
-  PLIST_HEAD* particleSystems = 0;
+  LIST_HEAD** particleSystems = 0;
 
   currentTime = _currentTime;
 
   if( !particleSystemsRef )
     return;
 
-  particleSystems = (PLIST_HEAD*)particleSystemsRef;
+  particleSystems = (LIST_HEAD**)particleSystemsRef;
 
   if( !particleSystems[0] )
     return;
@@ -540,21 +539,21 @@ void
 // if particleSystemName is NULL, all particle
 // systems are updated
 void
-  ParticleSystemsUpdate(PPARTICLE_SYSTEMS_HEAD *particleSystemsRef,
+  ParticleSystemsUpdate(PARTICLE_SYSTEMS_HEAD** particleSystemsRef,
               char                     *particleSystemName,
               float                    _currentTime
              )
 {
   CLIENT_POTYPE Obj = {0};
 
-  PLIST_HEAD* particleSystems = 0;
+  LIST_HEAD** particleSystems = 0;
 
   currentTime = _currentTime;
 
   if( !particleSystemsRef )
     return;
 
-  particleSystems = (PLIST_HEAD*)particleSystemsRef;
+  particleSystems = (LIST_HEAD**)particleSystemsRef;
 
   if( !particleSystems[0] )
     return;
@@ -597,21 +596,21 @@ void
 // if particleSystemName is NULL, all particle
 // systems are drawn
 void
-  ParticleSystemsDraw(PPARTICLE_SYSTEMS_HEAD *particleSystemsRef,
+  ParticleSystemsDraw(PARTICLE_SYSTEMS_HEAD** particleSystemsRef,
             char                     *particleSystemName,
                         float                    *_matrix
              )
 {
   CLIENT_POTYPE Obj = {0};
 
-  PLIST_HEAD* particleSystems = 0;
+  LIST_HEAD** particleSystems = 0;
 
   matrix = _matrix;
 
   if( !particleSystemsRef )
     return;
 
-  particleSystems = (PLIST_HEAD*)particleSystemsRef;
+  particleSystems = (LIST_HEAD**)particleSystemsRef;
 
   if( !particleSystems[0] )
     return;
@@ -642,7 +641,7 @@ void
 // if particleSystemName is NULL, all particle
 // systems are updated and drawn
 void
-  ParticleSystemsUpdateAndDraw(PPARTICLE_SYSTEMS_HEAD *particleSystemsRef,
+  ParticleSystemsUpdateAndDraw(PARTICLE_SYSTEMS_HEAD** particleSystemsRef,
                  char                     *particleSystemName,
                    float                    *_matrix,
                      float                    _currentTime
@@ -650,7 +649,7 @@ void
 {
   CLIENT_POTYPE Obj = {0};
 
-  PLIST_HEAD* particleSystems = 0;
+  LIST_HEAD** particleSystems = 0;
 
   matrix      = _matrix;
 
@@ -659,7 +658,7 @@ void
   if( !particleSystemsRef )
     return;
 
-  particleSystems = (PLIST_HEAD*)particleSystemsRef;
+  particleSystems = (LIST_HEAD**)particleSystemsRef;
 
   if( !particleSystems[0] )
     return;
@@ -704,18 +703,18 @@ void
 // if particleSystemName is NULL, all particle
 // systems are terminated
 void
-  ParticleSystemsTerminate(PPARTICLE_SYSTEMS_HEAD *particleSystemsRef,
+  ParticleSystemsTerminate(PARTICLE_SYSTEMS_HEAD** particleSystemsRef,
                char                     *particleSystemName
               )
 {
   CLIENT_POTYPE Obj = {0};
 
-  PLIST_HEAD* particleSystems = 0;
+  LIST_HEAD** particleSystems = 0;
 
   if( !particleSystemsRef )
     return;
 
-  particleSystems = (PLIST_HEAD*)particleSystemsRef;
+  particleSystems = (LIST_HEAD**)particleSystemsRef;
 
   if( !particleSystems[0] )
     return;

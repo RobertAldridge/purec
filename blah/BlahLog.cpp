@@ -21,7 +21,9 @@ using namespace std;
 
 #include "BlahPlatformLog.h"
 
+int Error(const char* const errorString);
 int Warning(const char* const warningString);
+int Verbose(const char* const verboseString);
 
 void BlahLog1Level2(const char* file, int line, const char* format, ...)
 {
@@ -44,7 +46,8 @@ void BlahLog1Level2(const char* file, int line, const char* format, ...)
 
 if(BlahPlatformLogIsEnabled() )
 //BlahPlatformLog(destination);
-  Warning(destination);
+//Warning(destination);
+  Verbose(destination);
 else
   printf("%s", destination);
 }

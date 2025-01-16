@@ -1,17 +1,6 @@
 // font.h
 // Robert Aldridge
 
-struct FontBlah;
-
-struct rect
-{
-  int left;
-  int top;
-  int right;
-  int bottom;
-
-};
-
 // Creates a white font
 // when RobsTextOutInitSystem is first called.
 //

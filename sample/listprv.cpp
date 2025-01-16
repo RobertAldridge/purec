@@ -29,9 +29,8 @@
     #define FALSE 0
   #endif
 
-#include "client_potype.h"
-
-#include "listpub.h"
+#include "list object.h"
+#include "list client.h"
 
 #include "listprv.h"
 
@@ -46,7 +45,7 @@
 //                           objects the client wishes to put in the list.
 //
 //  Returns:
-//      A PLIST_HEAD object which must be passed to all other functions
+//      A LIST_HEAD* object which must be passed to all other functions
 //      in this list interface. It will be NULL if the memory cannot
 //      be allocated for the list.
 //
@@ -57,7 +56,7 @@
 //
 //
 
-PLIST_HEAD
+LIST_HEAD*
 ListInit
 (
   CLIENT_COMPARE ClientCompare,
@@ -65,12 +64,12 @@ ListInit
 )
 {
   // times 2 for the buffer for the sorting routine
-  PLIST_HEAD Head;
+  LIST_HEAD* Head;
 
   if(MaxNumberOfObjects<0)
     return 0;
 
-  Head=(PLIST_HEAD)calloc(1,sizeof(LIST_HEAD));
+  Head=(LIST_HEAD*)calloc(1,sizeof(LIST_HEAD));
 
   if(Head)
   {
@@ -95,7 +94,7 @@ ListInit
 //  The Check if empty routine
 //
 //  Arguments:
-//      Head   - The PLIST_HEAD referring to a particular instance of
+//      Head   - The LIST_HEAD* referring to a particular instance of
 //               the list ADT.
 //
 //      NumberOfClientObjects - An optional INDEX_TYPE pointer, may be NULL.
@@ -115,7 +114,7 @@ ListInit
 INDEX_TYPE
 ListIsEmpty
 (
-  PLIST_HEAD Head,
+  LIST_HEAD* Head,
   INDEX_TYPE *NumberOfClientObjects
 )
 {
@@ -132,7 +131,7 @@ ListIsEmpty
 //  The POTYPE insertion routine.
 //
 //  Arguments:
-//      Head   - The PLIST_HEAD referring to a particular instance of
+//      Head   - The LIST_HEAD* referring to a particular instance of
 //               the list ADT.
 //
 //      ClientObject - The object to be inserted into the list.
@@ -161,12 +160,12 @@ ListIsEmpty
 INDEX_TYPE
 ListInsert
 (
-  PLIST_HEAD     Head,
+  LIST_HEAD*     Head,
   CLIENT_POTYPE  ClientObject,
   CLIENT_COMPARE ClientCompare
 )
 {
-  CLIENT_PPOTYPE GrowArray;
+  CLIENT_POTYPE* GrowArray;
 
   if( !Head || !Head->ObjectArray || Head->Sort || Head->Remove )
     return ERROR;
@@ -209,7 +208,7 @@ ListInsert
 //  The Remove routine.
 //
 //  Arguments:
-//      Head   -            The PLIST_HEAD referring to a particular instance
+//      Head   -            The LIST_HEAD* referring to a particular instance
 //                          of the list ADT.
 //
 //      ClientEquality -    An optional temporary EQUIVALENCE function pointer which only
@@ -217,7 +216,7 @@ ListInsert
 //                          It returns 0 otherwise. If this is NULL, the first
 //                          element in the list is removed.
 //
-//      ClientObject -      A required PPOTYPE specifying both the object to be
+//      ClientObject -      A required POTYPE* specifying both the object to be
 //                          found and is used as an out parameter.
 //
 //  Returns:
@@ -233,9 +232,9 @@ ListInsert
 INDEX_TYPE
 ListRemove
 (
-  PLIST_HEAD         Head,
+  LIST_HEAD*         Head,
   CLIENT_EQUIVALENCE ClientEquality,
-  CLIENT_PPOTYPE     ClientObject
+  CLIENT_POTYPE*     ClientObject
 )
 {
   int loop=0,Num;
@@ -296,7 +295,7 @@ ListRemove
 //  The Find routine.
 //
 //  Arguments:
-//      Head   -            The PLIST_HEAD referring to a particular instance
+//      Head   -            The LIST_HEAD* referring to a particular instance
 //                          of the list ADT.
 //
 //      ClientEquality -    An optional temporary EQUIVALENCE function pointer which only
@@ -304,7 +303,7 @@ ListRemove
 //                          It returns 0 otherwise. If this is NULL, the first
 //                          element in the list is returned.
 //
-//      ClientObject -      A required PPOTYPE specifying both the object to be
+//      ClientObject -      A required POTYPE* specifying both the object to be
 //                          found and is used as an out parameter.
 //
 //  Returns:
@@ -320,9 +319,9 @@ ListRemove
 INDEX_TYPE
 ListFind
 (
-  PLIST_HEAD         Head,
+  LIST_HEAD*         Head,
   CLIENT_EQUIVALENCE ClientEquality,
-  CLIENT_PPOTYPE     ClientObject
+  CLIENT_POTYPE*     ClientObject
 )
 {
   int loop=0,Num;
@@ -371,10 +370,10 @@ ListFind
 //  The GetNext routine.
 //
 //  Arguments:
-//      Head         -      The PLIST_HEAD referring to a particular instance
+//      Head         -      The LIST_HEAD* referring to a particular instance
 //                          of the list ADT.
 //
-//      ClientObject -      A required PPOTYPE where the next object is to be placed
+//      ClientObject -      A required POTYPE* where the next object is to be placed
 //
 //      Reset        -      A BOOL when TRUE, will reset the search to begin
 //                          at the start of the list.
@@ -392,8 +391,8 @@ ListFind
 INDEX_TYPE
 ListGetNext
 (
-  PLIST_HEAD     Head,
-  CLIENT_PPOTYPE ClientObject,
+  LIST_HEAD*     Head,
+  CLIENT_POTYPE* ClientObject,
   INDEX_TYPE     Reset
 )
 {
@@ -418,7 +417,7 @@ ListGetNext
 //  The terminate routine.
 //
 //  Arguments:
-//      Head   - The PLIST_HEAD referring to a particular instance of
+//      Head   - The LIST_HEAD* referring to a particular instance of
 //               the list ADT.
 //
 //  Returns:
@@ -434,7 +433,7 @@ ListGetNext
 void
 ListTerminate
 (
-  PLIST_HEAD Head
+  LIST_HEAD* Head
 )
 {
   if( Head && !Head->Dump && !Head->GetExtrema && !Head->Find && !Head->Remove && !Head->Sort )
@@ -450,7 +449,7 @@ ListTerminate
 //  A sort routine.
 //
 //  Arguments:
-//      Head    -   The PLIST_HEAD referring to a particular instance of
+//      Head    -   The LIST_HEAD* referring to a particular instance of
 //                  the list ADT.
 //
 //      ClientCompare - An optional temporary COMPARE function pointer. If not NULL, it
@@ -617,7 +616,7 @@ mergesortABr
 static void
 mergesortAB
 (
-  PLIST_HEAD Head,
+  LIST_HEAD* Head,
   INDEX_TYPE l,
   INDEX_TYPE r
 )
@@ -635,7 +634,7 @@ mergesortAB
 void
 ListSort
 (
-  PLIST_HEAD     Head,
+  LIST_HEAD*     Head,
   CLIENT_COMPARE ClientCompare
 )
 {
@@ -669,7 +668,7 @@ ListSort
 //  A get extrema routine.
 //
 //  Arguments:
-//      Head         -  The PLIST_HEAD referring to a particular instance of
+//      Head         -  The LIST_HEAD* referring to a particular instance of
 //                      the list ADT.
 //
 //      ClientCompare      -  An optional temporary COMPARE function pointer.
@@ -691,7 +690,7 @@ ListSort
 CLIENT_POTYPE
 ListGetExtrema
 (
-  PLIST_HEAD     Head,
+  LIST_HEAD*     Head,
   CLIENT_COMPARE ClientCompare,
   INDEX_TYPE     GetGreatest
 )
@@ -745,7 +744,7 @@ ListGetExtrema
 //  A list dump routine.
 //
 //  Arguments:
-//      Head   - The PLIST_HEAD referring to a particular instance of
+//      Head   - The LIST_HEAD* referring to a particular instance of
 //               the list ADT.
 //
 //      ClientEvaluate - An optional temporary EVALUATE function provided by the client.
@@ -769,7 +768,7 @@ ListGetExtrema
 INDEX_TYPE
 ListDump
 (
-  PLIST_HEAD      Head,
+  LIST_HEAD*      Head,
   CLIENT_EVALUATE ClientEvaluate,
   INDEX_TYPE      Reverse
 )

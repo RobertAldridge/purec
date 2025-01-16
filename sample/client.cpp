@@ -16,8 +16,8 @@
 
 //#include <crtdbg.h>
 
-#include "client_potype.h"
-#include "listpub.h"
+#include "list object.h"
+#include "list client.h"
 
 #define WIN32_LEAN_AND_MEAN
 
@@ -61,7 +61,7 @@ static int AreEqual(CLIENT_POTYPE Arg1, CLIENT_POTYPE Arg2)
 
 static void
 ProcessList(
-    PLIST_HEAD    ListHead,
+    LIST_HEAD*    ListHead,
     CLIENT_POTYPE InputArray[NUMBER],
     const char     *    IdentifierString
     )
@@ -109,7 +109,7 @@ mainListTest(
 {
 //long          OldValue;
     unsigned int  count;
-  PLIST_HEAD    listHead;
+  LIST_HEAD*    listHead;
     CLIENT_POTYPE input[NUMBER];
 
     memset( &input, 0, countof(input) );

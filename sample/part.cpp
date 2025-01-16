@@ -44,7 +44,7 @@ static uint8_t** __LinearFrameBufferGetBackBufferArray();
 // if emitterLife <= 0 then the lifetime of the particle system is infinite
 //
 // initializes and returns the dynamically allocated particle system
-PEMITTER
+EMITTER*
 CreateParticleSystem
 (
   char        *name,                          // EMITTER NAME
@@ -70,11 +70,11 @@ CreateParticleSystem
   float       gForceVarX,     float gForceVarY,     float gForceVarZ
 )
 {
-  PEMITTER particleSystem = (PEMITTER)calloc( 1, sizeof(EMITTER) );
+  EMITTER* particleSystem = (EMITTER*)calloc( 1, sizeof(EMITTER) );
 
   if( particleSystem )
   {
-    particleSystem->particles = (PPARTICLE)calloc( 1, sizeof(PARTICLE) * numParticles );
+    particleSystem->particles = (PARTICLE*)calloc( 1, sizeof(PARTICLE) * numParticles );
 
     if( !particleSystem->particles )
     {
@@ -151,7 +151,7 @@ CreateParticleSystem
 //
 // if the particle system has died, it will be destroyed and nulled out
 void
-ActivateParticleSystem(PEMITTER      *_particleSystem, // PREVIOUSLY CREATED PARTICLE SYSTEM
+ActivateParticleSystem(EMITTER** _particleSystem, // PREVIOUSLY CREATED PARTICLE SYSTEM
 
              float           currentTime,      // CURRENT TIME IN SECONDS
 
@@ -174,7 +174,7 @@ ActivateParticleSystem(PEMITTER      *_particleSystem, // PREVIOUSLY CREATED PAR
   float       speed = 0, speed_y_factor = 0;
   uint32_t       totalParticles = 0;
   COLOR     start, end;
-  PEMITTER  particleSystem = {0};
+  EMITTER* particleSystem = 0;
   PARTICLE* particle = 0;
 
   memset( &start, 0, sizeof(COLOR) );
@@ -280,7 +280,7 @@ ActivateParticleSystem(PEMITTER      *_particleSystem, // PREVIOUSLY CREATED PAR
 extern void
 UpdateParticleSystem
 (
-  PEMITTER *_particleSystem,                          // PREVIOUSLY CREATED PARTICLE SYSTEM
+  EMITTER** _particleSystem,                          // PREVIOUSLY CREATED PARTICLE SYSTEM
   float      currentTime,                               // CURRENT TIME IN SECONDS
 
   uint8_t       gForce,                                    // IF NOT SET TO 0, THE NEW GFORCE VECTOR WILL BE
@@ -297,8 +297,8 @@ UpdateParticleSystem
   uint32_t       totalParticles;
   int32_t       emitsPerFrame;
   COLOR     start,end;
-  PEMITTER  particleSystem;
-  PPARTICLE particle;
+  EMITTER* particleSystem = 0;
+  PARTICLE* particle = 0;
 
   memset( &start, 0, sizeof(COLOR) );
   memset( &end, 0, sizeof(COLOR) );
@@ -480,10 +480,12 @@ UpdateParticleSystem
     }while( emitsPerFrame > 0 && --totalParticles );
 }
 
-static uint8_t  LFbitDepth = 32, **LFbackBufferArray;
-static uint16_t LFwidth,LFheight;
+static uint8_t  LFbitDepth = 32;
+static uint8_t** LFbackBufferArray = 0;
+static uint16_t LFwidth = 0;
+static uint16_t LFheight = 0;
 
-static uint8_t** ( *_backBufferFunction ) ( );
+static uint8_t** (*_backBufferFunction) ();
 
 void __LinearFrameBufferOSSetBackBuffer(uint8_t** ( *__backBufferFunction ) ( ),
                          uint16_t     BackBufferViewPortWidth,
@@ -508,13 +510,13 @@ static uint8_t ** __LinearFrameBufferGetBackBufferArray() { return LFbackBufferA
 //
 // does not check if the particle system has died
 void
-DrawParticleSystem(PEMITTER *_particleSystem, // PREVIOUSLY CREATED PARTICLE SYSTEM
+DrawParticleSystem(EMITTER** _particleSystem, // PREVIOUSLY CREATED PARTICLE SYSTEM
                    float      *m                // 4x4 world to camera transformation matrix
                   )
 {
   uint32_t       totalParticles;
-  PEMITTER  particleSystem;
-  PPARTICLE particle;
+  EMITTER* particleSystem = 0;
+  PARTICLE* particle = 0;
 
   // FOR BACKBUFFER INFO
   uint8_t        antiAlias;
@@ -1165,7 +1167,7 @@ DrawParticleSystem(PEMITTER *_particleSystem, // PREVIOUSLY CREATED PARTICLE SYS
 
 // destroys the particle system and nulls it out
 void
-TerminateParticleSystem(PEMITTER *_particleSystem // PREVIOUSLY CREATED PARTICLE SYSTEM
+TerminateParticleSystem(EMITTER** _particleSystem // PREVIOUSLY CREATED PARTICLE SYSTEM
                        )
 {
   if( ! ( _particleSystem && *_particleSystem && (*_particleSystem)->particles ) )
@@ -1175,7 +1177,7 @@ TerminateParticleSystem(PEMITTER *_particleSystem // PREVIOUSLY CREATED PARTICLE
 
   free( (*_particleSystem)->particles );
 
-  memset( (*_particleSystem), 0, sizeof(EMITTER) );
+  memset( *_particleSystem, 0, sizeof(EMITTER) );
 
   free( (*_particleSystem) );
 

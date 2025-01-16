@@ -8,7 +8,7 @@
 
 #pragma warning(disable : 4200)
 
-typedef struct __LIST_HEAD
+struct LIST_HEAD
 {
   int         CurrentIndex;
 
@@ -37,9 +37,9 @@ typedef struct __LIST_HEAD
     CLIENT_COMPARE    ClientCompare;
 
   // NEEDS TO BE A SEPERATE ALLOCATION FOR DYNAMIC GROWTH
-    CLIENT_PPOTYPE      ObjectArray;
+    CLIENT_POTYPE*      ObjectArray;
 
-}LIST_HEAD,*PLIST_HEAD;
+};
 
 #endif // __LSTPRIV_H__
 

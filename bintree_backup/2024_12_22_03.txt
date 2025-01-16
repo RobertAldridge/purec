@@ -559,23 +559,107 @@ label_traverse_parent: // todo
 // node->parent == null
 }
 
+LR_DEFAULTSIZE and
 
+LoadImageA(0, "hell.ico", IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_SHARED);
 
+// deBoor.cpp
+static const double E;
+static dequeB* deBoorList = 0;
+static iteratorDB deBoorIter;
 
+// font.cpp
+static uint32_t GetIdealFontWidth() { return 10; }
+static uint32_t GetIdealFontHeight() { return 14; }
 
+// part.cpp
+static int32_t id;
+static uint8_t __LinearFrameBufferGetBitDepth();
+static uint8_t** __LinearFrameBufferGetBackBufferArray();
+static uint8_t  LFbitDepth = 32;
+static uint8_t** LFbackBufferArray = 0;
+static uint16_t LFwidth = 0;
+static uint16_t LFheight = 0;
+static uint8_t** (*_backBufferFunction) ();
+static uint8_t    __LinearFrameBufferGetBitDepth()        { return LFbitDepth;        }
+static uint8_t ** __LinearFrameBufferGetBackBufferArray() { return LFbackBufferArray; }
 
+// part_int.cpp
+static float currentTime;
+static float *matrix;
 
+// sample.cpp
+static const uint32_t myFatalError = 0xFFFFFFFFUL;
+static uint32_t g1000fullCount = 0;
+static uint32_t g1000modCount = 0;
+static uint32_t g1000sizeOf = 0;
 
+// winmain.cpp
+static struct FontBlah* _font = 0;
+static FILE* file = 0;
+static int numErrors = 0;
+static int numWarnings = 0;
+static enum GRAPHICS_IMPLEMENTATION Implementation;
+static IDirectDraw* ddraw_obj;
+static IDirectDrawClipper* ddraw_screenclipper;
+static IDirectDrawSurface* ddraw_screen;
+static IDirectDrawSurface* ddraw_backbuffer;
+static bool beNice;
+static bool forceFullScreen;
+static bool isModeChangeActive;
+static int width, height, bitDepth;
+static int oldWidth, oldHeight, oldBitDepth;
+static uint8_t** backbufferArray;
+static HDC backbufferDC;
+static HBITMAP backbufferBitmapHB;
+static HGDIOBJ backbufferCleanUp;
+static HWND _hWindow;
+static const char appClassName[] = "de Casteljau Algorithm -- Hit F10 for the Extra Box! --";
+static const char appName[] = "de Casteljau Algorithm -- Hit F10 for the Extra Box! --";
+static bool IsApplicationTopMost = true;
+static bool IsApplicationMinimized = false;
+static bool IsLeftMouseButtonDown = false;
+static bool IsRightMouseButtonDown = false;
+static bool IsWindowStyleChanging = false;
+static bool isMenuActive = false;
+static point mousePointCurrent = {-1, -1};
+static point mousePointPrevious = {-1, -1};
+static double angleTheta = 0;
+static double angleFee = 0;
+static double velocity = 0;
+static queueI* input = 0;
+static int orInput = 0;
+static double menuArray[13] = {0};
+static point origin;
+static point size;
+static rect menu;
+static int style;
+static const int WM_SETWIDTHHEIGHT = 0xff000000;
+static const int WM_CHANGEWINDOWSTYLE = 0xff000001;
+static HWND hWindow = 0;
+static bool IsApplicationEntry = false;
+static point prevPt = {0, 0};
+static HINSTANCE hInstance = 0;
+static double scaleTime = 0;
+static HANDLE mutexHandle = 0;
+static HINSTANCE _hInstance = 0;
+static WNDCLASSA windowClass = {0};
+static LIST_HEAD* listOfHandles = 0;
+static LIST_HEAD* listOfHeapAllocations = 0;
+static double _timeTicksPerSecond = 0;
+static double _timeInSeconds = 0;
+static double _timeDelta = 0;
+static double _timeStart = 0;
 
+// blahPlatformAlloc.cpp
+static bool gBlahLargePageSupportEnabled = false;
+static bool gBlahLargePageSupportFailed = false;
+static uint32_t gLargePageMinimum = 0;
 
-
-
-
-
-
-
-
-
+// ssSet.cpp
+const uint32_t SsSetRed = 1;
+const uint32_t SsSetBlack = 2;
+uint64_t gSsSetDebug[88] = {0};
 
 
 

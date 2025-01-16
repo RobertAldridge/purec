@@ -8,7 +8,7 @@
 // cannot handle multiple simultaneous
 // calls to particle functions
 // ...
-// because of a local static global variable used in the engine
+// because of globals
 //
 // Many thanks to the Jeff Lander article:
 // The Ocean Spray in Your Face (July 1998 Game Developer)
@@ -26,16 +26,14 @@ void
                  int    backBufferPitch
                  );
 
-typedef struct __PARTICLE_SYSTEMS_HEAD * PPARTICLE_SYSTEMS_HEAD;
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // loads the particle systems specified in the file
 // destroys existing particle system if not NULL
 // return new particle system
 // does nothing else if filename is NULL
-PPARTICLE_SYSTEMS_HEAD
-  ParticleSystemsLoadFileAndActivate( PPARTICLE_SYSTEMS_HEAD *particleSystems,
+PARTICLE_SYSTEMS_HEAD*
+  ParticleSystemsLoadFileAndActivate( PARTICLE_SYSTEMS_HEAD** particleSystems,
                       char                   *filename,
                       float                  currentTime
                                       );
@@ -45,7 +43,7 @@ PPARTICLE_SYSTEMS_HEAD
 // adds a particle system specified in the
 // file, does nothing if filename is NULL
 void
-  ParticleSystemsAddFileAndActivate( PPARTICLE_SYSTEMS_HEAD *particleSystems,
+  ParticleSystemsAddFileAndActivate( PARTICLE_SYSTEMS_HEAD** particleSystems,
                      char                   *filename,
                        float                  currentTime
                                      );
@@ -71,7 +69,7 @@ void
 extern void
   ParticleSystemsAddAndActivate
   (
-    PPARTICLE_SYSTEMS_HEAD *particleSystems,
+    PARTICLE_SYSTEMS_HEAD** particleSystems,
 
     char          *name,                            // EMITTER NAME
     float         currentTime,                          // CURRENT TIME IN SECONDS
@@ -117,7 +115,7 @@ extern void
 // if particleSystemName is NULL, all particle
 // systems are reactivated
 void
-  ParticleSystemsReActivate( PPARTICLE_SYSTEMS_HEAD *particleSystems,
+  ParticleSystemsReActivate( PARTICLE_SYSTEMS_HEAD** particleSystems,
                    char                   *particleSystemName,
                  float                  currentTime
                );
@@ -130,7 +128,7 @@ void
 // if particleSystemName is NULL, all particle
 // systems are updated
 void
-  ParticleSystemsUpdate( PPARTICLE_SYSTEMS_HEAD *particleSystems,
+  ParticleSystemsUpdate( PARTICLE_SYSTEMS_HEAD** particleSystems,
                char                   *particleSystemName,
                float                  currentTime
              );
@@ -143,8 +141,9 @@ void
 // if particleSystemName is NULL, all particle
 // systems are drawn
 void
-  ParticleSystemsDraw( PPARTICLE_SYSTEMS_HEAD *particleSystems,
-             char                   *particleSystemName
+  ParticleSystemsDraw(PARTICLE_SYSTEMS_HEAD** particleSystems,
+             char                   *particleSystemName,
+             float                  *matrix // 4x4 world to camera transformation matrix
              );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -155,9 +154,10 @@ void
 // if particleSystemName is NULL, all particle
 // systems are updated and drawn
 void
-  ParticleSystemsUpdateAndDraw( PPARTICLE_SYSTEMS_HEAD *particleSystems,
-                      char                   *particleSystemName,
-                      float                  currentTime
+  ParticleSystemsUpdateAndDraw(PARTICLE_SYSTEMS_HEAD** particleSystems,
+                    char                   *particleSystemName,
+                    float                  *matrix, // 4x4 world to camera transformation matrix
+                    float                  currentTime
                     );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -168,6 +168,6 @@ void
 // if particleSystemName is NULL, all particle
 // systems are terminated
 void
-  ParticleSystemsTerminate( PPARTICLE_SYSTEMS_HEAD *particleSystems,
+  ParticleSystemsTerminate( PARTICLE_SYSTEMS_HEAD** particleSystems,
                   char                   *particleSystemName
               );

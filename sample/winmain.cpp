@@ -122,7 +122,9 @@ using std::queue;
 
 #include "BlahLog.h"
 
-static int Error(const char* const errorString);
+int Error(const char* const errorString);
+int Warning(const char* const warningString);
+int Verbose(const char* const verboseString);
 
 static int mainTerm(HWND hwnd);
 
@@ -211,7 +213,7 @@ label_return:
   return result;
 }
 
-static int Error(const char* const errorString)
+int Error(const char* const errorString)
 {
   int result = -1;
 
@@ -314,6 +316,24 @@ label_return:
   return result;
 }
 
+int Verbose(const char* const verboseString)
+{
+  int result = -1;
+
+  if(file && file != (FILE*)0xff)
+  {
+    if( !verboseString || !verboseString[0] )
+      goto label_return;
+
+    fprintf(file, "%s\n\n", verboseString);
+  }
+
+  result = 0;
+
+label_return:
+  return result;
+}
+
 enum class GRAPHICS_IMPLEMENTATION
 {
   GDI = 0,
@@ -321,6 +341,12 @@ enum class GRAPHICS_IMPLEMENTATION
 
 }GRAPHICS_IMPLEMENTATION;
 
+//struct graphicsComInternal
+//{
+//  void* _this;
+//};
+
+//class GraphicsApi
 class Graphics
 {
 
@@ -677,12 +703,12 @@ static int graphicsDrawBackBufferToScreen(HWND hWindow)
   case GRAPHICS_IMPLEMENTATION::DIRECTDRAW: // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::DIRECTDRAW
   {
 #if ENABLE_DIRECTDRAW
-    RECT rectBackBuffer = {0};
-    RECT rectScreen = {0};
+    rect rectBackBuffer = {0};
+    rect rectScreen = {0};
 
     HRESULT hResult = 0;
 
-    if( !ClientToScreen(hWindow, (POINT*)&rectScreen) )
+    if( !ClientToScreen(hWindow, (POINT*) &rectScreen) )
     {
       Error("The function ClientToScreen(...) has failed");
 
@@ -797,7 +823,7 @@ static int graphicsRestoreOldMode()
     DEVMODEA blahDisplaySettings;
     memset( &blahDisplaySettings, 0, sizeof(DEVMODEA) );
 
-    sdfgdfg = EnumDisplaySettingsA(0, *(unsigned long*)&index/*ENUM_CURRENT_SETTINGS*/, &blahDisplaySettings);
+    sdfgdfg = EnumDisplaySettingsA(0, *(unsigned long*) &index/*ENUM_CURRENT_SETTINGS*/, &blahDisplaySettings);
 
     // DM_BITSPERPEL Use the dmBitsPerPel value.
     // DM_PELSWIDTH Use the dmPelsWidth value.
@@ -831,15 +857,15 @@ static int graphicsRestoreOldMode()
 
   switch(changeDisplaySettingsResult)
   {
-  case DISP_CHANGE_SUCCESSFUL: /*Warning("DISP_CHANGE_SUCCESSFUL");*/ break;
-  case DISP_CHANGE_BADDUALVIEW: Warning("DISP_CHANGE_BADDUALVIEW"); break;
-  case DISP_CHANGE_BADFLAGS: Warning("DISP_CHANGE_BADFLAGS"); break;
-  case DISP_CHANGE_BADMODE: Warning("DISP_CHANGE_BADMODE"); break;
-  case DISP_CHANGE_BADPARAM: Warning("DISP_CHANGE_BADPARAM"); break;
-  case DISP_CHANGE_FAILED: Warning("DISP_CHANGE_FAILED"); break;
-  case DISP_CHANGE_NOTUPDATED: Warning("DISP_CHANGE_NOTUPDATED"); break;
-  case DISP_CHANGE_RESTART: Warning("DISP_CHANGE_RESTART"); break;
-  default: Warning("DISP_CHANGE_BLAH"); break;
+  case DISP_CHANGE_SUCCESSFUL: /*Verbose("DISP_CHANGE_SUCCESSFUL");*/ break;
+  case DISP_CHANGE_BADDUALVIEW: Verbose("DISP_CHANGE_BADDUALVIEW"); break;
+  case DISP_CHANGE_BADFLAGS: Verbose("DISP_CHANGE_BADFLAGS"); break;
+  case DISP_CHANGE_BADMODE: Verbose("DISP_CHANGE_BADMODE"); break;
+  case DISP_CHANGE_BADPARAM: Verbose("DISP_CHANGE_BADPARAM"); break;
+  case DISP_CHANGE_FAILED: Verbose("DISP_CHANGE_FAILED"); break;
+  case DISP_CHANGE_NOTUPDATED: Verbose("DISP_CHANGE_NOTUPDATED"); break;
+  case DISP_CHANGE_RESTART: Verbose("DISP_CHANGE_RESTART"); break;
+  default: Verbose("DISP_CHANGE_BLAH"); break;
   }
 
   if(changeDisplaySettingsResult != DISP_CHANGE_SUCCESSFUL)
@@ -913,7 +939,7 @@ static int graphicsSetBitDepthTo32()
     DEVMODEA blahDisplaySettings;
     memset( &blahDisplaySettings, 0, sizeof(DEVMODEA) );
 
-    sdfgdfg = EnumDisplaySettingsA(0, *(unsigned long*)&index/*ENUM_CURRENT_SETTINGS*/, &blahDisplaySettings);
+    sdfgdfg = EnumDisplaySettingsA(0, *(unsigned long*) &index/*ENUM_CURRENT_SETTINGS*/, &blahDisplaySettings);
 
     // DM_BITSPERPEL Use the dmBitsPerPel value.
     // DM_PELSWIDTH Use the dmPelsWidth value.
@@ -947,20 +973,20 @@ static int graphicsSetBitDepthTo32()
 
   switch(changeDisplaySettingsResult)
   {
-  case DISP_CHANGE_SUCCESSFUL: /*Warning("DISP_CHANGE_SUCCESSFUL");*/ break;
-  case DISP_CHANGE_BADDUALVIEW: Warning("DISP_CHANGE_BADDUALVIEW"); break;
-  case DISP_CHANGE_BADFLAGS: Warning("DISP_CHANGE_BADFLAGS"); break;
-  case DISP_CHANGE_BADMODE: Warning("DISP_CHANGE_BADMODE"); break;
-  case DISP_CHANGE_BADPARAM: Warning("DISP_CHANGE_BADPARAM"); break;
-  case DISP_CHANGE_FAILED: Warning("DISP_CHANGE_FAILED"); break;
-  case DISP_CHANGE_NOTUPDATED: Warning("DISP_CHANGE_NOTUPDATED"); break;
-  case DISP_CHANGE_RESTART: Warning("DISP_CHANGE_RESTART"); break;
-  default: Warning("DISP_CHANGE_BLAH"); break;
+  case DISP_CHANGE_SUCCESSFUL: /*Verbose("DISP_CHANGE_SUCCESSFUL");*/ break;
+  case DISP_CHANGE_BADDUALVIEW: Verbose("DISP_CHANGE_BADDUALVIEW"); break;
+  case DISP_CHANGE_BADFLAGS: Verbose("DISP_CHANGE_BADFLAGS"); break;
+  case DISP_CHANGE_BADMODE: Verbose("DISP_CHANGE_BADMODE"); break;
+  case DISP_CHANGE_BADPARAM: Verbose("DISP_CHANGE_BADPARAM"); break;
+  case DISP_CHANGE_FAILED: Verbose("DISP_CHANGE_FAILED"); break;
+  case DISP_CHANGE_NOTUPDATED: Verbose("DISP_CHANGE_NOTUPDATED"); break;
+  case DISP_CHANGE_RESTART: Verbose("DISP_CHANGE_RESTART"); break;
+  default: Verbose("DISP_CHANGE_BLAH"); break;
   }
 
   if(changeDisplaySettingsResult != DISP_CHANGE_SUCCESSFUL)
   {
-    Warning("The function ChangeDisplaySettings(...) has failed for 32 bit pixel depth");
+    Error("The function ChangeDisplaySettings(...) has failed for 32 bit pixel depth");
 
     isModeChangeActive = false;
 
@@ -2638,9 +2664,9 @@ void Graphics::RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
 #undef b0
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-static const char appClassName[] = "de Casteljau Algorithm -- Hit F10 for the Extra Box! --";
+static const char appClassName[] = {'H', 0, 'e', 0, 'l', 0, 'l', 0, ' ', 0, 'o', 0, 'n', 0, ' ', 0, 'E', 0, 'a', 0, 'r', 0, 't', 0, 'h', 0, 0, 0}/*"Hell on Earth"*/;
 
-static const char appName[] = "de Casteljau Algorithm -- Hit F10 for the Extra Box! --";
+static const char appName[] = {'H', 0, 'e', 0, 'l', 0, 'l', 0, ' ', 0, 'o', 0, 'n', 0, ' ', 0, 'E', 0, 'a', 0, 'r', 0, 't', 0, 'h', 0, 0, 0}/*"Hell on Earth"*/;
 
 // used to disable the warning when exit(0) is called
 
@@ -2668,14 +2694,14 @@ static bool IsWindowStyleChanging = false;
 
 static bool isMenuActive = false;
 
-static POINT mousePointCurrent = {-1, -1};
-static POINT mousePointPrevious = {-1, -1};
+static point mousePointCurrent = {-1, -1};
+static point mousePointPrevious = {-1, -1};
 
 static double angleTheta = 0;
 static double angleFee = 0;
 static double velocity = 0;
 
-using pairQI = pair<POINT, int>;
+using pairQI = pair<point, int>;
 using queueI = queue<pairQI>;
 
 static queueI* input = 0;
@@ -2755,10 +2781,10 @@ INT_PTR CALLBACK Graphics::AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPAR
 
   if(Graphics::_hWindow && Graphics::graphicsIsModeChangeActive() == false && IsApplicationMinimized == false)
   {
-    POINT mousePt = {0};
+    point mousePt = {0};
 
-    GetCursorPos( &mousePt);
-    ScreenToClient(Graphics::_hWindow, &mousePt);
+    GetCursorPos( (POINT*) &mousePt);
+    ScreenToClient(Graphics::_hWindow, (POINT*) &mousePt);
 
     main(UPDATE_INPUT, mousePt.x, mousePt.y, 1, (double)Graphics::graphicsClientWidth() * 0.5, (double)Graphics::graphicsClientHeight() * 0.5, _font);
 
@@ -3262,10 +3288,10 @@ INT_PTR CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPAR
 
   if(Graphics::_hWindow && Graphics::graphicsIsModeChangeActive() == false && IsApplicationMinimized == false)
   {
-    POINT mousePt = {0};
+    point mousePt = {0};
 
-    GetCursorPos( &mousePt);
-    ScreenToClient(Graphics::_hWindow, &mousePt);
+    GetCursorPos( (POINT*) &mousePt);
+    ScreenToClient(Graphics::_hWindow, (POINT*) &mousePt);
 
     main(UPDATE_INPUT, mousePt.x, mousePt.y, 1, (double)Graphics::graphicsClientWidth() * 0.5, (double)Graphics::graphicsClientHeight() * 0.5, _font);
 
@@ -3288,11 +3314,11 @@ enum
   WINDOWSTYLE_FULLSCREEN = Graphics::GRAPHICS_FULLSCREEN
 };
 
-static POINT origin;
+static point origin;
 
-static POINT size;
+static point size;
 
-static RECT menu;
+static rect menu;
 
 static int style;
 
@@ -3315,19 +3341,19 @@ virtual WindowStyle& operator=(WindowStyle& ) = 0;
 
 public:
 
-static POINT getOrigin()
+static point getOrigin()
 {
   return origin;
 }
 
-static POINT getSize(bool clamp)
+static point getSize(bool clamp)
 {
   if(clamp == false || style == WINDOWSTYLE_FULLSCREEN)
   {
     return size;
   }
 
-  POINT temp = { size.x + menu.left + menu.right, size.y + menu.top + menu.bottom
+  point temp = { size.x + menu.left + menu.right, size.y + menu.top + menu.bottom
   };
 
   if(temp.x >= Graphics::oldWidth)
@@ -3346,7 +3372,7 @@ static POINT getSize(bool clamp)
   return temp;
 }
 
-static RECT getMenuRect()
+static rect getMenuRect()
 {
   return menu;
 }
@@ -3356,7 +3382,7 @@ static int getStyle()
   return style;
 }
 
-static POINT setOrigin(int x, int y)
+static point setOrigin(int x, int y)
 {
   origin.x = x;
   origin.y = y;
@@ -3387,7 +3413,7 @@ static int setSize(int width, int height)
   return style;
 }
 
-static RECT setMenuRect(int leftEdgeMenuThickness, int topEdgeMenuThickness, int rightEdgeMenuThickness, int bottomEdgeMenuThickness)
+static rect setMenuRect(int leftEdgeMenuThickness, int topEdgeMenuThickness, int rightEdgeMenuThickness, int bottomEdgeMenuThickness)
 {
   menu.left = leftEdgeMenuThickness;
   menu.top = topEdgeMenuThickness;
@@ -3414,10 +3440,10 @@ static int setStyle()
 };
 
 // Give the WindowStyle class static variables default values.
-POINT WindowStyle::origin = {-1, -1};
-POINT WindowStyle::size = {-1, -1};
+point WindowStyle::origin = {-1, -1};
+point WindowStyle::size = {-1, -1};
 
-RECT WindowStyle::menu = {-1, -1, -1, -1};
+rect WindowStyle::menu = {-1, -1, -1, -1};
 
 int WindowStyle::style = WINDOWSTYLE_WINDOW;
 // End initialization of WindowStyle class static variables.
@@ -3493,21 +3519,24 @@ extern void operator delete[](void* ptr)
 
 LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-  POINT mousePt = {0, 0};
+  point mousePt = {0, 0};
 
-  static POINT prevPt = {0, 0};
+  static point prevPt = {0, 0};
 
   static HINSTANCE hInstance = 0;
 
-  GetCursorPos( &mousePt);
-
-  ScreenToClient(hwnd, &mousePt);
+  GetCursorPos( (POINT*) &mousePt);
+  ScreenToClient(hwnd, (POINT*) &mousePt);
 
   switch(msg) // switch(msg)
   {
 
   case WM_CREATE: // switch(msg) - WM_CREATE
   {
+    long long slkdjgasdlkjfg = GetWindowLongPtrA(hwnd, 0);
+
+    BlahLog2("abc %lli\n", slkdjgasdlkjfg);
+
     hInstance = ( (LPCREATESTRUCT) lParam)->hInstance;
   }
   return 0; // switch(msg) - WM_CREATE
@@ -3548,22 +3577,22 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
       if(WindowStyle::getStyle() == Graphics::GRAPHICS_WINDOW)
       {
-        POINT origin = WindowStyle::getOrigin();
+        point origin = WindowStyle::getOrigin();
 
-        POINT size = WindowStyle::getSize(true);
+        point size = WindowStyle::getSize(true);
 
-        RECT menu = WindowStyle::getMenuRect();
+        rect menu = WindowStyle::getMenuRect();
 
         assert(size.x > 0 && size.y > 0 && "size.x > 0 && size.y > 0");
 
-        hWindow = CreateWindowA(appClassName, appName, WS_OVERLAPPEDWINDOW, origin.x - menu.left, origin.y - menu.top, size.x + menu.left + menu.right, size.y + menu.top + menu.bottom, 0, 0, hInstance, 0);
+        hWindow = CreateWindowExA(0, appClassName, appName, WS_OVERLAPPEDWINDOW, origin.x - menu.left, origin.y - menu.top, size.x + menu.left + menu.right, size.y + menu.top + menu.bottom, 0, 0, hInstance, 0);
 
         Graphics::width = size.x;
         Graphics::height = size.y;
       }
       else
       {
-        hWindow = CreateWindowA(appClassName, appName, WS_POPUP, 0, 0, Graphics::oldWidth, Graphics::oldHeight, 0, 0, hInstance, 0);
+        hWindow = CreateWindowExA(0, appClassName, appName, WS_POPUP, 0, 0, Graphics::oldWidth, Graphics::oldHeight, 0, 0, hInstance, 0);
 
         Graphics::width = Graphics::oldWidth;
         Graphics::height = Graphics::oldHeight;
@@ -3785,7 +3814,7 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
         {
           double* p;
           double f;
-          POINT pt;
+          point pt;
 
         }menu;
 
@@ -3813,7 +3842,7 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
         input->push(pairQI(mousePt, CAPTURE_TRANSLATE) );
 
-        POINT transPt = {mousePt.x + Graphics::graphicsClientWidth() / 2, mousePt.y + Graphics::graphicsClientHeight() / 2};
+        point transPt = {mousePt.x + Graphics::graphicsClientWidth() / 2, mousePt.y + Graphics::graphicsClientHeight() / 2};
 
         input->push(pairQI(transPt, UPDATE_INPUT) );
 
@@ -3824,7 +3853,7 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
         input->push(pairQI(mousePt, CAPTURE_SCALE) );
 
-        POINT scalePt = {mousePt.x + Graphics::graphicsClientWidth() / 2, mousePt.y + Graphics::graphicsClientWidth() / 2};
+        point scalePt = {mousePt.x + Graphics::graphicsClientWidth() / 2, mousePt.y + Graphics::graphicsClientWidth() / 2};
 
         input->push(pairQI(scalePt, UPDATE_INPUT) );
 
@@ -3990,9 +4019,9 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
   {
     if(Graphics::graphicsBackBufferFunction() && Graphics::graphicsIsModeChangeActive() == false && WindowStyle::getStyle() != Graphics::GRAPHICS_FULLSCREEN && IsWindowStyleChanging == false)
     {
-      POINT trans = {0, 0};
+      point trans = {0, 0};
 
-      /*BOOL returnVal = */ClientToScreen(hwnd, &trans);
+      /*BOOL returnVal = */ClientToScreen(hwnd, (POINT*) &trans);
 
       WindowStyle::setOrigin(trans.x, trans.y);
 
@@ -4107,7 +4136,7 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 // WMSZ_TOPRIGHT Top-right corner
 //
 // lParam
-// A pointer to a RECT structure with the screen coordinates of the drag rectangle. To change the size or position of the drag rectangle, an application must change the members of this structure.
+// A pointer to a rect structure with the screen coordinates of the drag rectangle. To change the size or position of the drag rectangle, an application must change the members of this structure.
 //
 // Return value
 // Type LRESULT
@@ -4120,25 +4149,25 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
     {
       static double scaleTime = 0;
 
-      RECT* rect = (LPRECT)lParam;
+      rect* _rect = (rect*)lParam;
 
       if(msg == WM_SIZE)
       {
-        rect = (RECT*)InsertHeapAllocation(sizeof(RECT) );
+        _rect = (rect*)InsertHeapAllocation(sizeof(rect) );
 
-        if(rect == 0)
+        if(_rect == 0)
         {
-          Error("WM_SIZE new RECT allocation failure");
+          Error("WM_SIZE new rect allocation failure");
 
           // We need help from DefWindowProc(...).
           break;
         }
 
-        rect->left = 0;
-        rect->top  = 0;
+        _rect->left = 0;
+        _rect->top  = 0;
 
-        rect->right = LOWORD(lParam);
-        rect->bottom = HIWORD(lParam);
+        _rect->right = LOWORD(lParam);
+        _rect->bottom = HIWORD(lParam);
       }
       else
       {
@@ -4153,15 +4182,15 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
         scaleTime = timeInSeconds() + 0.5;
       }
 
-      WindowStyle::setSize(rect->right - rect->left, rect->bottom - rect->top);
+      WindowStyle::setSize(_rect->right - _rect->left, _rect->bottom - _rect->top);
 
-      if(rect->right - rect->left <= 0 || rect->bottom - rect->top <= 0)
+      if(_rect->right - _rect->left <= 0 || _rect->bottom - _rect->top <= 0)
       {
         IsApplicationMinimized = true;
 
         if(msg == WM_SIZE)
         {
-          RemoveHeapAllocation(rect);
+          RemoveHeapAllocation(_rect);
         }
 
         PostMessage(hwnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);
@@ -4173,7 +4202,7 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
       {
         if(msg == WM_SIZE)
         {
-          RemoveHeapAllocation(rect);
+          RemoveHeapAllocation(_rect);
         }
 
         WindowProc(hwnd, (unsigned int)WM_CHANGEWINDOWSTYLE, 0, 0);
@@ -4190,8 +4219,8 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
       Graphics::graphicsTermScreenAndBackBuffer();
 
-      Graphics::width = rect->right - rect->left;
-      Graphics::height = rect->bottom - rect->top;
+      Graphics::width = _rect->right - _rect->left;
+      Graphics::height = _rect->bottom - _rect->top;
 
       if(Graphics::graphicsInitScreenAndBackBuffer(hwnd) != Graphics::GRAPHICS_OK)
       {
@@ -4204,7 +4233,7 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
         if(msg == WM_SIZE)
         {
-          RemoveHeapAllocation(rect);
+          RemoveHeapAllocation(_rect);
         }
 
         // There is an error, so we do not need held from DefWindowProc(...).
@@ -4217,7 +4246,7 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
       if(msg == WM_SIZE)
       {
-        RemoveHeapAllocation(rect);
+        RemoveHeapAllocation(_rect);
       }
     }
   }
@@ -4412,10 +4441,10 @@ static HINSTANCE _hInstance = 0;
 static WNDCLASSA windowClass = {0};
 
 // Keep track of how many handles have been opened
-static PLIST_HEAD listOfHandles = 0;
+static LIST_HEAD* listOfHandles = 0;
 
 // Keep track of how many allocations there are on the heap
-static PLIST_HEAD listOfHeapAllocations = 0;
+static LIST_HEAD* listOfHeapAllocations = 0;
 
 static int RemoveHeapAllocation(void* heapAllocation)
 {
@@ -4824,7 +4853,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, char* /*lpC
 
   int windowType = 0;
 
-  RECT windowRect = {0};
+  rect windowRect = {0};
 
   MSG Message = {0};
 
@@ -4958,14 +4987,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, char* /*lpC
   //    using RegisterClassA and CreateWindowA
   windowClass.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
   windowClass.lpfnWndProc = Graphics::WindowProc;
-  windowClass.cbClsExtra = 0;
-  windowClass.cbWndExtra = 0;
+  windowClass.cbClsExtra = 8;
+  windowClass.cbWndExtra = 8;
   windowClass.hInstance = hInstance;
-  windowClass.hIcon = LoadIconA(hInstance, "HELL_ON_EARTH_ICON");
-  windowClass.hCursor = LoadCursor(0, IDC_ARROW);
-  windowClass.hbrBackground = (HBRUSH) COLOR_WINDOW;
-  windowClass.lpszMenuName = 0;
+  windowClass.hIcon = (HICON)LoadImageA(0, "hell.ico", IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_SHARED);
+  windowClass.hCursor = LoadCursorA(0, MAKEINTRESOURCEA(32512)/*IDC_ARROW*/);
+  windowClass.hbrBackground = (HBRUSH)COLOR_WINDOW;
+  windowClass.lpszMenuName = appClassName;
   windowClass.lpszClassName = appClassName;
+
+  // windowClass.cbClsExtra = 8 GetClassLongPtrA SetClassLongPtrA
+  // windowClass.cbWndExtra = 8 GetWindowLongPtrA SetWindowLongPtrA
 
   if( !RegisterClassA( &windowClass) )
   {
@@ -5107,7 +5139,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, char* /*lpC
     windowType = WS_POPUP;
   }
 
-  if( !AdjustWindowRect( &windowRect, (unsigned long)windowType, FALSE) )
+  if( !AdjustWindowRect( (RECT*) &windowRect, (unsigned long)windowType, FALSE) )
   {
     int numberOfObjects = 0;
 
@@ -5255,7 +5287,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, char* /*lpC
   windowRect.left = 0;
   windowRect.top = 0;
 
-  POINT origin = { (Graphics::graphicsClientWidth() * 2 - windowRect.right) / 2, (Graphics::graphicsClientHeight() * 2 - windowRect.bottom) / 2};
+  point origin = { (Graphics::graphicsClientWidth() * 2 - windowRect.right) / 2, (Graphics::graphicsClientHeight() * 2 - windowRect.bottom) / 2};
 
   WindowStyle::setOrigin(origin.x + WindowStyle::getMenuRect().left, origin.y + WindowStyle::getMenuRect().top);
 
@@ -5267,7 +5299,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, char* /*lpC
 
 // HWND CreateWindowA(const char* windowClassName, const char* windowsTitleText, unsigned long windowStyle, int windowTopLeftXpos, int windowTopLeftYpos, int windowXwidth, int windowYheight, HWND parentWindow, HMENU childMenu, HINSTANCE currentInstance, void* parameterToWmCreate)
 
-  hWindow = CreateWindowA(appClassName, appName, (unsigned long)windowType, origin.x, origin.y, windowRect.right, windowRect.bottom, 0, 0, hInstance, 0);
+  hWindow = CreateWindowExA(0, appClassName, appName, (unsigned long)windowType, origin.x, origin.y, windowRect.right, windowRect.bottom, 0, 0, hInstance, 0);
 
   if( !hWindow || !input)
   {
@@ -5335,6 +5367,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, char* /*lpC
   // -6-
   InsertHandle(hWindow);
 
+  SetLastError(0);
+  long long wsejfediorhjgfodjht = SetWindowLongPtrA(hWindow, 0, 0x1000000010000000LL);
+  wsejfediorhjgfodjht = GetLastError();
+
   initTime();
 
   updateTime();
@@ -5375,7 +5411,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, char* /*lpC
 
   Graphics::graphicsUnlockBackBuffer();
 
-  PeekMessage( &Message, hWindow, 0, 0, PM_REMOVE);
+  PeekMessageA( &Message, hWindow, 0, 0, PM_REMOVE);
 
   // MSDN:
   // The GetMessage function retrieves a message from the calling thread's
@@ -5400,7 +5436,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, char* /*lpC
   // The possibility of a -1 return value means that such code can lead to fatal application errors.
   while(Message.message != WM_QUIT)
   {
-    PeekMessage( &Message, hWindow, 0, 0, PM_REMOVE);
+    PeekMessageA( &Message, hWindow, 0, 0, PM_REMOVE);
 
     updateTime();
 
@@ -5424,7 +5460,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, char* /*lpC
     // The MSG structure must contain valid message values.
     // If the lpmsg parameter points to a WM_TIMER message and the lParam parameter of the WM_TIMER
     // message is not NULL, lParam points to a function that is called instead of the window procedure.
-    DispatchMessage( &Message);
+    DispatchMessageA( &Message);
 
     if(IsApplicationMinimized == true)
     {
@@ -5439,10 +5475,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, char* /*lpC
 
     if(input->size() <= 0)
     {
-      POINT mousePt = {0};
+      point mousePt = {0};
 
-      GetCursorPos( &mousePt);
-      ScreenToClient(hWindow, &mousePt);
+      GetCursorPos( (POINT*) &mousePt);
+      ScreenToClient(hWindow, (POINT*) &mousePt);
 
       retVal = main(UPDATE_INPUT, mousePt.x, mousePt.y, 1, (double)Graphics::graphicsClientWidth() * 0.5, (double)Graphics::graphicsClientHeight() * 0.5, _font);
 
@@ -5476,7 +5512,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, char* /*lpC
         {
           double* p;
           double f;
-          POINT pt;
+          point pt;
 
         }menu;
 
@@ -5531,14 +5567,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, char* /*lpC
 
   main_term:
 
-  PostMessage(hWindow, WM_DESTROY, 0, 0);
+  PostMessageA(hWindow, WM_DESTROY, 0, 0);
 
   IsApplicationEntry = false;
 
   return (int)Message.wParam;
 }
 
-extern int GetFilesNamed(char* folderPath, int* howManyOutput, PLIST_HEAD fileList)
+extern int GetFilesNamed(char* folderPath, int* howManyOutput, LIST_HEAD* fileList)
 {
   CLIENT_POTYPE object = {0};
 

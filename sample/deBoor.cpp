@@ -1852,7 +1852,7 @@ void removeControlPoint() // deBoor::removeControlPoint
 
 const double deBoor::E = 0.000001;
 
-typedef deque< deBoor* > dequeB;
+typedef deque<deBoor*> dequeB;
 typedef dequeB::iterator iteratorDB;
 
 static dequeB* deBoorList = 0;

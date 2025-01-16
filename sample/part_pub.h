@@ -5,15 +5,13 @@
 //
 // editor Robert Aldridge
 
-typedef struct __EMITTER *PEMITTER;
-
 // creates dynamic memory for a particle system structure
 // creates dynamic memory for the particles of that system
 //
 // if emitterLife <= 0 then the lifetime of the particle system is infinite
 //
 // initializes and returns the dynamically allocated particle system
-extern PEMITTER
+extern EMITTER*
 CreateParticleSystem
 (
   char        *name,                            // EMITTER NAME
@@ -45,7 +43,7 @@ CreateParticleSystem
 //
 // if the particle system has died, it will be destroyed and nulled out
 extern void
-ActivateParticleSystem(PEMITTER     *particleSystem, // PREVIOUSLY CREATED PARTICLE SYSTEM
+ActivateParticleSystem(EMITTER** particleSystem, // PREVIOUSLY CREATED PARTICLE SYSTEM
 
              float         currentTime,    // CURRENT TIME IN SECONDS
 
@@ -69,7 +67,7 @@ ActivateParticleSystem(PEMITTER     *particleSystem, // PREVIOUSLY CREATED PARTI
 extern void
 UpdateParticleSystem
 (
-  PEMITTER      *particleSystem,                 // PREVIOUSLY CREATED PARTICLE SYSTEM
+  EMITTER** particleSystem,                 // PREVIOUSLY CREATED PARTICLE SYSTEM
   float         currentTime,                   // CURRENT TIME IN SECONDS
 
   unsigned char gForce,                    // IF NOT SET TO 0, THE NEW GFORCE VECTOR WILL BE
@@ -87,11 +85,11 @@ UpdateParticleSystem
 //
 // if the particle system has died, it will be destroyed and nulled out
 void
-DrawParticleSystem(PEMITTER *particleSystem,     // PREVIOUSLY CREATED PARTICLE SYSTEM
+DrawParticleSystem(EMITTER** particleSystem,     // PREVIOUSLY CREATED PARTICLE SYSTEM
            float    *matrix              // 4x4 world to camera transformation matrix
                   );
 
 // destroys the particle system and nulls it out
 void
-TerminateParticleSystem(PEMITTER *particleSystem // PREVIOUSLY CREATED PARTICLE SYSTEM
+TerminateParticleSystem(EMITTER** particleSystem // PREVIOUSLY CREATED PARTICLE SYSTEM
                        );

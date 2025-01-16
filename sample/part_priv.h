@@ -6,7 +6,7 @@
 // editor Robert Aldridge
 
 // Vectors in homogeneous space...
-typedef struct __VECTOR
+struct VECTOR
 {
   union
   {
@@ -18,9 +18,9 @@ typedef struct __VECTOR
     float vector[4];
   };
 
-}VECTOR,*PVECTOR;
+};
 
-typedef struct __COLOR
+struct COLOR
 {
   union
   {
@@ -38,17 +38,17 @@ typedef struct __COLOR
     float color[4];
   };
 
-}COLOR,*PCOLOR;
+};
 
-typedef enum PFLAGS
+enum PFLAGS
 {
-  PARTICLE_UNBORN=0,
+  PARTICLE_UNBORN = 0,
   PARTICLE_ACTIVE,
   PARTICLE_DEAD
 
-}PFLAGS;
+};
 
-typedef struct __PARTICLE // STRUCT FOR SINGLE PARTICLE
+struct PARTICLE // STRUCT FOR SINGLE PARTICLE
 {
   VECTOR pos;        // CURRENT POSITION
   VECTOR prevPos;    // PREVIOUS POSITION
@@ -60,9 +60,9 @@ typedef struct __PARTICLE // STRUCT FOR SINGLE PARTICLE
   COLOR  prevColor;  // PREVIOUS COLOR OF PARTICLE
   COLOR  deltaColor; // CHANGE OF COLOR OVER TIME
 
-}PARTICLE,*PPARTICLE;
+};
 
-typedef struct __EMITTER // STRUCT FOR PARTICLE SYSTEM
+struct EMITTER // STRUCT FOR PARTICLE SYSTEM
 {
   int32_t       id;              // EMITTER ID
   char        name[82];            // EMITTER NAME
@@ -77,7 +77,7 @@ typedef struct __EMITTER // STRUCT FOR PARTICLE SYSTEM
   float       pitch, pitchVar;         // PITCH AND VARIATION FOR VELOCITY
   float       speed, speedVar;         // VELOCITY MAGNITUDE AND VARIATION
   // PARTICLE
-  PPARTICLE particles;           // PARTICLE POOL - ARRAY OF PARTICLES
+  PARTICLE* particles;           // PARTICLE POOL - ARRAY OF PARTICLES
   int32_t       totalParticles;                // NUMBER OF PARTICLES IN POOL
   int32_t       numParticles;                  // NUMBER OF PARTICLES CURRENTLY ACTIVE
   int32_t       emitsPerFrame,  emitVar;       // EMITS PER FRAME AND VARIATION
@@ -87,4 +87,4 @@ typedef struct __EMITTER // STRUCT FOR PARTICLE SYSTEM
   // PHYSICS
   VECTOR    gForce,gForceVar;        // GLOBAL GRAVITY, WIND, ETC. AND VARIATION
 
-}EMITTER,*PEMITTER;
+};
