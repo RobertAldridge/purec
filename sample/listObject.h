@@ -1,5 +1,5 @@
 
-// list object.h
+// listObject.h
 // POTYPE FOR LIST FUNCTIONS
 
 union CLIENT_POTYPE

@@ -206,9 +206,9 @@
     <ClCompile Include="..\ssmm\ssStack.cpp" />
     <ClCompile Include="deBoor.cpp" />
     <ClCompile Include="font.cpp" />
-    <ClCompile Include="font_util.cpp" />
+    <ClCompile Include="fontUtil.cpp" />
     <ClCompile Include="emitter.cpp" />
-    <ClCompile Include="list client.cpp" />
+    <ClCompile Include="listClient.cpp" />
     <ClCompile Include="list.cpp" />
     <ClCompile Include="particle.cpp" />
     <ClCompile Include="sample.cpp" />
@@ -225,14 +225,14 @@
     <ClInclude Include="..\ssmm\ssQueue.h" />
     <ClInclude Include="..\ssmm\ssStack.h" />
     <ClInclude Include="font.h" />
-    <ClInclude Include="font_util.h" />
+    <ClInclude Include="fontUtil.h" />
     <ClInclude Include="header.h" />
-    <ClInclude Include="list object.h" />
+    <ClInclude Include="listObject.h" />
     <ClInclude Include="list.h" />
     <ClInclude Include="memory.h" />
     <ClInclude Include="emitter.h" />
     <ClInclude Include="particle.h" />
-    <ClInclude Include="resource_headers.h" />
+    <ClInclude Include="resourceHeaders.h" />
     <ClInclude Include="video.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

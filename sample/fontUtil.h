@@ -1,5 +1,5 @@
 
-// font_util.h
+// fontUtil.h
 
 typedef struct HDC__* HDC;
 

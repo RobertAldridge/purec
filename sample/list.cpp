@@ -1,6 +1,6 @@
 
 /*
- *  File:       list.c
+ * list.cpp
  *
  *  Function:   Holds private interface definitions for a First Class
  *              ADT list package.
@@ -32,7 +32,7 @@
 
 #include "list.h"
 
-#include "list object.h"
+#include "listObject.h"
 
 struct LIST_HEAD
 {

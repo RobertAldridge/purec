@@ -1,5 +1,5 @@
 
-// resource_headers.h
+// resourceHeaders.h
 
 //{{NO_DEPENDENCIES}}
 // Microsoft Developer Studio generated include file.

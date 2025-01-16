@@ -1,5 +1,5 @@
 
-// font_util.cpp
+// fontUtil.cpp
 
 #include <windowsx.h>
 
@@ -14,7 +14,7 @@
 
 #include "font.h"
 
-#include "font_util.h"
+#include "fontUtil.h"
 
 #include "BlahAlloc.h"
 
@@ -186,7 +186,7 @@ void FontUtilCopyBitmap(FontBlah* _this, HDC Source,
   }
 
   BltHB = (HBITMAP) LoadImageA( NULL,
-                 "ascii_white.bmp",
+                 "asciiWhite.bmp",
                  IMAGE_BITMAP,
                  0,
                  0,

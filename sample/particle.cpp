@@ -1,5 +1,5 @@
 
-// particle.c
+// particle.cpp
 //
 // particle system interface
 //
@@ -18,7 +18,7 @@
 #include <cstring>
 #include <cstdint>
 
-#include "list object.h"
+#include "listObject.h"
 #include "list.h"
 
 #include "video.h"

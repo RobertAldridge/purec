@@ -17,7 +17,7 @@
 
 #include "font.h"
 
-#include "font_util.h"
+#include "fontUtil.h"
 
 #include "BlahAlloc.h"
 
@@ -71,7 +71,7 @@ extern FontBlah* RobsTextOutInitSystem( uint8_t** ( *__backBufferFunction ) ( ),
     goto label_error;
 
 #ifndef NDEBUG
-  _this->file = fopen( "TextOutDebug.txt", "wb" );
+  _this->file = fopen( "textOutDebug.txt", "wb" );
   if( !_this->file )
     goto label_error;
 #endif

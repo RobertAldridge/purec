@@ -10,25 +10,25 @@ Run archive.exe, it is a self-extracting archive, containing all the related cod
 
 There is no README text file for help on how to run the program ( just this README ), but there is a help menu in the program that will show you how it works.  The help menus currently don't let you edit the curve while viewing them, but the *Box.exe programs can be run cuncurrently with the de Boor program instead.  I fixed this problem, but I lost the code that I wrote that did it, and could not reproduce it in time for the last version of the program.
 
-Everything of relevance is in de_Boor.cpp.  It contains lots of comments, but still looks like gobbledy-gook.
+Everything of relevance is in deBoor.cpp.  It contains lots of comments, but still looks like gobbledy-gook.
 
 The files
-         ascii_white.bmp,
-         de_Boor AboutBox.exe,
-         de_Boor HelpBox.exe,
-         and de_Boor ExtraBox.exe
+         asciiWhite.bmp,
+         deBoorAboutBox.exe,
+         deBoorHelpBox.exe,
+         and deBoorExtraBox.exe
          need to be in the same folder as the executable when running it outside of Microsoft Visual C++.
 
 To re-build the project, open up the existing de_Boor.dsw workspace, or to do it yourself, you need the files:
 
-list object.h
+listObject.h
 font.h
-list client.h
+list.h
 resource.h
-particle client.h
-de_Boor.cpp
-Winmain.cpp
-AboutBox.rc
+particle.h
+deBoor.cpp
+winmain.cpp
+aboutBox.rc
 
 and you will need to link to ddraw.lib and my 3 libraries:
 

@@ -1,6 +1,6 @@
 
 /*
- *  File:       list client.c
+ *  File:       listClient.cpp
  *
  *  Function:   Test code for List Package
  *
@@ -17,7 +17,7 @@
 
 //#include <crtdbg.h>
 
-#include "list object.h"
+#include "listObject.h"
 #include "list.h"
 
 #define WIN32_LEAN_AND_MEAN

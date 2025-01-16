@@ -110,7 +110,7 @@ using std::bad_alloc;
 using std::pair;
 using std::queue;
 
-#include "list object.h"
+#include "listObject.h"
 #include "list.h"
 
 #include "font.h"
@@ -119,7 +119,7 @@ using std::queue;
 
 #include "memory.h"
 
-#include "resource_headers.h"
+#include "resourceHeaders.h"
 
 #include "BlahLog.h"
 
@@ -3738,7 +3738,7 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 //typedef INT_PTR(CALLBACK* DLGPROC)(HWND, UINT, WPARAM, LPARAM);
       DialogBoxA(hInstance, "ExtraBox", hwnd, AboutDlgProc);
 
-      // WinExec("de_Casteljau ExtraBox.exe", 0);
+      // WinExec("deBoorExtraBox.exe", 0);
 
       return 0;
     }
@@ -3882,7 +3882,7 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
     {
       DialogBoxA(hInstance, "HelpBox", hwnd, AboutDlgProc);
 
-      /* WinExec("de_Casteljau HelpBox.exe", 0); */
+      /* WinExec("deBoorHelpBox.exe", 0); */
     }
     return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F8
 
@@ -3890,7 +3890,7 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
     {
       DialogBoxA(hInstance, "AboutBox", hwnd, AboutDlgProc);
 
-      /* WinExec("de_Casteljau AboutBox.exe", 0); */
+      /* WinExec("deBoorAboutBox.exe", 0); */
     }
     return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F9
 
@@ -4865,7 +4865,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, char* /*lpC
   // Only allow one instance of the application at a time.  Use CreateMutexA
   // to test if an instance of the application already exists, quit if
   // another instance exists or if CreateMutexA returns NULL.
-  mutexHandle = CreateMutexA(0, FALSE, "FunkyLovinNicoleSugarDaddy");
+  mutexHandle = CreateMutexA(0, FALSE, "FunkyLovinSugarDaddy");
 
   if( !mutexHandle)
   {
@@ -4891,7 +4891,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, char* /*lpC
   }
 
   // 1) Initialize the log file for logging warnings and errors.
-  file = fopen("cs250_os_debug.txt", "wb");
+  file = fopen("cs250debug.txt", "wb");
 
 #if !defined NDEBUG
   // Quit if the log file handle was not created.
