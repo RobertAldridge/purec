@@ -15,27 +15,30 @@
 extern EMITTER*
 CreateParticleSystem
 (
-  char        *name,                            // EMITTER NAME
-  float       currentTime,                        // CURRENT TIME IN SECONDS
-  float       emitterLife,                        // HOW LONG WILL THE PARTICLE SYSTEM LAST - IN SECONDS
+  char *name, // EMITTER NAME
+  float currentTime, // CURRENT TIME IN SECONDS
+  float emitterLife, // HOW LONG WILL THE PARTICLE SYSTEM LAST - IN SECONDS
+  
   // TRANSFORMATION INFO
-  float       posX,           float posY,           float posZ,     // XYZ POSITION OF PARTICLE SYSTEM ORIGIN AND VARIATION
-  float       posVarX,        float posVarY,        float posVarZ,
-  float       yaw,            float yawVar,               // YAW AND VARIATION FOR VELOCITY
-  float       pitch,          float pitchVar,               // PITCH AND VARIATION FOR VELOCITY
-  float       speed,          float speedVar,               // VELOCITY MAGNITUDE AND VARIATION
+  float posX, float posY, float posZ, // XYZ POSITION OF PARTICLE SYSTEM ORIGIN AND VARIATION
+  float posVarX, float posVarY, float posVarZ,
+  float yaw, float yawVar, // YAW AND VARIATION FOR VELOCITY
+  float pitch, float pitchVar, // PITCH AND VARIATION FOR VELOCITY
+  float speed, float speedVar, // VELOCITY MAGNITUDE AND VARIATION
+  
   // PARTICLE
-  int         numParticles,                       // TOTAL EMITTED AT ANY TIME
-  int         emitsPerFrame,  int   emitVar,                // EMITS PER FRAME AND VARIATION
-  float       life,           float lifeVar,                // LIFETIME OF PARTICLES AND VARIATION
+  int numParticles, // TOTAL EMITTED AT ANY TIME
+  int emitsPerFrame, int emitVar, // EMITS PER FRAME AND VARIATION
+  float life, float lifeVar, // LIFETIME OF PARTICLES AND VARIATION
 
-  float       startColorR,    float startColorG,    float startColorB,    // START COLOR OF PARTICLES AND VARIATION
-  float       startColorVarR, float startColorVarG, float startColorVarB,
-  float       endColorR,      float endColorG,      float endColorB,      // END COLOR OF PARTICLES AND VARIATION
-  float   endColorVarR,   float endColorVarG,   float endColorVarB,
+  float startColorR, float startColorG, float startColorB, // START COLOR OF PARTICLES AND VARIATION
+  float startColorVarR, float startColorVarG, float startColorVarB,
+  float endColorR, float endColorG, float endColorB, // END COLOR OF PARTICLES AND VARIATION
+  float endColorVarR, float endColorVarG, float endColorVarB,
+  
   // PHYSICS
-  float       gForceX,        float gForceY,        float gForceZ,        // GLOBAL GRAVITY, WIND, ETC. AND VARIATION
-  float       gForceVarX,     float gForceVarY,     float gForceVarZ
+  float gForceX, float gForceY, float gForceZ, // GLOBAL GRAVITY, WIND, ETC. AND VARIATION
+  float gForceVarX, float gForceVarY, float gForceVarZ
 );
 
 // initializes the particles of a particle system
@@ -44,23 +47,25 @@ CreateParticleSystem
 //
 // if the particle system has died, it will be destroyed and nulled out
 extern void
-ActivateParticleSystem(EMITTER** particleSystem, // PREVIOUSLY CREATED PARTICLE SYSTEM
+ActivateParticleSystem
+(
+  EMITTER** particleSystem, // PREVIOUSLY CREATED PARTICLE SYSTEM
 
-             float         currentTime,    // CURRENT TIME IN SECONDS
+  float currentTime, // CURRENT TIME IN SECONDS
 
-             unsigned char antiAlias,      // IF NOT SET TO 0, PARTICLES WILL BE SHADED LINES
-                           // IF SET TO 0, PARTICLES WILL BE COLORED POINTS
+  unsigned char antiAlias, // IF NOT SET TO 0, PARTICLES WILL BE SHADED LINES
+  // IF SET TO 0, PARTICLES WILL BE COLORED POINTS
 
-             unsigned char physics,        // IF NOT SET TO 0, ACCELERATION WILL BE INTEGRATED
-                               // INTO PARTICLES
-                                   // IF SET TO 0, ONLY VELOCITY WILL BE TAKEN
-                                 // INTO ACCOUNT
+  unsigned char physics, // IF NOT SET TO 0, ACCELERATION WILL BE INTEGRATED
+  // INTO PARTICLES
+  // IF SET TO 0, ONLY VELOCITY WILL BE TAKEN
+  // INTO ACCOUNT
 
-             unsigned char regeneration    // IF NOT SET TO 0, DEAD PARTICLES WILL BE
-                               // REGENERATED
-                               // IF SET TO 0, DEAD PARTICLES WILL NOT BE
-                                 // REGENERATED
-                      );
+  unsigned char regeneration // IF NOT SET TO 0, DEAD PARTICLES WILL BE
+  // REGENERATED
+  // IF SET TO 0, DEAD PARTICLES WILL NOT BE
+  // REGENERATED
+);
 
 // updates the particles of a particle system
 //
@@ -68,29 +73,33 @@ ActivateParticleSystem(EMITTER** particleSystem, // PREVIOUSLY CREATED PARTICLE 
 extern void
 UpdateParticleSystem
 (
-  EMITTER** particleSystem,                 // PREVIOUSLY CREATED PARTICLE SYSTEM
-  float         currentTime,                   // CURRENT TIME IN SECONDS
+  EMITTER** particleSystem, // PREVIOUSLY CREATED PARTICLE SYSTEM
+  float currentTime, // CURRENT TIME IN SECONDS
 
-  unsigned char gForce,                    // IF NOT SET TO 0, THE NEW GFORCE VECTOR WILL BE
-                                 // PERMANENTLY APPLIED TO THE PARTICLE SYSTEM
-                                 // IF SET TO 0, NEW GFORCE IS IGNORED
+  unsigned char gForce, // IF NOT SET TO 0, THE NEW GFORCE VECTOR WILL BE
+  // PERMANENTLY APPLIED TO THE PARTICLE SYSTEM
+  // IF SET TO 0, NEW GFORCE IS IGNORED
 
-  float         gForceX,    float gForceY,    float gForceZ,   // GLOBAL GRAVITY, WIND, ETC. AND VARIATION
-  float         gForceVarX, float gForceVarY, float gForceVarZ
+  float gForceX, float gForceY, float gForceZ, // GLOBAL GRAVITY, WIND, ETC. AND VARIATION
+  float gForceVarX, float gForceVarY, float gForceVarZ
 );
 
 #define UPDATE_PARTICLE_SYSTEM(PARTICLE_SYSTEM,CURRENT_TIME) \
-  UpdateParticleSystem(PARTICLE_SYSTEM,CURRENT_TIME,0,0,0,0,0,0,0)
+  UpdateParticleSystem(PARTICLE_SYSTEM, CURRENT_TIME, 0, 0, 0, 0, 0, 0, 0)
 
 // draws the particles of a particle system, does not update them
 //
 // if the particle system has died, it will be destroyed and nulled out
 void
-DrawParticleSystem(EMITTER** particleSystem,     // PREVIOUSLY CREATED PARTICLE SYSTEM
-           float    *matrix              // 4x4 world to camera transformation matrix
-                  );
+DrawParticleSystem
+(
+  EMITTER** particleSystem, // PREVIOUSLY CREATED PARTICLE SYSTEM
+  float* matrix // 4x4 world to camera transformation matrix
+);
 
 // destroys the particle system and nulls it out
 void
-TerminateParticleSystem(EMITTER** particleSystem // PREVIOUSLY CREATED PARTICLE SYSTEM
-                       );
+TerminateParticleSystem
+(
+  EMITTER** particleSystem // PREVIOUSLY CREATED PARTICLE SYSTEM
+);

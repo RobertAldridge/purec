@@ -20,14 +20,14 @@
 
   #define ERROR -1
 
-  #ifndef TRUE
-    #define TRUE 1
+  #ifndef true
+    #define true 1
   #endif
 
   #define NO_ERROR 0
 
-  #ifndef FALSE
-    #define FALSE 0
+  #ifndef false
+    #define false 0
   #endif
 
 #include "list.h"
@@ -71,14 +71,14 @@ struct LIST_HEAD
 //
 //  Arguments:
 //      ClientCompare - An optional permanent COMPARE function provided by the client.
-//                      May be NULL.
+//                      May be 0.
 //
 //      MaxNumberOfObjects - An optional hint at the maximal number of
 //                           objects the client wishes to put in the list.
 //
 //  Returns:
 //      A LIST_HEAD* object which must be passed to all other functions
-//      in this list interface. It will be NULL if the memory cannot
+//      in this list interface. It will be 0 if the memory cannot
 //      be allocated for the list.
 //
 //  Implementation Details:
@@ -129,9 +129,9 @@ ListInit
 //      Head   - The LIST_HEAD* referring to a particular instance of
 //               the list ADT.
 //
-//      NumberOfClientObjects - An optional INDEX_TYPE pointer, may be NULL.
+//      NumberOfClientObjects - An optional INDEX_TYPE pointer, may be 0.
 //                              It will be set to the number of client objects
-//                              in the list if it is not NULL
+//                              in the list if it is not 0
 //
 //  Returns:
 //      1 if list is empty, 0 otherwise.
@@ -168,7 +168,7 @@ ListIsEmpty
 //
 //      ClientObject - The object to be inserted into the list.
 //
-//      ClientCompare - An optional permanent COMPARE function pointer, may be NULL.
+//      ClientCompare - An optional permanent COMPARE function pointer, may be 0.
 //
 //  Returns:
 //      0 if successful, nonzero otherwise.
@@ -245,7 +245,7 @@ ListInsert
 //
 //      ClientEquality -    An optional temporary EQUIVALENCE function pointer which only
 //                          returns 1 if the objects are considered equivalent.
-//                          It returns 0 otherwise. If this is NULL, the first
+//                          It returns 0 otherwise. If this is 0, the first
 //                          element in the list is removed.
 //
 //      ClientObject -      A required POTYPE* specifying both the object to be
@@ -332,7 +332,7 @@ ListRemove
 //
 //      ClientEquality -    An optional temporary EQUIVALENCE function pointer which only
 //                          returns 1 if the objects are considered equivalent.
-//                          It returns 0 otherwise. If this is NULL, the first
+//                          It returns 0 otherwise. If this is 0, the first
 //                          element in the list is returned.
 //
 //      ClientObject -      A required POTYPE* specifying both the object to be
@@ -407,7 +407,7 @@ ListFind
 //
 //      ClientObject -      A required POTYPE* where the next object is to be placed
 //
-//      Reset        -      A BOOL when TRUE, will reset the search to begin
+//      Reset        -      A BOOL when true, will reset the search to begin
 //                          at the start of the list.
 //
 //  Returns:
@@ -431,7 +431,7 @@ ListGetNext
   if( !Head || !Head->ObjectArray || !ClientObject )
     return ERROR;
 
-  if(Reset==TRUE)
+  if(Reset==true)
     Head->CurrentTraverseIndex=0;
 
   if(Head->CurrentIndex < 1 ||
@@ -484,7 +484,7 @@ ListTerminate
 //      Head    -   The LIST_HEAD* referring to a particular instance of
 //                  the list ADT.
 //
-//      ClientCompare - An optional temporary COMPARE function pointer. If not NULL, it
+//      ClientCompare - An optional temporary COMPARE function pointer. If not 0, it
 //                      overrides the default COMPARE function specified at
 //                      init time.
 //
@@ -705,8 +705,8 @@ ListSort
 //
 //      ClientCompare      -  An optional temporary COMPARE function pointer.
 //
-//      GetGreatest  -  An int which if TRUE, causes the greatest POTYPE
-//                      to be returned. If FALSE, it causes the the least POTYPE
+//      GetGreatest  -  An int which if true, causes the greatest POTYPE
+//                      to be returned. If false, it causes the the least POTYPE
 //                      value to be returned.
 //
 //  Returns:
@@ -748,7 +748,7 @@ ListGetExtrema
 
   Head->GetExtrema=1;
 
-  if(GetGreatest==TRUE)
+  if(GetGreatest==true)
   {
     do
     {
@@ -781,7 +781,7 @@ ListGetExtrema
 //
 //      ClientEvaluate - An optional temporary EVALUATE function provided by the client.
 //
-//      Reverse - If TRUE, dump list in reverse order.
+//      Reverse - If true, dump list in reverse order.
 //
 //  Returns:
 //      0 if successful and there was a full dump,
@@ -825,7 +825,7 @@ ListDump
 
   Head->Dump=1;
 
-  if(Reverse==TRUE)
+  if(Reverse==true)
   {
     --Num;
 
@@ -835,9 +835,9 @@ ListDump
       {
         Head->Dump=0;
 
-        // return TRUE if there is no error but
+        // return true if there is no error but
         // the client wants to abruptly stop dump
-        return TRUE;
+        return true;
       }
 
     }while(Num--);
@@ -850,9 +850,9 @@ ListDump
       {
         Head->Dump=0;
 
-        // return TRUE if there is no error but
+        // return true if there is no error but
         // the client wants to abruptly stop dump
-        return TRUE;
+        return true;
       }
 
     }while(++loop!=Num);

@@ -32,12 +32,7 @@
 // during font initialization to match the original aspect ratio of
 // font size to screen size.  All input and output is in the ideal frame of
 // reference.  Coordinate conversion is handled internally by RobsTextOut.
-extern FontBlah* RobsTextOutInitSystem( uint8_t** ( *backBufferFunction ) ( ),
-                        const unsigned int actual_backbuffer_width,
-                        const unsigned int actual_backbuffer_height,
-                        const unsigned int ideal_backbuffer_width,
-                        const unsigned int ideal_backbuffer_height
-                      );
+extern FontBlah* RobsTextOutInitSystem(uint8_t** (*backBufferFunction)(), const uint32_t width, const uint32_t height, const uint32_t idealWidth, const uint32_t idealHeight);
 
 // The main RobsTextOut function prints clipped characters
 // to the backbuffer.  Characters do not wrap to the next line.
@@ -50,11 +45,7 @@ extern FontBlah* RobsTextOutInitSystem( uint8_t** ( *backBufferFunction ) ( ),
 // If the type has not been allocated, it will be when RobsTextOut
 // is called.  RobsTextOut will do nothing if RobsTextOutInitSystem
 // has not been called.
-extern void RobsTextOut(void* _this,
-                int x,
-                int y,
-                const char * const format,...
-               );
+extern void RobsTextOut(void* _this, int32_t x, int32_t y, const char* const format, ...);
 
 // Returns a rect with the upper left and lower right pixel coordinates
 // that contain the text which would be printed if RobsTextOut were called
@@ -68,14 +59,9 @@ extern void RobsTextOut(void* _this,
 //
 // RobsTextOutRect will return {-1,-1,-1,-1} if RobsTextOutInitSystem
 // has not been called.
-extern const rect RobsTextOutRect( FontBlah* _this,
-                        int x,
-                        int y,
-                         const char * const format,...
-                      );
+extern rect RobsTextOutRect(FontBlah* _this, int32_t x, int32_t y, const char* const format, ...);
 
 // Terminates the font system and releases all allocated fonts.
 //
 // All released fonts will be reloaded on the next call to RobsTextOutInitSystem
-extern void RobsTextOutTermSystem(FontBlah** _this
-                      );
+extern void RobsTextOutTermSystem(FontBlah** _this);

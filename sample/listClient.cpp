@@ -8,11 +8,10 @@
  *
  */
 
-#include <windows.h>
-
 #include <cstdint>
 #include <cstdlib>
 #include <cstdio>
+#include <cstring>
 #include <ctime>
 
 //#include <crtdbg.h>
@@ -20,14 +19,48 @@
 #include "listObject.h"
 #include "list.h"
 
-#define WIN32_LEAN_AND_MEAN
+#if 0
 
-static int
-Evaluate(
-    CLIENT_POTYPE*  Object
-    )
+#include <windows.h>
+
+#else
+
+extern "C"
 {
-    printf("This object is %d\n", Object->integer);
+
+union _LARGE_INTEGER
+{
+  struct
+  {
+    unsigned long LowPart;
+    long HighPart;
+
+  }DUMMYSTRUCTNAME;
+
+  struct
+  {
+    unsigned long LowPart;
+    long HighPart;
+
+  }u;
+
+  long long QuadPart;
+
+};
+
+typedef union _LARGE_INTEGER LARGE_INTEGER;
+
+int __stdcall QueryPerformanceCounter(LARGE_INTEGER* lpPerformanceCount);
+
+int __stdcall QueryPerformanceFrequency(LARGE_INTEGER* lpFrequency);
+
+}
+
+#endif
+
+static int Evaluate(CLIENT_POTYPE* Object)
+{
+  printf("This object is %d\n", Object->integer);
   return 0;
 }
 
@@ -74,12 +107,14 @@ ProcessList(
     //
     //  Time insertions
     //
-
-    QueryPerformanceCounter( (LARGE_INTEGER*)&t0);
+    
+    t0 = 0;
+    QueryPerformanceCounter( (LARGE_INTEGER*) &t0);
     for(count = 0; count < NUMBER; ++count)
         ListInsert(ListHead, InputArray[count], LessThan);
 
-    QueryPerformanceCounter( (LARGE_INTEGER*)&t1);
+    t1 = 0;
+    QueryPerformanceCounter( (LARGE_INTEGER*) &t1);
 
     insertTime = (uint32_t)t1 - (uint32_t)t0;
 
@@ -87,9 +122,14 @@ ProcessList(
     //  Time sorting
     //
 
-    QueryPerformanceCounter( (LARGE_INTEGER*)&t0);
+    t0 = 0;
+    QueryPerformanceCounter( (LARGE_INTEGER*) &t0);
+    
     ListSort(ListHead, GreaterThan);
-    QueryPerformanceCounter( (LARGE_INTEGER*)&t1);
+    
+    t1 = 0;
+    QueryPerformanceCounter( (LARGE_INTEGER*) &t1);
+
     sortTime = (uint32_t)t1 - (uint32_t)t0;
 
     ListDump(ListHead, Evaluate, 0);
@@ -116,8 +156,8 @@ mainListTest(
     memset( &input, 0, countof(input) );
 
   #ifndef NDEBUG
-  //OldValue = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
-//_CrtSetDbgFlag(OldValue|_CRTDBG_LEAK_CHECK_DF);
+//OldValue = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
+//_CrtSetDbgFlag(OldValue | _CRTDBG_LEAK_CHECK_DF);
   #else
 //OldValue = OldValue;
   #endif

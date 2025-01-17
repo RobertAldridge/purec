@@ -41,6 +41,7 @@ int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order);
 int64_t SsSetDepthTree(ssSet* _this);
 int64_t SsSetMaxStack(ssSet* _this);
 int64_t SsSetMaxQueue(ssSet* _this);
+int64_t SsSetGetDebug(ssSet* _this, uint32_t index);
 
 #if 0
 bool SsSetPush(ssSet* _this, void* client);

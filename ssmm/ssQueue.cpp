@@ -18,7 +18,7 @@ using std::uint8_t;
 #define BLAH_DEBUG 0
 
 #if BLAH_DEBUG
-  #include "BlahLog.h"
+#include "BlahLog.h"
 #endif
 
 struct SsQueueNode

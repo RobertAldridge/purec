@@ -2,12 +2,6 @@
 // BlahPlatformAlloc.cpp
 // Robert Aldridge
 
-#if defined(_MSC_VER)
-#include <windows.h>
-#include <ntsecapi.h>
-#include <sddl.h>
-#endif
-
 // _MSC_VER
 // ERROR_INSUFFICIENT_BUFFER
 // ERROR_SUCCESS
@@ -53,6 +47,20 @@ using std::uint32_t;
 #include "BlahLog.h"
 
 #include "BlahPlatformAlloc.h"
+
+#if defined(_MSC_VER)
+
+#include <windows.h>
+#include <ntsecapi.h>
+#include <sddl.h>
+
+#else
+
+extern "C"
+{
+}
+
+#endif
 
 #if defined(_MSC_VER)
 //static bool gBlahLargePageSupportEnabled

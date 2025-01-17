@@ -59,18 +59,6 @@ extern int main(int inputEvent, double x, double y, double B, double halfWidth, 
 // of the function is not 0.
 extern int term();
 
-#if 0
-#ifdef DEBUG
-  #undef DEBUG
-#endif
-
-#ifdef NDEBUG
-  #undef NDEBUG
-#endif
-
-#define DEBUG 1
-#endif
-
 #define ENABLE_DIRECTDRAW 0
 
 #if defined(_MSC_VER)
@@ -81,12 +69,6 @@ extern int term();
 #pragma warning (default : 4365)
 
 #endif
-
-#include <windows.h>
-
-#pragma warning (disable : 4820)
-//#include <ddraw.h>
-#pragma warning (default : 4820)
 
 //#include <d3d12.h>
 //#include <d2d1.h>
@@ -123,6 +105,206 @@ using std::queue;
 
 #include "BlahLog.h"
 
+#if 1
+
+#include <windows.h>
+
+#else
+
+extern "C"
+{
+
+BLACKNESS
+DM_DISPLAYFREQUENCY
+DISP_CHANGE_SUCCESSFUL
+DISP_CHANGE_BADDUALVIEW
+DISP_CHANGE_BADFLAGS
+DISP_CHANGE_BADMODE
+DISP_CHANGE_BADPARAM
+DISP_CHANGE_FAILED
+DISP_CHANGE_NOTUPDATED
+DISP_CHANGE_RESTART
+LR_CREATEDIBSECTION
+IMAGE_BITMAP
+SRCCOPY
+BI_RGB
+DIB_RGB_COLORS
+GDI_ERROR
+BITSPIXEL
+DM_BITSPERPEL
+DM_PELSWIDTH
+DM_PELSHEIGHT
+WM_INITDIALOG
+WM_COMMAND
+IDOK
+IDCANCEL
+WINDOWSTYLE_FULLSCREEN
+WINDOWSTYLE_WINDOW
+WM_CREATE
+WM_SETWIDTHHEIGHT
+HORZRES
+VERTRES
+WM_MOUSEMOVE
+WM_LBUTTONDOWN
+WM_LBUTTONUP
+WM_RBUTTONDOWN
+WM_RBUTTONUP
+WM_SETFOCUS
+WM_KILLFOCUS
+WM_CAPTURECHANGED
+WM_SYSCOMMAND
+SC_MAXIMIZE
+WM_NCLBUTTONDBLCLK
+HTCAPTION
+WM_SYSKEYDOWN
+VK_RETURN
+VK_F10
+WM_KEYDOWN
+VK_ESCAPE
+VK_F1
+VK_F2
+VK_F3
+VK_F4
+VK_F5
+VK_F6
+VK_F7
+VK_F8
+VK_F9
+VK_NUMPAD1
+VK_NUMPAD2
+VK_NUMPAD3
+VK_NUMPAD4
+VK_NUMPAD5
+VK_NUMPAD6
+VK_NUMPAD7
+VK_NUMPAD8
+VK_NUMPAD9
+VK_ADD
+VK_SUBTRACT
+WM_MOVE
+WM_MOVING
+SIZE_MAXHIDE
+SIZE_MINIMIZED
+SIZE_MAXIMIZED
+SIZE_MAXSHOW
+SIZE_RESTORED
+WM_SIZING
+WM_SYSCOMMAND
+SC_MINIMIZE
+WM_SIZE
+WM_PAINT
+WM_ERASEBKGND
+WM_DISPLAYCHANGE
+WM_CHANGEWINDOWSTYLE
+WM_CLOSE
+//
+LOWORD
+HIWORD
+//
+_CRTDBG_REPORT_FLAG
+_CRTDBG_LEAK_CHECK_DF
+//
+CS_HREDRAW
+CS_VREDRAW
+CS_DBLCLKS
+LR_DEFAULTSIZE
+LR_LOADFROMFILE
+LR_LOADTRANSPARENT
+LR_SHARED
+IMAGE_ICON
+IDC_ARROW; MAKEINTRESOURCEA(32512)
+COLOR_WINDOW
+WM_SETWIDTHHEIGHT
+WS_OVERLAPPEDWINDOW
+WS_POPUP
+WM_QUIT
+PM_REMOVE
+WM_DESTROY
+ERROR_NO_MORE_FILES
+INVALID_HANDLE_VALUE
+ERROR_SUCCESS
+
+BITMAPFILEHEADER
+BITMAPINFO
+BITMAPINFOHEADER
+DEVMODEA
+HDC
+HBITMAP
+HGDIOBJ
+HWND
+WPARAM
+LPARAM
+POINT
+LPCREATESTRUCT
+LRESULT
+WNDCLASSA
+//
+LARGE_INTEGER
+//
+HINSTANCE
+MSG
+HICON
+HBRUSH
+WIN32_FIND_DATAA
+HANDLE
+
+MessageBoxA
+GdiFlush
+BitBlt
+ChangeDisplaySettingsA
+StretchBlt
+CreateCompatibleDC
+CreateDIBSection
+SelectObject
+EnumDisplaySettingsA
+EndDialog
+SetDlgItemTextA
+GetWindowLongPtrA
+GetDC
+GetDeviceCaps
+ReleaseDC
+SetCapture
+ReleaseCapture
+DialogBoxA
+WinExec
+ClientToScreen
+DestroyWindow
+PostQuitMessage
+DefWindowProc
+//
+QueryPerformanceFrequency
+QueryPerformanceCounter
+//
+CreateMutexA
+//
+_CrtSetDbgFlag
+_CrtSetDbgFlag
+//
+LoadImageA
+LoadCursorA
+RegisterClassA
+AdjustWindowRect
+CreateWindowExA
+UnregisterClassA
+CloseHandle
+SetWindowLongPtrA
+ShowWindow
+TranslateMessage
+DispatchMessageA
+GetCursorPos
+ScreenToClient
+Sleep
+PostMessageA
+FindFirstFileA
+FindNextFileA
+SetLastError
+GetLastError
+FindClose
+
+}
+
+#endif
+
 int Error(const char* const errorString);
 int Warning(const char* const warningString);
 int Verbose(const char* const verboseString);
@@ -142,12 +324,24 @@ void* Allocate(size_t Size)
   return malloc(Size);
 }
 
-extern void DeAllocate(void * Memory)
+void DeAllocate(void* Memory)
 {
   return free(Memory);
 }
 
-void ParticleSystemsInitGraphics(void* /*backBufferPixelPointer*/, int /*backBufferViewPortWidth*/, int /*backBufferViewPortHeight*/, int /*backBufferBitDepth*/, int /*backBufferPitch*/)
+void TermAllocate()
+{
+}
+
+void
+ParticleSystemsInitGraphics
+(
+  void* /*backBufferPixelPointer*/,
+  int /*backBufferViewPortWidth*/,
+  int /*backBufferViewPortHeight*/,
+  int /*backBufferBitDepth*/,
+  int /*backBufferPitch*/
+)
 {
 }
 
@@ -155,7 +349,7 @@ static INDEX_TYPE TestObject(CLIENT_POTYPE ClientObject1, CLIENT_POTYPE ClientOb
 {
   if( !ClientObject1.object || !ClientObject2.object)
   {
-    Error("ClientObject.object == NULL");
+    Error("ClientObject.object == 0");
 
     return 0;
   }
@@ -252,7 +446,7 @@ int Error(const char* const errorString)
 #ifndef NDEBUG
   else
   {
-    ErrorBox("Error -- file == NULL");
+    ErrorBox("Error -- file == 0");
 
     ErrorBox(errorString);
   }
@@ -304,9 +498,9 @@ int Warning(const char* const warningString)
 #ifndef NDEBUG
   else
   {
-    ErrorBox("Error -- file == NULL");
+    ErrorBox("Error -- file == 0");
 
-    // If file == NULL then treat the warning as an error
+    // If file == 0 then treat the warning as an error
     ErrorBox(warningString);
   }
 #endif
@@ -363,18 +557,21 @@ enum
   GRAPHICS_FULLSCREEN
 };
 
-//INT_PTR(CALLBACK* DLGPROC)(HWND, UINT, WPARAM, LPARAM)
+//long long(CALLBACK* DLGPROC)(HWND, unsigned int, WPARAM, LPARAM)
 
-static INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+static long long CALLBACK AboutDlgProc(HWND hDlg, unsigned int msg, WPARAM wParam, LPARAM lParam);
 
-static INT_PTR CALLBACK InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+static long long CALLBACK InputDlgProc(HWND hDlg, unsigned int msg, WPARAM wParam, LPARAM lParam);
 
-static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+static LRESULT CALLBACK WindowProc(HWND hwnd, unsigned int msg, WPARAM wParam, LPARAM lParam);
 
+static void _RenderPoint32(int x0, int y0, int c0);
 static void RenderPoint32(int x0, int y0, int c0);
 
+static void _RenderLine32(int x0, int y0, int x1, int y1, int c0, int c1);
 static void RenderLine32(int x0, int y0, int x1, int y1, int c0, int c1);
 
+static void _RenderCircle32(int x0, int y0, int r0, int c0, int c1);
 static void RenderCircle32(int x0, int y0, int r0, int c0, int c1);
 
 private:
@@ -672,7 +869,7 @@ static int graphicsDrawBackBufferToScreen(HWND hWindow)
 
     if( !screen)
     {
-      Error("(screen = GetDC(hWindow) ) == NULL");
+      Error("(screen = GetDC(hWindow) ) == 0");
 
       goto label_return;
     }
@@ -764,7 +961,7 @@ static int graphicsSaveOldMode()
 
   if( !screen)
   {
-    Error("(screen = GetDC(0) ) == NULL");
+    Error("(screen = GetDC(0) ) == 0");
 
     goto label_return;
   }
@@ -895,7 +1092,7 @@ static int graphicsSetBitDepthTo32()
   long index = 0;
 
   DEVMODEA DMode;
-  //memset( &DMode, 0, sizeof(DEVMODEA) );
+  memset( &DMode, 0, sizeof(DEVMODEA) );
 
   if( (oldWidth >= graphicsWidth() || oldHeight >= graphicsHeight() ) && oldBitDepth == 32 && forceFullScreen == false)
   {
@@ -1030,7 +1227,7 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
 
   if( !BltDC)
   {
-    Error("(BltDC = CreateCompatibleDC(...) ) == NULL");
+    Error("(BltDC = CreateCompatibleDC(...) ) == 0");
 
     goto label_return;
   }
@@ -1041,7 +1238,7 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
 
   if( !_file)
   {
-    Error("(file = fopen(...) ) == NULL");
+    Error("(file = fopen(...) ) == 0");
 
     if( !DeleteDC(BltDC) )
     {
@@ -1150,7 +1347,7 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
 
   if( !BltHB)
   {
-    Error("(BltHB = LoadImage(...) ) == NULL");
+    Error("(BltHB = LoadImage(...) ) == 0");
 
     if( !DeleteDC(BltDC) )
     {
@@ -1170,7 +1367,7 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
 
   if( !CleanUp || CleanUp == (void*)GDI_ERROR)
   {
-    Error("(CleanUp = SelectObject(...) ) == NULL");
+    Error("(CleanUp = SelectObject(...) ) == 0");
 
     if( !DeleteObject(BltHB) )
     {
@@ -1203,7 +1400,7 @@ static int graphicsLoadBitmap(HDC destination, int destinationWidth, int destina
 
     if( !deviceTempCleanUp || deviceTempCleanUp == (void*)GDI_ERROR)
     {
-      Error("(deviceTempCleanUp = SelectObject(...) ) == NULL");
+      Error("(deviceTempCleanUp = SelectObject(...) ) == 0");
 
       error = true;
     }
@@ -1257,7 +1454,7 @@ static int graphicsTermScreenAndBackBufferGDI()
 
     if( !TempCleanUp || TempCleanUp == (void*)GDI_ERROR)
     {
-      Error("(TempCleanUp = SelectObject(...) ) == NULL");
+      Error("(TempCleanUp = SelectObject(...) ) == 0");
 
       error = true;
     }
@@ -1456,7 +1653,7 @@ static int graphicsInitScreenAndBackBufferGDI(HWND hWindow)
 
   if( !backbufferDC)
   {
-    Error("(backbufferDC = CreateCompatibleDC(...) ) == NULL");
+    Error("(backbufferDC = CreateCompatibleDC(...) ) == 0");
 
     goto label_return;
   }
@@ -1468,7 +1665,7 @@ static int graphicsInitScreenAndBackBufferGDI(HWND hWindow)
 
   if( !backbufferBitmapHB || !backbufferArray[graphicsClientHeight() - 1] )
   {
-    Error("(backbufferBitmapHB = CreateDIBSection(...) ) == NULL");
+    Error("(backbufferBitmapHB = CreateDIBSection(...) ) == 0");
 
     if( !DeleteDC(backbufferDC) )
     {
@@ -1492,7 +1689,7 @@ static int graphicsInitScreenAndBackBufferGDI(HWND hWindow)
 
   if( !backbufferCleanUp || backbufferCleanUp == (void*)GDI_ERROR)
   {
-    Error("(backbufferCleanUp = SelectObject(...) ) == NULL");
+    Error("(backbufferCleanUp = SelectObject(...) ) == 0");
 
     if( !DeleteObject(backbufferBitmapHB) )
     {
@@ -1880,9 +2077,9 @@ static int graphicsCheckIsFullScreen()
 
   screen = GetDC(0);
 
-  if(screen == NULL)
+  if( !screen)
   {
-    Error("(screen = GetDC(0) ) == NULL");
+    Error("(screen = GetDC(0) ) == 0");
 
     return GRAPHICS_ERROR;
   }
@@ -2022,7 +2219,7 @@ HWND Graphics::_hWindow = 0;
 #define g0(c0) (c0 & 0xff00)
 #define b0(c0) ( (c0 & 0xff) << 8)
 
-void Graphics::RenderPoint32(int x0, int y0, int c0)
+void Graphics::_RenderPoint32(int x0, int y0, int c0)
 {
   if(x0 >= 0 && y0 >= 0 && x0 < Graphics::graphicsClientWidth() && y0 < Graphics::graphicsClientHeight() )
   {
@@ -2032,7 +2229,18 @@ void Graphics::RenderPoint32(int x0, int y0, int c0)
   }
 }
 
-void Graphics::RenderLine32(int x0, int y0, int x1, int y1, int xi, int yi)
+void Graphics::RenderPoint32(int _x0, int _y0, int c0)
+{
+  for(int y0 = _y0 - 1; y0 <= _y0 + 1; y0++)
+  {
+    for(int x0 = _x0 - 1; x0 <= _x0 + 1; x0++)
+    {
+      Graphics::_RenderPoint32(x0, y0, c0);
+    }
+  }
+}
+
+void Graphics::_RenderLine32(int x0, int y0, int x1, int y1, int xi, int yi)
 {
   int count = 0;
   int dx = 0; int dxstep = 0; int dxabs = 0;
@@ -2347,7 +2555,18 @@ void Graphics::RenderLine32(int x0, int y0, int x1, int y1, int xi, int yi)
   }
 }
 
-void Graphics::RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
+void Graphics::RenderLine32(int x0, int y0, int x1, int y1, int xi, int yi)
+{
+  Graphics::_RenderLine32(x0 - 1, y0, x1 - 1, y1, xi, yi);
+  Graphics::_RenderLine32(x0 + 1, y0, x1 + 1, y1, xi, yi);
+  
+  Graphics::_RenderLine32(x0, y0 - 1, x1, y1 - 1, xi, yi);
+  Graphics::_RenderLine32(x0, y0 + 1, x1, y1 + 1, xi, yi);
+  
+  Graphics::_RenderLine32(x0, y0, x1, y1, xi, yi);
+}
+
+void Graphics::_RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
 {
   int d = 0; int de = 0; int dse = 0; int x = 0; int y = 0;
 
@@ -2645,6 +2864,11 @@ void Graphics::RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
   }while(++x <= y);
 }
 
+void Graphics::RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
+{
+  Graphics::_RenderCircle32(xcen, ycen, 2 * r, c0, c1);
+}
+
 #undef S
 
 //#undef f
@@ -2748,7 +2972,7 @@ enum INPUT_EVENT
   TOGGLE_CONTROL_POINT_TEXT = 16384
 };
 
-INT_PTR CALLBACK Graphics::AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM /*lParam*/)
+long long CALLBACK Graphics::AboutDlgProc(HWND hDlg, unsigned int msg, WPARAM wParam, LPARAM /*lParam*/)
 {
   switch(msg) // switch(msg)
   {
@@ -2757,7 +2981,7 @@ INT_PTR CALLBACK Graphics::AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPAR
   {
     isMenuActive = true;
   }
-  return TRUE; // switch(msg) - WM_INITDIALOG
+  return true; // switch(msg) - WM_INITDIALOG
 
   case WM_COMMAND: // switch(msg) - WM_COMMAND
   {
@@ -2772,7 +2996,7 @@ INT_PTR CALLBACK Graphics::AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPAR
 
       isMenuActive = false;
     }
-    return TRUE; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDOK, case IDCANCEL
+    return true; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDOK, case IDCANCEL
 
     } // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) )
   }
@@ -2794,7 +3018,7 @@ INT_PTR CALLBACK Graphics::AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPAR
     Sleep(1);
   }
 
-  return FALSE;
+  return false;
 }
 
 static bool checkString(char* string)
@@ -2843,7 +3067,7 @@ static void plusDecimal(double& lhs, double rhs)
   }
 }
 
-INT_PTR CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM /*lParam*/)
+long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, WPARAM wParam, LPARAM /*lParam*/)
 {
   char item[256] = {0};
 
@@ -2889,7 +3113,7 @@ INT_PTR CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPAR
     SetDlgItemTextA(hDlg, EDITS_INT, "1");
     SetDlgItemTextA(hDlg, EDITS_DEC, "0");
   }
-  return TRUE; // switch(msg) - WM_INITDIALOG
+  return true; // switch(msg) - WM_INITDIALOG
 
   case WM_COMMAND: // switch(msg) - WM_COMMAND
   {
@@ -3129,7 +3353,7 @@ INT_PTR CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPAR
 
       isMenuActive = false;
     }
-    return TRUE; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDOK
+    return true; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDOK
 
     case IDCANCEL: // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDCANCEL
     {
@@ -3139,7 +3363,7 @@ INT_PTR CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPAR
 
       isMenuActive = false;
     }
-    return TRUE; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDCANCEL
+    return true; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDCANCEL
 
     case IDEX1: // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX1
     {
@@ -3167,7 +3391,7 @@ INT_PTR CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPAR
       SetDlgItemTextA(hDlg, EDITS_INT, "1");
       SetDlgItemTextA(hDlg, EDITS_DEC, "0");
     }
-    return FALSE; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX1
+    return false; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX1
 
     case IDEX2: // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX2
     {
@@ -3195,7 +3419,7 @@ INT_PTR CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPAR
       SetDlgItemTextA(hDlg, EDITS_INT, "1");
       SetDlgItemTextA(hDlg, EDITS_DEC, "0");
     }
-    return FALSE; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX2
+    return false; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX2
 
     case IDEX3: // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX3
     {
@@ -3223,7 +3447,7 @@ INT_PTR CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPAR
       SetDlgItemTextA(hDlg, EDITS_INT, "2");
       SetDlgItemTextA(hDlg, EDITS_DEC, "0");
     }
-    return FALSE; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX3
+    return false; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX3
 
     case IDEX4: // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX4
     {
@@ -3251,7 +3475,7 @@ INT_PTR CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPAR
       SetDlgItemTextA(hDlg, EDITS_INT, "2");
       SetDlgItemTextA(hDlg, EDITS_DEC, "0");
     }
-    return FALSE; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX4
+    return false; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX4
 
     case IDEX5: // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX5
     {
@@ -3279,7 +3503,7 @@ INT_PTR CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPAR
       SetDlgItemTextA(hDlg, EDITS_INT, "3");
       SetDlgItemTextA(hDlg, EDITS_DEC, "0");
     }
-    return FALSE; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX5
+    return false; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX5
 
     } // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) )
   }
@@ -3301,7 +3525,7 @@ INT_PTR CALLBACK Graphics::InputDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPAR
     Sleep(1);
   }
 
-  return FALSE;
+  return false;
 }
 
 class WindowStyle
@@ -3518,7 +3742,7 @@ extern void operator delete[](void* ptr)
   }
 }
 
-LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, unsigned int msg, WPARAM wParam, LPARAM lParam)
 {
   point mousePt = {0, 0};
 
@@ -3734,8 +3958,8 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
     else if(wParam == VK_F10)
     {
 //DialogBoxParamA(hInstance, lpTemplate, hWndParent, lpDialogFunc, 0L)
-//WINUSERAPI INT_PTR WINAPI DialogBoxParamA(HINSTANCE hInstance, LPCSTR lpTemplateName, HWND hWndParent, DLGPROC lpDialogFunc, LPARAM dwInitParam);
-//typedef INT_PTR(CALLBACK* DLGPROC)(HWND, UINT, WPARAM, LPARAM);
+//WINUSERAPI long long WINAPI DialogBoxParamA(HINSTANCE hInstance, LPCSTR lpTemplateName, HWND hWndParent, DLGPROC lpDialogFunc, LPARAM dwInitParam);
+//typedef long long(CALLBACK* DLGPROC)(HWND, unsigned int, WPARAM, LPARAM);
       DialogBoxA(hInstance, "ExtraBox", hwnd, AboutDlgProc);
 
       // WinExec("deBoorExtraBox.exe", 0);
@@ -4142,7 +4366,7 @@ LRESULT CALLBACK Graphics::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 // Return value
 // Type LRESULT
 //
-// An application should return TRUE if it processes this message.
+// An application should return true if it processes this message.
 
   case WM_SIZING: // switch(msg) - WM_SIZING
   {
@@ -4454,14 +4678,14 @@ static int RemoveHeapAllocation(void* heapAllocation)
 
   if( !heapAllocation || heapAllocation == (void*)0xffffffff)
   {
-    Error("RemoveHeapAllocation -- heapAllocation == NULL");
+    Error("RemoveHeapAllocation -- heapAllocation == 0");
 
     return -1;
   }
 
   if( !listOfHeapAllocations)
   {
-    Error("RemoveHeapAllocation -- listOfHeapAllocations == NULL");
+    Error("RemoveHeapAllocation -- listOfHeapAllocations == 0");
 
     return -1;
   }
@@ -4491,14 +4715,14 @@ static int RemoveHandle(void* handle)
 
   if( !handle)
   {
-    Error("RemoveHandle -- handle == NULL");
+    Error("RemoveHandle -- handle == 0");
 
     return -1;
   }
 
   if( !listOfHandles)
   {
-    Error("RemoveHandle -- listOfHandles == NULL");
+    Error("RemoveHandle -- listOfHandles == 0");
 
     return -1;
   }
@@ -4530,7 +4754,7 @@ static void* InsertHeapAllocation(size_t numBytesToAllocate)
 
   if( !listOfHeapAllocations)
   {
-    Error("InsertHeapAllocation -- listOfHeapAllocations == NULL");
+    Error("InsertHeapAllocation -- listOfHeapAllocations == 0");
 
     return 0;
   }
@@ -4541,7 +4765,7 @@ BlahLog2("2 %i %llu\n", (int)numBytesToAllocate, (uint64_t)heapAllocation);
 
   if( !heapAllocation)
   {
-    Error("InsertHeapAllocation -- heapAllocation == NULL");
+    Error("InsertHeapAllocation -- heapAllocation == 0");
 
     return 0;
   }
@@ -4578,14 +4802,14 @@ static int InsertHandle(void* handle)
 
   if( !handle)
   {
-    Error("InsertHandle -- handle == NULL");
+    Error("InsertHandle -- handle == 0");
 
     return -1;
   }
 
   if( !listOfHandles)
   {
-    Error("InsertHandle -- listOfHandles == NULL");
+    Error("InsertHandle -- listOfHandles == 0");
 
     return -1;
   }
@@ -4778,26 +5002,25 @@ static int initTime()
 {
   int error = 0;
 
-  LARGE_INTEGER temp;
-  memset( &temp, 0, sizeof(LARGE_INTEGER) );
-
-  if( !QueryPerformanceFrequency( &temp) )
+  uint64_t temporary = 0;
+  if( !QueryPerformanceFrequency( (LARGE_INTEGER*) &temporary) )
   {
     Error("QueryPerformanceFrequency(...) function failure");
 
     error = -1;
   }
 
-  _timeTicksPerSecond = (double)temp.LowPart;
+  _timeTicksPerSecond = (double)temporary;
 
-  if( !QueryPerformanceCounter( &temp) )
+  temporary = 0;
+  if( !QueryPerformanceCounter( (LARGE_INTEGER*) &temporary) )
   {
     Error("QueryPerformanceCounter(...) function failure");
 
     error = -1;
   }
 
-  _timeInSeconds = (double)temp.LowPart;
+  _timeInSeconds = (double)temporary;
 
   _timeInSeconds /= _timeTicksPerSecond;
 
@@ -4812,10 +5035,8 @@ static int updateTime()
 
   double previousTime = 0;
 
-  LARGE_INTEGER temp;
-  memset( &temp, 0, sizeof(LARGE_INTEGER) );
-
-  if( !QueryPerformanceCounter( &temp) )
+  uint64_t temporary = 0;
+  if( !QueryPerformanceCounter( (LARGE_INTEGER*) &temporary) )
   {
     Error("QueryPerformanceCounter(...) function failure");
 
@@ -4824,7 +5045,7 @@ static int updateTime()
 
   previousTime = _timeInSeconds;
 
-  _timeInSeconds = (double)temp.LowPart;
+  _timeInSeconds = (double)temporary;
 
   _timeInSeconds /= _timeTicksPerSecond;
 
@@ -4836,7 +5057,7 @@ static int updateTime()
 // MSDN
 // hPrevInstance
 //     Handle to the previous instance of the application. For a Win32-based
-//     application, this parameter is always NULL.
+//     application, this parameter is always 0.
 //
 //     If you need to detect whether another instance already exists, create a
 //     uniquely named mutex using the CreateMutexA function. CreateMutexA will
@@ -4846,7 +5067,7 @@ static int updateTime()
 //
 // int WINAPI WinMain(HINSTANCE currentInstance, HINSTANCE previousInstance, char* commandLine, int showStateOfWindow)
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, char* /*lpCmdLine*/, int nCmdShow)
+extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, char* /*lpCmdLine*/, int nCmdShow)
 {
   int currentFrameNumber = 0;
 
@@ -4864,14 +5085,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, char* /*lpC
 
   // Only allow one instance of the application at a time.  Use CreateMutexA
   // to test if an instance of the application already exists, quit if
-  // another instance exists or if CreateMutexA returns NULL.
-  mutexHandle = CreateMutexA(0, FALSE, "FunkyLovinSugarDaddy");
+  // another instance exists or if CreateMutexA returns 0.
+  mutexHandle = CreateMutexA(0, false, "FunkyLovinSugarDaddy");
 
   if( !mutexHandle)
   {
     // Use MessageBox until we make sure that this is the only instance
     // of the application.  Then we can set up the log file.
-    ErrorBox("(MutexHandle = CreateMutexA(...) ) == NULL");
+    ErrorBox("(MutexHandle = CreateMutexA(...) ) == 0");
 
     IsApplicationEntry = false;
 
@@ -4902,7 +5123,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, char* /*lpC
       ErrorBox("CloseHandle(...) failure");
     }
 
-    ErrorBox("(file = fopen(...) ) == NULL");
+    ErrorBox("(file = fopen(...) ) == 0");
 
     IsApplicationEntry = false;
 
@@ -4931,7 +5152,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, char* /*lpC
 
   if( !listOfHandles)
   {
-    Error("(listOfHandles = ListInit(...) ) == NULL");
+    Error("(listOfHandles = ListInit(...) ) == 0");
 
     if( !CloseHandle(mutexHandle) )
     {
@@ -4955,7 +5176,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, char* /*lpC
   {
     ListTerminate(listOfHandles);
 
-    Error("(listOfHeapAllocations = ListInit(...) ) == NULL");
+    Error("(listOfHeapAllocations = ListInit(...) ) == 0");
 
     if( !CloseHandle(mutexHandle) )
     {
@@ -5140,7 +5361,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, char* /*lpC
     windowType = WS_POPUP;
   }
 
-  if( !AdjustWindowRect( (RECT*) &windowRect, (unsigned long)windowType, FALSE) )
+  if( !AdjustWindowRect( (RECT*) &windowRect, (unsigned long)windowType, false) )
   {
     int numberOfObjects = 0;
 
@@ -5306,7 +5527,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, char* /*lpC
   {
     int numberOfObjects = 0;
 
-    Error("(hWindow = CreateWindowA(...) ) == NULL");
+    Error("(hWindow = CreateWindowA(...) ) == 0");
 
     if( !UnregisterClassA(appClassName, _hInstance) )
     {
@@ -5460,7 +5681,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, char* /*lpC
     //
     // The MSG structure must contain valid message values.
     // If the lpmsg parameter points to a WM_TIMER message and the lParam parameter of the WM_TIMER
-    // message is not NULL, lParam points to a function that is called instead of the window procedure.
+    // message is not 0, lParam points to a function that is called instead of the window procedure.
     DispatchMessageA( &Message);
 
     if(IsApplicationMinimized == true)

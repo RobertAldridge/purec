@@ -1,329 +1,351 @@
 
 // fontUtil.cpp
 
-#include <windowsx.h>
-
-#pragma warning (disable : 4820)
-#include <ddraw.h>
-#pragma warning (default : 4820)
-
 #include <cassert>
 #include <cstdarg>
 #include <cstdio>
 #include <cstdint>
+#include <cstring>
 
 #include "font.h"
-
 #include "fontUtil.h"
 
 #include "BlahAlloc.h"
+#include "BlahLog.h"
+
+#if 0
+
+#include <windows.h>
+
+#else
+
+extern "C"
+{
+
+#define IMAGE_BITMAP 0
+
+#define LR_LOADFROMFILE 0x00000010
+
+#define LR_CREATEDIBSECTION 0x00002000
+
+#define GDI_ERROR 0xFFFFFFFFL
+
+#define SRCCOPY 0x00CC0020UL
+
+#define BI_RGB 0L
+
+#define DIB_RGB_COLORS 0
+
+struct HDC__
+{
+  int unused;
+};
+
+typedef struct HDC__* HDC;
+
+struct HBITMAP__
+{
+  int unused;
+};
+
+typedef struct HBITMAP__* HBITMAP;
+
+typedef void* HGDIOBJ;
+
+struct HINSTANCE__
+{
+  int unused;
+};
+
+typedef struct HINSTANCE__* HINSTANCE;
+
+typedef void* HANDLE;
+
+struct tagBITMAPINFOHEADER
+{
+  unsigned long biSize;
+  long biWidth;
+  long biHeight;
+  unsigned short biPlanes;
+  unsigned short biBitCount;
+  unsigned long biCompression;
+  unsigned long biSizeImage;
+  long biXPelsPerMeter;
+  long biYPelsPerMeter;
+  unsigned long biClrUsed;
+  unsigned long biClrImportant;
+};
+
+typedef struct tagBITMAPINFOHEADER BITMAPINFOHEADER;
+typedef struct tagBITMAPINFOHEADER* LPBITMAPINFOHEADER;
+typedef struct tagBITMAPINFOHEADER* PBITMAPINFOHEADER;
+
+struct tagRGBQUAD
+{
+  unsigned char rgbBlue;
+  unsigned char rgbGreen;
+  unsigned char rgbRed;
+  unsigned char rgbReserved;
+};
+
+typedef struct tagRGBQUAD RGBQUAD;
+
+struct tagBITMAPINFO
+{
+  BITMAPINFOHEADER bmiHeader;
+  RGBQUAD bmiColors[1];
+};
+
+typedef struct tagBITMAPINFO BITMAPINFO;
+typedef struct tagBITMAPINFO* LPBITMAPINFO;
+typedef struct tagBITMAPINFO* PBITMAPINFO;
+
+HDC __stdcall CreateCompatibleDC(HDC hdc);
+
+HANDLE __stdcall LoadImageA(HINSTANCE hInst, const char* name, unsigned int type, int cx, int cy, unsigned int fuLoad);
+
+int __stdcall DeleteDC(HDC hdc);
+
+HGDIOBJ __stdcall SelectObject(HDC hdc, HGDIOBJ h);
+
+int __stdcall DeleteObject(HGDIOBJ ho);
+
+int __stdcall BitBlt(HDC hdc, int x, int y, int cx, int cy, HDC hdcSrc, int x1, int y1, unsigned long rop);
+
+HBITMAP __stdcall CreateDIBSection(HDC hdc, const BITMAPINFO* pbmi, unsigned int usage, void** ppvBits, HANDLE hSection, unsigned long offset);
+
+}
+
+#endif
 
 struct FontBlah
 {
+  // ascii contains source rect of characters on font image
+  rect ascii[256];
 
-//ascii contains source rect of characters on font image
-rect ascii[ 256 ];
-//width is screen_width-1, height is screen_height-1
-int32_t font_width, font_height, width, height;
+  // width is screen_width - 1
+  // height is screen_height - 1
 
-int32_t actualWidth, actualHeight, idealWidth, idealHeight;
+  int32_t font_width;
+  int32_t font_height;
 
-uint8_t** backbuffer_array_pointer;
+  int32_t width;
+  int32_t height;
 
-uint8_t** ( *_backBufferFunction ) ( );
+  int32_t actualWidth;
+  int32_t actualHeight;
 
-uint8_t** text_white_array_pointer;
+  int32_t idealWidth;
+  int32_t idealHeight;
 
-uint8_t*  text_white;
+  uint8_t** backbuffer_array_pointer;
 
-// FOR DEBUGGING
-#ifndef NDEBUG
-  FILE* file;
+  uint8_t** (*_backBufferFunction)();
 
-  uint32_t  numErrors;
+  uint8_t** text_white_array_pointer;
 
-  uint32_t  numWarnings;
-#endif
-//
-
+  uint8_t* text_white;
 };
 
-#ifndef NDEBUG
-int FontUtilError(FontBlah* _this, const char* const errorString)
+// int* _StartX; input is old dest x, output is new dest x
+// int* _StartY; input is old dest y, output is new dest y
+// rect *_rect; input is old source rect, output is new source rect
+bool FontUtilClipSpecial(int* _StartX, int* _StartY, int _width, int _height, rect* _rect)
 {
-  if( _this && _this->file )
-  {
-    ++_this->numErrors;
+  bool result = false;
 
-    fprintf( _this->file, " FontUtilError#  : %i\n",   _this->numErrors );
+  int StartX = 0;
+  int StartY = 0;
 
-    fprintf( _this->file, " FontUtilError   : %s\n\n", errorString );
-  }
-
-  return 0;
-}
-
-int FontUtilWarning(FontBlah* _this, const char* const warningString)
-{
-  if( _this && _this->file )
-  {
-    ++_this->numWarnings;
-
-    fprintf( _this->file, " FontUtilWarning#: %i\n",   _this->numWarnings   );
-
-    fprintf( _this->file, " FontUtilWarning : %s\n\n", warningString );
-  }
-
-  return 0;
-}
-#endif
-
-unsigned char
-FontUtilClipSpecial( int  *StartX, // input is old dest x, output is new dest x
-       int  *StartY, // input is old dest y, output is new dest y
-       int  _width,
-       int  _height,
-       rect *_rect    // input is old source rect, output is new source rect
-       )
-{
-  #define StartX (*StartX)
-  #define StartY (*StartY)
-
-  int SrcWidth         = _rect->right  - _rect->left + 1;
-  int SrcHeight        = _rect->bottom - _rect->top  + 1;
+  int SrcWidth = 0;
+  int SrcHeight = 0;
   //
-  int DestWidth        = SrcWidth;
-  int DestHeight       = SrcHeight;
-  int SourceWidth      = 0;
-  int Xstart           = 0;
-  int Ystart           = 0;
-  int BackBufferWidth  = _width  + 1;
-  int BackBufferHeight = _height + 1;
+  int DestWidth = 0;
+  int DestHeight = 0;
+  int SourceWidth = 0;
+  int Xstart = 0;
+  int Ystart = 0;
+  int BackBufferWidth = 0;
+  int BackBufferHeight = 0;
+
+  if( !_StartX || !_StartY || !_rect)
+    goto label_return;
+
+  StartX = *_StartX;
+  StartY = *_StartY;
+
+  SrcWidth = _rect->right - _rect->left + 1;
+  SrcHeight = _rect->bottom - _rect->top + 1;
+  //
+  DestWidth = SrcWidth;
+  DestHeight = SrcHeight;
+  BackBufferWidth = _width + 1;
+  BackBufferHeight = _height + 1;
 
   // trivial reject
-  if( StartX <= -SrcWidth  || StartX > BackBufferWidth  - 1 ||
-        StartY <= -SrcHeight || StartY > BackBufferHeight - 1
-      )
+  if(StartX <= -SrcWidth || StartX > BackBufferWidth - 1 || StartY <= -SrcHeight || StartY > BackBufferHeight - 1)
   {
-    StartX       = -1;
-    StartY       = -1;
-    _rect->left   = -1;
-    _rect->top    = -1;
+    *_StartX = -1;
+    *_StartY = -1;
+
+    _rect->left = -1;
+    _rect->top = -1;
     _rect->right  = -1;
     _rect->bottom = -1;
 
-    return FALSE;
+    goto label_return;
   }
 
-  if (StartX < 0)
+  if(StartX < 0)
   {
-    Xstart     = -StartX;
-    DestWidth -=  Xstart;
+    Xstart = -StartX;
+    DestWidth -= Xstart;
   }
 
-  if( StartY < 0 )
+  if(StartY < 0)
   {
-    Ystart      = -StartY;
-    DestHeight -=  Ystart;
+    Ystart = -StartY;
+    DestHeight -= Ystart;
   }
 
-  if( SrcWidth + StartX > BackBufferWidth )
+  if( (SrcWidth + StartX) > BackBufferWidth)
   {
-    DestWidth   -= ( SrcWidth + StartX ) - BackBufferWidth;
-    SourceWidth  = ( SrcWidth + StartX ) - BackBufferWidth;
+    DestWidth -= (SrcWidth + StartX) - BackBufferWidth;
+    SourceWidth = (SrcWidth + StartX) - BackBufferWidth;
   }
 
-  if( SrcHeight + StartY > BackBufferHeight )
-  {
-    DestHeight -= ( SrcHeight + StartY ) - BackBufferHeight;
-  }
+  if( (SrcHeight + StartY) > BackBufferHeight)
+    DestHeight -= (SrcHeight + StartY) - BackBufferHeight;
 
-  if( StartX < 0 )
-  {
-        StartX = 0;
-  }
+  if(StartX < 0)
+    StartX = 0;
 
-  if( StartY < 0 )
-  {
+  if(StartY < 0)
     StartY = 0;
-  }
-
-  #undef StartY
-  #undef StartX
 
   _rect->left += Xstart;
-  _rect->top  += Ystart;
+  _rect->top += Ystart;
 
-  _rect->right  = _rect->left + DestWidth  - 1;
-  _rect->bottom = _rect->top  + DestHeight - 1;
+  _rect->right = _rect->left + DestWidth - 1;
+  _rect->bottom = _rect->top + DestHeight - 1;
 
-  return TRUE;
+  *_StartX = StartX;
+  *_StartY = StartY;
+
+  result = true;
+
+label_return:
+  return result;
 }
 
-void FontUtilCopyBitmap(FontBlah* _this, HDC Source,
-                      int sourceWidth,
-                      int sourceHeight
-                      )
+void FontUtilCopyBitmap(FontBlah* _this, void* _Source, int sourceWidth, int sourceHeight)
 {
-  HDC   BltDC;
+  HDC BltDC = {0};
 
-  HBITMAP BltHB;
+  HBITMAP BltHB = {0};
 
-  HGDIOBJ CleanUp;
+  HGDIOBJ CleanUp = 0;
+
+  HDC Source = (HDC)_Source;
 
   if( !_this)
-    return;
+    goto label_return;
 
-  BltDC = CreateCompatibleDC( 0 );
+  BltDC = CreateCompatibleDC(0);
 
-  if( BltDC == NULL )
+  if( !BltDC)
   {
-    #ifndef NDEBUG
-      FontUtilError(_this, " ( BltDC = CreateCompatibleDC(...) ) == NULL " );
-    #endif
-
-    return;
+    BlahLog("Error ( BltDC = CreateCompatibleDC(...) ) == 0");
+    goto label_return;
   }
 
-  BltHB = (HBITMAP) LoadImageA( NULL,
-                 "asciiWhite.bmp",
-                 IMAGE_BITMAP,
-                 0,
-                 0,
-                 LR_LOADFROMFILE | LR_CREATEDIBSECTION
-                 );
+  BltHB = (HBITMAP)LoadImageA(0, "asciiWhite.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 
-  if( BltHB == NULL )
+  if( !BltHB)
   {
-    #ifndef NDEBUG
-      FontUtilError(_this, " ( BltHB = LoadImage(...) ) == NULL " );
-    #endif
+    BlahLog("Error ( BltHB = LoadImage(...) ) == 0");
 
-    if( !DeleteDC( BltDC ) )
-    {
-      #ifndef NDEBUG
-        FontUtilError(_this, " DeleteDC(...) function failure " );
-      #endif
-    }
+    if( !DeleteDC( BltDC) )
+      BlahLog("Error DeleteDC(...) function failure");
 
-    return;
+    goto label_return;
   }
 
-  CleanUp = SelectObject( BltDC, BltHB );
+  CleanUp = SelectObject(BltDC, BltHB);
 
-  if( CleanUp == NULL || CleanUp == (void*)GDI_ERROR )
+  if( !CleanUp || CleanUp == (void*)GDI_ERROR)
   {
-    #ifndef NDEBUG
-      FontUtilError(_this, " ( CleanUp = SelectObject(...) ) == NULL " );
-    #endif
+    BlahLog("Error ( CleanUp = SelectObject(...) ) == 0");
+
+    if( !DeleteObject(BltHB) )
+      BlahLog("Error  DeleteObject(..) function failure");
+
+    if( !DeleteDC(BltDC) )
+      BlahLog("Error  DeleteDC(...) function failure");
+
+    goto label_return;
+  }
+
+  if( !BitBlt(Source, 0, 0, sourceWidth, sourceHeight, BltDC, 0, 0, SRCCOPY) )
+    BlahLog("Error BitBlt failure");
+
+  if(BltDC)
+  {
+    HGDIOBJ deviceTemporaryCleanUp = 0;
+
+    // free all gdi
+
+    deviceTemporaryCleanUp = SelectObject(BltDC, CleanUp);
+
+    if( !deviceTemporaryCleanUp || deviceTemporaryCleanUp == (void*)GDI_ERROR)
+      BlahLog("Error ( deviceTemporaryCleanUp = SelectObject(...) ) == 0");
 
     if( !DeleteObject( BltHB ) )
-    {
-      #ifndef NDEBUG
-        FontUtilError(_this, " DeleteObject(..) function failure " );
-      #endif
-    }
+      BlahLog("Error DeleteObject(..) function failure");
 
     if( !DeleteDC( BltDC ) )
-    {
-      #ifndef NDEBUG
-        FontUtilError(_this, " DeleteDC(...) function failure " );
-      #endif
-    }
-
-    return;
+      BlahLog("Error DeleteDC(...) function failure");
   }
 
-  if(     !BitBlt
-        (
-        Source,
-        0,
-        0,
-        sourceWidth,
-        sourceHeight,
-        BltDC,
-        0,
-        0,
-        SRCCOPY
-      )
-    )
-  {
-    #ifndef NDEBUG
-      FontUtilError(_this, " BitBlt failure " );
-    #endif
-  }
-
-  HGDIOBJ deviceTempCleanUp = 0;
-
-  if( BltDC != 0 )
-  {
-    /* free all gdi */
-
-    deviceTempCleanUp = SelectObject( BltDC, CleanUp );
-
-    if( deviceTempCleanUp == NULL || deviceTempCleanUp == (void*)GDI_ERROR )
-    {
-      #ifndef NDEBUG
-        FontUtilError(_this, " ( deviceTempCleanUp = SelectObject(...) ) == NULL " );
-      #endif
-    }
-
-    if( !DeleteObject( BltHB ) )
-    {
-      #ifndef NDEBUG
-        FontUtilError(_this, " DeleteObject(..) function failure " );
-      #endif
-    }
-
-    if( !DeleteDC( BltDC ) )
-    {
-      #ifndef NDEBUG
-        FontUtilError(_this, " DeleteDC(...) function failure " );
-      #endif
-    }
-  }
+label_return:
+  return;
 }
 
-void
-FontUtilLoadBitmap(FontBlah* _this
-      )
+void FontUtilLoadBitmap(FontBlah* _this)
 {
-  int        loop     =   0;
+  int loop = 0;
 
-  int        *tempMem =   0;
+  int* tempMem = 0;
 
-  BITMAPINFO bInfo    = { {0}, { {0} } };
+  BITMAPINFO bInfo = { {0}, { {0} } };
 
-  HDC     deviceIndependentDC       = 0;
+  HDC deviceIndependentDC = {0};
 
-  HBITMAP deviceIndependentBitmapHB = 0;
+  HBITMAP deviceIndependentBitmapHB = {0};
 
-  HGDIOBJ deviceIndependentCleanUp  = 0;
+  HGDIOBJ deviceIndependentCleanUp = 0;
 
   if( !_this)
-    return;
+    goto label_return;
 
-  bInfo.bmiHeader.biBitCount    = 32;
-  bInfo.bmiHeader.biWidth     = 160;
-  bInfo.bmiHeader.biHeight    = 224;
-  bInfo.bmiHeader.biPlanes    = 1;
-  bInfo.bmiHeader.biSize      = sizeof( BITMAPINFOHEADER );
+  bInfo.bmiHeader.biBitCount = 32;
+  bInfo.bmiHeader.biWidth = 160;
+  bInfo.bmiHeader.biHeight = 224;
+  bInfo.bmiHeader.biPlanes = 1;
+  bInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
   bInfo.bmiHeader.biCompression = BI_RGB;
 
-  /* create the permanent container */
+  // create the permanent container
 
-  deviceIndependentDC = CreateCompatibleDC( 0 );
+  deviceIndependentDC = CreateCompatibleDC(0);
 
-  if( deviceIndependentDC == NULL )
+  if( !deviceIndependentDC)
   {
-    #ifndef NDEBUG
-      FontUtilError(_this, " ( deviceIndependentDC = CreateCompatibleDC(...) ) == NULL " );
-    #endif
-
-    return;
+    BlahLog("Error ( deviceIndependentDC = CreateCompatibleDC(...) ) == 0");
+    goto label_return;
   }
 
-  /* create bitmap */
+  // create bitmap
 
   if( !_this->text_white)
     _this->text_white = (uint8_t*)BlahAlloc(sizeof(uint8_t) * 160 * 224 * 4, true);
@@ -331,26 +353,20 @@ FontUtilLoadBitmap(FontBlah* _this
   if( !_this->text_white_array_pointer)
     _this->text_white_array_pointer = (uint8_t**)BlahAlloc(sizeof(uint8_t*) * 224, true);
 
-  if( (!_this->text_white) || (!_this->text_white_array_pointer) )
+  if( !_this->text_white || !_this->text_white_array_pointer)
   {
-    #ifndef NDEBUG
-      FontUtilError(_this, " malloc(...) == NULL " );
-    #endif
+    BlahLog("Error malloc(...) == 0");
 
-    if( !DeleteDC( deviceIndependentDC ) )
-    {
-      #ifndef NDEBUG
-        FontUtilError(_this, " DeleteDC(...) function failure " );
-      #endif
-    }
+    if( !DeleteDC(deviceIndependentDC) )
+      BlahLog("Error DeleteDC(...) function failure");
 
-    if( _this->text_white )
+    if(_this->text_white)
     {
       BlahFree(_this->text_white, sizeof(uint8_t) * 160 * 224 * 4, true);
       _this->text_white = 0;
     }
 
-    if( _this->text_white_array_pointer )
+    if(_this->text_white_array_pointer)
     {
       BlahFree(_this->text_white_array_pointer, sizeof(uint8_t*) * 224, true);
       _this->text_white_array_pointer = 0;
@@ -358,37 +374,25 @@ FontUtilLoadBitmap(FontBlah* _this
 
     deviceIndependentDC = 0;
 
-    return;
+    goto label_return;
   }
 
-  deviceIndependentBitmapHB = CreateDIBSection( deviceIndependentDC,
-                          &bInfo,
-                          DIB_RGB_COLORS,
-                          (void**) &tempMem,
-                          0,
-                          0
-                        );
+  deviceIndependentBitmapHB = CreateDIBSection(deviceIndependentDC, &bInfo, DIB_RGB_COLORS, (void**) &tempMem, 0, 0);
 
-  if( deviceIndependentBitmapHB == NULL || tempMem == NULL )
+  if( !deviceIndependentBitmapHB || !tempMem)
   {
-    #ifndef NDEBUG
-      FontUtilError(_this, " ( deviceIndependentBitmapHB = CreateDIBSection(...) ) == NULL " );
-    #endif
+    BlahLog("Error ( deviceIndependentBitmapHB = CreateDIBSection(...) ) == 0");
 
-    if( !DeleteDC( deviceIndependentDC ) )
-    {
-      #ifndef NDEBUG
-        FontUtilError(_this, " DeleteDC(...) function failure " );
-      #endif
-    }
+    if( !DeleteDC(deviceIndependentDC) )
+      BlahLog("Error DeleteDC(...) function failure");
 
-    if( _this->text_white )
+    if(_this->text_white)
     {
       BlahFree(_this->text_white, sizeof(uint8_t) * 160 * 224 * 4, true);
       _this->text_white = 0;
     }
 
-    if( _this->text_white_array_pointer )
+    if(_this->text_white_array_pointer)
     {
       BlahFree(_this->text_white_array_pointer, sizeof(uint8_t*) * 224, true);
       _this->text_white_array_pointer = 0;
@@ -396,135 +400,109 @@ FontUtilLoadBitmap(FontBlah* _this
 
     deviceIndependentDC = 0;
 
-    return;
+    goto label_return;
   }
 
-  /* permanent container */
+  // permanent container
 
-  deviceIndependentCleanUp = SelectObject( deviceIndependentDC,
-                                         deviceIndependentBitmapHB
-                       );
+  deviceIndependentCleanUp = SelectObject(deviceIndependentDC, deviceIndependentBitmapHB);
 
-  if( deviceIndependentCleanUp == NULL || deviceIndependentCleanUp == (void*)GDI_ERROR )
+  if( !deviceIndependentCleanUp || deviceIndependentCleanUp == (void*)GDI_ERROR)
   {
-    #ifndef NDEBUG
-      FontUtilError(_this, " ( deviceIndependentCleanUp = SelectObject(...) ) == NULL " );
-    #endif
+    BlahLog("Error ( deviceIndependentCleanUp = SelectObject(...) ) == 0");
 
-    if( !DeleteObject( deviceIndependentBitmapHB ) )
-    {
-      #ifndef NDEBUG
-        FontUtilError(_this, " DeleteObject(..) function failure " );
-      #endif
-    }
+    if( !DeleteObject(deviceIndependentBitmapHB) )
+      BlahLog("Error DeleteObject(..) function failure");
 
-    if( !DeleteDC( deviceIndependentDC ) )
-    {
-      #ifndef NDEBUG
-        FontUtilError(_this, " DeleteDC(...) function failure " );
-      #endif
-    }
+    if( !DeleteDC(deviceIndependentDC) )
+      BlahLog("Error DeleteDC(...) function failure");
 
-    if( _this->text_white )
+    if(_this->text_white)
     {
       BlahFree(_this->text_white, sizeof(uint8_t) * 160 * 224 * 4, true);
       _this->text_white = 0;
     }
 
-    if( _this->text_white_array_pointer )
+    if(_this->text_white_array_pointer)
     {
       BlahFree(_this->text_white_array_pointer, sizeof(uint8_t*) * 224, true);
       _this->text_white_array_pointer = 0;
     }
 
-    deviceIndependentDC       = 0;
+    deviceIndependentDC = 0;
     deviceIndependentBitmapHB = 0;
 
-    return;
+    goto label_return;
   }
 
-  FontUtilCopyBitmap( _this, deviceIndependentDC, 160, 224 );
+  FontUtilCopyBitmap(_this, deviceIndependentDC, 160, 224);
 
-  memcpy( _this->text_white, tempMem, 160 * 224 * 4 );
+  memcpy(_this->text_white, tempMem, (size_t)160 * 224 * 4);
 
-  _this->text_white_array_pointer[ 223 ] = _this->text_white;
+  _this->text_white_array_pointer[223] = _this->text_white;
 
   // Set up the text buffer pointer array.
-  for( loop = 224 - 2; loop >= 0; loop-- )
+  for(loop = 224 - 2; loop >= 0; loop--)
+    _this->text_white_array_pointer[loop] = _this->text_white_array_pointer[loop + 1] + 160 * 4;
+
+  if(deviceIndependentDC)
   {
-    _this->text_white_array_pointer[ loop ] =
-      _this->text_white_array_pointer[ loop + 1 ] + 160 * 4;
-  }
+    HGDIOBJ deviceTemporaryCleanUp = 0;
 
-  HGDIOBJ deviceTempCleanUp = 0;
+    // free all gdi
 
-  if( deviceIndependentDC != 0 )
-  {
-    /* free all gdi */
+    deviceTemporaryCleanUp = SelectObject(deviceIndependentDC, deviceIndependentCleanUp);
 
-    deviceTempCleanUp = SelectObject( deviceIndependentDC, deviceIndependentCleanUp );
+    if( !deviceTemporaryCleanUp || deviceTemporaryCleanUp == (void*)GDI_ERROR)
+      BlahLog("Error ( deviceTemporaryCleanUp = SelectObject(...) ) == 0");
 
-    if( deviceTempCleanUp == NULL || deviceTempCleanUp == (void*)GDI_ERROR )
-    {
-      #ifndef NDEBUG
-        FontUtilError(_this, " ( deviceTempCleanUp = SelectObject(...) ) == NULL " );
-      #endif
-    }
+    if( !DeleteObject(deviceIndependentBitmapHB) )
+      BlahLog("Error DeleteObject(..) function failure");
 
-    if( !DeleteObject( deviceIndependentBitmapHB ) )
-    {
-      #ifndef NDEBUG
-        FontUtilError(_this, " DeleteObject(..) function failure " );
-      #endif
-    }
+    if( !DeleteDC(deviceIndependentDC) )
+      BlahLog("Error DeleteDC(...) function failure");
 
-    if( !DeleteDC( deviceIndependentDC ) )
-    {
-      #ifndef NDEBUG
-        FontUtilError(_this, " DeleteDC(...) function failure " );
-      #endif
-    }
-
-    deviceIndependentDC       = 0;
-    deviceIndependentCleanUp  = 0;
+    deviceIndependentDC = 0;
+    deviceIndependentCleanUp = 0;
     deviceIndependentBitmapHB = 0;
   }
+
+label_return:
+  return;
 }
 
-void FontUtilCharAntiAliasColorBlit( uint8_t **backbuffer,
-                        uint8_t **textbuffer,
-                        int  xDst,
-                        int  yDst,
-                        rect *_RectSrc
-                      )
+void FontUtilCharAntiAliasColorBlit(uint8_t** backbuffer, uint8_t** textbuffer, int xDst, int yDst, rect* _RectSrc)
 {
-  uint8_t  *Dst = 0,
-           *Src = 0;
+  uint8_t* Dst = 0;
+  uint8_t* Src = 0;
 
-  unsigned long SrcRed, SrcGreen, SrcBlue;
-  unsigned long ColorSrc;
-  unsigned long DstRatio;
-  unsigned long SrcRatio;
+  unsigned long SrcRed = 0;
+  unsigned long SrcGreen = 0;
+  unsigned long SrcBlue = 0;
 
-  short          HeightLoop,
-               Width,
-               WidthLoop;
+  unsigned long ColorSrc = 0;
+  unsigned long DstRatio = 0;
+  unsigned long SrcRatio = 0;
 
-  rect           RectDst,
-           RectSrc;
+  short HeightLoop = 0;
+  short Width = 0;
+  short WidthLoop = 0;
+
+  rect RectDst = {0};
+  rect RectSrc = {0};
 
   RectSrc = *_RectSrc;
 
-  RectDst.left   = xDst;
-  RectDst.top    = yDst;
-  RectDst.right  = xDst + ( RectSrc.right  - RectSrc.left );
-  RectDst.bottom = yDst + ( RectSrc.bottom - RectSrc.top  );
+  RectDst.left = xDst;
+  RectDst.top = yDst;
+  RectDst.right = xDst + (RectSrc.right - RectSrc.left);
+  RectDst.bottom = yDst + (RectSrc.bottom - RectSrc.top);
 
-  backbuffer = &backbuffer[ RectDst.top ];
-  textbuffer = &textbuffer[ RectSrc.top ];
+  backbuffer = &backbuffer[RectDst.top];
+  textbuffer = &textbuffer[RectSrc.top];
 
-  HeightLoop = (short) ( RectDst.bottom - RectDst.top  );
-  Width      = (short) ( RectDst.right  - RectDst.left );
+  HeightLoop = (short) (RectDst.bottom - RectDst.top);
+  Width = (short) (RectDst.right - RectDst.left);
 
   do
   {
@@ -533,49 +511,46 @@ void FontUtilCharAntiAliasColorBlit( uint8_t **backbuffer,
     int rectDstLeft = RectDst.left << 2;
     int rectSrcLeft = RectSrc.left << 2;
 
-    Dst       = ( (uint8_t*) (*backbuffer) ) + rectDstLeft;
-    Src       = ( (uint8_t*) (*textbuffer) ) + rectSrcLeft;
+    Dst = (uint8_t*)backbuffer[0] + rectDstLeft;
+    Src = (uint8_t*)textbuffer[0] + rectSrcLeft;
 
     do
     {
-      SrcRatio = ( *( (unsigned long*) Src ) ) & 0xff;
+      SrcRatio = ( *(unsigned long*)Src) & 0xff;
 
       Src += 4;
 
-      if( SrcRatio == 0 )
-        Dst += 4;
-
-      else if( SrcRatio == 0xff )
+      if( !SrcRatio)
       {
-        *( (unsigned long*) Dst ) =  0x00ffffff;
+        Dst += 4;
+      }
+      else if(SrcRatio == 0xff)
+      {
+        *(unsigned long*)Dst = 0x00ffffff;
 
         Dst += 4;
       }
-
       else
       {
-        ColorSrc = *( (unsigned long*) Dst );
+        ColorSrc = *(unsigned long*)Dst;
 
-        SrcRed   = ( ( ColorSrc << 8  ) >> 24 );
-        SrcGreen = ( ( ColorSrc << 16 ) >> 24 );
-        SrcBlue  = ( ( ColorSrc << 24 ) >> 24 );
+        SrcRed = (ColorSrc << 8) >> 24;
+        SrcGreen = (ColorSrc << 16) >> 24;
+        SrcBlue = (ColorSrc << 24) >> 24;
 
         DstRatio = 0xff - SrcRatio;
 
         SrcRatio *= 0xff;
 
-        *( (unsigned long*) Dst ) =
-          ( ( ( SrcRatio + ( SrcRed   * DstRatio ) ) / 0xff ) << 16 ) |
-          ( ( ( SrcRatio + ( SrcGreen * DstRatio ) ) / 0xff ) << 8  ) |
-            ( ( SrcRatio + ( SrcBlue  * DstRatio ) ) / 0xff );
+        *(unsigned long*)Dst = ( (SrcRatio + (SrcRed * DstRatio) ) / 0xff) << 16 | ( (SrcRatio + (SrcGreen * DstRatio) ) / 0xff) << 8 | (SrcRatio + (SrcBlue * DstRatio) ) / 0xff;
 
         Dst += 4;
       }
 
-    }while( --WidthLoop > 0 );
+    }while( --WidthLoop > 0);
 
     ++backbuffer;
     ++textbuffer;
 
-  }while( --HeightLoop > 0 );
+  }while( --HeightLoop > 0);
 }

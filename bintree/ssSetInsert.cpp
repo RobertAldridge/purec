@@ -63,7 +63,7 @@ bool SsSetInsertLevel2(ssSet* _this, SsSetNode* x, SsSetCompare lessThan)
       y = xP->parent->right;
 
       if( !y)
-        gSsSetDebug[81]++;
+        _this->debug[81]++;
 
       if(y && y->color == SsSetRed)
       {
@@ -81,7 +81,7 @@ bool SsSetInsertLevel2(ssSet* _this, SsSetNode* x, SsSetCompare lessThan)
 
         xP->parent->color = SsSetRed;
 
-        SsSetRotateLeftRightInsertLevel3(x);
+        SsSetRotateLeftRightInsertLevel3(_this, x);
 
         x = x->left;
       }
@@ -91,7 +91,7 @@ bool SsSetInsertLevel2(ssSet* _this, SsSetNode* x, SsSetCompare lessThan)
 
         xP->color = SsSetBlack;
 
-        SsSetRotateRightInsertLevel3(xP->parent);
+        SsSetRotateRightInsertLevel3(_this, xP->parent);
       }
     }
     else
@@ -99,7 +99,7 @@ bool SsSetInsertLevel2(ssSet* _this, SsSetNode* x, SsSetCompare lessThan)
       y = xP->parent->left;
 
       if( !y)
-        gSsSetDebug[82]++;
+        _this->debug[82]++;
 
       if(y && y->color == SsSetRed)
       {
@@ -117,7 +117,7 @@ bool SsSetInsertLevel2(ssSet* _this, SsSetNode* x, SsSetCompare lessThan)
 
         xP->parent->color = SsSetRed;
 
-        SsSetRotateRightLeftInsertLevel3(x);
+        SsSetRotateRightLeftInsertLevel3(_this, x);
 
         x = x->right;
       }
@@ -127,7 +127,7 @@ bool SsSetInsertLevel2(ssSet* _this, SsSetNode* x, SsSetCompare lessThan)
 
         xP->parent->color = SsSetRed;
 
-        SsSetRotateLeftInsertLevel3(xP->parent);
+        SsSetRotateLeftInsertLevel3(_this, xP->parent);
       }
     }
   }
@@ -217,7 +217,7 @@ int64_t SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client
   if(_this->root.right || _this->root.color)
   {
     BlahLog("insert");
-    gSsSetDebug[68]++;
+    _this->debug[68]++;
   }
 
   result = true;

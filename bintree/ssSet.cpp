@@ -59,12 +59,12 @@ struct ssSet
   uint32_t num;
 
   uint32_t sizeOf;
+
+  int64_t debug[88];
 };
 
 const uint32_t SsSetRed = 1;
 const uint32_t SsSetBlack = 2;
-
-uint64_t gSsSetDebug[88] = {0};
 
 #define GETCLIENT(node) (void*)(node + 1)
 
@@ -95,34 +95,34 @@ static uint32_t SsSetCalculateLogBase2Level2(int64_t number);
 static SsSetNode* SsSetTreeSearchLevel2(SsSetNode* x, void* objectKey, SsSetCompare lessThan);
 
 // ssSetLeft.cpp
-static void SsSetRotateLeftErase1Level4(SsSetNode* xP);
-static void SsSetRotateLeftErase2Level4(SsSetNode* xP);
-static void SsSetRotateLeftInsertLevel3(SsSetNode* xPP);
+static void SsSetRotateLeftErase1Level4(ssSet* _this, SsSetNode* xP);
+static void SsSetRotateLeftErase2Level4(ssSet* _this, SsSetNode* xP);
+static void SsSetRotateLeftInsertLevel3(ssSet* _this, SsSetNode* xPP);
 
 // ssSetLeftLeft.cpp
-static void SsSetRotateLeftLeftEraseLevel4(SsSetNode* xP);
+static void SsSetRotateLeftLeftEraseLevel4(ssSet* _this, SsSetNode* xP);
 
 // ssSetLeftRight.cpp
-static void SsSetRotateLeftRightInsertLevel3(SsSetNode* x);
-static void SsSetRotateLeftRightEraseLevel4(SsSetNode* xP);
+static void SsSetRotateLeftRightInsertLevel3(ssSet* _this, SsSetNode* x);
+static void SsSetRotateLeftRightEraseLevel4(ssSet* _this, SsSetNode* xP);
 
 // ssSetLeftRightLeft.cpp
-static void SsSetRotateLeftRightLeftEraseLevel4(SsSetNode* xP);
+static void SsSetRotateLeftRightLeftEraseLevel4(ssSet* _this, SsSetNode* xP);
 
 // ssSetRight.cpp
-static void SsSetRotateRightErase1Level4(SsSetNode* xP);
-static void SsSetRotateRightErase2Level4(SsSetNode* xP);
-static void SsSetRotateRightInsertLevel3(SsSetNode* xPP);
+static void SsSetRotateRightErase1Level4(ssSet* _this, SsSetNode* xP);
+static void SsSetRotateRightErase2Level4(ssSet* _this, SsSetNode* xP);
+static void SsSetRotateRightInsertLevel3(ssSet* _this, SsSetNode* xPP);
 
 // ssSetRightRight.cpp
-static void SsSetRotateRightRightEraseLevel4(SsSetNode* xP);
+static void SsSetRotateRightRightEraseLevel4(ssSet* _this, SsSetNode* xP);
 
 // ssSetRightLeft.cpp
-static void SsSetRotateRightLeftInsertLevel3(SsSetNode* x);
-static void SsSetRotateRightLeftEraseLevel4(SsSetNode* xP);
+static void SsSetRotateRightLeftInsertLevel3(ssSet* _this, SsSetNode* x);
+static void SsSetRotateRightLeftEraseLevel4(ssSet* _this, SsSetNode* xP);
 
 // ssSetRightLeftRight.cpp
-static void SsSetRotateRightLeftRightEraseLevel4(SsSetNode* xP);
+static void SsSetRotateRightLeftRightEraseLevel4(ssSet* _this, SsSetNode* xP);
 
 // ssSetInsert.cpp
 static bool SsSetInsertLevel3(ssSet* _this, SsSetNode* insert, SsSetCompare lessThan);
@@ -624,6 +624,56 @@ int64_t SsSetMaxQueue(ssSet* _this)
 
 label_return:
   return result ? maxQueue : SsSetError;
+}
+
+int64_t SsSetGetDebug(ssSet* _this, uint32_t index)
+{
+  bool result = false;
+
+  int64_t debug = 0;
+
+  if( !_this || index >= countof(_this->debug) )
+  {
+    BlahLog("error");
+    goto label_return;
+  }
+
+  // root
+  // leaf
+  // lessThan
+  // evaluate
+  // allocator
+  // stack
+  // queue
+  // maxStack
+  // maxQueue
+  // num
+  // sizeOf
+
+  // no change
+  // -----
+  // root
+  // leaf
+  // lessThan
+  // evaluate
+  // allocator
+  // stack
+  // queue
+  // maxStack
+  // maxQueue
+  // num
+  // sizeOf
+
+  // touched in this function
+  // -----
+  // n/a
+
+  debug = _this->debug[index];
+
+  result = true;
+
+label_return:
+  return result ? debug : SsSetError;
 }
 
 // integrated for root sentinel

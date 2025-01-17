@@ -373,8 +373,6 @@ static void swapInt(uint32_t& lhs, uint32_t& rhs)
   rhs = temporary;
 }
 
-extern uint64_t gSsSetDebug[88];
-
 #if G1000ENABLE
 static uint32_t g1000fullCount = 0;
 static uint32_t g1000modCount = 0;
@@ -527,13 +525,11 @@ static bool SsSetTest(blahRandom* /*random*/)
 
 //uint32_t numData = 10000000;
 
-memset(gSsSetDebug, 0, sizeof(gSsSetDebug) );
+  int64_t ssSetDebug[88] = {0};
 
 for(uint32_t numData = 10; numData <= 100; numData += 1)
 {
   double percentageQueue = 0;
-
-//memset(gSsSetDebug, 0, sizeof(gSsSetDebug) );
 
 //ssSet* SsSetConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32_t resize, SsSetCompare lessThan)
   ssSet* mySet = SsSetConstruct(sizeof(uint32_t), numData <= 5000000 ? numData : 5000000, 4100000000, 10000000, lessThan);
@@ -937,21 +933,22 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
 
   if(numData >= 86)
   {
-    for(uint32_t index = 0; index < countof(gSsSetDebug); index++)
+    for(uint32_t index = 0; index < countof(ssSetDebug); index++)
     {
-//BlahLog("debug rotate %u %llu\n", index, gSsSetDebug[index] );
+      ssSetDebug[index] += SsSetGetDebug(mySet, index);
+//BlahLog("debug rotate %u %llu\n", index, ssSetDebug[index] );
     }
 
-    for(uint32_t index = 0; index < countof(gSsSetDebug); index++)
+    for(uint32_t index = 0; index < countof(ssSetDebug); index++)
     {
       if(index == 1 || index == 21 || index == 68 || index == 69 || index == 78 || index == 79 || index == 80)
       {
-        if(gSsSetDebug[index] )
-          BlahLog("debug rotate %u %llu\n", index, gSsSetDebug[index] );
+        if(ssSetDebug[index] )
+          BlahLog("debug rotate %u %llu\n", index, ssSetDebug[index] );
       }
-      else if( !gSsSetDebug[index] )
+      else if( !ssSetDebug[index] )
       {
-        BlahLog("debug rotate %u %llu\n", index, gSsSetDebug[index] );
+        BlahLog("debug rotate %u %llu\n", index, ssSetDebug[index] );
       }
     }
   }
@@ -971,7 +968,7 @@ label_return:
   return result;
 }
 
-static int mainLevel2()
+extern "C" static int mainLevel2()
 {
   int result = -1;
 
@@ -1007,7 +1004,7 @@ label_return:
 }
 
 #if 0
-int WINAPI WinMain
+extern "C" int __stdcall WinMain
 (
   HINSTANCE /*hInstance*/, // handle to current instance
   HINSTANCE /*hPrevInstance*/, // handle to previous instance

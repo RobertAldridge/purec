@@ -24,10 +24,10 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
         w = w->left;
 
         if( !w->left)
-          gSsSetDebug[70]++;
+          _this->debug[70]++;
 
         if( !w->right)
-          gSsSetDebug[71]++;
+          _this->debug[71]++;
 
         if( ( !w->left || w->left->color == SsSetBlack) && ( !w->right || w->right->color == SsSetBlack) )
         {
@@ -37,7 +37,7 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
 
           xP->color = SsSetRed;
 
-          SsSetRotateLeftErase1Level4(xP);
+          SsSetRotateLeftErase1Level4(_this, xP);
 
           w = xP->right;
 
@@ -53,7 +53,7 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
 
           xP->color = SsSetRed;
 
-          SsSetRotateLeftRightLeftEraseLevel4(xP);
+          SsSetRotateLeftRightLeftEraseLevel4(_this, xP);
 
           w = xP->parent;
 
@@ -73,7 +73,7 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
 
           xP->color = SsSetRed;
 
-          SsSetRotateLeftLeftEraseLevel4(xP);
+          SsSetRotateLeftLeftEraseLevel4(_this, xP);
 
           w = xP->parent;
 
@@ -89,10 +89,10 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
       else
       {
         if( !w->left)
-          gSsSetDebug[72]++;
+          _this->debug[72]++;
 
         if( !w->right)
-          gSsSetDebug[73]++;
+          _this->debug[73]++;
 
         if( ( !w->left || w->left->color == SsSetBlack) && ( !w->right || w->right->color == SsSetBlack) )
         {
@@ -106,7 +106,7 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
 
           w->color = SsSetRed;
 
-          SsSetRotateRightLeftEraseLevel4(xP);
+          SsSetRotateRightLeftEraseLevel4(_this, xP);
 
           w = xP->parent;
 
@@ -126,7 +126,7 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
 
           w->right->color = SsSetBlack;
 
-          SsSetRotateLeftErase2Level4(xP);
+          SsSetRotateLeftErase2Level4(_this, xP);
 
           x = GETROOTFROMTREE(_this);
         }
@@ -141,10 +141,10 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
         w = w->right;
 
         if( !w->left)
-          gSsSetDebug[74]++;
+          _this->debug[74]++;
 
         if( !w->right)
-          gSsSetDebug[75]++;
+          _this->debug[75]++;
 
         if( ( !w->right || w->right->color == SsSetBlack) && ( !w->left || w->left->color == SsSetBlack) )
         {
@@ -154,7 +154,7 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
 
           xP->color = SsSetRed;
 
-          SsSetRotateRightErase1Level4(xP);
+          SsSetRotateRightErase1Level4(_this, xP);
 
           w = xP->left;
 
@@ -170,7 +170,7 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
 
           xP->color = SsSetRed;
 
-          SsSetRotateRightLeftRightEraseLevel4(xP);
+          SsSetRotateRightLeftRightEraseLevel4(_this, xP);
 
           w = xP->parent;
 
@@ -190,7 +190,7 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
 
           xP->color = SsSetRed;
 
-          SsSetRotateRightRightEraseLevel4(xP);
+          SsSetRotateRightRightEraseLevel4(_this, xP);
 
           w = xP->parent;
 
@@ -206,10 +206,10 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
       else
       {
         if( !w->left)
-          gSsSetDebug[76]++;
+          _this->debug[76]++;
 
         if( !w->right)
-          gSsSetDebug[77]++;
+          _this->debug[77]++;
 
         if( ( !w->right || w->right->color == SsSetBlack) && ( !w->left || w->left->color == SsSetBlack) )
         {
@@ -223,7 +223,7 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
 
           w->color = SsSetRed;
 
-          SsSetRotateLeftRightEraseLevel4(xP);
+          SsSetRotateLeftRightEraseLevel4(_this, xP);
 
           w = xP->parent;
 
@@ -243,7 +243,7 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
 
           w->left->color = SsSetBlack;
 
-          SsSetRotateRightErase2Level4(xP);
+          SsSetRotateRightErase2Level4(_this, xP);
 
           x = GETROOTFROMTREE(_this);
         }
@@ -282,7 +282,7 @@ SsSetNode* SsSetEraseLevel2(ssSet* _this, SsSetNode* z)
 
   // check if y is ever sentinelRoot (should never get here)
   if(y == GETSENTINELFROMTREE(_this) )
-    gSsSetDebug[79]++;
+    _this->debug[79]++;
 
 // check if y is ever sentinelRoot
 
@@ -322,10 +322,10 @@ SsSetNode* SsSetEraseLevel2(ssSet* _this, SsSetNode* z)
   // z not root sentinel
 
   if(x == y)
-    gSsSetDebug[86]++;
+    _this->debug[86]++;
 
   if(x == z)
-    gSsSetDebug[87]++;
+    _this->debug[87]++;
 
   // swap nodes instead of swapping clients.  we have use cases where it's important for the lifetime of the node to
   // match the lifetime of the client data.  for example if the client is a sentinel.
@@ -342,13 +342,13 @@ SsSetNode* SsSetEraseLevel2(ssSet* _this, SsSetNode* z)
     SsSetNode* right = blahOld->right;
 
     if( !parent)
-      gSsSetDebug[83]++;
+      _this->debug[83]++;
 
     if( !left)
-      gSsSetDebug[84]++;
+      _this->debug[84]++;
 
     if( !right)
-      gSsSetDebug[85]++;
+      _this->debug[85]++;
 
     //     parent
     //      | ^
@@ -482,7 +482,7 @@ SsSetNode* SsSetEraseLevel2(ssSet* _this, SsSetNode* z)
 // Sentinel }
 
   if(y == GETSENTINELFROMTREE(_this) )
-    gSsSetDebug[80]++;
+    _this->debug[80]++;
 
 label_return:
   return y;
@@ -571,7 +571,7 @@ int64_t SsSetErase(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
     if(_this->root.right || _this->root.color)
     {
       BlahLog("erase");
-      gSsSetDebug[69]++;
+      _this->debug[69]++;
     }
   }
 

@@ -1,39 +1,36 @@
 
-/*
- * list.h
- *
- *  Function:   Holds public interface definitions for a First Class
- *              ADT list package.
- *
- *  Author:     Interface : Bruce McQuistan (brucemc@digipen.edu)
-
- *  Author:     Robert Aldridge (raldridg@digipen.edu)
- *  Author:     Bruce McQuistan (brucemc@digipen.edu)
- *  Author:     Robert Sedgewick (author of Algorithms in C)
- *                 ~Sedgewick needs to come out with pts. 5-8 for his 3rd edition!~
- *              Special thanks to Robert Tarjan (author of Data Structures and Network Algorithms)
- *                 ~According to Bruce, Tarjan proved generic sorting can be no faster
- *                 than N lg N, that's cool!~
- *
- *              Half of the comments before each function were by Bruce,
- *              since he wrote the interface.  I updated his comments when
- *              I added extra features to the engine.  The implementation details
- *              are all my comments since I implemented the functions.  The double
- *              sorting method is from Bruce and Sedgewick.  Many thanks to them
- *              for their hard work.  Bruce, you should write a book!
- *
- *  Revision History:
- *              I implemented the functions in October 2000 for
- *              my advanced Algorithm Analysis class (cs330). Robert Aldridge
- *
- *              The last known bug fix was in February 2000 when
- *              I was using my list routines in my 3D engine for
- *              my 3D class (cs250). Robert Aldridge
- *
- *              The last revision was in May 2001 while organizing
- *              the list library into a DLL for an online resume. Robert Aldridge
- *
- */
+// list.h
+//
+//  Function:   Holds public interface definitions for a First Class
+//              ADT list package.
+//
+//  Author:     Interface : Bruce McQuistan (brucemc@digipen.edu)
+//
+//  Author:     Robert Aldridge (raldridg@digipen.edu)
+//  Author:     Bruce McQuistan (brucemc@digipen.edu)
+//  Author:     Robert Sedgewick (author of Algorithms in C)
+//                 ~Sedgewick needs to come out with pts. 5-8 for his 3rd edition!~
+//              Special thanks to Robert Tarjan (author of Data Structures and Network Algorithms)
+//                 ~According to Bruce, Tarjan proved generic sorting can be no faster
+//                 than N lg N, that's cool!~
+//
+//              Half of the comments before each function were by Bruce,
+//              since he wrote the interface.  I updated his comments when
+//              I added extra features to the engine.  The implementation details
+//              are all my comments since I implemented the functions.  The double
+//              sorting method is from Bruce and Sedgewick.  Many thanks to them
+//              for their hard work.  Bruce, you should write a book!
+//
+//  Revision History:
+//              I implemented the functions in October 2000 for
+//              my advanced Algorithm Analysis class (cs330). Robert Aldridge
+//
+//              The last known bug fix was in February 2000 when
+//              I was using my list routines in my 3D engine for
+//              my 3D class (cs250). Robert Aldridge
+//
+//              The last revision was in May 2001 while organizing
+//              the list library into a DLL for an online resume. Robert Aldridge
 
 ///////////////////////////////////////////////////////////////
 //
@@ -63,14 +60,14 @@ typedef INDEX_TYPE(*CLIENT_EQUIVALENCE)(CLIENT_POTYPE ClientObject1, CLIENT_POTY
 //
 //  Arguments:
 //      ClientCompare - An optional permanent COMPARE function provided by the client.
-//                      May be NULL.
+//                      May be 0.
 //
 //      MaxNumberOfObjects - An optional hint at the maximal number of
 //                           objects the client wishes to put in the list.
 //
 //  Returns:
 //      A LIST_HEAD* object which must be passed to all other functions
-//      in this list interface. It will be NULL if the memory cannot
+//      in this list interface. It will be 0 if the memory cannot
 //      be allocated for the list.
 //
 //  Implementation Details:
@@ -84,7 +81,7 @@ LIST_HEAD*
 ListInit
 (
   CLIENT_COMPARE ClientCompare,
-  INDEX_TYPE     MaxNumberOfObjects
+  INDEX_TYPE MaxNumberOfObjects
 );
 
 //
@@ -94,9 +91,9 @@ ListInit
 //      Head   - The LIST_HEAD* referring to a particular instance of
 //               the list ADT.
 //
-//      NumberOfClientObjects - An optional INDEX_TYPE pointer, may be NULL.
+//      NumberOfClientObjects - An optional INDEX_TYPE pointer, may be 0.
 //                              It will be set to the number of client objects
-//                              in the list if it is not NULL
+//                              in the list if it is not 0
 //
 //  Returns:
 //      1 if list is empty, 0 otherwise.
@@ -112,7 +109,7 @@ INDEX_TYPE
 ListIsEmpty
 (
   LIST_HEAD* Head,
-  INDEX_TYPE *NumberOfClientObjects
+  INDEX_TYPE* NumberOfClientObjects
 );
 
 //
@@ -124,7 +121,7 @@ ListIsEmpty
 //
 //      ClientObject - The object to be inserted into the list.
 //
-//      ClientCompare - An optional permanent COMPARE function pointer, may be NULL.
+//      ClientCompare - An optional permanent COMPARE function pointer, may be 0.
 //
 //  Returns:
 //      0 if successful, nonzero otherwise.
@@ -148,7 +145,7 @@ ListIsEmpty
 INDEX_TYPE
 ListInsert
 (
-  LIST_HEAD*     Head,
+  LIST_HEAD* Head,
   CLIENT_POTYPE  ClientObject,
   CLIENT_COMPARE ClientCompare
 );
@@ -162,7 +159,7 @@ ListInsert
 //
 //      ClientEquality -    An optional temporary EQUIVALENCE function pointer which only
 //                          returns 1 if the objects are considered equivalent.
-//                          It returns 0 otherwise. If this is NULL, the first
+//                          It returns 0 otherwise. If this is 0, the first
 //                          element in the list is removed.
 //
 //      ClientObject -      A required POTYPE* specifying both the object to be
@@ -183,9 +180,9 @@ ListInsert
 INDEX_TYPE
 ListRemove
 (
-  LIST_HEAD*         Head,
+  LIST_HEAD* Head,
   CLIENT_EQUIVALENCE ClientEquality,
-  CLIENT_POTYPE*     ClientObject
+  CLIENT_POTYPE* ClientObject
 );
 
 //
@@ -197,7 +194,7 @@ ListRemove
 //
 //      ClientEquality -    An optional temporary EQUIVALENCE function pointer which only
 //                          returns 1 if the objects are considered equivalent.
-//                          It returns 0 otherwise. If this is NULL, the first
+//                          It returns 0 otherwise. If this is 0, the first
 //                          element in the list is returned.
 //
 //      ClientObject -      A required POTYPE* specifying both the object to be
@@ -216,9 +213,9 @@ ListRemove
 INDEX_TYPE
 ListFind
 (
-  LIST_HEAD*         Head,
+  LIST_HEAD* Head,
   CLIENT_EQUIVALENCE ClientEquality,
-  CLIENT_POTYPE*     ClientObject
+  CLIENT_POTYPE* ClientObject
 );
 
 //
@@ -230,7 +227,7 @@ ListFind
 //
 //      ClientObject -      A required POTYPE* where the next object is to be placed
 //
-//      Reset        -      A BOOL when TRUE, will reset the search to begin
+//      Reset        -      A BOOL when true, will reset the search to begin
 //                          at the start of the list.
 //
 //  Returns:
@@ -248,9 +245,9 @@ ListFind
 INDEX_TYPE
 ListGetNext
 (
-  LIST_HEAD*     Head,
+  LIST_HEAD* Head,
   CLIENT_POTYPE* ClientObject,
-  INDEX_TYPE     Reset
+  INDEX_TYPE Reset
 );
 
 //
@@ -283,7 +280,7 @@ ListTerminate
 //      Head    -   The LIST_HEAD* referring to a particular instance of
 //                  the list ADT.
 //
-//      ClientCompare -   An optional temporary COMPARE function pointer. If not NULL, it
+//      ClientCompare -   An optional temporary COMPARE function pointer. If not 0, it
 //                        overrides the default COMPARE function specified at
 //                        init time.
 //
@@ -300,7 +297,7 @@ ListTerminate
 void
 ListSort
 (
-  LIST_HEAD*     Head,
+  LIST_HEAD* Head,
   CLIENT_COMPARE ClientCompare
 );
 
@@ -313,8 +310,8 @@ ListSort
 //
 //      ClientCompare      -  An optional temporary COMPARE function pointer.
 //
-//      GetGreatest  -  An int which if TRUE, causes the greatest POTYPE
-//                      to be returned. If FALSE, it causes the the least POTYPE
+//      GetGreatest  -  An int which if true, causes the greatest POTYPE
+//                      to be returned. If false, it causes the the least POTYPE
 //                      value to be returned.
 //
 //  Returns:
@@ -330,9 +327,9 @@ ListSort
 CLIENT_POTYPE
 ListGetExtrema
 (
-  LIST_HEAD*     Head,
+  LIST_HEAD* Head,
   CLIENT_COMPARE ClientCompare,
-  INDEX_TYPE     GetGreatest
+  INDEX_TYPE GetGreatest
 );
 
 //
@@ -344,7 +341,7 @@ ListGetExtrema
 //
 //      ClientEvaluate - An optional temporary EVALUATE function provided by the client.
 //
-//      Reverse - If TRUE, dump list in reverse order.
+//      Reverse - If true, dump list in reverse order.
 //
 //  Returns:
 //      0 if successful and there was a full dump,
@@ -363,7 +360,7 @@ ListGetExtrema
 INDEX_TYPE
 ListDump
 (
-  LIST_HEAD*      Head,
+  LIST_HEAD* Head,
   CLIENT_EVALUATE ClientEvaluate,
-  INDEX_TYPE      Reverse
+  INDEX_TYPE Reverse
 );

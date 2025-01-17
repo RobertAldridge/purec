@@ -3,6 +3,8 @@
 
 #define countof(x) (sizeof(x) / sizeof(x[0] ) )
 
+//typedef struct HDC__* HDC;
+
 struct FontBlah;
 
 struct LIST_HEAD;
