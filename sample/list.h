@@ -329,7 +329,7 @@ ListGetExtrema
 (
   LIST_HEAD* Head,
   CLIENT_COMPARE ClientCompare,
-  INDEX_TYPE GetGreatest
+  bool GetGreatest
 );
 
 //
@@ -362,5 +362,5 @@ ListDump
 (
   LIST_HEAD* Head,
   CLIENT_EVALUATE ClientEvaluate,
-  INDEX_TYPE Reverse
+  bool Reverse
 );

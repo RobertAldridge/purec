@@ -1,12 +1,9 @@
 
-/*
- *  File:       listClient.cpp
- *
- *  Function:   Test code for List Package
- *
- *  Author:     Bruce McQuistan (brucemc@digipen.edu) and Robert Aldridge (raldridg@digipen.edu)
- *
- */
+// listClient.cpp
+//
+// Function: Test code for List Package
+//
+// Author: Bruce McQuistan (brucemc@digipen.edu) and Robert Aldridge (raldridg@digipen.edu)
 
 #include <cstdint>
 #include <cstdlib>

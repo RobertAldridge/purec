@@ -1,34 +1,24 @@
 
-/*
- * list.cpp
- *
- *  Function:   Holds private interface definitions for a First Class
- *              ADT list package.
- *
- *  Author:     Bruce McQuistan (brucemc@digipen.edu) and Robert Aldridge (raldridg@digipen.edu)
- *
- *  Revision History:
- *              5/3/99  - Created. brucemc.
- *              4/13/00 - List sort using mergesort added. brucemc.
- *
- */
+
+// list.cpp
+//
+// Function: Holds private interface definitions for a First Class
+//           ADT list package.
+//
+// Author: Bruce McQuistan (brucemc@digipen.edu) and Robert Aldridge (raldridg@digipen.edu)
+//
+// Revision History:
+//   5/3/99  - Created. brucemc.
+//   4/13/00 - List sort using mergesort added. brucemc.
 
 #include <cstdio>
 #include <cstdlib>
 #include <cassert>
 #include <cstring>
 
-  #define ERROR -1
+#define ERROR -1
 
-  #ifndef true
-    #define true 1
-  #endif
-
-  #define NO_ERROR 0
-
-  #ifndef false
-    #define false 0
-  #endif
+#define NO_ERROR 0
 
 #include "list.h"
 
@@ -101,11 +91,11 @@ ListInit
   if(MaxNumberOfObjects<0)
     return 0;
 
-  Head=(LIST_HEAD*)calloc(1,sizeof(LIST_HEAD));
+  Head=(LIST_HEAD*)calloc(1, sizeof(LIST_HEAD) );
 
   if(Head)
   {
-    Head->ObjectArray=(CLIENT_POTYPE*)calloc(1,sizeof(CLIENT_POTYPE)*MaxNumberOfObjects*2);
+    Head->ObjectArray = (CLIENT_POTYPE*)calloc(1, sizeof(CLIENT_POTYPE) * (MaxNumberOfObjects * 2) );
 
     if(!Head->ObjectArray)
     {
@@ -156,7 +146,7 @@ ListIsEmpty
   if(NumberOfClientObjects)
     *NumberOfClientObjects=Head->CurrentIndex;
 
-  return(!Head->CurrentIndex);
+  return Head->CurrentIndex == 0;
 }
 
 //
@@ -217,7 +207,7 @@ ListInsert
       return ERROR;
     }
 
-    GrowArray=(CLIENT_POTYPE*)calloc(1,sizeof(CLIENT_POTYPE)*Head->MaxNumberOfObjects*4);
+    GrowArray=(CLIENT_POTYPE*)calloc(1, sizeof(CLIENT_POTYPE) * (Head->MaxNumberOfObjects * 4) );
 
     if(!GrowArray)
       return ERROR;
@@ -305,7 +295,7 @@ ListRemove
       memcpy(ClientObject,&Head->ObjectArray[loop],sizeof(CLIENT_POTYPE));
 
       if(--Head->CurrentIndex>0)
-        memcpy(&Head->ObjectArray[loop],&Head->ObjectArray[loop+1],sizeof(CLIENT_POTYPE)*(Head->CurrentIndex-loop));
+        memcpy(&Head->ObjectArray[loop],&Head->ObjectArray[loop+1],sizeof(CLIENT_POTYPE) * ( (size_t)Head->CurrentIndex - loop) );
 
       memset(&Head->ObjectArray[Head->CurrentIndex],0,sizeof(CLIENT_POTYPE));
 
@@ -705,7 +695,7 @@ ListSort
 //
 //      ClientCompare      -  An optional temporary COMPARE function pointer.
 //
-//      GetGreatest  -  An int which if true, causes the greatest POTYPE
+//      GetGreatest  -  A bool which if true, causes the greatest POTYPE
 //                      to be returned. If false, it causes the the least POTYPE
 //                      value to be returned.
 //
@@ -722,13 +712,15 @@ ListSort
 CLIENT_POTYPE
 ListGetExtrema
 (
-  LIST_HEAD*     Head,
+  LIST_HEAD* Head,
   CLIENT_COMPARE ClientCompare,
-  INDEX_TYPE     GetGreatest
+  bool GetGreatest
 )
 {
-  int           loop=0,Num;
-  CLIENT_POTYPE temp={0};
+  int loop = 0;
+  int Num = 0;
+
+  CLIENT_POTYPE temp = {0};
 
   if( !Head || !Head->ObjectArray || Head->Dump || Head->Find || Head->GetExtrema || Head->Remove || Head->Sort )
     return temp;
@@ -748,7 +740,7 @@ ListGetExtrema
 
   Head->GetExtrema=1;
 
-  if(GetGreatest==true)
+  if(GetGreatest)
   {
     do
     {
@@ -800,12 +792,13 @@ ListGetExtrema
 INDEX_TYPE
 ListDump
 (
-  LIST_HEAD*      Head,
+  LIST_HEAD* Head,
   CLIENT_EVALUATE ClientEvaluate,
-  INDEX_TYPE      Reverse
+  bool Reverse
 )
 {
-  int loop=0,Num;
+  int loop = 0;
+  int Num = 0;
 
   if( !Head || !Head->ObjectArray || Head->Dump || Head->Find || Head->GetExtrema || Head->Remove || Head->Sort )
     return ERROR;
@@ -825,7 +818,7 @@ ListDump
 
   Head->Dump=1;
 
-  if(Reverse==true)
+  if(Reverse)
   {
     --Num;
 

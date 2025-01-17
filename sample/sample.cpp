@@ -936,7 +936,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
     for(uint32_t index = 0; index < countof(ssSetDebug); index++)
     {
       ssSetDebug[index] += SsSetGetDebug(mySet, index);
-//BlahLog("debug rotate %u %llu\n", index, ssSetDebug[index] );
+//BlahLog("debug rotate %u %lli\n", index, ssSetDebug[index] );
     }
 
     for(uint32_t index = 0; index < countof(ssSetDebug); index++)
@@ -944,11 +944,11 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
       if(index == 1 || index == 21 || index == 68 || index == 69 || index == 78 || index == 79 || index == 80)
       {
         if(ssSetDebug[index] )
-          BlahLog("debug rotate %u %llu\n", index, ssSetDebug[index] );
+          BlahLog("debug rotate %u %lli\n", index, ssSetDebug[index] );
       }
       else if( !ssSetDebug[index] )
       {
-        BlahLog("debug rotate %u %llu\n", index, ssSetDebug[index] );
+        BlahLog("debug rotate %u %lli\n", index, ssSetDebug[index] );
       }
     }
   }

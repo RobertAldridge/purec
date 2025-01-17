@@ -224,11 +224,11 @@ CreateParticleSystem
   float gForceVarX, float gForceVarY, float gForceVarZ
 )
 {
-  EMITTER* particleSystem = (EMITTER*)calloc(1, sizeof(EMITTER));
+  EMITTER* particleSystem = (EMITTER*)calloc(1, sizeof(EMITTER) );
 
   if(particleSystem)
   {
-    particleSystem->particles = (PARTICLE*)calloc(1, sizeof(PARTICLE)* numParticles);
+    particleSystem->particles = (PARTICLE*)calloc(1, sizeof(PARTICLE) * numParticles);
 
     if(!particleSystem->particles)
     {
