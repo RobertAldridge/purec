@@ -398,9 +398,7 @@ deBoor(int _degree = 3, int _iterateConstant = 16): t(0.5), frameR(0), frameS(1)
 
   // temp m + 1 container
   for(int loop = 0; loop <= degree; loop++)
-  {
     tempPt.push_back(point(0, 0) );
-  }
 
   if(iterateConstant < 1)
   {
@@ -1649,11 +1647,19 @@ void capture_t_of_F_of_t() // deBoor::capture_t_of_F_of_t
 // erase all elements in the control point list.
 void clearAllControlPoint() // deBoor::clearAllControlPoint
 {
+  int degree = blahDegree;
+
   //if( !shelPt.empty() )
   //  shelPt.clear();
   
   if( !tranPt.empty() )
     tranPt.clear();
+  
+  if( !tempPt.empty() )
+    tempPt.clear();
+
+  for(int loop = 0; loop <= degree; loop++)
+    tempPt.push_back(point(0, 0) );
 
   if( !knots.empty() )
     knots.clear();
@@ -1811,15 +1817,21 @@ void removeControlPoint() // deBoor::removeControlPoint
       if(currentIndex != ctrlPt)
         temporaryPt.push_back(tranPt[currentIndex] );
     }
+
+    clearAllControlPoint();
     
-    tranPt.clear();
+    //tranPt.clear();
     
     for(int currentIndex = 0; currentIndex < (int)temporaryPt.size(); currentIndex++)
     {
-      tranPt.push_back(temporaryPt[currentIndex] );
+      //tranPt.push_back(temporaryPt[currentIndex] );
+      
+      inputCur = temporaryPt[currentIndex];
+      addControlPoint();
     }
   }
 
+#if 0
   --numControlPts;
 
 // todo found an edge case bug when deleting control points.  the source of the bug smells of knots.
@@ -1900,6 +1912,7 @@ void removeControlPoint() // deBoor::removeControlPoint
       knots.push_back(temporaryK[currentIndex] );
     }
   }
+#endif
 
 } // deBoor::removeControlPoint
 
