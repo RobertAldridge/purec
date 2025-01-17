@@ -309,7 +309,7 @@ uint8_t padding[5];
 double minMaxT;
 
 // This is temp memory used for iterative shell computations for t of f(t).
-dequeP shelPt;
+//dequeP shelPt;
 
 // The transformed control points are stored in this list.
 dequeP tranPt;
@@ -370,7 +370,7 @@ public:
 
 // Initialize the de Boor algorithm when the user inputs the
 // first control point.
-deBoor(int _degree = 3, int _iterateConstant = 16): t(0.5), frameR(0), frameS(1), capturedControlPt(0), numControlPts(0), iterateConstant(_iterateConstant), blahDegree(_degree), dimension(3), shellT(0), shellBl(true), ctrlBl(true), dispK(true), padding{0}, minMaxT(0), shelPt(), tranPt(), tempPt(), knots(), subdWt(), inputCur(0, 0), inputPrv(0, 0), minPt(0, 0), maxPt(0, 0), halfWidth(0.5), halfHeight(0.5), captureAction(0), circleDrawingPrimitive(0), lineDrawingPrimitive(0), pointDrawingPrimitive(0), textDrawingPrimitive(0), font(0) // deBoor::deBoor
+deBoor(int _degree = 3, int _iterateConstant = 16): t(0.5), frameR(0), frameS(1), capturedControlPt(0), numControlPts(0), iterateConstant(_iterateConstant), blahDegree(_degree), dimension(3), shellT(0), shellBl(true), ctrlBl(true), dispK(true), padding{0}, minMaxT(0), /*shelPt(), */tranPt(), tempPt(), knots(), subdWt(), inputCur(0, 0), inputPrv(0, 0), minPt(0, 0), maxPt(0, 0), halfWidth(0.5), halfHeight(0.5), captureAction(0), circleDrawingPrimitive(0), lineDrawingPrimitive(0), pointDrawingPrimitive(0), textDrawingPrimitive(0), font(0) // deBoor::deBoor
 {
   int degree = blahDegree;
 
@@ -413,10 +413,10 @@ deBoor(int _degree = 3, int _iterateConstant = 16): t(0.5), frameR(0), frameS(1)
 // Free dynamic memory allocations when destroying the algorithm instance.
 ~deBoor() // deBoor::~deBoor
 {
-  while( !shelPt.empty() )
-  {
-    shelPt.clear();
-  }
+  //while( !shelPt.empty() )
+  //{
+  //  shelPt.clear();
+  //}
 
   while( !tranPt.empty() )
   {
@@ -1537,7 +1537,7 @@ void addControlPoint() // deBoor::addControlPoint
   // Add the new control point to the list.
   numControlPts++;
 
-  shelPt.push_back(inputCur);
+  //shelPt.push_back(inputCur);
   tranPt.push_back(inputCur);
 
   if(numControlPts > degree + 1)
@@ -1633,7 +1633,7 @@ void capture_t_of_F_of_t() // deBoor::capture_t_of_F_of_t
 // erase all elements in the control point list.
 void clearAllControlPoint() // deBoor::clearAllControlPoint
 {
-  shelPt.clear();
+  //shelPt.clear();
   tranPt.clear();
 
   knots.clear();
@@ -1782,7 +1782,7 @@ void removeControlPoint() // deBoor::removeControlPoint
     }
   }
 
-  shelPt.erase(shelPt.begin() + ctrlPt);
+  //shelPt.erase(shelPt.begin() + ctrlPt);
   tranPt.erase(tranPt.begin() + ctrlPt);
 
   --numControlPts;
