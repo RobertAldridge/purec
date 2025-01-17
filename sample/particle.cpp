@@ -83,35 +83,58 @@ static int ParticleSystemsInternalLoad(LIST_HEAD* particleSystems, FILE* file)
 
   int result = 0;
 
-  result += fscanf(file, "%s\n", Obj.name); // name
+  // name
+  result += fscanf(file, "%s\n", Obj.name);
 
-  result += fscanf(file, "%f\n", &fbuffer[0] ); // emitterLife
+  // emitterLife
+  result += fscanf(file, "%f\n", &fbuffer[0] );
 
-  result += fscanf(file, "%f %f %f\n", &fbuffer[1], &fbuffer[2], &fbuffer[3] ); // posX posY posZ
+  // posX posY posZ
+  result += fscanf(file, "%f %f %f\n", &fbuffer[1], &fbuffer[2], &fbuffer[3] );
+  
+  // posVarX posVarY posVarZ
+  result += fscanf(file, "%f %f %f\n", &fbuffer[4], &fbuffer[5], &fbuffer[6] );
 
-  result += fscanf(file, "%f %f %f\n", &fbuffer[4], &fbuffer[5], &fbuffer[6] ); // posVarX posVarY posVarZ
+  // yaw yawVar
+  result += fscanf(file, "%f %f\n", &fbuffer[7], &fbuffer[8] );
+  
+  // pitch pitchVar
+  result += fscanf(file, "%f %f\n", &fbuffer[9], &fbuffer[10] );
+  
+  // speed speedVar
+  result += fscanf(file, "%f %f\n", &fbuffer[11], &fbuffer[12] );
 
-  result += fscanf(file, "%f %f\n", &fbuffer[7], &fbuffer[8] ); // yaw yawVar
-  result += fscanf(file, "%f %f\n", &fbuffer[9], &fbuffer[10] ); // pitch pitchVar
-  result += fscanf(file, "%f %f\n", &fbuffer[11], &fbuffer[12] ); // speed speedVar
+  // numParticles
+  result += fscanf(file, "%i\n", &ibuffer[0] );
 
-  result += fscanf(file, "%i\n", &ibuffer[0] ); // numParticles
+  // emitsPerFrame emitVar
+  result += fscanf(file, "%i %i\n", &ibuffer[1], &ibuffer[2] );
 
-  result += fscanf(file, "%i %i\n", &ibuffer[1], &ibuffer[2] ); // emitsPerFrame emitVar
+  // life lifeVar
+  result += fscanf(file, "%f %f\n", &fbuffer[13], &fbuffer[14] );
 
-  result += fscanf(file, "%f %f\n", &fbuffer[13], &fbuffer[14] ); // life lifeVar
+  // startColorR startColorG startColorB
+  result += fscanf(file, "%f %f %f\n", &fbuffer[15], &fbuffer[16], &fbuffer[17] );
+  
+  // startColorVarR startColorVarG startColorVarB
+  result += fscanf(file, "%f %f %f\n", &fbuffer[18], &fbuffer[19], &fbuffer[20] );
+  
+  // endColorR endColorG endColorB
+  result += fscanf(file, "%f %f %f\n", &fbuffer[21], &fbuffer[22], &fbuffer[23] );
+  
+  // endColorVarR endColorVarG endColorVarB
+  result += fscanf(file, "%f %f %f\n", &fbuffer[24], &fbuffer[25], &fbuffer[26] );
 
-  result += fscanf(file, "%f %f %f\n", &fbuffer[15], &fbuffer[16], &fbuffer[17] ); // startColorR startColorG startColorB
-  result += fscanf(file, "%f %f %f\n", &fbuffer[18], &fbuffer[19], &fbuffer[20] ); // startColorVarR startColorVarG startColorVarB
-  result += fscanf(file, "%f %f %f\n", &fbuffer[21], &fbuffer[22], &fbuffer[23] ); // endColorR endColorG endColorB
-  result += fscanf(file, "%f %f %f\n", &fbuffer[24], &fbuffer[25], &fbuffer[26] ); // endColorVarR endColorVarG endColorVarB
+  // gForceX gForceY gForceZ
+  result += fscanf(file, "%f %f %f\n", &fbuffer[27], &fbuffer[28], &fbuffer[29] );
+  
+  // gForceVarX gForceVarY gForceVarZ
+  result += fscanf(file, "%f %f %f\n", &fbuffer[30], &fbuffer[31], &fbuffer[32] );
 
-  result += fscanf(file, "%f %f %f\n", &fbuffer[27], &fbuffer[28], &fbuffer[29] ); // gForceX gForceY gForceZ
-  result += fscanf(file, "%f %f %f\n", &fbuffer[30], &fbuffer[31], &fbuffer[32] ); // gForceVarX gForceVarY gForceVarZ
+  // antiAlias physics regeneration
+  result += fscanf(file, "%i %i %i", &ibuffer[3],  &ibuffer[4],  &ibuffer[5] );
 
-  result += fscanf(file, "%i %i %i", &ibuffer[3],  &ibuffer[4],  &ibuffer[5] );  // antiAlias physics regeneration
-
-  // IF FIRST TWO CHARACTERS ARE "OS", THEN NORMALIZE THE INPUT
+  // if first two characters are "os", then normalize the input
   if(Obj.name && Obj.name[0] && Obj.name[1] && Obj.name[0] == 'O' && Obj.name[1] == 'S')
   {
     float halfWidth = (float)__LinearFrameBufferGetWidth() * 0.5f;
@@ -162,26 +185,34 @@ static int ParticleSystemsInternalLoad(LIST_HEAD* particleSystems, FILE* file)
     fbuffer[31] *= invHalfHeight;
   }
 
-  Obj.particleSystem = (void*)
-    CreateParticleSystem
-    (
-      Obj.name,
-      currentTime,
-      fbuffer[0],
-      fbuffer[1], fbuffer[2], fbuffer[3],
-      fbuffer[4], fbuffer[5], fbuffer[6],
-      fbuffer[7], fbuffer[8],
-      fbuffer[9], fbuffer[10],
-      fbuffer[11], fbuffer[12],
-      ibuffer[0],
-      ibuffer[1], ibuffer[2],
-      fbuffer[13], fbuffer[14],
-      fbuffer[15], fbuffer[16], fbuffer[17],
-      fbuffer[18], fbuffer[19], fbuffer[20],
-      fbuffer[21], fbuffer[22], fbuffer[23],
-      fbuffer[24], fbuffer[25], fbuffer[26],
-      fbuffer[27], fbuffer[28], fbuffer[29],
-      fbuffer[30], fbuffer[31], fbuffer[32] );
+  Obj.particleSystem = (void*)CreateParticleSystem
+  (
+    Obj.name,
+    currentTime,
+    
+    fbuffer[0],
+    
+    fbuffer[1], fbuffer[2], fbuffer[3],
+    fbuffer[4], fbuffer[5], fbuffer[6],
+    
+    fbuffer[7], fbuffer[8],
+    fbuffer[9], fbuffer[10],
+    fbuffer[11], fbuffer[12],
+    
+    ibuffer[0],
+    
+    ibuffer[1], ibuffer[2],
+    fbuffer[13], fbuffer[14],
+    
+    fbuffer[15], fbuffer[16], fbuffer[17],
+    fbuffer[18], fbuffer[19], fbuffer[20],
+    
+    fbuffer[21], fbuffer[22], fbuffer[23],
+    fbuffer[24], fbuffer[25], fbuffer[26],
+    
+    fbuffer[27], fbuffer[28], fbuffer[29],
+    fbuffer[30], fbuffer[31], fbuffer[32]
+  );
 
   ActivateParticleSystem( (EMITTER**) &Obj.particleSystem, currentTime, (uint8_t)ibuffer[3], (uint8_t)ibuffer[4], (uint8_t)ibuffer[5] );
 
@@ -205,6 +236,7 @@ ParticleSystemsLoadFileAndActivate
 (
   PARTICLE_SYSTEMS_HEAD** _particleSystems,
   char* filename,
+  
   float _currentTime
 )
 {
@@ -230,7 +262,7 @@ ParticleSystemsLoadFileAndActivate
 
   if(Num <= 0)
   {
-    fclose (file);
+    fclose(file);
 
     return 0;
   }
@@ -242,7 +274,7 @@ ParticleSystemsLoadFileAndActivate
 
   if( !particleSystems)
   {
-    fclose (file);
+    fclose(file);
 
     return 0;
   }
@@ -265,6 +297,7 @@ ParticleSystemsAddFileAndActivate
 (
   PARTICLE_SYSTEMS_HEAD** particleSystemsRef,
   char* filename,
+  
   float _currentTime
 )
 {
@@ -316,18 +349,18 @@ ParticleSystemsAddFileAndActivate
 }
 
 // adds a particle system to the list
-// input is assumed to be normalized between -1 and 1 for x,y,z
-// and between 0 and 1 for r,g,b
-// clipping is x:[-1,1] y:[-1,1] z:[0,1]
+// input is assumed to be normalized between -1 and 1 for x, y, z
+// and between 0 and 1 for r, g, b
+// clipping is x:[-1, 1] y:[-1, 1] z:[0, 1]
+//
 // angles are specified in radians
 // speed and force are normalized
 //
 // if input is not normalized, set first two characters
 // of name to "OS" to have variables normalized
-// from x:[0,BackBufferViewPortWidth -1]
-//      y:[0,BackBufferViewPortHeight-1]
-//      z:[-1,1]
-//      r:[0,255] g:[0,255] b:[0,255]
+// from x:[0, BackBufferViewPortWidth - 1] y:[0, BackBufferViewPortHeight - 1] z:[-1, 1]
+// r:[0, 255] g:[0, 255] b:[0, 255]
+//
 // converts angles from degrees to radians
 // speed is normalized based on BackBufferViewPortWidth
 // force is normalized based on BackBufferViewPortWidth and BackBufferViewPortHeight
@@ -336,43 +369,73 @@ ParticleSystemsAddAndActivate
 (
   PARTICLE_SYSTEMS_HEAD** particleSystemsRef,
 
-  char* name, // EMITTER NAME
-  float _currentTime, // CURRENT TIME IN SECONDS
-  float emitterLife, // HOW LONG WILL THE PARTICLE SYSTEM LAST - IN SECONDS
+  // emitter name
+  char* name, 
+  
+  // current time in seconds
+  float _currentTime, 
+  
+  // how long will the particle system last - in seconds
+  float emitterLife, 
 
-  // TRANSFORMATION INFO
-  float posX, float posY, float posZ, // XYZ POSITION OF PARTICLE SYSTEM ORIGIN AND VARIATION
+  // transformation info
+  
+  // xyz position of particle system origin and variation
+  float posX, float posY, float posZ, 
   float posVarX, float posVarY, float posVarZ,
-  float yaw, float yawVar, // YAW AND VARIATION FOR VELOCITY
-  float pitch, float pitchVar, // PITCH AND VARIATION FOR VELOCITY
-  float speed, float speedVar, // VELOCITY MAGNITUDE AND VARIATION
+  
+  // yaw and variation for velocity
+  float yaw, float yawVar, 
+  
+  // pitch and variation for velocity
+  float pitch, float pitchVar, 
+  
+  // velocity magnitude and variation
+  float speed, float speedVar, 
 
-  // PARTICLE
-  int numParticles, // TOTAL EMITTED AT ANY TIME
-  int emitsPerFrame, int emitVar, // EMITS PER FRAME AND VARIATION
-  float life, float lifeVar, // LIFETIME OF PARTICLES AND VARIATION
+  // particle
+  
+  // total emitted at any time
+  int numParticles, 
+  
+  // emits per frame and variation
+  int emitsPerFrame, int emitVar, 
+  
+  // lifetime of particles and variation
+  float life, float lifeVar, 
 
-  float startColorR, float startColorG, float startColorB, // START COLOR OF PARTICLES AND VARIATION
+  // start color of particles and variation
+  float startColorR, float startColorG, float startColorB,
   float startColorVarR, float startColorVarG, float startColorVarB,
-  float endColorR, float endColorG, float endColorB, // END COLOR OF PARTICLES AND VARIATION
+  
+  // end color of particles and variation
+  float endColorR, float endColorG, float endColorB, 
   float endColorVarR, float endColorVarG, float endColorVarB,
 
-  // PHYSICS
-  float gForceX, float gForceY, float gForceZ, // GLOBAL GRAVITY, WIND, ETC. AND VARIATION
+  // physics
+  
+  // global gravity, wind, etc. and variation
+  float gForceX, float gForceY, float gForceZ, 
   float gForceVarX, float gForceVarY, float gForceVarZ,
 
-  unsigned char antiAlias, // IF NOT SET TO 0, PARTICLES WILL BE SHADED LINES
-  // IF SET TO 0, PARTICLES WILL BE COLORED POINTS
+  // if not set to 0, particles will be shaded lines
+  //
+  // if set to 0, particles will be colored points
+  unsigned char antiAlias, 
 
-  unsigned char physics, // IF NOT SET TO 0, ACCELERATION WILL BE INTEGRATED
-  // INTO PARTICLES
-  // IF SET TO 0, ONLY VELOCITY WILL BE TAKEN
-  // INTO ACCOUNT
+  // if not set to 0, acceleration will be integrated
+  // into particles
+  //
+  // if set to 0, only velocity will be taken
+  // into account
+  unsigned char physics,
 
-  unsigned char regeneration // IF NOT SET TO 0, DEAD PARTICLES WILL BE
-  // REGENERATED
-  // IF SET TO 0, DEAD PARTICLES WILL NOT BE
-  // REGENERATED
+  // if not set to 0, dead particles will be
+  // regenerated
+  //
+  // if set to 0, dead particles will not be
+  // regenerated
+  unsigned char regeneration
 )
 {
   CLIENT_POTYPE Obj = {0};
@@ -392,7 +455,7 @@ ParticleSystemsAddAndActivate
 
   strcpy(Obj.name, name);
 
-  // IF FIRST TWO CHARACTERS ARE "OS", THEN NORMALIZE THE INPUT
+  // if first two characters are "os", then normalize the input
   if(name && name[0] && name[1] && name[0] == 'O' && name[1] == 'S')
   {
     float halfWidth = (float)__LinearFrameBufferGetWidth() * 0.5f;
@@ -443,33 +506,34 @@ ParticleSystemsAddAndActivate
     gForceVarY *= invHalfHeight;
   }
 
-  Obj.particleSystem = (void*)
-    CreateParticleSystem
-    (
-      Obj.name,
-      _currentTime,
-      emitterLife,
+  Obj.particleSystem = (void*)CreateParticleSystem
+  (
+    Obj.name,
+    _currentTime,
+    
+    emitterLife,
 
-      posX, posY, posZ,
-      posVarX, posVarY, posVarZ,
+    posX, posY, posZ,
+    posVarX, posVarY, posVarZ,
 
-      yaw, yawVar,
-      pitch, pitchVar,
-      speed, speedVar,
+    yaw, yawVar,
+    pitch, pitchVar,
+    speed, speedVar,
 
-      numParticles,
+    numParticles,
 
-      emitsPerFrame, emitVar,
-      life, lifeVar,
+    emitsPerFrame, emitVar,
+    life, lifeVar,
 
-      startColorR, startColorG, startColorB,
-      startColorVarR, startColorVarG, startColorVarB,
+    startColorR, startColorG, startColorB,
+    startColorVarR, startColorVarG, startColorVarB,
 
-      endColorR, endColorG, endColorB,
-      endColorVarR, endColorVarG, endColorVarB,
+    endColorR, endColorG, endColorB,
+    endColorVarR, endColorVarG, endColorVarB,
 
-      gForceX, gForceY, gForceZ,
-      gForceVarX, gForceVarY, gForceVarZ);
+    gForceX, gForceY, gForceZ,
+    gForceVarX, gForceVarY, gForceVarZ
+  );
 
   ActivateParticleSystem( (EMITTER**) &Obj.particleSystem, _currentTime, antiAlias, physics, regeneration);
 
@@ -490,6 +554,7 @@ ParticleSystemsReActivate
 (
   PARTICLE_SYSTEMS_HEAD** particleSystemsRef,
   char* particleSystemName,
+
   float _currentTime
 )
 {
@@ -549,6 +614,7 @@ ParticleSystemsUpdate
 (
   PARTICLE_SYSTEMS_HEAD** particleSystemsRef,
   char* particleSystemName,
+
   float _currentTime
 )
 {
@@ -608,7 +674,9 @@ ParticleSystemsDraw
 (
   PARTICLE_SYSTEMS_HEAD** particleSystemsRef,
   char* particleSystemName,
-  float* _matrix // 4x4 world to camera transformation matrix
+  
+  // 4x4 world to camera transformation matrix
+  float* _matrix
 )
 {
   CLIENT_POTYPE Obj = {0};
@@ -657,7 +725,10 @@ ParticleSystemsUpdateAndDraw
 (
   PARTICLE_SYSTEMS_HEAD** particleSystemsRef,
   char* particleSystemName,
-  float* _matrix, // 4x4 world to camera transformation matrix
+  
+  // 4x4 world to camera transformation matrix
+  float* _matrix,
+  
   float _currentTime
 )
 {
@@ -693,7 +764,7 @@ ParticleSystemsUpdateAndDraw
     if( !ListFind(particleSystems[0], Equal, &Obj) )
     {
       Update( &Obj);
-      Draw  ( &Obj);
+      Draw ( &Obj);
 
       if( !Obj.particleSystem)
         ListRemove(particleSystems[0], Equal, &Obj);

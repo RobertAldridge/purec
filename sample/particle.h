@@ -3,7 +3,7 @@
 //
 // menu particle system interface
 //
-// Robert Aldridge
+// robert aldridge
 //
 // if in a multithreaded environment,
 // cannot handle multiple simultaneous
@@ -11,13 +11,13 @@
 // ...
 // because of globals
 //
-// Many thanks to the Jeff Lander article:
-// The Ocean Spray in Your Face (July 1998 Game Developer)
+// many thanks to the jeff lander article:
+// the ocean spray in your face (july 1998 game developer)
 
-// ALWAYS CALL ParticleSystemsInitGraphics AT START OF PROGRAM
-// AND WHEN RELOADING BETWEEN SCREEN MODES
+// always call particlesystemsinitgraphics at start of program
+// and when reloading between screen modes
 //
-// Call it every program loop if necessary!
+// call it every program loop if necessary!
 
 extern void
 ParticleSystemsInitGraphics
@@ -40,6 +40,7 @@ ParticleSystemsLoadFileAndActivate
 (
   PARTICLE_SYSTEMS_HEAD** particleSystems,
   char* filename,
+
   float currentTime
 );
 
@@ -52,24 +53,25 @@ ParticleSystemsAddFileAndActivate
 (
   PARTICLE_SYSTEMS_HEAD** particleSystems,
   char* filename,
+
   float currentTime
 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // adds a particle system to the list
-// input is assumed to be normalized between -1 and 1 for x,y,z
-// and between 0 and 1 for r,g,b
-// clipping is x:[-1,1] y:[-1,1] z:[0,1]
+// input is assumed to be normalized between -1 and 1 for x, y, z
+// and between 0 and 1 for r, g, b
+// clipping is x:[-1, 1] y:[-1, 1] z:[0, 1]
+//
 // angles are specified in radians
 // speed and force are normalized
 //
 // if input is not normalized, set first two characters
 // of name to "OS" to have variables normalized
-// from x:[0,BackBufferViewPortWidth -1]
-// y:[0,BackBufferViewPortHeight-1]
-// z:[-1,1]
-// r:[0,255] g:[0,255] b:[0,255]
+// from x:[0, BackBufferViewPortWidth - 1] y:[0, BackBufferViewPortHeight - 1] z:[-1, 1]
+// r:[0, 255] g:[0, 255] b:[0, 255]
+//
 // converts angles from degrees to radians
 // speed is normalized based on BackBufferViewPortWidth
 // force is normalized based on BackBufferViewPortWidth and BackBufferViewPortHeight
@@ -78,43 +80,73 @@ ParticleSystemsAddAndActivate
 (
   PARTICLE_SYSTEMS_HEAD** particleSystems,
 
-  char* name, // EMITTER NAME
-  float currentTime, // CURRENT TIME IN SECONDS
-  float emitterLife, // HOW LONG WILL THE PARTICLE SYSTEM LAST - IN SECONDS
+  // emitter name
+  char* name,
+  
+  // current time in seconds
+  float currentTime,
+  
+  // how long will the particle system last - in seconds
+  float emitterLife,
 
-  // TRANSFORMATION INFO
-  float posX, float posY, float posZ, // XYZ POSITION OF PARTICLE SYSTEM ORIGIN AND VARIATION
+  // transformation info
+  
+  // xyz position of particle system origin and variation
+  float posX, float posY, float posZ,
   float posVarX, float posVarY, float posVarZ,
-  float yaw, float yawVar, // YAW AND VARIATION FOR VELOCITY
-  float pitch, float pitchVar, // PITCH AND VARIATION FOR VELOCITY
-  float speed, float speedVar, // VELOCITY MAGNITUDE AND VARIATION
+  
+  // yaw and variation for velocity
+  float yaw, float yawVar,
+  
+  // pitch and variation for velocity
+  float pitch, float pitchVar,
+  
+  // velocity magnitude and variation
+  float speed, float speedVar,
 
-  // PARTICLE
-  int numParticles, // TOTAL EMITTED AT ANY TIME
-  int emitsPerFrame, int emitVar, // EMITS PER FRAME AND VARIATION
-  float life, float lifeVar, // LIFETIME OF PARTICLES AND VARIATION
+  // particle
+  
+  // total emitted at any time
+  int numParticles,
+  
+  // emits per frame and variation
+  int emitsPerFrame, int emitVar,
+  
+  // lifetime of particles and variation
+  float life, float lifeVar,
 
-  float startColorR, float startColorG, float startColorB, // START COLOR OF PARTICLES AND VARIATION
+  // start color of particles and variation
+  float startColorR, float startColorG, float startColorB,
   float startColorVarR, float startColorVarG, float startColorVarB,
-  float endColorR, float endColorG, float endColorB, // END COLOR OF PARTICLES AND VARIATION
+  
+  // end color of particles and variation
+  float endColorR, float endColorG, float endColorB,
   float endColorVarR, float endColorVarG, float endColorVarB,
 
-  // PHYSICS
-  float gForceX, float gForceY, float gForceZ, // GLOBAL GRAVITY, WIND, ETC. AND VARIATION
+  // physics
+  
+  // global gravity, wind, etc. and variation
+  float gForceX, float gForceY, float gForceZ,
   float gForceVarX, float gForceVarY, float gForceVarZ,
 
-  unsigned char antiAlias, // IF NOT SET TO 0, PARTICLES WILL BE SHADED LINES
-  // IF SET TO 0, PARTICLES WILL BE COLORED POINTS
+  // if not set to 0, particles will be shaded lines
+  //
+  // if set to 0, particles will be colored points
+  unsigned char antiAlias,
 
-  unsigned char physics, // IF NOT SET TO 0, ACCELERATION WILL BE INTEGRATED
-  // INTO PARTICLES
-  // IF SET TO 0, ONLY VELOCITY WILL BE TAKEN
-  // INTO ACCOUNT
+  // if not set to 0, acceleration will be integrated
+  // into particles
+  //
+  // if set to 0, only velocity will be taken
+  // into account
+  unsigned char physics,
 
-  unsigned char regeneration // IF NOT SET TO 0, DEAD PARTICLES WILL BE
-  // REGENERATED
-  // IF SET TO 0, DEAD PARTICLES WILL NOT BE
-  // REGENERATED
+  // if not set to 0, dead particles will be
+  // regenerated
+  //
+  // if set to 0, dead particles will not be
+  // regenerated
+  unsigned char regeneration
 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -129,6 +161,7 @@ ParticleSystemsReActivate
 (
   PARTICLE_SYSTEMS_HEAD** particleSystems,
   char* particleSystemName,
+
   float currentTime
 );
 
@@ -144,6 +177,7 @@ ParticleSystemsUpdate
 (
   PARTICLE_SYSTEMS_HEAD** particleSystems,
   char* particleSystemName,
+
   float currentTime
 );
 
@@ -159,7 +193,9 @@ ParticleSystemsDraw
 (
   PARTICLE_SYSTEMS_HEAD** particleSystems,
   char* particleSystemName,
-  float* matrix // 4x4 world to camera transformation matrix
+  
+  // 4x4 world to camera transformation matrix
+  float* matrix
 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -174,7 +210,10 @@ ParticleSystemsUpdateAndDraw
 (
   PARTICLE_SYSTEMS_HEAD** particleSystems,
   char* particleSystemName,
-  float* matrix, // 4x4 world to camera transformation matrix
+  
+  // 4x4 world to camera transformation matrix
+  float* matrix,
+  
   float currentTime
 );
 
