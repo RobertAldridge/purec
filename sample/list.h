@@ -227,7 +227,7 @@ ListFind
 //
 //      ClientObject -      A required POTYPE* where the next object is to be placed
 //
-//      Reset        -      A BOOL when true, will reset the search to begin
+//      Reset        -      A bool when true, will reset the search to begin
 //                          at the start of the list.
 //
 //  Returns:
@@ -247,7 +247,7 @@ ListGetNext
 (
   LIST_HEAD* Head,
   CLIENT_POTYPE* ClientObject,
-  INDEX_TYPE Reset
+  bool Reset
 );
 
 //

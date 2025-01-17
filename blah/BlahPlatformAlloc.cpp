@@ -3,44 +3,14 @@
 // Robert Aldridge
 
 // _MSC_VER
-// ERROR_INSUFFICIENT_BUFFER
-// ERROR_SUCCESS
-// MEM_COMMIT
-// MEM_LARGE_PAGES
-// MEM_RELEASE
-// MEM_RESERVE
-// PAGE_READWRITE
-// POLICY_CREATE_ACCOUNT
-// POLICY_LOOKUP_NAMES
-// SE_LOCK_MEMORY_NAME
-// SE_PRIVILEGE_ENABLED
-// TOKEN_ADJUST_PRIVILEGES
-// TOKEN_QUERY
 
-// LSA_OBJECT_ATTRIBUTES
-// LSA_UNICODE_STRING
-// TOKEN_PRIVILEGES
-// TOKEN_USER
-
-// AdjustTokenPrivileges
-// CloseHandle
-// ConvertSidToStringSid
-// GetCurrentProcess
-// GetLargePageMinimum
-// GetLastError
-// GetTokenInformation
-// LookupPrivilegeValue
-// LsaAddAccountRights
-// LsaOpenPolicy
-// LsaRemoveAccountRights
-// OpenProcessToken
-// VirtualAlloc
-// VirtualFree
-
-#include <cstddef> // size_t, wchar_t
+//#include <cstddef> // size_t, wchar_t
 #include <cstdint> // uint32_t
+#include <cstdlib> // free, malloc
+//#include <cstring>
+#include <cwchar> // wcslen
 
-using std::size_t;
+//using std::size_t;
 using std::uint32_t;
 //using std::wchar_t;
 
@@ -48,7 +18,7 @@ using std::uint32_t;
 
 #include "BlahPlatformAlloc.h"
 
-#if defined(_MSC_VER)
+#if 0/*defined(_MSC_VER)*/
 
 #include <windows.h>
 #include <ntsecapi.h>
@@ -58,6 +28,143 @@ using std::uint32_t;
 
 extern "C"
 {
+
+#define ERROR_INSUFFICIENT_BUFFER 122L
+#define ERROR_SUCCESS 0L
+
+#define MEM_COMMIT 0x00001000
+#define MEM_LARGE_PAGES 0x20000000
+#define MEM_RELEASE 0x00008000
+#define MEM_RESERVE 0x00002000
+
+#define PAGE_READWRITE 0x04
+
+#define POLICY_CREATE_ACCOUNT 0x00000010L
+#define POLICY_LOOKUP_NAMES 0x00000800L
+
+#define SE_LOCK_MEMORY_NAME L"SeLockMemoryPrivilege"
+
+#define SE_PRIVILEGE_ENABLED 0x00000002L
+
+#define TOKEN_ADJUST_PRIVILEGES 0x0020
+#define TOKEN_QUERY 0x0008
+
+enum _TOKEN_INFORMATION_CLASS
+{
+  TokenUser = 1
+};
+
+typedef enum _TOKEN_INFORMATION_CLASS TOKEN_INFORMATION_CLASS;
+typedef enum _TOKEN_INFORMATION_CLASS* PTOKEN_INFORMATION_CLASS;
+
+struct _LSA_UNICODE_STRING
+{
+  unsigned short Length;
+  unsigned short MaximumLength;
+  unsigned char padding1[4];
+  wchar_t* Buffer;
+};
+
+typedef struct _LSA_UNICODE_STRING LSA_UNICODE_STRING;
+typedef struct _LSA_UNICODE_STRING* PLSA_UNICODE_STRING;
+
+typedef void* LSA_HANDLE;
+typedef void** PLSA_HANDLE;
+
+typedef unsigned long ACCESS_MASK;
+
+typedef void* HANDLE;
+
+struct _LSA_OBJECT_ATTRIBUTES
+{
+  unsigned long Length;
+  unsigned char padding1[4];
+  HANDLE RootDirectory;
+  LSA_UNICODE_STRING* ObjectName;
+  unsigned long Attributes;
+  unsigned char padding2[4];
+  void* SecurityDescriptor;
+  void* SecurityQualityOfService;
+};
+
+typedef struct _LSA_OBJECT_ATTRIBUTES LSA_OBJECT_ATTRIBUTES;
+typedef struct _LSA_OBJECT_ATTRIBUTES* PLSA_OBJECT_ATTRIBUTES;
+
+typedef void* PSID;   
+
+struct _SID_AND_ATTRIBUTES
+{
+  PSID Sid;
+  unsigned long Attributes;
+  unsigned char padding1[4];
+};
+
+typedef struct _SID_AND_ATTRIBUTES SID_AND_ATTRIBUTES;
+typedef struct _SID_AND_ATTRIBUTES* PSID_AND_ATTRIBUTES;
+
+struct _TOKEN_USER
+{
+  SID_AND_ATTRIBUTES User;
+};
+
+typedef struct _TOKEN_USER TOKEN_USER;
+typedef struct _TOKEN_USER* PTOKEN_USER;
+
+struct _LUID
+{
+  unsigned long LowPart;
+  long HighPart;
+};
+
+typedef struct _LUID LUID;
+typedef struct _LUID* PLUID;
+
+struct _LUID_AND_ATTRIBUTES
+{
+  LUID Luid;
+  unsigned long Attributes;
+};
+
+typedef struct _LUID_AND_ATTRIBUTES LUID_AND_ATTRIBUTES;
+typedef struct _LUID_AND_ATTRIBUTES* PLUID_AND_ATTRIBUTES;
+
+struct _TOKEN_PRIVILEGES
+{
+  unsigned long PrivilegeCount;
+  LUID_AND_ATTRIBUTES Privileges[1];
+};
+
+typedef struct _TOKEN_PRIVILEGES TOKEN_PRIVILEGES;
+typedef struct _TOKEN_PRIVILEGES* PTOKEN_PRIVILEGES;
+
+long __stdcall LsaOpenPolicy(LSA_UNICODE_STRING* SystemName, LSA_OBJECT_ATTRIBUTES* ObjectAttributes, ACCESS_MASK DesiredAccess, LSA_HANDLE* PolicyHandle);
+
+__declspec(dllimport) int __stdcall AdjustTokenPrivileges(HANDLE TokenHandle, int DisableAllPrivileges, TOKEN_PRIVILEGES* NewState, unsigned long BufferLength, PTOKEN_PRIVILEGES PreviousState, unsigned long* ReturnLength);
+
+__declspec(dllimport) int __stdcall CloseHandle(HANDLE hObject);
+
+int __stdcall ConvertSidToStringSidW(PSID Sid, wchar_t** StringSid);
+
+__declspec(dllimport) HANDLE __stdcall GetCurrentProcess();
+
+__declspec(dllimport) unsigned long long __stdcall GetLargePageMinimum();
+
+__declspec(dllimport) unsigned long __stdcall GetLastError();
+
+__declspec(dllimport) int __stdcall GetTokenInformation(HANDLE TokenHandle, TOKEN_INFORMATION_CLASS TokenInformationClass, void* TokenInformation, unsigned long TokenInformationLength, unsigned long* ReturnLength);
+
+__declspec(dllimport) int __stdcall LookupPrivilegeValueW(const wchar_t* lpSystemName, const wchar_t* lpName, LUID* lpLuid);
+
+long __stdcall LsaAddAccountRights(LSA_HANDLE PolicyHandle, PSID AccountSid, LSA_UNICODE_STRING* UserRights, unsigned long CountOfRights);
+
+long __stdcall LsaRemoveAccountRights(LSA_HANDLE PolicyHandle, PSID AccountSid, unsigned char AllRights, LSA_UNICODE_STRING* UserRights, unsigned long CountOfRights);
+
+__declspec(dllimport) int __stdcall OpenProcessToken(HANDLE ProcessHandle, unsigned long DesiredAccess, HANDLE* TokenHandle);
+
+__declspec(dllimport) void* __stdcall VirtualAlloc(void* BaseAddress, unsigned long long Size, unsigned long AllocationType, unsigned long Protection);
+
+__declspec(dllimport) int __stdcall VirtualFree(void* lpAddress, unsigned long long dwSize, unsigned long dwFreeType);
+
 }
 
 #endif
@@ -183,7 +290,7 @@ bool EnableLargePageSupport()
     goto label_return;
   }
 
-  ConvertSidToStringSid(tokenUser->User.Sid, &strsid);
+  ConvertSidToStringSidW(tokenUser->User.Sid, &strsid);
   BlahLog("User SID: %S\n", strsid);
 
   CloseHandle(hToken);
@@ -216,7 +323,7 @@ bool EnableLargePageSupport()
   tp.PrivilegeCount = 1;
   tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
 
-  if( !LookupPrivilegeValue(0, SE_LOCK_MEMORY_NAME, &tp.Privileges[0].Luid) )
+  if( !LookupPrivilegeValueW(0, SE_LOCK_MEMORY_NAME, &tp.Privileges[0].Luid) )
   {
     BlahLog("LookupPrivilegeValue failed %lu\n", GetLastError() );
     goto label_return;

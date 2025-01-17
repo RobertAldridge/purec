@@ -10,7 +10,9 @@
 
 extern "C"
 {
-  void __stdcall OutputDebugStringA(const char* lpOutputString);
+
+__declspec(dllimport) void __stdcall OutputDebugStringA(const char* lpOutputString);
+
 }
 
 #endif

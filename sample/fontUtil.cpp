@@ -13,7 +13,7 @@
 #include "BlahAlloc.h"
 #include "BlahLog.h"
 
-#if 0
+#if 0/*defined(_MSC_VER)*/
 
 #include <windows.h>
 
@@ -100,19 +100,19 @@ typedef struct tagBITMAPINFO BITMAPINFO;
 typedef struct tagBITMAPINFO* LPBITMAPINFO;
 typedef struct tagBITMAPINFO* PBITMAPINFO;
 
-HDC __stdcall CreateCompatibleDC(HDC hdc);
+__declspec(dllimport) HDC __stdcall CreateCompatibleDC(HDC hdc);
 
-HANDLE __stdcall LoadImageA(HINSTANCE hInst, const char* name, unsigned int type, int cx, int cy, unsigned int fuLoad);
+__declspec(dllimport) HANDLE __stdcall LoadImageA(HINSTANCE hInst, const char* name, unsigned int type, int cx, int cy, unsigned int fuLoad);
 
-int __stdcall DeleteDC(HDC hdc);
+__declspec(dllimport) int __stdcall DeleteDC(HDC hdc);
 
-HGDIOBJ __stdcall SelectObject(HDC hdc, HGDIOBJ h);
+__declspec(dllimport) HGDIOBJ __stdcall SelectObject(HDC hdc, HGDIOBJ h);
 
-int __stdcall DeleteObject(HGDIOBJ ho);
+__declspec(dllimport) int __stdcall DeleteObject(HGDIOBJ ho);
 
-int __stdcall BitBlt(HDC hdc, int x, int y, int cx, int cy, HDC hdcSrc, int x1, int y1, unsigned long rop);
+__declspec(dllimport) int __stdcall BitBlt(HDC hdc, int x, int y, int cx, int cy, HDC hdcSrc, int x1, int y1, unsigned long rop);
 
-HBITMAP __stdcall CreateDIBSection(HDC hdc, const BITMAPINFO* pbmi, unsigned int usage, void** ppvBits, HANDLE hSection, unsigned long offset);
+__declspec(dllimport) HBITMAP __stdcall CreateDIBSection(HDC hdc, const BITMAPINFO* pbmi, unsigned int usage, void** ppvBits, HANDLE hSection, unsigned long offset);
 
 }
 

@@ -782,11 +782,11 @@ HDC
 HBITMAP
 HGDIOBJ
 HWND
-WPARAM
-LPARAM
+unsigned long long
+long long
 POINT
 LPCREATESTRUCT
-LRESULT
+long long
 WNDCLASSA
 //
 LARGE_INTEGER
@@ -850,3 +850,5 @@ FindNextFileA
 SetLastError
 GetLastError
 FindClose
+
+16 48 16

@@ -19,7 +19,7 @@
 #include "listObject.h"
 #include "list.h"
 
-#if 0
+#if 0/*defined(_MSC_VER)*/
 
 #include <windows.h>
 
@@ -50,9 +50,9 @@ union _LARGE_INTEGER
 
 typedef union _LARGE_INTEGER LARGE_INTEGER;
 
-int __stdcall QueryPerformanceCounter(LARGE_INTEGER* lpPerformanceCount);
+__declspec(dllimport) int __stdcall QueryPerformanceCounter(LARGE_INTEGER* lpPerformanceCount);
 
-int __stdcall QueryPerformanceFrequency(LARGE_INTEGER* lpFrequency);
+__declspec(dllimport) int __stdcall QueryPerformanceFrequency(LARGE_INTEGER* lpFrequency);
 
 }
 
