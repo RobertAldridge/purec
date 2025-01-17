@@ -1,9 +1,11 @@
 
 // resourceHeaders.h
 
-//{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
-// Used by AboutBox.rc
+// { {NO_DEPENDENCIES} }
+//
+// microsoft Developer Studio generated include file
+//
+// used by aboutBox.rc
 
 #define IDEX1 3
 #define IDEX2 4
@@ -50,13 +52,15 @@
 #define IDC_RADIO2 1032
 #define IDC_BUTTON1 1033
 
-// Next default values for new objects
+// next default values for new objects
 
-#ifdef APSTUDIO_INVOKED
-#ifndef APSTUDIO_READONLY_SYMBOLS
+#if defined APSTUDIO_INVOKED
+
+#if !defined APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE 104
 #define _APS_NEXT_COMMAND_VALUE 40001
 #define _APS_NEXT_CONTROL_VALUE 1005
 #define _APS_NEXT_SYMED_VALUE 101
 #endif
+
 #endif
