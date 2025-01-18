@@ -23,7 +23,7 @@ const int SsSetLevelorder = 3; // levelorder == breadth-first
 
 ssSet* SsSetConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32_t resize, SsSetCompare lessThan);
 
-int64_t SsSetDestruct(ssSet* _this);
+int64_t SsSetDestruct(ssSet** _this);
 
 int64_t SsSetNum(ssSet* _this);
 

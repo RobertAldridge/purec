@@ -200,7 +200,7 @@
     <ClCompile Include="..\blah\BlahAlloc.cpp" />
     <ClCompile Include="..\blah\BlahPlatformAlloc.cpp" />
     <ClCompile Include="..\blah\BlahPlatformLog.cpp" />
-    <ClCompile Include="..\ssmm\ssArray.cpp" />
+    <ClCompile Include="..\ssmm\ssArrayIndex.cpp" />
     <ClCompile Include="..\ssmm\ssMm.cpp" />
     <ClCompile Include="..\ssmm\ssQueue.cpp" />
     <ClCompile Include="..\ssmm\ssStack.cpp" />

@@ -96,6 +96,12 @@ extern int term();
 //using std::memset;
 //using std::uint32_t;
 
+struct point
+{
+  int x;
+  int y;
+};
+
 #include "listObject.h"
 #include "list.h"
 

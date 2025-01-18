@@ -315,18 +315,16 @@ int64_t SsArrayReset(ssArray* _this)
 
   uint32_t num = 0;
 
-  SsArrayPool* pool = 0;
-
   if( !_this)
     goto label_return;
 
   num = _this->numChunks;
 
-  pool = _this->head;
+  _this->current = _this->head;
 
-  _this->chunk = SsArrayPoolToFirstChunk(pool);
+  _this->chunk = SsArrayPoolToFirstChunk(_this->current);
 
-  _this->current = pool;
+  this->numChunks = 0;
 
   _this->max = pool->num;
 

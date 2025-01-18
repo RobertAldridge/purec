@@ -220,7 +220,7 @@ static void SsStackStateChangeProcessRolloverNext(ssStack* _this)
   }
 }
 
-static bool SsStackResizeNewPool(ssStack* _this, uint32_t minimumCapacity)
+static bool SsStackResizeNewPool(ssStack* _this, uint32_t minimum)
 {
   bool result = false;
 
@@ -232,8 +232,8 @@ static bool SsStackResizeNewPool(ssStack* _this, uint32_t minimumCapacity)
 
   SsStackPool* pool = 0;
 
-  if(minimumCapacity > 0)
-    diff = minimumCapacity;
+  if(minimum > 0)
+    diff = minimum;
   else if(_this->max <= _this->resize)
     diff = _this->max;
   else
@@ -247,12 +247,12 @@ static bool SsStackResizeNewPool(ssStack* _this, uint32_t minimumCapacity)
 
   sizeOf = SsStackGetPoolSizeOf(_this, diff);
 
-  if(minimumCapacity > 0)
+  if(minimum > 0)
     sizeOf += SsStackGetSizeOfSsStackHeader();
 
   pointer = (uint8_t*)BlahAlloc(sizeOf, true);
 
-  if(minimumCapacity > 0)
+  if(minimum > 0)
     pointer += SsStackGetSizeOfSsStackHeader();
 
   pool = (SsStackPool*)pointer;

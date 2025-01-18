@@ -471,7 +471,7 @@ static void DebugFree(uint32_t* data[G1000NUMERATOR] )
 #endif
 
 // ssSet* SsSetConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32_t resize, SsSetCompare lessThan)
-// int64_t SsSetDestruct(ssSet* _this)
+// int64_t SsSetDestruct(ssSet** _this)
 // int64_t SsSetNum(ssSet* _this)
 // int64_t SsSetReset(ssSet* _this)
 // int64_t SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
@@ -944,8 +944,8 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
     }
   }
   
-  //int64_t SsSetDestruct(ssSet* _this)
-  if(SsSetDestruct(mySet) < 0)
+  //int64_t SsSetDestruct(ssSet** _this)
+  if(SsSetDestruct( &mySet) < 0)
   {
     BlahLog("error");
     goto label_return;

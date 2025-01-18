@@ -688,11 +688,21 @@ label_return:
 }
 
 // integrated for root sentinel
-int64_t SsSetDestruct(ssSet* _this)
+int64_t SsSetDestruct(ssSet** reference)
 {
   bool result = false;
+  
+  ssSet* _this = 0;
 
   uint32_t num = 0;
+  
+  if( !reference)
+  {
+    BlahLog("error");
+    goto label_return;
+  }
+
+  _this = reference[0];
 
   if( !_this)
   {
@@ -738,7 +748,8 @@ int64_t SsSetDestruct(ssSet* _this)
   SsMmDestruct( &_this->allocator);
 
   BlahFree(_this, sizeof(ssSet), true);
-  _this = 0;
+  
+  reference[0] = 0;
 
   result = true;
 

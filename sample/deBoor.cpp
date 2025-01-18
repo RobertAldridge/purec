@@ -92,6 +92,7 @@
 //#include <queue>
 #include <vector>
 
+#include "ssArray.h"
 #include "ssQueue.h"
 #include "ssSet.h"
 
@@ -330,7 +331,8 @@ double minMaxT;
 
 // The transformed control points are stored in this list.
 //dequeP tranPt;
-vectorP tranPt;
+//vectorP tranPt;
+ssArray* tranPt;
 
 // This is temp memory used for computing intermediate de Boor stage points.
 //dequeP tempPt;
@@ -390,7 +392,7 @@ public:
 
 // Initialize the de Boor algorithm when the user inputs the
 // first control point.
-deBoor(int _degree = 3, int _iterateConstant = 16): t(0.5), frameR(0), frameS(1), capturedControlPt(0), numControlPts(0), iterateConstant(_iterateConstant), blahDegree(_degree), dimension(3), shellT(0), shellBl(true), ctrlBl(true), dispK(true), padding{0}, minMaxT(0), /*shelPt(), */tranPt(), tempPt(), knots(), subdWt(0), inputCur(0, 0), inputPrv(0, 0), minPt(0, 0), maxPt(0, 0), halfWidth(0.5), halfHeight(0.5), captureAction(0), circleDrawingPrimitive(0), lineDrawingPrimitive(0), pointDrawingPrimitive(0), textDrawingPrimitive(0), font(0) // deBoor::deBoor
+deBoor(int _degree = 3, int _iterateConstant = 16): t(0.5), frameR(0), frameS(1), capturedControlPt(0), numControlPts(0), iterateConstant(_iterateConstant), blahDegree(_degree), dimension(3), shellT(0), shellBl(true), ctrlBl(true), dispK(true), padding{0}, minMaxT(0), /*shelPt(), */tranPt(0), tempPt(), knots(), subdWt(0), inputCur(0, 0), inputPrv(0, 0), minPt(0, 0), maxPt(0, 0), halfWidth(0.5), halfHeight(0.5), captureAction(0), circleDrawingPrimitive(0), lineDrawingPrimitive(0), pointDrawingPrimitive(0), textDrawingPrimitive(0), font(0) // deBoor::deBoor
 {
   int degree = blahDegree;
 
@@ -425,6 +427,8 @@ deBoor(int _degree = 3, int _iterateConstant = 16): t(0.5), frameR(0), frameS(1)
   }
 
   colors1[0] = colors0[0];
+  
+  tranPt = SsArrayConstruct(sizeof(point), 10, 4000000000, 10000);
 
   subdWt = SsQueueConstruct(sizeof(pairQS), 20 * _iterateConstant, 4000000000, 10000);
 
@@ -436,8 +440,10 @@ deBoor(int _degree = 3, int _iterateConstant = 16): t(0.5), frameR(0), frameS(1)
   //if( !shelPt.empty() )
   //  shelPt.clear();
 
-  if( !tranPt.empty() )
-    tranPt.clear();
+  if(SsArrayNum(tranPt) > 0)
+    SsArrayReset(tranPt);
+  
+  SsArrayDestruct( &tranPt);
 
   if( !tempPt.empty() )
     tempPt.clear();
@@ -1068,7 +1074,8 @@ void updateDraw() // deBoor::updateDraw
 
       for(int loop = 0; loop < numControlPts; loop++)
       {
-        _temp = tranPt[ (uint32_t)loop];
+        memset( &_temp, 0, sizeof(point) );
+        SsArrayGetAt(tranPt, (uint32_t)loop, &_temp);
 
         drawCircle(_temp, (loop == (capturedControlPt - 1) )? 15: 10, loop + 1);
 
@@ -1194,9 +1201,13 @@ void updateDraw() // deBoor::updateDraw
 
       for(int d = 0; d < numControlPts - 1; d++)
       {
-        d0 = tranPt[ (uint32_t)d];
+        //d0 = tranPt[ (uint32_t)d];
+        memset( &d0, 0, sizeof(point) );
+        SsArrayGetAt(tranPt, (uint32_t)d, &d0);
 
-        d1 = tranPt[ (int64_t)d + 1];
+        //d1 = tranPt[ (int64_t)d + 1];
+        memset( &d1, 0, sizeof(point) );
+        SsArrayGetAt(tranPt, (uint32_t)d + 1, &d1);
 
         u1 = d + degree + 1;
 
@@ -1221,7 +1232,9 @@ void updateDraw() // deBoor::updateDraw
 
       for(int currentPtIndex = 0; currentPtIndex < numControlPts; currentPtIndex++)
       {
-        _temp = tranPt[ (uint32_t)currentPtIndex];
+        //_temp = tranPt[ (uint32_t)currentPtIndex];
+        memset( &_temp, 0, sizeof(point) );
+        SsArrayGetAt(tranPt, (uint32_t)currentPtIndex, &_temp);
 
         drawCircle(_temp, (currentPtIndex == (capturedControlPt - 1) )? 15 : 10, currentPtIndex + 1);
 
@@ -1351,7 +1364,7 @@ point do_deBoor(double dt, bool draw = false) // deBoor::do_deBoor
     return temp;
   }
 
-  if( (int)knots.size() < degree + 1 || (int)tranPt.size() < degree + 1)
+  if( (int)knots.size() < degree + 1 || (int)SsArrayNum(tranPt) < degree + 1)
   {
     return temp;
   }
@@ -1444,7 +1457,9 @@ point do_deBoor(double dt, bool draw = false) // deBoor::do_deBoor
 
   for(i = I - degree, j = 0; i <= I - r; i++, j++)
   {
-    tempPt[ (uint32_t)j] = tranPt[ (uint32_t)i];
+    //tempPt[ (uint32_t)j] = tranPt[ (uint32_t)i];
+    memset( &tempPt[ (uint32_t)j], 0, sizeof(point) );
+    SsArrayGetAt(tranPt, (uint32_t)i, &tempPt[ (uint32_t)j] );
   }
 
   for(j = 1; j <= degree - r; j++)
@@ -1555,7 +1570,8 @@ void addControlPoint() // deBoor::addControlPoint
   numControlPts++;
 
   //shelPt.push_back(inputCur);
-  tranPt.push_back(inputCur);
+  //tranPt.push_back(inputCur);
+  SsArrayPush(tranPt, &inputCur);
 
   if(numControlPts > degree + 1)
   {
@@ -1599,13 +1615,22 @@ void captureControlPoint() // deBoor::captureControlPoint
   // and the captureAction() function is activated to point to the dragControlPoint()
   // function.
   capturedControlPt = 0;
-  distMin = inputCur.dist(tranPt[ (uint32_t)capturedControlPt] );
+  
+  {
+    point temporaryPoint = {0};
+    SsArrayGetAt(tranPt, (uint32_t)capturedControlPt, &temporaryPoint);
+    
+    distMin = inputCur.dist(temporaryPoint);
+  }
 
   for(int currentPtIndex = 1; currentPtIndex < numControlPts; currentPtIndex++)
   {
-    if(distMin > inputCur.dist(tranPt[ (uint32_t)currentPtIndex] ) )
+    point temporaryPoint = {0};
+    SsArrayGetAt(tranPt, (uint32_t)currentPtIndex, &temporaryPoint);
+    
+    if(distMin > inputCur.dist(temporaryPoint) )
     {
-      distMin = inputCur.dist(tranPt[ (uint32_t)currentPtIndex] );
+      distMin = inputCur.dist(temporaryPoint);
 
       capturedControlPt = currentPtIndex;
     }
@@ -1620,21 +1645,29 @@ void captureControlPoint() // deBoor::captureControlPoint
 // Captures t of F(t)
 void capture_t_of_F_of_t() // deBoor::capture_t_of_F_of_t
 {
-  // Find the minimum and maximum values of the coordinate pts,
-  // which are needed to normalize input.
-  minPt.x = maxPt.x = tranPt[0].x;
-  minPt.y = maxPt.y = 0;
-
-  for(int currentPtIndex = 1; currentPtIndex < numControlPts; currentPtIndex++)
   {
-    if(minPt.x > tranPt[ (uint32_t)currentPtIndex].x)
+    point temporaryPoint = {0};
+    SsArrayGetAt(tranPt, 0, &temporaryPoint);
+    
+    // Find the minimum and maximum values of the coordinate pts,
+    // which are needed to normalize input.
+    minPt.x = maxPt.x = temporaryPoint.x;
+    minPt.y = maxPt.y = 0;
+  }
+
+  for(int currentIndex = 1; currentIndex < numControlPts; currentIndex++)
+  {
+    point temporaryPoint = {0};
+    SsArrayGetAt(tranPt, (uint32_t)currentIndex, &temporaryPoint);
+    
+    if(minPt.x > temporaryPoint.x)
     {
-      minPt.x = tranPt[ (uint32_t)currentPtIndex].x;
+      minPt.x = temporaryPoint.x;
     }
 
-    if(maxPt.x < tranPt[ (uint32_t)currentPtIndex].x)
+    if(maxPt.x < temporaryPoint.x)
     {
-      maxPt.x = tranPt[ (uint32_t)currentPtIndex].x;
+      maxPt.x = temporaryPoint.x;
     }
   }
 
@@ -1655,8 +1688,12 @@ void clearAllControlPoint() // deBoor::clearAllControlPoint
   //if( !shelPt.empty() )
   //  shelPt.clear();
   
-  if( !tranPt.empty() )
-    tranPt.clear();
+  if(SsArrayNum(tranPt) > 0)
+    SsArrayReset(tranPt);
+  
+  //SsArrayDestruct( &tranPt);
+  
+  //tranPt = SsArrayConstruct(sizeof(point), 10, 4000000000, 10000);
   
   if( !tempPt.empty() )
     tempPt.clear();
@@ -1706,7 +1743,12 @@ void dragControlPoint() // deBoor::dragControlPoint
 {
   // Drag the captured ctrl pt relative to input movement between
   // the current input pt and the previous input pt.
-  tranPt[ (int64_t)capturedControlPt - 1] += inputCur - inputPrv;
+  
+  point temporaryPoint = {0};
+  SsArrayGetAt(tranPt, (uint32_t)capturedControlPt - 1, &temporaryPoint);
+  
+  temporaryPoint += inputCur - inputPrv;
+  SsArraySetAt(tranPt, (uint32_t)capturedControlPt - 1, &temporaryPoint);
 
 } // deBoor::dragControlPoint
 
@@ -1724,17 +1766,18 @@ void dumpAllCaptures() // deBoor::dumpAllCaptures
 
 void dragTranslate() // deBoor::dragTranslate
 {
-  point p; // init todo
+  point p = {0}; // init todo
 
-  iteratorVP a = tranPt.begin();
-
-  for(int index = 0; index < numControlPts; index++, a++)
+  for(int index = 0; index < numControlPts; index++)
   {
-    p = *a;
+    memset( &p, 0, sizeof(point) );
+    SsArrayGetAt(tranPt, (uint32_t)index, &p);
 
-    a->x = p.x + (inputCur.x - inputPrv.x);
-    a->y = p.y + (inputCur.y - inputPrv.y);
-    a->z = p.z;
+    p.x += inputCur.x - inputPrv.x;
+    p.y += inputCur.y - inputPrv.y;
+    //p.z = p.z;
+    
+    SsArraySetAt(tranPt, (uint32_t)index, &p);
   }
 
 } // deBoor::dragTranslate
@@ -1746,17 +1789,18 @@ void dragScale() // deBoor::dragScale
   double tx = (1 - scale) * halfWidth;
   double ty = (1 - scale) * halfHeight;
 
-  point p; // init todo
+  point p = {0}; // init todo
 
-  iteratorVP a = tranPt.begin();
-
-  for(int index = 0; index < numControlPts; index++, a++)
+  for(int index = 0; index < numControlPts; index++)
   {
-    p = *a;
+    memset( &p, 0, sizeof(point) );
+    SsArrayGetAt(tranPt, (uint32_t)index, &p);
 
-    a->x = p.x * scale + tx;
-    a->y = p.y * scale + ty;
-    a->z = p.z;
+    p.x = p.x * scale + tx;
+    p.y = p.y * scale + ty;
+    //p.z = p.z;
+    
+    SsArraySetAt(tranPt, (uint32_t)index, &p);
   }
 
 } // deBoor::dragScale
@@ -1773,15 +1817,18 @@ void dragRotate() // deBoor::dragRotate
 
   point p; // init todo
 
-  iteratorVP a = tranPt.begin();
-
-  for(int index = 0; index < numControlPts; index++, a++)
+  for(int index = 0; index < numControlPts; index++)
   {
-    p = *a;
+    point a = {0};
 
-    a->x = sine * (-p.y + ty) + cosine * (p.x - tx) + tx;
-    a->y = sine * (p.x - tx) + cosine * (p.y - ty) + ty;
-    a->z = p.z;
+    memset( &p, 0, sizeof(point) );
+    SsArrayGetAt(tranPt, (uint32_t)index, &p);
+
+    a.x = sine * (-p.y + ty) + cosine * (p.x - tx) + tx;
+    a.y = sine * (p.x - tx) + cosine * (p.y - ty) + ty;
+    a.z = p.z;
+
+    SsArraySetAt(tranPt, (uint32_t)index, &a);
   }
 
 } // deBoor::dragRotate
@@ -1797,15 +1844,31 @@ void removeControlPoint() // deBoor::removeControlPoint
   //
   // The ctrl pt that is closest to the input pt is the pt that is deleted.
   ctrlPt = 0;
-  distMin = inputCur.dist(tranPt[ (uint32_t)ctrlPt] );
-
-  for(int currentPtIndex = 1; currentPtIndex < numControlPts; currentPtIndex++)
+  
   {
-    if(distMin > inputCur.dist(tranPt[ (uint32_t)currentPtIndex] ) )
-    {
-      distMin = inputCur.dist(tranPt[ (uint32_t)currentPtIndex] );
+    point temporaryPoint = {0};
+    SsArrayGetAt(tranPt, (uint32_t)ctrlPt, &temporaryPoint);
 
-      ctrlPt = currentPtIndex;
+    distMin = inputCur.dist(temporaryPoint);
+    BlahLog2("distance1 %f\n", distMin);
+  }
+
+  BlahLog2("chosen index %i\n", ctrlPt);
+
+  for(int currentIndex = 1; currentIndex < numControlPts; currentIndex++)
+  {
+    point temporaryPoint = {0};
+    SsArrayGetAt(tranPt, (uint32_t)currentIndex, &temporaryPoint);
+
+    double distanceTwo = inputCur.dist(temporaryPoint);
+    BlahLog2("distance2 %f\n", distanceTwo);
+
+    if(distanceTwo < distMin)
+    {
+      distMin = distanceTwo;
+
+      ctrlPt = currentIndex;
+      BlahLog2("chosen index %i\n", ctrlPt);
     }
   }
   
@@ -1813,25 +1876,33 @@ void removeControlPoint() // deBoor::removeControlPoint
   //tranPt.erase(tranPt.begin() + ctrlPt);
 
   {
-    vectorP temporaryPt;
+    ssArray* temporaryArray = SsArrayConstruct(sizeof(point), 10, 4000000000, 10000);
 
     for(int currentIndex = 0; currentIndex < numControlPts; currentIndex++)
     {
       if(currentIndex != ctrlPt)
-        temporaryPt.push_back(tranPt[currentIndex] );
+      {
+        point temporaryPoint = {0};
+        SsArrayGetAt(tranPt, currentIndex, &temporaryPoint);
+        
+        SsArrayPush(temporaryArray, &temporaryPoint);
+      }
     }
 
     clearAllControlPoint();
     
-    //tranPt.clear();
-    
-    for(int currentIndex = 0; currentIndex < (int)temporaryPt.size(); currentIndex++)
+    for(int currentIndex = 0; currentIndex < (int)SsArrayNum(temporaryArray); currentIndex++)
     {
-      //tranPt.push_back(temporaryPt[currentIndex] );
+      //inputCur = temporaryArray[currentIndex];
+      //memcpy( &inputCur, &temporaryArray[currentIndex], sizeof(point) );
       
-      inputCur = temporaryPt[currentIndex];
+      point temporaryPoint = {0};
+      SsArrayGetAt(temporaryArray, currentIndex, &inputCur);
+
       addControlPoint();
     }
+    
+    SsArrayDestruct( &temporaryArray);
   }
 
 #if 0
@@ -2277,8 +2348,7 @@ int term() // term
     BlahLog2("iterate2\n");
   }
 
-  SsSetDestruct(deBoorList);
-  deBoorList = 0;
+  SsSetDestruct( &deBoorList);
 #else
   if(deBoorList)
   {
@@ -2312,8 +2382,7 @@ int term() // term
 
     //delete deBoorList;
     //deBoorList = 0;
-    SsSetDestruct(deBoorList);
-    deBoorList = 0;
+    SsSetDestruct( &deBoorList);
 
     BlahLog2("destroy root deBoorList after\n");
   }
