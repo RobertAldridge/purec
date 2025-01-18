@@ -82,49 +82,49 @@ ParticleSystemsAddAndActivate
 
   // emitter name
   char* name,
-  
+
   // current time in seconds
   float currentTime,
-  
+
   // how long will the particle system last - in seconds
   float emitterLife,
 
   // transformation info
-  
+
   // xyz position of particle system origin and variation
   float posX, float posY, float posZ,
   float posVarX, float posVarY, float posVarZ,
-  
+
   // yaw and variation for velocity
   float yaw, float yawVar,
-  
+
   // pitch and variation for velocity
   float pitch, float pitchVar,
-  
+
   // velocity magnitude and variation
   float speed, float speedVar,
 
   // particle
-  
+
   // total emitted at any time
   int numParticles,
-  
+
   // emits per frame and variation
   int emitsPerFrame, int emitVar,
-  
+
   // lifetime of particles and variation
   float life, float lifeVar,
 
   // start color of particles and variation
   float startColorR, float startColorG, float startColorB,
   float startColorVarR, float startColorVarG, float startColorVarB,
-  
+
   // end color of particles and variation
   float endColorR, float endColorG, float endColorB,
   float endColorVarR, float endColorVarG, float endColorVarB,
 
   // physics
-  
+
   // global gravity, wind, etc. and variation
   float gForceX, float gForceY, float gForceZ,
   float gForceVarX, float gForceVarY, float gForceVarZ,
@@ -193,7 +193,7 @@ ParticleSystemsDraw
 (
   PARTICLE_SYSTEMS_HEAD** particleSystems,
   char* particleSystemName,
-  
+
   // 4x4 world to camera transformation matrix
   float* matrix
 );
@@ -210,10 +210,10 @@ ParticleSystemsUpdateAndDraw
 (
   PARTICLE_SYSTEMS_HEAD** particleSystems,
   char* particleSystemName,
-  
+
   // 4x4 world to camera transformation matrix
   float* matrix,
-  
+
   float currentTime
 );
 

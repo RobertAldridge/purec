@@ -91,16 +91,16 @@ static int ParticleSystemsInternalLoad(LIST_HEAD* particleSystems, FILE* file)
 
   // posX posY posZ
   result += fscanf(file, "%f %f %f\n", &fbuffer[1], &fbuffer[2], &fbuffer[3] );
-  
+
   // posVarX posVarY posVarZ
   result += fscanf(file, "%f %f %f\n", &fbuffer[4], &fbuffer[5], &fbuffer[6] );
 
   // yaw yawVar
   result += fscanf(file, "%f %f\n", &fbuffer[7], &fbuffer[8] );
-  
+
   // pitch pitchVar
   result += fscanf(file, "%f %f\n", &fbuffer[9], &fbuffer[10] );
-  
+
   // speed speedVar
   result += fscanf(file, "%f %f\n", &fbuffer[11], &fbuffer[12] );
 
@@ -115,19 +115,19 @@ static int ParticleSystemsInternalLoad(LIST_HEAD* particleSystems, FILE* file)
 
   // startColorR startColorG startColorB
   result += fscanf(file, "%f %f %f\n", &fbuffer[15], &fbuffer[16], &fbuffer[17] );
-  
+
   // startColorVarR startColorVarG startColorVarB
   result += fscanf(file, "%f %f %f\n", &fbuffer[18], &fbuffer[19], &fbuffer[20] );
-  
+
   // endColorR endColorG endColorB
   result += fscanf(file, "%f %f %f\n", &fbuffer[21], &fbuffer[22], &fbuffer[23] );
-  
+
   // endColorVarR endColorVarG endColorVarB
   result += fscanf(file, "%f %f %f\n", &fbuffer[24], &fbuffer[25], &fbuffer[26] );
 
   // gForceX gForceY gForceZ
   result += fscanf(file, "%f %f %f\n", &fbuffer[27], &fbuffer[28], &fbuffer[29] );
-  
+
   // gForceVarX gForceVarY gForceVarZ
   result += fscanf(file, "%f %f %f\n", &fbuffer[30], &fbuffer[31], &fbuffer[32] );
 
@@ -189,27 +189,27 @@ static int ParticleSystemsInternalLoad(LIST_HEAD* particleSystems, FILE* file)
   (
     Obj.name,
     currentTime,
-    
+
     fbuffer[0],
-    
+
     fbuffer[1], fbuffer[2], fbuffer[3],
     fbuffer[4], fbuffer[5], fbuffer[6],
-    
+
     fbuffer[7], fbuffer[8],
     fbuffer[9], fbuffer[10],
     fbuffer[11], fbuffer[12],
-    
+
     ibuffer[0],
-    
+
     ibuffer[1], ibuffer[2],
     fbuffer[13], fbuffer[14],
-    
+
     fbuffer[15], fbuffer[16], fbuffer[17],
     fbuffer[18], fbuffer[19], fbuffer[20],
-    
+
     fbuffer[21], fbuffer[22], fbuffer[23],
     fbuffer[24], fbuffer[25], fbuffer[26],
-    
+
     fbuffer[27], fbuffer[28], fbuffer[29],
     fbuffer[30], fbuffer[31], fbuffer[32]
   );
@@ -236,7 +236,7 @@ ParticleSystemsLoadFileAndActivate
 (
   PARTICLE_SYSTEMS_HEAD** _particleSystems,
   char* filename,
-  
+
   float _currentTime
 )
 {
@@ -297,7 +297,7 @@ ParticleSystemsAddFileAndActivate
 (
   PARTICLE_SYSTEMS_HEAD** particleSystemsRef,
   char* filename,
-  
+
   float _currentTime
 )
 {
@@ -370,58 +370,58 @@ ParticleSystemsAddAndActivate
   PARTICLE_SYSTEMS_HEAD** particleSystemsRef,
 
   // emitter name
-  char* name, 
-  
+  char* name,
+
   // current time in seconds
-  float _currentTime, 
-  
+  float _currentTime,
+
   // how long will the particle system last - in seconds
-  float emitterLife, 
+  float emitterLife,
 
   // transformation info
-  
+
   // xyz position of particle system origin and variation
-  float posX, float posY, float posZ, 
+  float posX, float posY, float posZ,
   float posVarX, float posVarY, float posVarZ,
-  
+
   // yaw and variation for velocity
-  float yaw, float yawVar, 
-  
+  float yaw, float yawVar,
+
   // pitch and variation for velocity
-  float pitch, float pitchVar, 
-  
+  float pitch, float pitchVar,
+
   // velocity magnitude and variation
-  float speed, float speedVar, 
+  float speed, float speedVar,
 
   // particle
-  
+
   // total emitted at any time
-  int numParticles, 
-  
+  int numParticles,
+
   // emits per frame and variation
-  int emitsPerFrame, int emitVar, 
-  
+  int emitsPerFrame, int emitVar,
+
   // lifetime of particles and variation
-  float life, float lifeVar, 
+  float life, float lifeVar,
 
   // start color of particles and variation
   float startColorR, float startColorG, float startColorB,
   float startColorVarR, float startColorVarG, float startColorVarB,
-  
+
   // end color of particles and variation
-  float endColorR, float endColorG, float endColorB, 
+  float endColorR, float endColorG, float endColorB,
   float endColorVarR, float endColorVarG, float endColorVarB,
 
   // physics
-  
+
   // global gravity, wind, etc. and variation
-  float gForceX, float gForceY, float gForceZ, 
+  float gForceX, float gForceY, float gForceZ,
   float gForceVarX, float gForceVarY, float gForceVarZ,
 
   // if not set to 0, particles will be shaded lines
   //
   // if set to 0, particles will be colored points
-  unsigned char antiAlias, 
+  unsigned char antiAlias,
 
   // if not set to 0, acceleration will be integrated
   // into particles
@@ -510,7 +510,7 @@ ParticleSystemsAddAndActivate
   (
     Obj.name,
     _currentTime,
-    
+
     emitterLife,
 
     posX, posY, posZ,
@@ -674,7 +674,7 @@ ParticleSystemsDraw
 (
   PARTICLE_SYSTEMS_HEAD** particleSystemsRef,
   char* particleSystemName,
-  
+
   // 4x4 world to camera transformation matrix
   float* _matrix
 )
@@ -725,10 +725,10 @@ ParticleSystemsUpdateAndDraw
 (
   PARTICLE_SYSTEMS_HEAD** particleSystemsRef,
   char* particleSystemName,
-  
+
   // 4x4 world to camera transformation matrix
   float* _matrix,
-  
+
   float _currentTime
 )
 {

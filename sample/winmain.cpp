@@ -2955,10 +2955,10 @@ void Graphics::RenderLine32(int x0, int y0, int x1, int y1, int xi, int yi)
 {
   Graphics::_RenderLine32(x0 - 1, y0, x1 - 1, y1, xi, yi);
   Graphics::_RenderLine32(x0 + 1, y0, x1 + 1, y1, xi, yi);
-  
+
   Graphics::_RenderLine32(x0, y0 - 1, x1, y1 - 1, xi, yi);
   Graphics::_RenderLine32(x0, y0 + 1, x1, y1 + 1, xi, yi);
-  
+
   Graphics::_RenderLine32(x0, y0, x1, y1, xi, yi);
 }
 
@@ -4152,13 +4152,13 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
   static point prevPt = {0, 0};
 
   static HINSTANCE hInstance = 0;
-  
+
   static bool didIgetThePointer = false;
-  
+
   if( !didIgetThePointer)
   {
     unsigned long long slkdjgasdlkjfg = (unsigned long long)GetWindowLongPtrA(hwnd, 0);
-    
+
     if(slkdjgasdlkjfg == 0x1000000010000000ULL)
     {
       //BlahLog("pointer %llu %u\n", slkdjgasdlkjfg, msg);
@@ -4283,7 +4283,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
   case WM_LBUTTONUP: // switch(msg) - WM_LBUTTONUP
   {
     IsLeftMouseButtonDown = false;
-    
+
     pairQI client = {mousePt, DUMP_ALL_CAPTURES};
     SsQueuePushBack(input, &client);
 
@@ -4294,7 +4294,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
   case WM_RBUTTONDOWN: // switch(msg) - WM_RBUTTONDOWN
   {
     IsRightMouseButtonDown = true;
-    
+
     pairQI client = {mousePt, 16 | orInput};
     SsQueuePushBack(input, &client);
 
@@ -4430,7 +4430,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
     {
       IsLeftMouseButtonDown = false;
       IsRightMouseButtonDown = false;
-      
+
       pairQI client = {mousePt, TOGGLE_SHELLS};
       SsQueuePushBack(input, &client);
 
@@ -4442,7 +4442,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
     {
       IsLeftMouseButtonDown = false;
       IsRightMouseButtonDown = false;
-      
+
       pairQI client = {mousePt, DUMP_ALL_CAPTURES};
       SsQueuePushBack(input, &client);
 
@@ -4481,42 +4481,42 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
         menuArray[11] = mousePt.x;
         menuArray[12] = mousePt.y;
-        
+
         pairQI client = {menu.pt, MENU_INPUT};
         SsQueuePushBack(input, &client);
 
         //////////////////////////////////////////////////////////////////
-        
+
         client.first = mousePt;
         client.second = UPDATE_INPUT;
         SsQueuePushBack(input, &client);
-        
+
         client.first = mousePt;
         client.second = CAPTURE_TRANSLATE;
         SsQueuePushBack(input, &client);
 
         point transPt = {mousePt.x + Graphics::graphicsClientWidth() / 2, mousePt.y + Graphics::graphicsClientHeight() / 2};
-        
+
         client.first = transPt;
         client.second = UPDATE_INPUT;
         SsQueuePushBack(input, &client);
-        
+
         client.first = transPt;
         client.second = DUMP_ALL_CAPTURES;
         SsQueuePushBack(input, &client);
 
         //////////////////////////////////////////////////////////////////
-        
+
         client.first = mousePt;
         client.second = UPDATE_INPUT;
         SsQueuePushBack(input, &client);
-        
+
         client.first = mousePt;
         client.second = CAPTURE_SCALE;
         SsQueuePushBack(input, &client);
 
         point scalePt = {mousePt.x + Graphics::graphicsClientWidth() / 2, mousePt.y + Graphics::graphicsClientWidth() / 2};
-        
+
         client.first = scalePt;
         client.second = UPDATE_INPUT;
         SsQueuePushBack(input, &client);
@@ -4527,18 +4527,18 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
         {
           scalePt.x += Graphics::graphicsClientWidth() / 2;
           scalePt.y += Graphics::graphicsClientWidth() / 2;
-          
+
           client.first = scalePt;
           client.second = UPDATE_INPUT;
           SsQueuePushBack(input, &client);
         }
-        
+
         client.first = scalePt;
         client.second = DUMP_ALL_CAPTURES;
         SsQueuePushBack(input, &client);
 
         //////////////////////////////////////////////////////////////////
-        
+
         client.first = mousePt;
         client.second = UPDATE_INPUT;
         SsQueuePushBack(input, &client);
@@ -4570,7 +4570,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
     {
       IsLeftMouseButtonDown = false;
       IsRightMouseButtonDown = false;
-      
+
       pairQI client = {mousePt, TOGGLE_CONTROL_POINTS};
       SsQueuePushBack(input, &client);
 
@@ -4584,7 +4584,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
     {
       IsLeftMouseButtonDown = false;
       IsRightMouseButtonDown = false;
-      
+
       pairQI client = {mousePt, ADD_CURVE};
       SsQueuePushBack(input, &client);
 
@@ -4609,7 +4609,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
     {
       IsLeftMouseButtonDown = false;
       IsRightMouseButtonDown = false;
-      
+
       pairQI client = {mousePt, TRAVERSE_CURVE_LIST};
       SsQueuePushBack(input, &client);
 
@@ -4623,7 +4623,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
     {
       IsLeftMouseButtonDown = false;
       IsRightMouseButtonDown = false;
-      
+
       pairQI client = {mousePt, TOGGLE_CONTROL_POINT_TEXT};
       SsQueuePushBack(input, &client);
 
@@ -4667,7 +4667,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
     {
       IsLeftMouseButtonDown = false;
       IsRightMouseButtonDown = false;
-      
+
       pairQI client = {mousePt, INCREASE_ITERATION_CONSTANT};
       SsQueuePushBack(input, &client);
 
@@ -4679,7 +4679,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
     {
       IsLeftMouseButtonDown = false;
       IsRightMouseButtonDown = false;
-      
+
       pairQI client = {mousePt, DECREASE_ITERATION_CONSTANT};
       SsQueuePushBack(input, &client);
 

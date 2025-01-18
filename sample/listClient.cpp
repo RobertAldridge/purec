@@ -104,7 +104,7 @@ ProcessList(
     //
     //  Time insertions
     //
-    
+
     t0 = 0;
     QueryPerformanceCounter( (LARGE_INTEGER*) &t0);
     for(count = 0; count < NUMBER; ++count)
@@ -121,9 +121,9 @@ ProcessList(
 
     t0 = 0;
     QueryPerformanceCounter( (LARGE_INTEGER*) &t0);
-    
+
     ListSort(ListHead, GreaterThan);
-    
+
     t1 = 0;
     QueryPerformanceCounter( (LARGE_INTEGER*) &t1);
 

@@ -943,7 +943,7 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
       }
     }
   }
-  
+
   //int64_t SsSetDestruct(ssSet** _this)
   if(SsSetDestruct( &mySet) < 0)
   {

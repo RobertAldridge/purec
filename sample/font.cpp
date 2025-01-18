@@ -295,9 +295,9 @@ label_return:
 void RobsTextOut(void* reference, int32_t x, int32_t y, const char* const format, ...)
 {
   FontBlah* _this = (FontBlah*)reference;
-  
+
   char dest_buffer[514] = {0};
-  
+
   va_list argptr = 0;
 
   if( !_this)

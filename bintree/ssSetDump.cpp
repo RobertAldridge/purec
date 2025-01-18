@@ -147,15 +147,15 @@ int64_t SsSetIsBegin(ssSet* _this)
   // check for index bounds
   if(_this->index < 0 || _this->index > _this->num)
     goto label_return;
-  
+
   // check for end iterator conditions; both conditions must be true
   if(_this->iterator == &_this->end && _this->index == _this->num)
     goto label_num;
-  
+
   // if not end iterator then verify neither condition is true
   if(_this->iterator == &_this->end || _this->index == _this->num)
     goto label_return;
-  
+
   // if we get here then we are at a valid index and current must be valid
 
   // verify current is valid
@@ -186,21 +186,21 @@ int64_t SsSetIsEnd(ssSet* _this)
   // check for index bounds
   if(_this->index < 0 || _this->index > _this->num)
     goto label_return;
-  
+
   // check for end iterator conditions; both conditions must be true
   if(_this->iterator == &_this->end && _this->index == _this->num)
     goto label_num;
-  
+
   // if not end iterator then verify neither condition is true
   if(_this->iterator == &_this->end || _this->index == _this->num)
     goto label_return;
-  
+
   // if we get here then we are at a valid index and current must be valid
 
   // verify current is valid
   if( !_this->current)
     goto label_return;
-  
+
   end = 0;
 
 label_num:
@@ -223,15 +223,15 @@ int64_t SsSetGetCurrent(ssSet* _this, void* client)
   // check for index bounds
   if(_this->index < 0 || _this->index > _this->num)
     goto label_return;
-  
+
   // check for end iterator conditions; both conditions must be true
   if(_this->iterator == &_this->end && _this->index == _this->num)
     goto label_num;
-  
+
   // if not end iterator then verify neither condition is true
   if(_this->iterator == &_this->end || _this->index == _this->num)
     goto label_return;
-  
+
   // if we get here then we are at a valid index and current must be valid
 
   // verify current is valid
@@ -258,7 +258,7 @@ int64_t SsSetGetNext(ssSet* _this, bool reset, void* client)
 
   if( !_this || !client)
     goto label_return;
-  
+
   // check for index bounds
   if(_this->index < 0 || _this->index > _this->num)
     goto label_return;
@@ -270,7 +270,7 @@ int64_t SsSetGetNext(ssSet* _this, bool reset, void* client)
   {
     if(SsStackReset(_this->stack) < 0)
       goto label_return;
-    
+
     _this->iterator = GETROOTFROMTREE(_this);
     _this->current = 0;
     _this->index = -1;
@@ -326,7 +326,7 @@ int64_t SsSetGetNext(ssSet* _this, bool reset, void* client)
       goto label_return;
 
     memcpy(client, GETCLIENT(node), _this->sizeOf);
-    
+
     _this->current = node;
 
     node = node->right;
@@ -350,7 +350,7 @@ label_num:
 label_return:
   if( !result)
     BlahLog2("error\n");
-  
+
   return result ? end : SsSetError;
 }
 

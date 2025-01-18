@@ -18,14 +18,14 @@ CreateParticleSystem
   char *name, // EMITTER NAME
   float currentTime, // CURRENT TIME IN SECONDS
   float emitterLife, // HOW LONG WILL THE PARTICLE SYSTEM LAST - IN SECONDS
-  
+
   // TRANSFORMATION INFO
   float posX, float posY, float posZ, // XYZ POSITION OF PARTICLE SYSTEM ORIGIN AND VARIATION
   float posVarX, float posVarY, float posVarZ,
   float yaw, float yawVar, // YAW AND VARIATION FOR VELOCITY
   float pitch, float pitchVar, // PITCH AND VARIATION FOR VELOCITY
   float speed, float speedVar, // VELOCITY MAGNITUDE AND VARIATION
-  
+
   // PARTICLE
   int numParticles, // TOTAL EMITTED AT ANY TIME
   int emitsPerFrame, int emitVar, // EMITS PER FRAME AND VARIATION
@@ -35,7 +35,7 @@ CreateParticleSystem
   float startColorVarR, float startColorVarG, float startColorVarB,
   float endColorR, float endColorG, float endColorB, // END COLOR OF PARTICLES AND VARIATION
   float endColorVarR, float endColorVarG, float endColorVarB,
-  
+
   // PHYSICS
   float gForceX, float gForceY, float gForceZ, // GLOBAL GRAVITY, WIND, ETC. AND VARIATION
   float gForceVarX, float gForceVarY, float gForceVarZ

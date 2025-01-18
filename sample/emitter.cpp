@@ -779,7 +779,7 @@ DrawParticleSystem(EMITTER** _particleSystem, // PREVIOUSLY CREATED PARTICLE SYS
   particleSystem = *_particleSystem;
 
   particle = particleSystem->particles;
-  
+
   totalParticles = (uint32_t)particleSystem->totalParticles;
 
   antiAlias = (uint8_t)((particleSystem->flags & ANTI_ALIAS_BIT)== ANTI_ALIAS_BIT);
@@ -1252,21 +1252,21 @@ DrawParticleSystem(EMITTER** _particleSystem, // PREVIOUSLY CREATED PARTICLE SYS
             {
               switch(bitDepth)
               {
-                
+
               case 8: copy_x_8(); break;
-              
+
               case 15: copy_x_15(); break;
-              
+
               case 16: copy_x_16(); break;
-              
+
               case 24: copy_x_24(); break;
-              
+
               case 32: copy_x_32(); break;
-              
+
               default:
                 assert("DrawParticleSystem - unsupported bit depth" && 0);
               break;
-                
+
               }
 
               x0 += dxstep;
@@ -1298,21 +1298,21 @@ DrawParticleSystem(EMITTER** _particleSystem, // PREVIOUSLY CREATED PARTICLE SYS
             {
               switch(bitDepth)
               {
-                
+
               case 8: copy_y_8(); break;
-              
+
               case 15: copy_y_15(); break;
-              
+
               case 16: copy_y_16(); break;
-              
+
               case 24: copy_y_24(); break;
-              
+
               case 32: copy_y_32(); break;
-              
+
               default:
                 assert("DrawParticleSystem - unsupported bit depth" && 0);
               break;
-                
+
               }
 
               y0 += dystep;
@@ -1373,25 +1373,25 @@ DrawParticleSystem(EMITTER** _particleSystem, // PREVIOUSLY CREATED PARTICLE SYS
           case 8:
             *(bb[y] + x)= (uint8_t)((((uint16_t)red)+ ((uint16_t)green)+ ((uint16_t)blue))/ 3);
           break;
-            
+
           case 15:
             *(((uint16_t*)bb[y])+ x)= (uint16_t)(((((uint16_t)red)>> 3)<< 10)| ((((uint16_t)green)>> 3)<< 5)| (((uint16_t)blue)>> 3));
           break;
-            
+
           case 16:
             *(((uint16_t*)bb[y])+ x)= (uint16_t)(((((uint16_t)red)>> 3)<< 11)| ((((uint16_t)green)>> 2)<< 5)| (((uint16_t)blue)>> 3));
           break;
-            
+
           case 24:
             *(bb[y] + x * 3)= (uint8_t)blue;
             *(bb[y] + x * 3 + 1)= (uint8_t)green;
             *(bb[y] + x * 3 + 2)= (uint8_t)red;
           break;
-            
+
           case 32:
             *(((uint32_t*)bb[y])+ x)= ((((uint32_t)red)<< 16)| (((uint32_t)green)<< 8)| ((uint32_t)blue));
           break;
-            
+
           default:
             assert("DrawParticleSystem - unsupported bit depth" && 0);
           break;

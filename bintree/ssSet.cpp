@@ -691,11 +691,11 @@ label_return:
 int64_t SsSetDestruct(ssSet** reference)
 {
   bool result = false;
-  
+
   ssSet* _this = 0;
 
   uint32_t num = 0;
-  
+
   if( !reference)
   {
     BlahLog("error");
@@ -748,7 +748,7 @@ int64_t SsSetDestruct(ssSet** reference)
   SsMmDestruct( &_this->allocator);
 
   BlahFree(_this, sizeof(ssSet), true);
-  
+
   reference[0] = 0;
 
   result = true;

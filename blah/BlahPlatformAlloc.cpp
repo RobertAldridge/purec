@@ -90,7 +90,7 @@ struct _LSA_OBJECT_ATTRIBUTES
 typedef struct _LSA_OBJECT_ATTRIBUTES LSA_OBJECT_ATTRIBUTES;
 typedef struct _LSA_OBJECT_ATTRIBUTES* PLSA_OBJECT_ATTRIBUTES;
 
-typedef void* PSID;   
+typedef void* PSID;
 
 struct _SID_AND_ATTRIBUTES
 {
