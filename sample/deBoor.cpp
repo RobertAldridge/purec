@@ -90,7 +90,7 @@
 //#include <deque>
 #include <list>
 //#include <queue>
-#include <vector>
+//#include <vector>
 
 #include "ssArray.h"
 #include "ssQueue.h"
@@ -102,7 +102,7 @@
 
 //using std::deque;
 using std::list;
-using std::vector;
+//using std::vector;
 
 extern void* operator new(size_t size);
 
@@ -268,11 +268,11 @@ struct pairQS
 //typedef deque<point> dequeP;
 //typedef dequeP::iterator iteratorDP;
 
-typedef vector<point> vectorP;
-typedef vectorP::iterator iteratorVP;
+//typedef vector<point> vectorP;
+//typedef vectorP::iterator iteratorVP;
 
-typedef vector<double> vectorK;
-typedef vectorK::iterator iteratorVK;
+//typedef vector<double> vectorK;
+//typedef vectorK::iterator iteratorVK;
 
 // This variable t is used to describe F(t), which is
 // the point on the curve that shells are shown for,
@@ -336,10 +336,12 @@ ssArray* tranPt;
 
 // This is temp memory used for computing intermediate de Boor stage points.
 //dequeP tempPt;
-vectorP tempPt;
+//vectorP tempPt;
+ssArray* tempPt;
 
 // This is the knot list associated with the de Boor control points.
-vectorK knots;
+//vectorK knots;
+ssArray* knots;
 
 // Iterative subdivision queue.
 //queueS subdWt;
@@ -392,7 +394,7 @@ public:
 
 // Initialize the de Boor algorithm when the user inputs the
 // first control point.
-deBoor(int _degree = 3, int _iterateConstant = 16): t(0.5), frameR(0), frameS(1), capturedControlPt(0), numControlPts(0), iterateConstant(_iterateConstant), blahDegree(_degree), dimension(3), shellT(0), shellBl(true), ctrlBl(true), dispK(true), padding{0}, minMaxT(0), /*shelPt(), */tranPt(0), tempPt(), knots(), subdWt(0), inputCur(0, 0), inputPrv(0, 0), minPt(0, 0), maxPt(0, 0), halfWidth(0.5), halfHeight(0.5), captureAction(0), circleDrawingPrimitive(0), lineDrawingPrimitive(0), pointDrawingPrimitive(0), textDrawingPrimitive(0), font(0) // deBoor::deBoor
+deBoor(int _degree = 3, int _iterateConstant = 16): t(0.5), frameR(0), frameS(1), capturedControlPt(0), numControlPts(0), iterateConstant(_iterateConstant), blahDegree(_degree), dimension(3), shellT(0), shellBl(true), ctrlBl(true), dispK(true), padding{0}, minMaxT(0), /*shelPt(), */tranPt(0), tempPt(0), knots(0), subdWt(0), inputCur(0, 0), inputPrv(0, 0), minPt(0, 0), maxPt(0, 0), halfWidth(0.5), halfHeight(0.5), captureAction(0), circleDrawingPrimitive(0), lineDrawingPrimitive(0), pointDrawingPrimitive(0), textDrawingPrimitive(0), font(0) // deBoor::deBoor
 {
   int degree = blahDegree;
 
@@ -400,10 +402,15 @@ deBoor(int _degree = 3, int _iterateConstant = 16): t(0.5), frameR(0), frameS(1)
   {
     degree = 1;
   }
+  
+  tempPt = SsArrayConstruct(sizeof(point), 10, 4000000000, 10000);
 
   // temp m + 1 container
   for(int loop = 0; loop <= degree; loop++)
-    tempPt.push_back(point(0, 0) );
+  {
+    point blahPoint = {0};
+    SsArrayPush(tempPt, &blahPoint);
+  }
 
   if(iterateConstant < 1)
   {
@@ -429,6 +436,8 @@ deBoor(int _degree = 3, int _iterateConstant = 16): t(0.5), frameR(0), frameS(1)
   colors1[0] = colors0[0];
   
   tranPt = SsArrayConstruct(sizeof(point), 10, 4000000000, 10000);
+  
+  knots = SsArrayConstruct(sizeof(double), 10, 4000000000, 10000);
 
   subdWt = SsQueueConstruct(sizeof(pairQS), 20 * _iterateConstant, 4000000000, 10000);
 
@@ -445,11 +454,15 @@ deBoor(int _degree = 3, int _iterateConstant = 16): t(0.5), frameR(0), frameS(1)
   
   SsArrayDestruct( &tranPt);
 
-  if( !tempPt.empty() )
-    tempPt.clear();
+  if(SsArrayNum(tempPt) > 0)
+    SsArrayReset(tempPt);
+  
+  SsArrayDestruct( &tempPt);
 
-  if( !knots.empty() )
-    knots.clear();
+  if(SsArrayNum(knots) > 0)
+    SsArrayReset(knots);
+  
+  SsArrayDestruct( &knots);
 
   if(SsQueueNum(subdWt) > 0)
     SsQueueReset(subdWt);
@@ -831,7 +844,15 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
       knots.push_back(knots.back() + 1);
     }
 
-    t = knots[ (uint32_t)degree] + (knots.back() - knots[ (uint32_t)degree] ) * 0.5;
+    {
+      double knots_degree = 0;
+      SsArrayGetAt(knots, (uint32_t)degree, &knots_degree);
+      
+      double knots_back = 0;
+      SsArrayGet(knots, &knots_back);
+      
+      t = knots_degree + (knots_back - knots_degree) * 0.5;
+    }
 
     inputPrv = inputCur;
 
@@ -1086,16 +1107,24 @@ void updateDraw() // deBoor::updateDraw
           textDrawingPrimitive(font, (int)(_temp.x + 0.5)/*cast todo*/, (int)(_temp.y + 0.5)/*cast todo*/, "d0,%i", (int)loop);
 
           _temp.y += 14.0;
+          
+          {
+            double knots_loop_p1 = 0;
+            SsArrayGetAt(knots, (uint32_t)loop + 1, &knots_loop_p1);
 
-          textDrawingPrimitive(font, (int)(_temp.x + 0.5)/*cast todo*/, (int)(_temp.y + 0.5)/*cast todo*/, "%i", (int)knots[ (int64_t)loop + 1] );
+            textDrawingPrimitive(font, (int)(_temp.x + 0.5)/*cast todo*/, (int)(_temp.y + 0.5)/*cast todo*/, "%i", (int)knots_loop_p1);
+          }
 
           int loopDegree = 0;
 
           while(++loopDegree != degree)
           {
             _temp.y += 14.0;
+            
+            double knots_loop_degree_p1 = 0;
+            SsArrayGetAt(knots, ( (uint32_t)loop + loopDegree) + 1, &knots_loop_degree_p1);
 
-            textDrawingPrimitive(font, (int)(_temp.x + 0.5)/*cast todo*/, (int)(_temp.y + 0.5)/*cast todo*/, "%i", (int)knots[ ( (int64_t)loop + loopDegree) + 1] );
+            textDrawingPrimitive(font, (int)(_temp.x + 0.5)/*cast todo*/, (int)(_temp.y + 0.5)/*cast todo*/, "%i", (int)knots_loop_degree_p1);
           }
         }
       }
@@ -1115,12 +1144,21 @@ void updateDraw() // deBoor::updateDraw
   {
     if(SsQueueNum(subdWt) > 0)
       SsQueueReset(subdWt);
+    
+    double knots_degree = 0;
+    SsArrayGetAt(knots, (uint32_t)degree, &knots_degree);
+    
+    double knots_back = 0;
+    SsArrayGet(knots, &knots_back);
 
-    double blah/*weight*/ = (knots.back() - knots[ (uint32_t)degree] ) * 0.5;
+    double blah/*weight*/ = (knots_back - knots_degree) * 0.5;
 
-    p1 = do_deBoor(knots[ (uint32_t)degree] + blah);
+    p1 = do_deBoor(knots_degree + blah);
+    
+    knots_degree = 0;
+    SsArrayGetAt(knots, (uint32_t)degree, &knots_degree);
 
-    pairQS client = {p1, point(knots[ (uint32_t)degree] + blah, blah) };
+    pairQS client = {p1, point(knots_degree + blah, blah) };
     SsQueuePushBack(subdWt, &client);
 
     minMaxT = 1;
@@ -1218,9 +1256,21 @@ void updateDraw() // deBoor::updateDraw
 
         for(int u = d + 1; u < u1; u++)
         {
-          if(u + 1 < (int)knots.size() && !eq(knots[ (uint32_t)u], knots[ (int64_t)u + 1] ) )
+          double knots_u = 0;
+          double knots_u_p1 = 0;
+
+          SsArrayGetAt(knots, (uint32_t)u, &knots_u);
+          SsArrayGetAt(knots, (uint32_t)u + 1, &knots_u_p1);
+
+          if(u + 1 < (int)knots.size() && !eq(knots_u, knots_u_p1) )
           {
-            drawLine(d0 + (d1 - d0) * ( (knots[ (uint32_t)u] - knots[ (int64_t)d + 1] ) / (knots[ (uint32_t)u1] - knots[ (int64_t)d + 1] ) ), d0 + (d1 - d0) * ( (knots[ (int64_t)u + 1] - knots[ (int64_t)d + 1] ) / (knots[ (uint32_t)u1] - knots[ (int64_t)d + 1] ) ), u);
+            double knots_d_p1 = 0;
+            double knots_u1 = 0;
+            
+            SsArrayGetAt(knots, (uint32_t)d + 1, &knots_d_p1);
+            SsArrayGetAt(knots, (uint32_t)u1, &knots_u1);
+          
+            drawLine(d0 + (d1 - d0) * ( (knots_u - knots_d_p1) / (knots_u1 - knots_d_p1) ), d0 + (d1 - d0) * ( (knots_u_p1 - knots_d_p1) / (knots_u1 - knots_d_p1) ), u);
           }
         }
       }
@@ -1245,8 +1295,11 @@ void updateDraw() // deBoor::updateDraw
           textDrawingPrimitive(font, (int)(_temp.x + 0.5)/*cast todo*/, (int)(_temp.y + 0.5)/*cast todo*/, "d0,%i", (int)currentPtIndex);
 
           _temp.y += 14.0;
+          
+          double knots_cpi_p1 = 0;
+          SsArrayGetAt(knots, (uint32_t)currentPtIndex + 1, &knots_cpi_p1);
 
-          textDrawingPrimitive(font, (int)(_temp.x + 0.5)/*cast todo*/, (int)(_temp.y + 0.5)/*cast todo*/, "%i", (int)knots[ (int64_t)currentPtIndex + 1] );
+          textDrawingPrimitive(font, (int)(_temp.x + 0.5)/*cast todo*/, (int)(_temp.y + 0.5)/*cast todo*/, "%i", (int)knots_cpi_p1);
 
           int loopDegree = 0;
 
@@ -1457,28 +1510,44 @@ point do_deBoor(double dt, bool draw = false) // deBoor::do_deBoor
 
   for(i = I - degree, j = 0; i <= I - r; i++, j++)
   {
-    //tempPt[ (uint32_t)j] = tranPt[ (uint32_t)i];
-    memset( &tempPt[ (uint32_t)j], 0, sizeof(point) );
-    SsArrayGetAt(tranPt, (uint32_t)i, &tempPt[ (uint32_t)j] );
+    point blahPoint = {0};
+    SsArrayGetAt(tranPt, (uint32_t)i, &blahPoint);
+
+    SsArraySetAt(tempPt, (uint32_t)j, &blahPoint);
   }
 
   for(j = 1; j <= degree - r; j++)
   {
     for(i = I - degree + j, k = 0; i <= I - r; i++, k++)
     {
-      tempPt[ (uint32_t)k] = ( (knots[ ( ( (int64_t)degree + i) - j) + 1] - dt) / (knots[ ( ( (int64_t)degree + i) - j) + 1] - knots[ (uint32_t)i] ) ) * tempPt[ (uint32_t)k] + ( (dt - knots[ (uint32_t)i] ) / (knots[ ( ( (int64_t)degree + i) - j) + 1] - knots[ (uint32_t)i] ) ) * tempPt[ (int64_t)k + 1];
+      point p0 = {0};
+      SsArrayGetAt(tempPt, (uint32_t)k, &p0);
+      
+      point p1 = {0};
+      SsArrayGetAt(tempPt, (uint32_t)k + 1, &p1);
+      
+      point p2 = ( (knots[ ( ( (int64_t)degree + i) - j) + 1] - dt) / (knots[ ( ( (int64_t)degree + i) - j) + 1] - knots[ (uint32_t)i] ) ) * p0 + ( (dt - knots[ (uint32_t)i] ) / (knots[ ( ( (int64_t)degree + i) - j) + 1] - knots[ (uint32_t)i] ) ) * p1;
+
+      SsArraySetAt(tempPt, (uint32_t)k, &p2);
     }
 
     if(draw == true)
     {
       for(i = I - degree + j, k = 0; i <= I - r - 1; i++, k++)
       {
-        drawLine(tempPt[ (uint32_t)k], tempPt[ (int64_t)k + 1], I);
+        point p0 = {0};
+        SsArrayGetAt(tempPt, (uint32_t)k, &p0);
+        
+        point p1 = {0};
+        SsArrayGetAt(tempPt, (uint32_t)k + 1, &p1);
+        
+        drawLine(p0, p1, I);
       }
     }
   }
 
-  temp = tempPt[0];
+  memset( &temp, 0, sizeof(point) );
+  SsArrayGetAt(tempPt, 0, &temp);
 
   if(draw == true)
   {
@@ -1687,26 +1756,25 @@ void clearAllControlPoint() // deBoor::clearAllControlPoint
 
   //if( !shelPt.empty() )
   //  shelPt.clear();
-  
+
   if(SsArrayNum(tranPt) > 0)
     SsArrayReset(tranPt);
-  
-  //SsArrayDestruct( &tranPt);
-  
-  //tranPt = SsArrayConstruct(sizeof(point), 10, 4000000000, 10000);
-  
-  if( !tempPt.empty() )
-    tempPt.clear();
 
+  if(SsArrayNum(tempPt) > 0)
+    SsArrayReset(tempPt);
+  
   for(int loop = 0; loop <= degree; loop++)
-    tempPt.push_back(point(0, 0) );
+  {
+    point blahPoint = {0};
+    SsArrayPush(tempPt, &blahPoint);
+  }
 
-  if( !knots.empty() )
-    knots.clear();
+  if(SsArrayNum(knots) > 0)
+    SsArrayReset(knots);
 
   if(SsQueueNum(subdWt) > 0)
     SsQueueReset(subdWt);
-
+  
   numControlPts = 0;
 
 } // deBoor::clearAllControlPoint
@@ -1971,20 +2039,30 @@ void removeControlPoint() // deBoor::removeControlPoint
   //knots.erase(knots.begin() + ctrlPt);
   
   {
-    vectorK temporaryK;
+    ssArray* temporaryK = SsArrayConstruct(sizeof(double), 10, 4000000000, 10000);
 
     for(int currentIndex = 0; currentIndex < (int)knots.size(); currentIndex++)
     {
       if(currentIndex != ctrlPt)
-        temporaryK.push_back(knots[currentIndex] );
+      {
+        double value = 0;
+        SsArrayGetAt(knots, currentIndex, &value);
+
+        SsArrayPush(temporaryK, &value);
+      }
     }
     
     knots.clear();
     
-    for(int currentIndex = 0; currentIndex < (int)temporaryK.size(); currentIndex++)
+    for(int currentIndex = 0; currentIndex < (int)SsArrayNum(temporaryK); currentIndex++)
     {
-      knots.push_back(temporaryK[currentIndex] );
+      double value = 0;
+      SsArrayGetAt(temporaryK, currentIndex, &value);
+
+      knots.push_back(value);
     }
+    
+    SsArrayDestruct( &temporaryK);
   }
 #endif
 
