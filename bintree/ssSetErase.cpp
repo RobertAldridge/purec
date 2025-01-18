@@ -567,6 +567,10 @@ int64_t SsSetErase(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
 
     _this->num--;
 
+    _this->iterator = &_this->end;
+    _this->current = 0;
+    _this->index = _this->num;
+
     // verify sentinel root right child is null and color is zero
     if(_this->root.right || _this->root.color)
     {

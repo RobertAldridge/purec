@@ -11,6 +11,8 @@ typedef uint32_t(*SsSetEvaluate)(void*);
 //const int SsSetOk = 0;
 const int SsSetError = -1;
 
+const int SsSetBegin = 1;
+const int SsSetEnd = 1;
 const int SsSetDuplicate = 1;
 const int SsSetNotFound = 1;
 
@@ -34,6 +36,11 @@ int64_t SsSetErase(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
 int64_t SsSetGetExtrema(ssSet* _this, bool maximum, void* client);
 
 int64_t SsSetFind(ssSet* _this, void* key, SsSetCompare lessThan, void* client);
+
+int64_t SsSetIsBegin(ssSet* _this);
+int64_t SsSetIsEnd(ssSet* _this);
+int64_t SsSetGetCurrent(ssSet* _this, void* client);
+int64_t SsSetGetNext(ssSet* _this, bool reset, void* client);
 
 int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order);
 

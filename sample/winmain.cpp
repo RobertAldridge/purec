@@ -4155,7 +4155,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
     
     if(slkdjgasdlkjfg == 0x1000000010000000ULL)
     {
-      BlahLog("pointer %llu %u\n", slkdjgasdlkjfg, msg);
+      //BlahLog("pointer %llu %u\n", slkdjgasdlkjfg, msg);
       didIgetThePointer = true;
     }
   }
@@ -6062,9 +6062,10 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
     SetLastError(0);
     unsigned long long wsejfediorhjgfodjht = (unsigned long long)SetWindowLongPtrA(hWindow, 0, 0x1000000010000000ULL);
     wsejfediorhjgfodjht = GetLastError();
-    BlahLog("SetWindowLongPtrA %llu\n", wsejfediorhjgfodjht);
+    //BlahLog("SetWindowLongPtrA %llu\n", wsejfediorhjgfodjht);
   }
 
+  if(0)
   {
     BlahLog("sizeof(SECURITY_ATTRIBUTES) %i\n", (int)sizeof(SECURITY_ATTRIBUTES) );
     BlahLog("sizeof(BITMAPFILEHEADER) %i\n", (int)sizeof(BITMAPFILEHEADER) );

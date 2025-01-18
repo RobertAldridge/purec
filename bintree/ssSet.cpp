@@ -40,6 +40,9 @@ struct ssSet
   // sentinel
   SsSetNode leaf;
 
+  // sentinel
+  SsSetNode end;
+
   SsSetCompare lessThan;
 
   SsSetEvaluate evaluate;
@@ -61,6 +64,10 @@ struct ssSet
   uint32_t sizeOf;
 
   int64_t debug[88];
+
+  SsSetNode* iterator;
+  SsSetNode* current;
+  int64_t index;
 };
 
 const uint32_t SsSetRed = 1;
@@ -418,6 +425,10 @@ int64_t SsSetReset(ssSet* _this)
   SsQueueReset(_this->queue);
   SsStackReset(_this->stack);
   SsMmReset(_this->allocator);
+
+  _this->iterator = &_this->end;
+  _this->current = 0;
+  _this->index = _this->num;
 
   result = true;
 
@@ -821,6 +832,10 @@ ssSet* SsSetConstruct(uint32_t sizeOf, uint32_t minimum, int64_t maximum, uint32
     BlahLog("error");
     goto label_return;
   }
+
+  _this->iterator = &_this->end;
+  _this->current = 0;
+  _this->index = _this->num;
 
   result = true;
 

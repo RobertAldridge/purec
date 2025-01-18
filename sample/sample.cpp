@@ -922,15 +922,6 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
   //BlahLog("log2 %i %u\n", 1048576, calculateLogBase2(1048576) );
   //BlahLog("log2 %i %u\n", 1048575, calculateLogBase2(1048575) );
 
-//int64_t SsSetDestruct(ssSet* _this)
-  if(SsSetDestruct(mySet) < 0)
-  {
-    BlahLog("error");
-    goto label_return;
-  }
-
-  DebugFree(datablah);
-
   if(numData >= 86)
   {
     for(uint32_t index = 0; index < countof(ssSetDebug); index++)
@@ -952,6 +943,15 @@ for(uint32_t numData = 10; numData <= 100; numData += 1)
       }
     }
   }
+  
+  //int64_t SsSetDestruct(ssSet* _this)
+  if(SsSetDestruct(mySet) < 0)
+  {
+    BlahLog("error");
+    goto label_return;
+  }
+
+  DebugFree(datablah);
 
 //BlahLog("queue %u %f\n", numData, percentageQueue);
 

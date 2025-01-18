@@ -350,10 +350,10 @@ ActivateParticleSystem
 
   PARTICLE* particle = 0;
 
-  memset(&start, 0, sizeof(COLOR));
-  memset(&end, 0, sizeof(COLOR));
+  memset( &start, 0, sizeof(COLOR) );
+  memset( &end, 0, sizeof(COLOR) );
 
-  if(!_particleSystem || !_particleSystem[0] || !_particleSystem[0]->particles)
+  if( !_particleSystem || !_particleSystem[0] || !_particleSystem[0]->particles)
     return;
 
   particleSystem = _particleSystem[0];
@@ -422,15 +422,15 @@ ActivateParticleSystem
     particle->life = particleSystem->life + (particleSystem->lifeVar * RND());
 
     // CALCULATE COLORS
-    start.r = particleSystem->startColor.r + (particleSystem->startColorVar.r * RND());
-    start.g = particleSystem->startColor.g + (particleSystem->startColorVar.g * RND());
-    start.b = particleSystem->startColor.b + (particleSystem->startColorVar.b * RND());
-    start.i = particleSystem->startColor.i + (particleSystem->startColorVar.i * RND());
+    start.r = particleSystem->startColor.r + (particleSystem->startColorVar.r * RND() );
+    start.g = particleSystem->startColor.g + (particleSystem->startColorVar.g * RND() );
+    start.b = particleSystem->startColor.b + (particleSystem->startColorVar.b * RND() );
+    start.i = particleSystem->startColor.i + (particleSystem->startColorVar.i * RND() );
 
-    end.r = particleSystem->endColor.r + (particleSystem->endColorVar.r * RND());
-    end.g = particleSystem->endColor.g + (particleSystem->endColorVar.g * RND());
-    end.b = particleSystem->endColor.b + (particleSystem->endColorVar.b * RND());
-    end.i = particleSystem->endColor.i + (particleSystem->endColorVar.i * RND());
+    end.r = particleSystem->endColor.r + (particleSystem->endColorVar.r * RND() );
+    end.g = particleSystem->endColor.g + (particleSystem->endColorVar.g * RND() );
+    end.b = particleSystem->endColor.b + (particleSystem->endColorVar.b * RND() );
+    end.i = particleSystem->endColor.i + (particleSystem->endColorVar.i * RND() );
 
     particle->prevColor.r = particle->color.r = start.r;
     particle->prevColor.g = particle->color.g = start.g;
@@ -438,10 +438,10 @@ ActivateParticleSystem
     particle->prevColor.i = particle->color.i = start.i;
 
     // COLOR CHANGE PER SECOND
-    particle->deltaColor.r = (end.r - start.r)/ particle->life;
-    particle->deltaColor.g = (end.g - start.g)/ particle->life;
-    particle->deltaColor.b = (end.b - start.b)/ particle->life;
-    particle->deltaColor.i = (end.i - start.i)/ particle->life;
+    particle->deltaColor.r = (end.r - start.r) / particle->life;
+    particle->deltaColor.g = (end.g - start.g) / particle->life;
+    particle->deltaColor.b = (end.b - start.b) / particle->life;
+    particle->deltaColor.i = (end.i - start.i) / particle->life;
 
     ++particle;
 

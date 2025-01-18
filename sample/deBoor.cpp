@@ -87,18 +87,19 @@
 #include <cstdarg>
 
 //#include <iostream>
-#include <deque>
+//#include <deque>
 #include <list>
 //#include <queue>
 #include <vector>
 
 #include "ssQueue.h"
+#include "ssSet.h"
 
 #include "BlahLog.h"
 
 //using namespace std;
 
-using std::deque;
+//using std::deque;
 using std::list;
 using std::vector;
 
@@ -263,13 +264,14 @@ struct pairQS
 //typedef pair<point, point> pairQS;
 //typedef queue<pairQS> queueS;
 
-typedef deque<point> dequeP;
-typedef dequeP::iterator iteratorDP;
+//typedef deque<point> dequeP;
+//typedef dequeP::iterator iteratorDP;
 
 typedef vector<point> vectorP;
+typedef vectorP::iterator iteratorVP;
 
 typedef vector<double> vectorK;
-typedef vectorK::iterator iterVK;
+typedef vectorK::iterator iteratorVK;
 
 // This variable t is used to describe F(t), which is
 // the point on the curve that shells are shown for,
@@ -327,7 +329,8 @@ double minMaxT;
 //dequeP shelPt;
 
 // The transformed control points are stored in this list.
-dequeP tranPt;
+//dequeP tranPt;
+vectorP tranPt;
 
 // This is temp memory used for computing intermediate de Boor stage points.
 //dequeP tempPt;
@@ -1723,7 +1726,7 @@ void dragTranslate() // deBoor::dragTranslate
 {
   point p; // init todo
 
-  iteratorDP a = tranPt.begin();
+  iteratorVP a = tranPt.begin();
 
   for(int index = 0; index < numControlPts; index++, a++)
   {
@@ -1745,7 +1748,7 @@ void dragScale() // deBoor::dragScale
 
   point p; // init todo
 
-  iteratorDP a = tranPt.begin();
+  iteratorVP a = tranPt.begin();
 
   for(int index = 0; index < numControlPts; index++, a++)
   {
@@ -1770,7 +1773,7 @@ void dragRotate() // deBoor::dragRotate
 
   point p; // init todo
 
-  iteratorDP a = tranPt.begin();
+  iteratorVP a = tranPt.begin();
 
   for(int index = 0; index < numControlPts; index++, a++)
   {
@@ -1810,7 +1813,7 @@ void removeControlPoint() // deBoor::removeControlPoint
   //tranPt.erase(tranPt.begin() + ctrlPt);
 
   {
-    dequeP temporaryPt;
+    vectorP temporaryPt;
 
     for(int currentIndex = 0; currentIndex < numControlPts; currentIndex++)
     {
@@ -1920,17 +1923,39 @@ void removeControlPoint() // deBoor::removeControlPoint
 
 const double deBoor::E = 0.000001;
 
-typedef deque<deBoor*> dequeB;
-typedef dequeB::iterator iteratorDB;
+struct pairDI
+{
+  deBoor* first;
+  int64_t second;
+};
 
-static dequeB* deBoorList = 0;
-static iteratorDB deBoorIter;
+//typedef deque<deBoor*> dequeB;
+//typedef dequeB::iterator iteratorDB;
+
+//static dequeB* deBoorList = 0;
+static ssSet* deBoorList = 0;
+
+//static iteratorDB deBoorIter;
+pairDI deBoorIter = {0, 0};
 
 enum
 {
   ERROR = -1,
   OK = 0
 };
+
+static uint32_t deBoorListSsSetCompare(void* lhsRef, void* rhsRef)
+{
+  bool result = false;
+
+  pairDI* lhs = (pairDI*)lhsRef;
+  pairDI* rhs = (pairDI*)rhsRef;
+
+  if(lhs->second < rhs->second)
+    result = true;
+
+  return result;
+}
 
 int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int), void(*_textDrawingPrimitive)(void*, int, int, const char* const, ...), void* _font) // init
 {
@@ -1946,7 +1971,8 @@ int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(i
 
     BlahLog2("create root deBoorList before\n");
 
-    deBoorList = new dequeB;
+    //deBoorList = new dequeB;
+    deBoorList = SsSetConstruct(sizeof(pairDI), 10, 4000000000, 10000, deBoorListSsSetCompare);
 
     BlahLog2("create root deBoorList after\n");
 
@@ -1955,19 +1981,28 @@ int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(i
       return ERROR;
     }
 
-    deBoorList->push_back(new deBoor);
+    //deBoorList->push_back(new de_Boor);
+    deBoorIter.first = new deBoor;
+    deBoorIter.second = 0;
+    SsSetInsert(deBoorList, &deBoorIter, 0, 0);
 
-    if( !(*deBoorList)[0] )
+    //if( !(*deBoorList)[0] )
+    if( !deBoorIter.first)
     {
       return ERROR;
     }
 
-    (*deBoorList)[0]->setPrimitiveDrawingFunctions(_halfWidth, _halfHeight, _circleDrawingPrimitive, _lineDrawingPrimitive, _pointDrawingPrimitive, _textDrawingPrimitive, _font);
+    //(*deBoorList)[0]->setPrimitiveDrawingFunctions
+    deBoorIter.first->setPrimitiveDrawingFunctions(_halfWidth, _halfHeight, _circleDrawingPrimitive, _lineDrawingPrimitive, _pointDrawingPrimitive, _textDrawingPrimitive, _font);
 
-    deBoorIter = deBoorList->begin();
+    //deBoorIter = deBoorList->begin();
+    deBoorIter.first = 0;
+    deBoorIter.second = 0;
+    SsSetGetNext(deBoorList, true, &deBoorIter);
   }
 
-  if( !(*deBoorList)[0] || deBoorIter != deBoorList->begin() )
+  //if( !(*deBoorList)[0] || deBoorIter != deBoorList->begin() )
+  if( !deBoorIter.first || !SsSetIsBegin(deBoorList) )
   {
     return ERROR;
   }
@@ -1978,62 +2013,117 @@ int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(i
 
 int main(int inputEvent, double x, double y, double B, double _halfWidth, double _halfHeight, void* _font) // main
 {
-  if( !deBoorList || deBoorList->size() == 0)
+  // if( !deBoorList || deBoorList->size() == 0)
+  if( !deBoorList || !SsSetNum(deBoorList) || !deBoorIter.first)
   {
     return ERROR;
   }
 
-  if(deBoorIter == deBoorList->end() || *deBoorIter == 0)
+#if 0
+  //if(deBoorIter == deBoorList->end() || *deBoorIter == 0)
+  if(SsSetIsEnd(deBoorList) == SsSetEnd || !deBoorIter.first)
   {
-    deBoorIter = deBoorList->begin();
+    //deBoorIter = deBoorList->begin();
+    deBoorIter.first = 0;
+    deBoorIter.second = 0;
+    SsSetGetNext(deBoorList, true, &deBoorIter);
   }
+#endif
 
   if(_halfWidth <= 0 || _halfHeight <= 0)
   {
     return ERROR;
   }
 
-  (*deBoorIter)->setPrimitiveDrawingFunctions(_halfWidth, _halfHeight, 0, 0, 0, 0, _font);
+  //deBoorIter.first->setPrimitiveDrawingFunctions(_halfWidth, _halfHeight, 0, 0, 0, 0, _font);
 
   int retVal = 0;
 
-  iteratorDB temp; // init todo
-
-  deBoor* curve = 0;
+  //iteratorDB temp; // init todo
 
   switch(inputEvent) // switch(inputEvent)
   {
 
   case deBoor::ADD_deBoor_CURVE: // switch(inputEvent) - deBoor::ADD_deBoor_CURVE
   {
-    curve = new deBoor;
+    pairDI curve = {new deBoor, SsSetNum(deBoorList) };
 
-    if( !curve)
+    if( !curve.first)
     {
       return ERROR;
     }
 
-    curve->setPrimitiveDrawingFunctions(**deBoorIter, _font);
+    //curve->setPrimitiveDrawingFunctions(**deBoorIter);
+    curve.first->setPrimitiveDrawingFunctions(*deBoorIter.first, _font);
 
-    deBoorList->push_back(curve);
+    //deBoorList->push_back(curve);
+    SsSetInsert(deBoorList, &curve, 0, 0);
+    
+    deBoorIter.first = 0;
+    deBoorIter.second = 0;
+    SsSetGetNext(deBoorList, true, &deBoorIter);
+    
+    while(deBoorIter.first != curve.first)
+    {
+      deBoorIter.first = 0;
+      deBoorIter.second = 0;
+      SsSetGetNext(deBoorList, false, &deBoorIter);
+    }
 
-    deBoorIter = deBoorList->end() - 1;
+    //deBoorIter = deBoorList->end() - 1;
   }
   break; // switch(inputEvent) - deBoor::ADD_deBoor_CURVE
 
   case deBoor::REMOVE_deBoor_CURVE: // switch(inputEvent) - deBoor::REMOVE_deBoor_CURVE
   {
-    if(deBoorList->size() == 1)
+    //if(deBoorList->size() == 1)
+    if(SsSetNum(deBoorList) == 1)
     {
       inputEvent = deBoor::DUMP_ALL_CONTROL_POINTS;
     }
     else
     {
-      delete *deBoorIter;
+      int found = 0;
+      
+      pairDI current = {deBoorIter.first, deBoorIter.second};
+      
+      //deBoorIter = deBoorList->begin();
+      deBoorIter.first = 0;
+      deBoorIter.second = 0;
+      SsSetGetNext(deBoorList, true, &deBoorIter);
+      
+      while(deBoorIter.first != current.first)
+      {
+        found++;
+        
+        deBoorIter.first = 0;
+        deBoorIter.second = 0;
+        SsSetGetNext(deBoorList, false, &deBoorIter);
+      }
+      
+      //deBoorList->erase(deBoorIter);
+      SsSetErase(deBoorList, &deBoorIter, 0, 0);
+      
+      delete deBoorIter.first;
+      deBoorIter.first = 0;
+      
+      if(found == SsSetNum(deBoorList) )
+        found = 0;
+      
+      int index = 0;
 
-      deBoorList->erase(deBoorIter);
-
-      deBoorIter = deBoorList->begin();
+      deBoorIter.first = 0;
+      deBoorIter.second = 0;
+      SsSetGetNext(deBoorList, true, &deBoorIter);
+      
+      while(index != found)
+      {
+        index++;
+        
+        deBoorIter.first = 0;
+        deBoorIter.second = 0;
+        SsSetGetNext(deBoorList, false, &deBoorIter);
+      }
 
       retVal |= 1;
 
@@ -2044,38 +2134,62 @@ int main(int inputEvent, double x, double y, double B, double _halfWidth, double
 
   case deBoor::TRAVERSE_deBoor_CURVE_LIST: // switch(inputEvent) - deBoor::TRAVERSE_deBoor_CURVE_LIST
   {
-    ++deBoorIter;
+    //++deBoorIter;
+    deBoorIter.first = 0;
+    deBoorIter.second = 0;
+    SsSetGetNext(deBoorList, false, &deBoorIter);
 
-    if(deBoorIter == deBoorList->end() )
+    if(SsSetIsEnd(deBoorList) == SsSetEnd)
     {
-      deBoorIter = deBoorList->begin();
+      //deBoorIter = deBoorList->begin();
+      deBoorIter.first = 0;
+      deBoorIter.second = 0;
+      SsSetGetNext(deBoorList, true, &deBoorIter);
     }
   }
   break; // switch(inputEvent) - deBoor::TRAVERSE_deBoor_CURVE_LIST
 
   } // switch(inputEvent)
 
-  iteratorDB loop;
+  deBoorIter.first->setPrimitiveDrawingFunctions(_halfWidth, _halfHeight, 0, 0, 0, 0, _font);
 
-  (*deBoorIter)->setPrimitiveDrawingFunctions(_halfWidth, _halfHeight, 0, 0, 0, 0, _font);
+  deBoorIter.first->updateDraw();
 
-  (*deBoorIter)->updateDraw();
+  retVal |= deBoorIter.first->updateInput(inputEvent, x * B, y * B, B);
+  
+  //loop = deBoorList->begin()
+  pairDI loop = {0, 0};
+  SsSetGetNext(deBoorList, true, &loop);
 
-  retVal |= (*deBoorIter)->updateInput(inputEvent, x * B, y * B, B);
-
-  for(loop = deBoorList->begin(); loop != deBoorList->end(); loop++)
+  //for(loop = deBoorList->begin(); loop != deBoorList->end(); loop++)
+  while( !SsSetIsEnd(deBoorList) )
   {
-    if(loop != deBoorIter)
+    if(loop.first != deBoorIter.first)
     {
-      (*loop)->setPrimitiveDrawingFunctions(_halfWidth, _halfHeight, 0, 0, 0, 0, _font);
+      loop.first->setPrimitiveDrawingFunctions(_halfWidth, _halfHeight, 0, 0, 0, 0, _font);
 
-      (*loop)->updateDraw();
+      loop.first->updateDraw();
     }
 
-    if( (retVal != 0 || inputEvent == deBoor::DUMP_ALL_CAPTURES) && loop != deBoorIter)
+    if( (retVal != 0 || inputEvent == deBoor::DUMP_ALL_CAPTURES) && loop.first != deBoorIter.first)
     {
-      retVal |= (*loop)->updateInput(deBoor::DUMP_ALL_CAPTURES, x * B, y * B, B);
+      retVal |= loop.first->updateInput(deBoor::DUMP_ALL_CAPTURES, x * B, y * B, B);
     }
+    
+    loop.first = 0;
+    loop.second = 0;
+    SsSetGetNext(deBoorList, false, &loop);
+  }
+  
+  loop.first = deBoorIter.first;
+  loop.second = deBoorIter.second;
+  SsSetGetNext(deBoorList, true, &loop);
+  
+  while(loop.first != deBoorIter.first)
+  {
+    loop.first = deBoorIter.first;
+    loop.second = deBoorIter.second;
+    SsSetGetNext(deBoorList, false, &loop);
   }
 
   return retVal;
@@ -2084,30 +2198,126 @@ int main(int inputEvent, double x, double y, double B, double _halfWidth, double
 
 int term() // term
 {
-  iteratorDB loop;
+  //iteratorDB loop;
 
-  if(deBoorList)
+#if 1
+  deBoorIter.first = 0;
+  deBoorIter.second = 0;
+
+  int count = (int)SsSetNum(deBoorList);
+  if(count <= 0)
   {
-    deBoorIter = deBoorList->end();
+    BlahLog2("error\n");
+  }
 
-    for(loop = deBoorList->begin(); loop != deBoorList->end(); loop++)
+  BlahLog2("count %i\n", count);
+
+  BlahLog2("test1\n");
+
+  pairDI ksdhfkoslh = {0, 0};
+
+  if(SsSetGetNext(deBoorList, true, &ksdhfkoslh) )
+  {
+    BlahLog2("error\n");
+  }
+
+  if(SsSetIsBegin(deBoorList) != SsSetBegin)
+  {
+    BlahLog2("error\n");
+  }
+
+  BlahLog2("iterate1\n");
+
+  for(int index = 1; index < count; index++)
+  {
+    ksdhfkoslh.first = 0;
+    ksdhfkoslh.second = 0;
+    if(SsSetGetNext(deBoorList, false, &ksdhfkoslh) )
     {
-      if(*loop)
-      {
-        delete *loop;
-        *loop = 0;
-      }
+      BlahLog2("error\n");
     }
 
-    deBoorList->clear();
+    if(index == count - 1)
+      BlahLog2("iterate1\n\n");
+    else
+      BlahLog2("iterate1\n");
+  }
+
+  ksdhfkoslh.first = 0;
+  ksdhfkoslh.second = 0;
+  if(SsSetGetNext(deBoorList, false, &ksdhfkoslh) != SsSetEnd)
+  {
+    BlahLog2("error\n");
+  }
+
+  BlahLog2("test2\n");
+
+
+  while(SsSetNum(deBoorList) > 0)
+  {
+    pairDI loop = {0, 0};
+
+    //int64_t SsSetGetExtrema(ssSet* _this, bool maximum, void* client);
+    if(SsSetGetExtrema(deBoorList, true, &loop) )
+    {
+      BlahLog2("warning\n");
+      continue;
+    }
+    
+    //int64_t SsSetErase(ssSet* _this, void* key, SsSetCompare lessThan, void* client);
+    if(SsSetErase(deBoorList, &loop, 0, 0) )
+    {
+      BlahLog2("warning\n");
+      continue;
+    }
+    
+    delete loop.first;
+    loop.first = 0;
+
+    BlahLog2("iterate2\n");
+  }
+
+  SsSetDestruct(deBoorList);
+  deBoorList = 0;
+#else
+  if(deBoorList)
+  {
+    pairDI loop = {0, 0};
+    
+    //deBoorIter = deBoorList->end();
+    deBoorIter.first = 0;
+    deBoorIter.second = 0;
+
+    SsSetGetNext(deBoorList, true, &loop);
+
+    //for(loop = deBoorList->begin(); loop != deBoorList->end(); loop++)
+    while( !SsSetIsEnd(deBoorList) )
+    {
+      if(loop.first)
+      {
+        delete loop.first;
+        loop.first = 0;
+      }
+
+      loop.first = 0;
+      loop.second = 0;
+      SsSetGetNext(deBoorList, false, &loop);
+    }
+
+    //deBoorList->clear();
+    if(SsSetNum(deBoorList) > 0)
+      SsSetReset(deBoorList);
 
     BlahLog2("destroy root deBoorList before\n");
 
-    delete deBoorList;
+    //delete deBoorList;
+    //deBoorList = 0;
+    SsSetDestruct(deBoorList);
     deBoorList = 0;
 
     BlahLog2("destroy root deBoorList after\n");
   }
+#endif
 
   return OK;
 

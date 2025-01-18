@@ -92,9 +92,6 @@ int64_t SsSetDumpLevel2inorder(ssSet* _this, SsSetNode* node, SsSetEvaluate eval
 
   int64_t stackNum = 0;
 
-  if( !node)
-    goto label_num;
-
   // Stack* stack = StackInit()
   if(SsStackReset(_this->stack) < 0)
     goto label_return;
@@ -128,7 +125,6 @@ int64_t SsSetDumpLevel2inorder(ssSet* _this, SsSetNode* node, SsSetEvaluate eval
     node = node->right;
   }
 
-label_num:
   if(stackNum < 0)
     goto label_return;
 
@@ -136,6 +132,226 @@ label_num:
 
 label_return:
   return result ? (int64_t)callback : SsSetError;
+}
+
+// integrated for root sentinel
+int64_t SsSetIsBegin(ssSet* _this)
+{
+  bool result = false;
+
+  int begin = 0;
+
+  if( !_this)
+    goto label_return;
+
+  // check for index bounds
+  if(_this->index < 0 || _this->index > _this->num)
+    goto label_return;
+  
+  // check for end iterator conditions; both conditions must be true
+  if(_this->iterator == &_this->end && _this->index == _this->num)
+    goto label_num;
+  
+  // if not end iterator then verify neither condition is true
+  if(_this->iterator == &_this->end || _this->index == _this->num)
+    goto label_return;
+  
+  // if we get here then we are at a valid index and current must be valid
+
+  // verify current is valid
+  if( !_this->current)
+    goto label_return;
+
+  // check whether we are at begin
+  if( !_this->index)
+    begin = 1;
+
+label_num:
+  result = true;
+
+label_return:
+  return result ? begin : SsSetError;
+}
+
+// integrated for root sentinel
+int64_t SsSetIsEnd(ssSet* _this)
+{
+  bool result = false;
+
+  int end = 1;
+
+  if( !_this)
+    goto label_return;
+
+  // check for index bounds
+  if(_this->index < 0 || _this->index > _this->num)
+    goto label_return;
+  
+  // check for end iterator conditions; both conditions must be true
+  if(_this->iterator == &_this->end && _this->index == _this->num)
+    goto label_num;
+  
+  // if not end iterator then verify neither condition is true
+  if(_this->iterator == &_this->end || _this->index == _this->num)
+    goto label_return;
+  
+  // if we get here then we are at a valid index and current must be valid
+
+  // verify current is valid
+  if( !_this->current)
+    goto label_return;
+  
+  end = 0;
+
+label_num:
+  result = true;
+
+label_return:
+  return result ? end : SsSetError;
+}
+
+// integrated for root sentinel
+int64_t SsSetGetCurrent(ssSet* _this, void* client)
+{
+  bool result = false;
+
+  int end = 1;
+
+  if( !_this || !client)
+    goto label_return;
+
+  // check for index bounds
+  if(_this->index < 0 || _this->index > _this->num)
+    goto label_return;
+  
+  // check for end iterator conditions; both conditions must be true
+  if(_this->iterator == &_this->end && _this->index == _this->num)
+    goto label_num;
+  
+  // if not end iterator then verify neither condition is true
+  if(_this->iterator == &_this->end || _this->index == _this->num)
+    goto label_return;
+  
+  // if we get here then we are at a valid index and current must be valid
+
+  // verify current is valid
+  if( !_this->current)
+    goto label_return;
+
+  end = 0;
+
+  memcpy(client, GETCLIENT(_this->current), _this->sizeOf);
+
+label_num:
+  result = true;
+
+label_return:
+  return result ? end : SsSetError;
+}
+
+// integrated for root sentinel
+int64_t SsSetGetNext(ssSet* _this, bool reset, void* client)
+{
+  bool result = false;
+
+  int end = 1;
+
+  if( !_this || !client)
+    goto label_return;
+  
+  // check for index bounds
+  if(_this->index < 0 || _this->index > _this->num)
+    goto label_return;
+
+  // we stay at end unless forced to reset, but it's also not an error
+  //
+  // we refuse the request to reset if the set is empty, but it's also not an error
+  if(reset && _this->num > 0)
+  {
+    if(SsStackReset(_this->stack) < 0)
+      goto label_return;
+    
+    _this->iterator = GETROOTFROMTREE(_this);
+    _this->current = 0;
+    _this->index = -1;
+  }
+  // check for end iterator conditions; both conditions must be true
+  else if(_this->iterator == &_this->end && _this->index == _this->num)
+  {
+    goto label_num;
+  }
+  // if not end iterator then verify neither condition is true
+  else if(_this->iterator == &_this->end || _this->index == _this->num)
+  {
+    goto label_return;
+  }
+  // if we get here then we are at a valid index and current must be valid
+  //
+  // verify current is valid
+  else if( !_this->current)
+  {
+    goto label_return;
+  }
+  // if the previous iteration ended at the last element, then set end
+  else if(_this->index == (int64_t)_this->num - 1)
+  {
+    _this->iterator = &_this->end;
+    _this->current = 0;
+    _this->index = _this->num;
+    goto label_num;
+  }
+
+  // _this->iterator != null
+  // _this->iterator != &_this->end
+  // _this->index >= -1
+  // _this->index < _this->num - 1
+
+  do
+  {
+    SsSetNode* node = _this->iterator;
+
+    while(node)
+    {
+      if( !SsStackPush(_this->stack, &node) )
+        goto label_return;
+
+      node = node->left;
+    }
+
+    // in this context it is also considered an error if the stack is empty
+    if(SsStackNum(_this->stack) <= 0)
+      goto label_return;
+
+    if( !SsStackPop(_this->stack, &node) )
+      goto label_return;
+
+    memcpy(client, GETCLIENT(node), _this->sizeOf);
+    
+    _this->current = node;
+
+    node = node->right;
+
+    _this->iterator = node;
+
+    _this->index++;
+
+    end = 0;
+
+  }while(0);
+
+label_num:
+  result = true;
+
+  // _this->iterator != null
+  // _this->iterator != &_this->end
+  // _this->index >= 0
+  // _this->index < _this->num
+
+label_return:
+  if( !result)
+    BlahLog2("error\n");
+  
+  return result ? end : SsSetError;
 }
 
 // integrated for root sentinel
@@ -281,16 +497,6 @@ label_num:
 label_return:
   return result ? (int64_t)callback : SsSetError;
 }
-
-#if 0
-static int64_t(*gSsSetIterativeTreeTraverse)(ssSet* _this, SsSetNode* node, SsSetEvaluate evaluate)[4] =
-{
-  SsSetDumpLevel2preorder,
-  SsSetDumpLevel2inorder,
-  SsSetDumpLevel2postorder,
-  SsSetDumpLevel2levelorder
-};
-#endif
 
 // integrated for root sentinel
 int64_t SsSetDump(ssSet* _this, SsSetEvaluate evaluate, int order)
