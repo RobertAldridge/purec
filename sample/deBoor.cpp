@@ -1044,7 +1044,7 @@ void updateDraw() // deBoor::updateDraw
         {
           _temp = _temp.projectTo2D();
 
-          font->TextOut(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "d0,%i", (int)loop);
+          font->T1xtOut(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "d0,%i", (int)loop);
 
           _temp.y += 14.0;
 
@@ -1052,7 +1052,7 @@ void updateDraw() // deBoor::updateDraw
             double knots_loop_p1 = 0;
             SsStackGetAt(knots, (uint32_t)loop + 1, &knots_loop_p1);
 
-            font->TextOut(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "%i", (int)knots_loop_p1);
+            font->T1xtOut(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "%i", (int)knots_loop_p1);
           }
 
           int loopDegree = 0;
@@ -1064,7 +1064,7 @@ void updateDraw() // deBoor::updateDraw
             double knots_loop_degree_p1 = 0;
             SsStackGetAt(knots, ( (uint32_t)loop + loopDegree) + 1, &knots_loop_degree_p1);
 
-            font->TextOut(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "%i", (int)knots_loop_degree_p1);
+            font->T1xtOut(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "%i", (int)knots_loop_degree_p1);
           }
         }
       }
@@ -1225,14 +1225,14 @@ void updateDraw() // deBoor::updateDraw
         {
           _temp = _temp.projectTo2D();
 
-          font->TextOut(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "d0,%i", (int)currentIndex);
+          font->T1xtOut(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "d0,%i", (int)currentIndex);
 
           _temp.y += 14.0;
 
           double knots_ci_p1 = 0;
           SsStackGetAt(knots, (uint32_t)currentIndex + 1, &knots_ci_p1);
 
-          font->TextOut(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "%i", (int)knots_ci_p1);
+          font->T1xtOut(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "%i", (int)knots_ci_p1);
 
           int loopDegree = 0;
 
@@ -1243,7 +1243,7 @@ void updateDraw() // deBoor::updateDraw
             double knots_ci_ld_p1 = 0;
             SsStackGetAt(knots, ( (uint32_t)currentIndex + loopDegree) + 1, &knots_ci_ld_p1);
 
-            font->TextOut(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "%i", (int)knots_ci_ld_p1);
+            font->T1xtOut(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "%i", (int)knots_ci_ld_p1);
           }
         }
       }

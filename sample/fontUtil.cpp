@@ -121,7 +121,7 @@ struct FontBlah
 {
   FontClient* ( *TextOutInitSystem)(FontClient* _this, GraphicsClient* _graphics, uint32_t width, uint32_t height, uint32_t idealWidth, uint32_t idealHeight);
 
-  void ( *TextOut)(FontClient* _this, int32_t x, int32_t y, const char* format, ...);
+  void ( *T1xtOut)(FontClient* _this, int32_t x, int32_t y, const char* format, ...);
 
   rectInteger ( *TextOutRect)(FontClient* _this, int32_t x, int32_t y, const char* format, ...);
 

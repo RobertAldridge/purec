@@ -59,7 +59,7 @@ extern int main(int inputEvent, double x, double y, double B, double halfWidth, 
 // of the function is not 0.
 extern int term();
 
-#define ENABLE_DIRECTDRAW 0
+#define ENABLE_DIRECTDRAW 1
 
 //#include <d3d12.h>
 //#include <d2d1.h>
@@ -113,11 +113,20 @@ extern int term();
 
 #include "BlahAlloc.h"
 
-#if 0//defined(_MSC_VER)
+#if defined(_MSC_VER)
 
+#pragma warning (disable : 4820)
+#define INITGUID
 #define _CRTDBG_MAP_ALLOC
 #include <crtdbg.h>
 #include <windows.h>
+
+#if ENABLE_DIRECTDRAW
+#include <ddraw.h>
+#include <dxgi.h>
+#include <d3d9.h>
+#endif
+#pragma warning (default : 4820)
 
 #else
 
@@ -753,6 +762,10 @@ static INDEX_TYPE TestObjectEquivalent(CLIENT_POTYPE ClientObject1, CLIENT_POTYP
 
 static FontClient* _font = 0;
 
+#if ENABLE_DIRECTDRAW
+typedef HRESULT (WINAPI * LPDIRECTDRAWCREATE7)(GUID FAR*, LPDIRECTDRAW FAR*, IUnknown FAR*);
+#endif
+
 struct GraphicsBlah
 {
 
@@ -831,13 +844,6 @@ int ( *GraphicsCheckIsFullScreen)(GraphicsClient* _this);
 // GRAPHICS_IMPLEMENTATION::GDI foundation is always there to catch us.
 enum GRAPHICS_IMPLEMENTATION Implementation;
 
-#if ENABLE_DIRECTDRAW
-IDirectDraw* ddraw_obj;
-IDirectDrawClipper* ddraw_screenclipper;
-IDirectDrawSurface* ddraw_screen;
-IDirectDrawSurface* ddraw_backbuffer;
-#endif
-
 // If we want to be nice then we won't try to change
 // the bit depth on the user.
 bool beNice;
@@ -865,6 +871,15 @@ HBITMAP backbufferBitmapHB;
 HGDIOBJ backbufferCleanUp;
 
 HWND _hWindow;
+
+#if ENABLE_DIRECTDRAW
+HINSTANCE hInstDDraw7;
+LPDIRECTDRAWCREATE7 dDCreate7;
+IDirectDraw* ddraw_obj;
+IDirectDrawClipper* ddraw_screenclipper;
+IDirectDrawSurface* ddraw_screen;
+IDirectDrawSurface* ddraw_backbuffer;
+#endif
 
 };
 
@@ -1260,6 +1275,7 @@ static void GraphicsSafeMode(GraphicsClient* reference)
   widthHeight[1] = (unsigned short)_this->oldHeight;
 
   _this->Implementation = GRAPHICS_IMPLEMENTATION::GDI;
+  BlahLog2("GRAPHICS_IMPLEMENTATION::GDI\n");
 
   GraphicsWindowProc(_this->_hWindow, WM_DISPLAYCHANGE, (unsigned long long)_this->oldBitDepth, *(unsigned long*)widthHeight);
 
@@ -1443,13 +1459,13 @@ static int GraphicsUnlockBackBuffer(GraphicsClient* reference)
 #if ENABLE_DIRECTDRAW
     HRESULT hResult = 0;
 
-    hResult = ddraw_backbuffer->Unlock(backbufferArray[0] );
+    hResult = _this->ddraw_backbuffer->Unlock(_this->backbufferArray[0] );
 
     if(FAILED(hResult) )
     {
       Error("IDirectDrawSurface::Unlock(...) has failed for the back buffer");
 
-      graphicsSafeMode();
+      _this->GraphicsSafeMode(reference);
 
       goto label_return;
     }
@@ -1504,24 +1520,24 @@ static int GraphicsLockBackBuffer(GraphicsClient* reference)
 
     ddsd.dwSize = sizeof(DDSURFACEDESC);
 
-    hResult = ddraw_backbuffer->Lock(0, &ddsd, DDLOCK_SURFACEMEMORYPTR | DDLOCK_WAIT, 0);
+    hResult = _this->ddraw_backbuffer->Lock(0, &ddsd, DDLOCK_SURFACEMEMORYPTR | DDLOCK_WAIT, 0);
 
     if(FAILED(hResult) )
     {
       Error("IDirectDrawSurface::Lock(...) has failed for the back buffer");
 
-      graphicsSafeMode();
+      _this->GraphicsSafeMode(reference);
 
       goto label_return;
     }
 
-    if(backbufferArray[0] != ddsd.lpSurface || backbufferArray[1] != (uint8_t*)ddsd.lpSurface + ddsd.lPitch)
+    if(_this->backbufferArray[0] != ddsd.lpSurface || _this->backbufferArray[1] != (uint8_t*)ddsd.lpSurface + ddsd.lPitch)
     {
       uint8_t* surface = (uint8_t*)ddsd.lpSurface;
 
-      for(int index = 0; index < graphicsClientHeight(); index++)
+      for(int index = 0; index < _this->GraphicsClientHeight(reference); index++)
       {
-        backbufferArray[index] = surface + index * (int)ddsd.lPitch;
+        _this->backbufferArray[index] = surface + index * (int)ddsd.lPitch;
       }
     }
 
@@ -1577,13 +1593,13 @@ static int GraphicsClearBackBuffer(GraphicsClient* reference)
 
     ddfx.dwFillColor = 0x00000000;
 
-    hResult = ddraw_backbuffer->Blt(0, 0, 0, DDBLT_COLORFILL | DDBLT_WAIT, &ddfx);
+    hResult = _this->ddraw_backbuffer->Blt(0, 0, 0, DDBLT_COLORFILL | DDBLT_WAIT, &ddfx);
 
     if(FAILED(hResult) )
     {
       Error("ddraw_backbuffer->Blt(...) function failure");
 
-      graphicsSafeMode();
+      _this->GraphicsSafeMode(reference);
 
       goto label_return;
     }
@@ -1668,22 +1684,22 @@ static int GraphicsDrawBackBufferToScreen(GraphicsClient* reference, HWND hWindo
       goto label_return;
     }
 
-    rectBackBuffer.right = graphicsClientWidth();
-    rectBackBuffer.bottom = graphicsClientHeight();
+    rectBackBuffer.right = _this->GraphicsClientWidth(reference);
+    rectBackBuffer.bottom = _this->GraphicsClientHeight(reference);
 
     rectScreen.left = rectScreen.left;
     rectScreen.top = rectScreen.top;
 
-    rectScreen.right = rectScreen.left + graphicsWidth();
-    rectScreen.bottom = rectScreen.top  + graphicsHeight();
+    rectScreen.right = rectScreen.left + _this->GraphicsWidth(reference);
+    rectScreen.bottom = rectScreen.top  + _this->GraphicsHeight(reference);
 
-    hResult = ddraw_screen->Blt( &rectScreen, ddraw_backbuffer, &rectBackBuffer, DDBLT_WAIT, 0);
+    hResult = _this->ddraw_screen->Blt( (RECT*) &rectScreen, _this->ddraw_backbuffer, (RECT*) &rectBackBuffer, DDBLT_WAIT, 0);
 
     if(FAILED(hResult) )
     {
       Error("ddraw_screen->Blt(...) function failure");
 
-      graphicsSafeMode();
+      _this->GraphicsSafeMode(reference);
 
       goto label_return;
     }
@@ -2270,7 +2286,11 @@ label_return:
   return result;
 }
 
-static int GraphicsTermScreenAndBackBufferDIRECTDRAW(GraphicsClient* /*_this*/)
+#if ENABLE_DIRECTDRAW
+static int GraphicsTermScreenAndBackBufferDIRECTDRAW(GraphicsClient* reference)
+#else
+static int GraphicsTermScreenAndBackBufferDIRECTDRAW(GraphicsClient* /*reference*/)
+#endif
 {
   int result = GRAPHICS_ERROR;
 
@@ -2279,11 +2299,15 @@ static int GraphicsTermScreenAndBackBufferDIRECTDRAW(GraphicsClient* /*_this*/)
 
   HRESULT hResult = 0;
 
-  if(ddraw_backbuffer)
-  {
-    hResult = ddraw_backbuffer->Release();
+  GraphicsBlah* _this = (GraphicsBlah*)reference;
+  if( !_this)
+    goto label_return;
 
-    ddraw_backbuffer = 0;
+  if(_this->ddraw_backbuffer)
+  {
+    hResult = _this->ddraw_backbuffer->Release();
+
+    _this->ddraw_backbuffer = 0;
 
     if(FAILED(hResult) )
     {
@@ -2293,11 +2317,11 @@ static int GraphicsTermScreenAndBackBufferDIRECTDRAW(GraphicsClient* /*_this*/)
     }
   }
 
-  if(ddraw_screen)
+  if(_this->ddraw_screen)
   {
-    hResult = ddraw_screen->Release();
+    hResult = _this->ddraw_screen->Release();
 
-    ddraw_screen = 0;
+    _this->ddraw_screen = 0;
 
     if(FAILED(hResult) )
     {
@@ -2307,11 +2331,11 @@ static int GraphicsTermScreenAndBackBufferDIRECTDRAW(GraphicsClient* /*_this*/)
     }
   }
 
-  if(ddraw_screenclipper)
+  if(_this->ddraw_screenclipper)
   {
-    hResult = ddraw_screenclipper->Release();
+    hResult = _this->ddraw_screenclipper->Release();
 
-    ddraw_screenclipper = 0;
+    _this->ddraw_screenclipper = 0;
 
     if(FAILED(hResult) )
     {
@@ -2321,11 +2345,11 @@ static int GraphicsTermScreenAndBackBufferDIRECTDRAW(GraphicsClient* /*_this*/)
     }
   }
 
-  if(ddraw_obj)
+  if(_this->ddraw_obj)
   {
-    hResult = ddraw_obj->Release();
+    hResult = _this->ddraw_obj->Release();
 
-    ddraw_obj = 0;
+    _this->ddraw_obj = 0;
 
     if(FAILED(hResult) )
     {
@@ -2509,7 +2533,7 @@ static int GraphicsInitScreenAndBackBufferGDI(GraphicsClient* reference, HWND hW
 
   _this->GraphicsLockBackBuffer(reference);
 
-  _font->TextOut(_font, 10, 10, "Press F8 for help");
+  _font->T1xtOut(_font, 10, 10, "Press F8 for help");
 
   _this->GraphicsUnlockBackBuffer(reference);
 
@@ -2522,7 +2546,7 @@ label_return:
 }
 
 #if ENABLE_DIRECTDRAW
-static int GraphicsInitScreenAndBackBufferDIRECTDRAW(GraphicsClient* _this, HWND hWindow)
+static int GraphicsInitScreenAndBackBufferDIRECTDRAW(GraphicsClient* reference, HWND hWindow)
 #else
 static int GraphicsInitScreenAndBackBufferDIRECTDRAW(GraphicsClient* /*_this*/, HWND /*hWindow*/)
 #endif
@@ -2534,26 +2558,28 @@ static int GraphicsInitScreenAndBackBufferDIRECTDRAW(GraphicsClient* /*_this*/, 
 
   HRESULT hResult = 0;
 
+  GraphicsBlah* _this = (GraphicsBlah*)reference;
+  if( !_this)
+    goto label_return;
+
   ddsd.dwSize = sizeof(DDSURFACEDESC);
 
-  if(ddraw_obj || ddraw_screen || ddraw_screenclipper || ddraw_backbuffer)
+  if(_this->ddraw_obj || _this->ddraw_screen || _this->ddraw_screenclipper || _this->ddraw_backbuffer)
   {
     result = GRAPHICS_OK;
 
     goto label_return;
   }
 
-  //IDXGIAdapter * pIDXGIAdapter = nullptr;
-//ID3D12Device * pD3D12Device = nullptr;
-//HRESULT hr = ::D3D12CreateDevice(pIDXGIAdapter, D3D_FEATURE_LEVEL_11_0, IID_ID3D12Device, &pD3D12Device);
+  _this->hInstDDraw7 = LoadLibraryA("ddraw.dll");
+  if( !_this->hInstDDraw7)
+    goto label_return;
 
-  // Initialize the direct draw interface.
-//HRESULT __stdcall D2D1CreateFactory(D2D1_FACTORY_TYPE factoryType, REFIID riid, CONST D2D1_FACTORY_OPTIONS* pFactoryOptions, void** ppIFactory);
-  D2D1_FACTORY_OPTIONS blahFactoryOptions = {0};
-  void* m_d2dFactory = 0;
-  D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, __uuidof(ID2D1Factory1), &blahFactoryOptions, &m_d2dFactory);
+  _this->dDCreate7 = (LPDIRECTDRAWCREATE7)GetProcAddress(_this->hInstDDraw7, "DirectDrawCreate");
+  if( !_this->dDCreate7)
+    goto label_return;
 
-  hResult = DirectDrawCreate(0, &ddraw_obj, 0);
+  hResult = _this->dDCreate7(0, &_this->ddraw_obj, 0);
 
   if(FAILED(hResult) )
   {
@@ -2562,15 +2588,15 @@ static int GraphicsInitScreenAndBackBufferDIRECTDRAW(GraphicsClient* /*_this*/, 
     goto label_return;
   }
 
-  hResult = ddraw_obj->SetCooperativeLevel(hWindow, DDSCL_NORMAL);
+  hResult = _this->ddraw_obj->SetCooperativeLevel(hWindow, DDSCL_NORMAL);
 
   if(FAILED(hResult) )
   {
     Error("The function SetCooperativeLevel(...) has failed.");
 
-    hResult = ddraw_obj->Release();
+    hResult = _this->ddraw_obj->Release();
 
-    ddraw_obj = 0;
+    _this->ddraw_obj = 0;
 
     if(FAILED(hResult) )
     {
@@ -2585,15 +2611,15 @@ static int GraphicsInitScreenAndBackBufferDIRECTDRAW(GraphicsClient* /*_this*/, 
 
   ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
 
-  hResult = ddraw_obj->CreateSurface( &ddsd, &ddraw_screen, 0);
+  hResult = _this->ddraw_obj->CreateSurface( &ddsd, &_this->ddraw_screen, 0);
 
   if(FAILED(hResult) )
   {
     Error("The function CreateSurface(...) has failed while trying to create the screen surface.");
 
-    hResult = ddraw_obj->Release();
+    hResult = _this->ddraw_obj->Release();
 
-    ddraw_obj = 0;
+    _this->ddraw_obj = 0;
 
     if(FAILED(hResult) )
     {
@@ -2604,24 +2630,24 @@ static int GraphicsInitScreenAndBackBufferDIRECTDRAW(GraphicsClient* /*_this*/, 
   }
 
   // Create the clipper object which will be used on the screen surface.
-  hResult = ddraw_obj->CreateClipper(0, &ddraw_screenclipper, 0);
+  hResult = _this->ddraw_obj->CreateClipper(0, &_this->ddraw_screenclipper, 0);
 
   if(FAILED(hResult) )
   {
     Error("The function CreateClipper(...) has failed while trying to create the screen clipper object.");
 
-    hResult = ddraw_screen->Release();
+    hResult = _this->ddraw_screen->Release();
 
-    ddraw_screen = 0;
+    _this->ddraw_screen = 0;
 
     if(FAILED(hResult) )
     {
       Error("The DirectDraw screen object failed to release correctly.");
     }
 
-    hResult = ddraw_obj->Release();
+    hResult = _this->ddraw_obj->Release();
 
-    ddraw_obj = 0;
+    _this->ddraw_obj = 0;
 
     if(FAILED(hResult) )
     {
@@ -2632,33 +2658,33 @@ static int GraphicsInitScreenAndBackBufferDIRECTDRAW(GraphicsClient* /*_this*/, 
   }
 
   // Associate the clipper to our client window.
-  hResult = ddraw_screenclipper->SetHWnd(0, hWindow);
+  hResult = _this->ddraw_screenclipper->SetHWnd(0, hWindow);
 
   if(FAILED(hResult) )
   {
     Error("The function SetHWnd(...) has failed for the screen clipper object.");
 
-    hResult = ddraw_screenclipper->Release();
+    hResult = _this->ddraw_screenclipper->Release();
 
-    ddraw_screenclipper = 0;
+    _this->ddraw_screenclipper = 0;
 
     if(FAILED(hResult) )
     {
       Error("The DirectDraw screen clipper object failed to release correctly.");
     }
 
-    hResult = ddraw_screen->Release();
+    hResult = _this->ddraw_screen->Release();
 
-    ddraw_screen = 0;
+    _this->ddraw_screen = 0;
 
     if(FAILED(hResult) )
     {
       Error("The DirectDraw screen object failed to release correctly.");
     }
 
-    hResult = ddraw_obj->Release();
+    hResult = _this->ddraw_obj->Release();
 
-    ddraw_obj = 0;
+    _this->ddraw_obj = 0;
 
     if(FAILED(hResult) )
     {
@@ -2669,33 +2695,33 @@ static int GraphicsInitScreenAndBackBufferDIRECTDRAW(GraphicsClient* /*_this*/, 
   }
 
   // Clip the screen surface to the client window.
-  hResult = ddraw_screen->SetClipper(ddraw_screenclipper);
+  hResult = _this->ddraw_screen->SetClipper(_this->ddraw_screenclipper);
 
   if(FAILED(hResult) )
   {
     Error("The function SetClipper(...) has failed for the screen surface.");
 
-    hResult = ddraw_screenclipper->Release();
+    hResult = _this->ddraw_screenclipper->Release();
 
-    ddraw_screenclipper = 0;
+    _this->ddraw_screenclipper = 0;
 
     if(FAILED(hResult) )
     {
       Error("The DirectDraw screen clipper object failed to release correctly.");
     }
 
-    hResult = ddraw_screen->Release();
+    hResult = _this->ddraw_screen->Release();
 
-    ddraw_screen = 0;
+    _this->ddraw_screen = 0;
 
     if(FAILED(hResult) )
     {
       Error("The DirectDraw screen object failed to release correctly.");
     }
 
-    hResult = ddraw_obj->Release();
+    hResult = _this->ddraw_obj->Release();
 
-    ddraw_obj = 0;
+    _this->ddraw_obj = 0;
 
     if(FAILED(hResult) )
     {
@@ -2714,33 +2740,33 @@ static int GraphicsInitScreenAndBackBufferDIRECTDRAW(GraphicsClient* /*_this*/, 
 
   ddsd.dwHeight = _this->GraphicsClientHeight(reference);
 
-  hResult = ddraw_obj->CreateSurface( &ddsd, &ddraw_backbuffer, 0);
+  hResult = _this->ddraw_obj->CreateSurface( &ddsd, &_this->ddraw_backbuffer, 0);
 
-  if(FAILED(hResult) || FAILED(ddraw_backbuffer->GetSurfaceDesc( &ddsd) ) )
+  if(FAILED(hResult) || FAILED(_this->ddraw_backbuffer->GetSurfaceDesc( &ddsd) ) )
   {
     Error("The function CreateSurface(...) has failed while trying to create the back buffer surface.");
 
-    hResult = ddraw_screen->Release();
+    hResult = _this->ddraw_screen->Release();
 
-    ddraw_screen = 0;
+    _this->ddraw_screen = 0;
 
     if(FAILED(hResult) )
     {
       Error("The DirectDraw screen object failed to release correctly.");
     }
 
-    hResult = ddraw_screenclipper->Release();
+    hResult = _this->ddraw_screenclipper->Release();
 
-    ddraw_screenclipper = 0;
+    _this->ddraw_screenclipper = 0;
 
     if(FAILED(hResult) )
     {
       Error("The DirectDraw screen clipper object failed to release correctly.");
     }
 
-    hResult = ddraw_obj->Release();
+    hResult = _this->ddraw_obj->Release();
 
-    ddraw_obj = 0;
+    _this->ddraw_obj = 0;
 
     if(FAILED(hResult) )
     {
@@ -2753,23 +2779,28 @@ static int GraphicsInitScreenAndBackBufferDIRECTDRAW(GraphicsClient* /*_this*/, 
   _this->GraphicsClearBackBuffer(reference);
 
   if( !_font)
-    _font = RobsTextOutInitSystem(_this->graphicsBackBufferFunction, _this->GraphicsClientWidth(reference), _this->GraphicsClientHeight(reference), _this->GraphicsWidth(reference), _this->GraphicsHeight(reference) );
+    _font = RobsTextOutInitSystem(_font, reference, _this->GraphicsClientWidth(reference), _this->GraphicsClientHeight(reference), _this->GraphicsWidth(reference), _this->GraphicsHeight(reference) );
 
   ParticleSystemsInitGraphics(_this->GraphicsBackBufferFunction(reference)[0], _this->GraphicsClientWidth(reference), _this->GraphicsClientHeight(reference), 32, ddsd.lPitch);
 
   _this->GraphicsLockBackBuffer(reference);
 
-  _font->TextOut(_font, 10, 10, "Press F8 for help");
+  _font->T1xtOut(_font, 10, 10, "Press F8 for help");
 
   _this->GraphicsUnlockBackBuffer(reference);
 
-  _this->GraphicsDrawBackBufferToScreen(hWindow);
+  _this->GraphicsDrawBackBufferToScreen(reference, hWindow);
 
   result = GRAPHICS_OK;
 #endif
 
 #if ENABLE_DIRECTDRAW
 label_return:
+  if(result == GRAPHICS_ERROR && _this->hInstDDraw7)
+  {
+    FreeLibrary(_this->hInstDDraw7);
+    _this->hInstDDraw7;
+  }
 #endif
 
   return result;
@@ -2795,6 +2826,7 @@ static int GraphicsInitScreenAndBackBuffer(GraphicsClient* reference, HWND hWind
   if(_this->bitDepth != 32)
   {
     _this->Implementation = GRAPHICS_IMPLEMENTATION::GDI;
+    BlahLog2("GRAPHICS_IMPLEMENTATION::GDI\n");
   }
 
   if(_this->bitDepth <= 0)
@@ -2825,6 +2857,7 @@ static int GraphicsInitScreenAndBackBuffer(GraphicsClient* reference, HWND hWind
     if(_this->GraphicsInitScreenAndBackBufferDIRECTDRAW(reference, hWindow) != 0)
     {
       _this->Implementation = GRAPHICS_IMPLEMENTATION::GDI;
+      BlahLog2("GRAPHICS_IMPLEMENTATION::GDI\n");
 
       result = _this->GraphicsInitScreenAndBackBuffer(reference, hWindow);
       goto label_return;
@@ -3004,8 +3037,8 @@ GraphicsClient* GraphicsClientConstruct(GraphicsClient* /*reference*/)
   if( !_this)
     goto label_return;
 
-  //_this->Implementation = GRAPHICS_IMPLEMENTATION::DIRECTDRAW;
-  _this->Implementation = GRAPHICS_IMPLEMENTATION::GDI;
+  _this->Implementation = GRAPHICS_IMPLEMENTATION::DIRECTDRAW;
+  BlahLog2("GRAPHICS_IMPLEMENTATION::DIRECTDRAW\n");
 
   _this->width = 3840;
   _this->height = 2160;
@@ -3117,15 +3150,22 @@ int64_t GraphicsClientDestruct(GraphicsClient** reference)
 {
   int result = 0;
 
-  GraphicsClient* _this = 0;
+  GraphicsBlah* _this = 0;
 
   if( !reference)
     goto label_return;
 
-  _this = reference[0];
+  _this = (GraphicsBlah*)reference[0];
 
   if( !_this)
     goto label_return;
+
+#if ENABLE_DIRECTDRAW
+  _this->dDCreate7 = 0;
+
+  FreeLibrary(_this->hInstDDraw7);
+  _this->hInstDDraw7 = 0;
+#endif
 
   BlahFree(_this, sizeof(GraphicsBlah), true);
 
@@ -6635,7 +6675,7 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
 
         _graphics->GraphicsLockBackBuffer(reference);
 
-        _font->TextOut(_font, 10, 10, "Press F8 for help");
+        _font->T1xtOut(_font, 10, 10, "Press F8 for help");
 
         main(UPDATE_INPUT, mousePt.x, mousePt.y, 1, (double)_graphics->GraphicsClientWidth(reference) * 0.5, (double)_graphics->GraphicsClientHeight(reference) * 0.5, reference, _font);
       }
@@ -6683,7 +6723,7 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
 
         _graphics->GraphicsLockBackBuffer(reference);
 
-        _font->TextOut(_font, 10, 10, "Press F8 for help");
+        _font->T1xtOut(_font, 10, 10, "Press F8 for help");
 
         main(UPDATE_INPUT, client.first.x, client.first.y, 1, (double)_graphics->GraphicsClientWidth(reference) * 0.5, (double)_graphics->GraphicsClientHeight(reference) * 0.5, reference, _font);
       }

@@ -24,7 +24,7 @@ struct FontBlah
 {
   FontClient* ( *TextOutInitSystem)(FontClient* _this, GraphicsClient* _graphics, uint32_t width, uint32_t height, uint32_t idealWidth, uint32_t idealHeight);
 
-  void ( *TextOut)(FontClient* _this, int32_t x, int32_t y, const char* format, ...);
+  void ( *T1xtOut)(FontClient* _this, int32_t x, int32_t y, const char* format, ...);
 
   rectInteger ( *TextOutRect)(FontClient* _this, int32_t x, int32_t y, const char* format, ...);
 
@@ -307,7 +307,7 @@ label_return:
   if(_this)
   {
     _this->TextOutInitSystem = RobsTextOutInitSystem;
-    _this->TextOut = RobsTextOut;
+    _this->T1xtOut = RobsTextOut;
     _this->TextOutRect = RobsTextOutRect;
     _this->TextOutTermSystem = RobsTextOutTermSystem;
   }
@@ -330,13 +330,13 @@ void RobsTextOut(FontClient* reference, int32_t x, int32_t y, const char* format
 
   if( !format)
   {
-    BlahLog("Error TextOut -> !format");
+    BlahLog("Error T1xtOut -> !format");
     goto label_return;
   }
 
   if( !(*format) )
   {
-    BlahLog("Warning TextOut -> !(*format)");
+    BlahLog("Warning T1xtOut -> !(*format)");
     goto label_return;
   }
 

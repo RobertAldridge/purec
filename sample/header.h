@@ -46,7 +46,7 @@ struct FontClient
 {
   FontClient* ( *TextOutInitSystem)(FontClient* _this, uint8_t** ( *backBufferFunction)(), uint32_t width, uint32_t height, uint32_t idealWidth, uint32_t idealHeight);
 
-  void ( *TextOut)(FontClient* _this, int32_t x, int32_t y, const char* format, ...);
+  void ( *T1xtOut)(FontClient* _this, int32_t x, int32_t y, const char* format, ...);
 
   rectInteger ( *TextOutRect)(FontClient* _this, int32_t x, int32_t y, const char* format, ...);
 
@@ -67,6 +67,7 @@ struct COLOR;
 
 struct VECTOR;
 
+#pragma warning(disable: 4191)
 #pragma warning(disable: 4365)
 #pragma warning(disable: 4514)
 
