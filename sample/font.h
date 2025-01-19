@@ -57,7 +57,7 @@ extern void RobsTextOut(void* _this, int32_t x, int32_t y, const char* const for
 // To get the current font's width and height, call rect = RobsTextOutRect(0,0," ").
 // Then the contents of the rect will be {0,0,currentFontWidth-1,currentFontHeight-1}.
 //
-// RobsTextOutRect will return {-1,-1,-1,-1} if RobsTextOutInitSystem
+// RobsTextOutRect will return { -1, -1, -1, -1} if RobsTextOutInitSystem
 // has not been called.
 extern rect RobsTextOutRect(FontBlah* _this, int32_t x, int32_t y, const char* const format, ...);
 

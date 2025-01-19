@@ -12,16 +12,16 @@ void SsSetRotateLeftErase1Level4(ssSet* _this, SsSetNode* xP)
   xP->right = xPR->left;
 
   if(xPR->left)
-    xPR->left->parent = xP, _this->debug[0] ++;
+    xPR->left->parent = xP, _this->debug[0]++;
   else
-    _this->debug[1] ++; // never reached through empirical testing
+    _this->debug[1]++; // never reached through empirical testing
 
   xPR->parent = xP->parent;
 
   if(xP == xP->parent->left)
-    xP->parent->left = xPR, _this->debug[40] ++;
+    xP->parent->left = xPR, _this->debug[40]++;
   else
-    xP->parent->right = xPR, _this->debug[41] ++;
+    xP->parent->right = xPR, _this->debug[41]++;
 
   xPR->left = xP;
 
@@ -36,16 +36,16 @@ void SsSetRotateLeftErase2Level4(ssSet* _this, SsSetNode* xP)
   xP->right = xPR->left;
 
   if(xPR->left)
-    xPR->left->parent = xP, _this->debug[2] ++;
+    xPR->left->parent = xP, _this->debug[2]++;
   else
-    _this->debug[3] ++;
+    _this->debug[3]++;
 
   xPR->parent = xP->parent;
 
   if(xP == xP->parent->left)
-    xP->parent->left = xPR, _this->debug[42] ++;
+    xP->parent->left = xPR, _this->debug[42]++;
   else
-    xP->parent->right = xPR, _this->debug[43] ++;
+    xP->parent->right = xPR, _this->debug[43]++;
 
   xPR->left = xP;
 
@@ -60,16 +60,16 @@ void SsSetRotateLeftInsertLevel3(ssSet* _this, SsSetNode* xPP)
   xPP->right = xPPR->left;
 
   if(xPPR->left)
-    xPPR->left->parent = xPP, _this->debug[4] ++;
+    xPPR->left->parent = xPP, _this->debug[4]++;
   else
-    _this->debug[5] ++;
+    _this->debug[5]++;
 
   xPPR->parent = xPP->parent;
 
   if(xPP == xPP->parent->left)
-    xPP->parent->left = xPPR, _this->debug[44] ++;
+    xPP->parent->left = xPPR, _this->debug[44]++;
   else
-    xPP->parent->right = xPPR, _this->debug[45] ++;
+    xPP->parent->right = xPPR, _this->debug[45]++;
 
   xPPR->left = xPP;
 

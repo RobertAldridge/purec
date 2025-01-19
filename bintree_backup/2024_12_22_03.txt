@@ -658,8 +658,7 @@ static uint32_t gLargePageMinimum = 0;
 
 // consolidate return statements
 // deBoor.cpp
-// emitter.cpp
-// particle.cpp
+// deCastlejau.cpp
 // winmain.cpp
 
 
