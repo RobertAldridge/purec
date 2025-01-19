@@ -172,8 +172,7 @@ static uint8_t* SsArrayGetPreviousChunk(ssArray* _this)
   {
     pool = pool->previous;
 
-    // we specifically want the new pool's num for arithmetic
-    // _this->current->previous->num, not _this->current->num
+    // use new pool in arithmetic
     index = pool->num - 1;
   }
   else
@@ -331,7 +330,7 @@ int64_t SsArrayDestruct(ssArray** reference)
 
   num = _this->numChunks;
 
-  SsArrayPoolListFree(_this, _this->head);
+  SsArrayPoolListFree(_this, _this->tail);
 
   sizeOf = SsArrayGetPoolSizeOf(_this, _this->head->num);
   BlahFree(_this, sizeOf + SsArrayGetSizeOfSsArrayHeader(), true);

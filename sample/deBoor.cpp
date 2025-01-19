@@ -80,7 +80,7 @@
 
 //#include <iostream>
 //#include <deque>
-//#include <list>
+///#include <list>
 //#include <queue>
 //#include <vector>
 
@@ -404,6 +404,8 @@ deBoor(int _degree = 3, int _iterateConstant = 16) : t(0.5), frameR(0), frameS(1
 
   if(degree <= 0)
     degree = 1;
+
+  BlahLog2("deBoor %i\n", (int)sizeof(deBoor) );
 
   tempPt = SsArrayConstruct(sizeof(point), 10, 4000000000, 10000);
 
@@ -778,33 +780,34 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
       // Put the knots in ascending order, and make sure that there
       // are no knots with multiplicity greater that degree + 1.
 
-      //list<double> sort; // init todo
       ssSet* sort = SsSetConstruct(sizeof(double), (uint32_t)_numKnots, 4000000000, 10000, doubleSsSetCompare);
 
-      int loop = 0;
-
-      // Put the knots in ascending order.
-      for(loop = 0; loop != _numKnots; loop++)
-      {
-        //sort.push_back(_knotList[loop] );
-        //SsSetInsert(sort, &_numKnots[loop], 0, 0);
-        SsSetInsert(sort, &_knotList[loop], 0, 0);
-      }
-
-      //sort.sort();
-
-      //double knotValue = sort.front();
       double knotValue = 0;
-      SsSetGetExtrema(sort, false, &knotValue);
 
       int knotMultiplicity = 0;
 
+      // Put the knots in ascending order.
+      for(int loop = 0; loop < _numKnots; loop++)
+        SsSetInsert(sort, &_knotList[loop], 0, 0);
+
+      BlahLog2("MENU_INPUT\n");
+
       // Check for multiplicity greater than degree + 1 as the knots
       // are inserted into the active knot list.
-      for(loop = 0; loop != _numKnots; loop++)
+      for(int loop = 0; loop < _numKnots; loop++)
       {
         double sort_front = 0;
-        SsSetGetExtrema(sort, false, &sort_front);
+
+        if( !loop)
+        {
+          SsSetGetNext(sort, true, &sort_front);
+
+          knotValue = sort_front;
+        }
+        else
+        {
+          SsSetGetNext(sort, false, &sort_front);
+        }
 
         if(eq(sort_front, knotValue) )
         {
@@ -818,18 +821,8 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
         }
 
         if(knotMultiplicity <= degree + 1)
-        {
-          //double sort_front = sort.front();
-
           SsStackPush(knots, &sort_front);
-        }
-
-        //sort.pop_front();
-        SsSetErase(sort, &sort_front, 0, 0);
       }
-
-      if(SsSetNum(sort) > 0)
-        SsSetReset(sort);
 
       SsSetDestruct( &sort);
     }
@@ -2422,7 +2415,7 @@ int term() // term
 {
   int result = ERROR;
 
-  int count = 0;
+  //int count = 0;
 
   pairDI ksdhfkoslh = {0, 0};
 
@@ -2434,88 +2427,6 @@ int term() // term
     goto label_return;
   }
 
-#if 1
-  deBoorIter.first = 0;
-  deBoorIter.second = 0;
-
-  count = (int)SsSetNum(deBoorList);
-  if(count <= 0)
-  {
-    BlahLog2("error\n");
-  }
-
-  BlahLog2("count %i\n", count);
-
-  BlahLog2("test1\n");
-
-  ksdhfkoslh.first = 0;
-  ksdhfkoslh.second = 0;
-  if(SsSetGetNext(deBoorList, true, &ksdhfkoslh) )
-  {
-    BlahLog2("error\n");
-  }
-
-  if(SsSetIsBegin(deBoorList) != SsSetBegin)
-  {
-    BlahLog2("error\n");
-  }
-
-  BlahLog2("iterate1\n");
-
-  for(int index = 1; index < count; index++)
-  {
-    ksdhfkoslh.first = 0;
-    ksdhfkoslh.second = 0;
-    if(SsSetGetNext(deBoorList, false, &ksdhfkoslh) )
-    {
-      BlahLog2("error\n");
-    }
-
-    if(index == count - 1)
-      BlahLog2("iterate1\n\n");
-    else
-      BlahLog2("iterate1\n");
-  }
-
-  ksdhfkoslh.first = 0;
-  ksdhfkoslh.second = 0;
-  if(SsSetGetNext(deBoorList, false, &ksdhfkoslh) != SsSetEnd)
-  {
-    BlahLog2("error\n");
-  }
-
-  BlahLog2("test2\n");
-
-
-  while(SsSetNum(deBoorList) > 0)
-  {
-    pairDI loop = {0, 0};
-
-    //int64_t SsSetGetExtrema(ssSet* _this, bool maximum, void* client);
-    if(SsSetGetExtrema(deBoorList, true, &loop) < 0)
-    {
-      BlahLog2("error\n");
-      continue;
-    }
-
-    //int64_t SsSetErase(ssSet* _this, void* key, SsSetCompare lessThan, void* client);
-    if(SsSetErase(deBoorList, &loop, 0, 0) < 0)
-    {
-      BlahLog2("error\n");
-      continue;
-    }
-
-    if(loop.first)
-    {
-      delete loop.first;
-      loop.first = 0;
-    }
-
-    BlahLog2("iterate2\n");
-  }
-
-  SsSetDestruct( &deBoorList);
-#else
   if(deBoorList)
   {
     pairDI loop = {0, 0};
@@ -2527,7 +2438,7 @@ int term() // term
     SsSetGetNext(deBoorList, true, &loop);
 
     //for(loop = deBoorList->begin(); loop != deBoorList->end(); loop++)
-    while( !SsSetIsEnd(deBoorList) )
+    for(int count = 1; count <= SsSetNum(deBoorList); count++)
     {
       if(loop.first)
       {
@@ -2541,8 +2452,9 @@ int term() // term
     }
 
     //deBoorList->clear();
-    if(SsSetNum(deBoorList) > 0)
-      SsSetReset(deBoorList);
+
+    //if(SsSetNum(deBoorList) > 0)
+    //  SsSetReset(deBoorList);
 
     BlahLog2("destroy root deBoorList before\n");
 
@@ -2552,7 +2464,6 @@ int term() // term
 
     BlahLog2("destroy root deBoorList after\n");
   }
-#endif
 
   result = OK;
 
