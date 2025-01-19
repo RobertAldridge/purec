@@ -285,6 +285,7 @@
     <ClCompile Include="..\ssmm\ssQueue.cpp" />
     <ClCompile Include="..\ssmm\ssStack.cpp" />
     <ClCompile Include="deBoor.cpp" />
+    <ClCompile Include="deCasteljau.cpp" />
     <ClCompile Include="font.cpp" />
     <ClCompile Include="fontUtil.cpp" />
     <ClCompile Include="emitter.cpp" />

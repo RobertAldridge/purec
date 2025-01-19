@@ -76,8 +76,6 @@ extern int term();
 //#include <cmath>
 //#include <ctime>
 
-//#pragma warning (disable : 4365)
-
 //#include <iostream>
 //#include <string>
 //#include <queue>
@@ -95,12 +93,6 @@ extern int term();
 //using std::memcpy;
 //using std::memset;
 //using std::uint32_t;
-
-struct point
-{
-  int x;
-  int y;
-};
 
 #include "listObject.h"
 #include "list.h"
@@ -1297,8 +1289,8 @@ static int graphicsDrawBackBufferToScreen(HWND hWindow)
   case GRAPHICS_IMPLEMENTATION::DIRECTDRAW: // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::DIRECTDRAW
   {
 #if ENABLE_DIRECTDRAW
-    rect rectBackBuffer = {0};
-    rect rectScreen = {0};
+    rectInteger rectBackBuffer = {0};
+    rectInteger rectScreen = {0};
 
     HRESULT hResult = 0;
 
@@ -3321,8 +3313,8 @@ static bool IsWindowStyleChanging = false;
 
 static bool isMenuActive = false;
 
-static point mousePointCurrent = {-1, -1};
-static point mousePointPrevious = {-1, -1};
+static pointInteger mousePointCurrent = {-1, -1};
+static pointInteger mousePointPrevious = {-1, -1};
 
 static double angleTheta = 0;
 static double angleFee = 0;
@@ -3330,11 +3322,11 @@ static double velocity = 0;
 
 struct pairQI
 {
-  point first;
+  pointInteger first;
   int second;
 };
 
-//using pairQI = pair<point, int>;
+//using pairQI = pair<pointInteger, int>;
 //using queueI = queue<pairQI>;
 
 //static queueI* input = 0;
@@ -3421,7 +3413,7 @@ long long __stdcall Graphics::AboutDlgProc(HWND hDlg, unsigned int msg, unsigned
 
   if(Graphics::_hWindow && Graphics::graphicsIsModeChangeActive() == false && IsApplicationMinimized == false)
   {
-    point mousePt = {0};
+    pointInteger mousePt = {0};
 
     GetCursorPos( (POINT*) &mousePt);
     ScreenToClient(Graphics::_hWindow, (POINT*) &mousePt);
@@ -3913,7 +3905,7 @@ _IDCANCEL:
 
   if(Graphics::_hWindow && Graphics::graphicsIsModeChangeActive() == false && IsApplicationMinimized == false)
   {
-    point mousePt = {0};
+    pointInteger mousePt = {0};
 
     GetCursorPos( (POINT*) &mousePt);
     ScreenToClient(Graphics::_hWindow, (POINT*) &mousePt);
@@ -3940,11 +3932,11 @@ enum
   WINDOWSTYLE_FULLSCREEN = Graphics::GRAPHICS_FULLSCREEN
 };
 
-static point origin;
+static pointInteger origin;
 
-static point size;
+static pointInteger size;
 
-static rect menu;
+static rectInteger menu;
 
 static int style;
 
@@ -3967,14 +3959,14 @@ virtual WindowStyle& operator= (WindowStyle& ) = 0;
 
 public:
 
-static point getOrigin() // point WindowStyle::getOrigin()
+static pointInteger getOrigin() // pointInteger WindowStyle::getOrigin()
 {
   return origin;
 }
 
-static point getSize(bool clamp) // point WindowStyle::getSize(bool clamp)
+static pointInteger getSize(bool clamp) // pointInteger WindowStyle::getSize(bool clamp)
 {
-  point temporary = {0, 0};
+  pointInteger temporary = {0, 0};
 
   if(clamp == false || style == WINDOWSTYLE_FULLSCREEN)
   {
@@ -4002,7 +3994,7 @@ label_return:
   return temporary;
 }
 
-static rect getMenuRect() // rect WindowStyle::getMenuRect()
+static rectInteger getMenuRect() // rectInteger WindowStyle::getMenuRect()
 {
   return menu;
 }
@@ -4012,7 +4004,7 @@ static int getStyle() // int WindowStyle::getStyle()
   return style;
 }
 
-static point setOrigin(int x, int y) // point WindowStyle::setOrigin(int x, int y)
+static pointInteger setOrigin(int x, int y) // pointInteger WindowStyle::setOrigin(int x, int y)
 {
   origin.x = x;
   origin.y = y;
@@ -4041,7 +4033,7 @@ label_return:
   return style;
 }
 
-static rect setMenuRect(int leftEdgeMenuThickness, int topEdgeMenuThickness, int rightEdgeMenuThickness, int bottomEdgeMenuThickness) // rect WindowStyle::setMenuRect(int leftEdgeMenuThickness, int topEdgeMenuThickness, int rightEdgeMenuThickness, int bottomEdgeMenuThickness)
+static rectInteger setMenuRect(int leftEdgeMenuThickness, int topEdgeMenuThickness, int rightEdgeMenuThickness, int bottomEdgeMenuThickness) // rectInteger WindowStyle::setMenuRect(int leftEdgeMenuThickness, int topEdgeMenuThickness, int rightEdgeMenuThickness, int bottomEdgeMenuThickness)
 {
   menu.left = leftEdgeMenuThickness;
   menu.top = topEdgeMenuThickness;
@@ -4068,10 +4060,10 @@ static int setStyle() // int WindowStyle::setStyle()
 }; // class WindowStyle
 
 // Give the WindowStyle class static variables default values.
-point WindowStyle::origin = {-1, -1};
-point WindowStyle::size = {-1, -1};
+pointInteger WindowStyle::origin = {-1, -1};
+pointInteger WindowStyle::size = {-1, -1};
 
-rect WindowStyle::menu = {-1, -1, -1, -1};
+rectInteger WindowStyle::menu = {-1, -1, -1, -1};
 
 int WindowStyle::style = WINDOWSTYLE_WINDOW;
 // End initialization of WindowStyle class static variables.
@@ -4158,9 +4150,9 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 {
   long long result = 0;
 
-  point mousePt = {0, 0};
+  pointInteger mousePt = {0, 0};
 
-  static point prevPt = {0, 0};
+  static pointInteger prevPt = {0, 0};
 
   static HINSTANCE hInstance = 0;
 
@@ -4228,11 +4220,11 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
       if(WindowStyle::getStyle() == Graphics::GRAPHICS_WINDOW)
       {
-        point origin = WindowStyle::getOrigin();
+        pointInteger origin = WindowStyle::getOrigin();
 
-        point size = WindowStyle::getSize(true);
+        pointInteger size = WindowStyle::getSize(true);
 
-        rect menu = WindowStyle::getMenuRect();
+        rectInteger menu = WindowStyle::getMenuRect();
 
         assert(size.x > 0 && size.y > 0 && "size.x > 0 && size.y > 0");
 
@@ -4472,7 +4464,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
         {
           double* p;
           double f;
-          point pt;
+          pointInteger pt;
 
         }menu;
 
@@ -4506,7 +4498,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
         client.second = CAPTURE_TRANSLATE;
         SsQueuePushBack(input, &client);
 
-        point transPt = {mousePt.x + Graphics::graphicsClientWidth() / 2, mousePt.y + Graphics::graphicsClientHeight() / 2};
+        pointInteger transPt = {mousePt.x + Graphics::graphicsClientWidth() / 2, mousePt.y + Graphics::graphicsClientHeight() / 2};
 
         client.first = transPt;
         client.second = UPDATE_INPUT;
@@ -4526,7 +4518,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
         client.second = CAPTURE_SCALE;
         SsQueuePushBack(input, &client);
 
-        point scalePt = {mousePt.x + Graphics::graphicsClientWidth() / 2, mousePt.y + Graphics::graphicsClientWidth() / 2};
+        pointInteger scalePt = {mousePt.x + Graphics::graphicsClientWidth() / 2, mousePt.y + Graphics::graphicsClientWidth() / 2};
 
         client.first = scalePt;
         client.second = UPDATE_INPUT;
@@ -4708,7 +4700,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
   {
     if(Graphics::graphicsBackBufferFunction() && Graphics::graphicsIsModeChangeActive() == false && WindowStyle::getStyle() != Graphics::GRAPHICS_FULLSCREEN && IsWindowStyleChanging == false)
     {
-      point trans = {0, 0};
+      pointInteger trans = {0, 0};
 
       /*int returnVal = */ClientToScreen(hwnd, (POINT*) &trans);
 
@@ -4825,7 +4817,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 // WMSZ_TOPRIGHT Top-right corner
 //
 // lParam
-// A pointer to a rect structure with the screen coordinates of the drag rectangle. To change the size or position of the drag rectangle, an application must change the members of this structure.
+// A pointer to a rectInteger structure with the screen coordinates of the drag rectangle. To change the size or position of the drag rectangle, an application must change the members of this structure.
 //
 // Return value
 // Type long long
@@ -4838,15 +4830,15 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
     {
       static double scaleTime = 0;
 
-      rect* _rect = (rect*)lParam;
+      rectInteger* _rect = (rectInteger*)lParam;
 
       if(msg == WM_SIZE)
       {
-        _rect = (rect*)InsertHeapAllocation(sizeof(rect) );
+        _rect = (rectInteger*)InsertHeapAllocation(sizeof(rectInteger) );
 
         if(_rect == 0)
         {
-          Error("WM_SIZE new rect allocation failure");
+          Error("WM_SIZE new rectInteger allocation failure");
 
           // We need help from DefWindowProc(...).
           break;
@@ -5531,11 +5523,11 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
 
   int windowType = 0;
 
-  rect windowRect = {0};
+  rectInteger windowRect = {0};
 
   MSG Message = {0};
 
-  point origin = {0};
+  pointInteger origin = {0};
 
   _hInstance = hInstance;
 
@@ -5600,7 +5592,7 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
   // 6) Set _CrtSetDbgFlag to keep track of allocations on the heap
   _CrtSetDbgFlag(_CrtSetDbgFlag(_CRTDBG_REPORT_FLAG) | _CRTDBG_LEAK_CHECK_DF);
 
-  // Enable floating point exceptions to track down bad floating point usage.
+  // Enable floating _point exceptions to track down bad floating _point usage.
   /* _controlfp(0, _EM_ZERODIVIDE | _EM_INVALID); */
 
   // Copyright 1999-2000 Bruce Dawson. ~ end
@@ -6173,7 +6165,7 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
 
     if( !SsQueueNum(input) )
     {
-      point mousePt = {0};
+      pointInteger mousePt = {0};
 
       GetCursorPos( (POINT*) &mousePt);
       ScreenToClient(hWindow, (POINT*) &mousePt);
@@ -6213,7 +6205,7 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
         {
           double* p;
           double f;
-          point pt;
+          pointInteger pt;
 
         }menu;
 

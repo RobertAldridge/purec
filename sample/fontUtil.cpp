@@ -120,8 +120,8 @@ __declspec(dllimport) HBITMAP __stdcall CreateDIBSection(HDC hdc, const BITMAPIN
 
 struct FontBlah
 {
-  // ascii contains source rect of characters on font image
-  rect ascii[256];
+  // ascii contains source rectInteger of characters on font image
+  rectInteger ascii[256];
 
   // width is screen_width - 1
   // height is screen_height - 1
@@ -149,8 +149,8 @@ struct FontBlah
 
 // int* _StartX; input is old dest x, output is new dest x
 // int* _StartY; input is old dest y, output is new dest y
-// rect *_rect; input is old source rect, output is new source rect
-bool FontUtilClipSpecial(int* _StartX, int* _StartY, int _width, int _height, rect* _rect)
+// rectInteger *_rect; input is old source rectInteger, output is new source rectInteger
+bool FontUtilClipSpecial(int* _StartX, int* _StartY, int _width, int _height, rectInteger* _rect)
 {
   bool result = false;
 
@@ -471,7 +471,7 @@ label_return:
   return;
 }
 
-void FontUtilCharAntiAliasColorBlit(uint8_t** backbuffer, uint8_t** textbuffer, int xDst, int yDst, rect* _RectSrc)
+void FontUtilCharAntiAliasColorBlit(uint8_t** backbuffer, uint8_t** textbuffer, int xDst, int yDst, rectInteger* _RectSrc)
 {
   uint8_t* Dst = 0;
   uint8_t* Src = 0;
@@ -488,8 +488,8 @@ void FontUtilCharAntiAliasColorBlit(uint8_t** backbuffer, uint8_t** textbuffer, 
   short Width = 0;
   short WidthLoop = 0;
 
-  rect RectDst = {0};
-  rect RectSrc = {0};
+  rectInteger RectDst = {0};
+  rectInteger RectSrc = {0};
 
   RectSrc = *_RectSrc;
 

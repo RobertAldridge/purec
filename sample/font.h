@@ -47,19 +47,19 @@ extern FontBlah* RobsTextOutInitSystem(uint8_t** (*backBufferFunction)(), const 
 // has not been called.
 extern void RobsTextOut(void* _this, int32_t x, int32_t y, const char* const format, ...);
 
-// Returns a rect with the upper left and lower right pixel coordinates
+// Returns a rectInteger with the upper left and lower right pixel coordinates
 // that contain the text which would be printed if RobsTextOut were called
 // with the same arguments.
 //
-// The rect is in pixel coordinates, so a 10 by 10 at (100,100)
-// would be {100,100,109,109}
+// The rectInteger is in pixel coordinates, so a 10 by 10 at (100, 100)
+// would be {100, 100, 109, 109}
 //
-// To get the current font's width and height, call rect = RobsTextOutRect(0,0," ").
-// Then the contents of the rect will be {0,0,currentFontWidth-1,currentFontHeight-1}.
+// To get the current font's width and height, call rectInteger = RobsTextOutRect(0, 0, " ").
+// Then the contents of the rectInteger will be {0, 0, currentFontWidth - 1, currentFontHeight - 1}.
 //
 // RobsTextOutRect will return { -1, -1, -1, -1} if RobsTextOutInitSystem
 // has not been called.
-extern rect RobsTextOutRect(FontBlah* _this, int32_t x, int32_t y, const char* const format, ...);
+extern rectInteger RobsTextOutRect(FontBlah* _this, int32_t x, int32_t y, const char* const format, ...);
 
 // Terminates the font system and releases all allocated fonts.
 //

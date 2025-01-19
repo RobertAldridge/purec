@@ -17,8 +17,8 @@
 
 struct FontBlah
 {
-  // ascii contains source rect of characters on font image
-  rect ascii[256];
+  // ascii contains source rectInteger of characters on font image
+  rectInteger ascii[256];
 
   // width is screen_width - 1
   // height is screen_height - 1
@@ -52,7 +52,7 @@ static uint8_t CharTrivialAcceptance(FontBlah* _this, const int32_t x, const int
 
 static void _RobsTextOut(FontBlah* _this, int32_t x, int32_t y, const char* const dest_buffer);
 
-static rect _RobsTextOutRect(FontBlah* _this, int32_t x, int32_t y, const char* const dest_buffer);
+static rectInteger _RobsTextOutRect(FontBlah* _this, int32_t x, int32_t y, const char* const dest_buffer);
 ////////////////////////////////////////
 
 uint32_t GetIdealFontWidth()
@@ -143,7 +143,7 @@ void _RobsTextOut(FontBlah* _this, int32_t x, int32_t y, const char* const dest_
     // clip and blit
     else
     {
-      rect SrcRect = _this->ascii[ (uint8_t) ( (int16_t)text[0] + 128) ];
+      rectInteger SrcRect = _this->ascii[ (uint8_t) ( (int16_t)text[0] + 128) ];
 
       // checks output from FontUtilClipSpecial
       if(FontUtilClipSpecial( &x, &y, _this->width, _this->height, &SrcRect) )
@@ -159,7 +159,7 @@ label_return:
   return;
 }
 
-rect _RobsTextOutRect(FontBlah* _this, int32_t x, int32_t y, const char* const dest_buffer)
+rectInteger _RobsTextOutRect(FontBlah* _this, int32_t x, int32_t y, const char* const dest_buffer)
 {
   char* text = 0;
 
@@ -167,7 +167,7 @@ rect _RobsTextOutRect(FontBlah* _this, int32_t x, int32_t y, const char* const d
   uint32_t chars_per_line = 0;
   uint32_t max_chars_per_line = 0;
 
-  rect output_rect = {-1, -1, -1, -1};
+  rectInteger output_rect = {-1, -1, -1, -1};
 
   if( !_this)
     goto label_return;
@@ -329,13 +329,13 @@ label_return:
   return;
 }
 
-rect RobsTextOutRect(FontBlah* _this, int32_t x, int32_t y, const char* const format, ...)
+rectInteger RobsTextOutRect(FontBlah* _this, int32_t x, int32_t y, const char* const format, ...)
 {
   char dest_buffer[514] = {0};
 
   va_list argptr = 0;
 
-  rect output_rect = {-1, -1, -1, -1};
+  rectInteger output_rect = {-1, -1, -1, -1};
 
   if( !_this)
     goto label_return;

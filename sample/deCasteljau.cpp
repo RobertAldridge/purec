@@ -55,22 +55,17 @@
 //
 // Emailed to Michael Jahn Mon, Jul 30th, 2001 12:00 pm VERSION 1.2
 
-#pragma warning(push, 3)
+//#include <cassert>
+//#include <cmath>
+//#include <ctime>
+//#include <cstdarg>
 
-#pragma warning(disable: 4710)
-
-#pragma warning(disable: 4786)
-
-#include <cassert>
-#include <cmath>
-#include <ctime>
-#include <cstdarg>
-
-#include <iostream>
+//#include <iostream>
 #include <deque>
 #include <queue>
 
 using std::deque;
+using std::pair;
 using std::queue;
 
 extern void* operator new(size_t size);
@@ -81,8 +76,60 @@ extern void operator delete(void* ptr);
 
 extern void operator delete[](void* ptr);
 
+#if 0
+// Epsilon:
+//    If num - floor(num)<= E, then num = floor(num).
+//    If ceiling(num) - num <= E, then num = ceiling(num).
+//
+// Both are always true, even when truncating from double to int.
+const double E = 0.000001;
+
+// function convert float to int
+static int fti(double f) // int deCasteljau::fti(double f)
+{
+  return ( (f - floor(f) <= E) ? ( (int)floor(f) ) : ( (ceil(f) - f <= E) ? ( (int)ceil(f) ) : ( (int)f) ) );
+
+}
+
+// A little 2D point class, makes stuff easier.
+class point // class deCasteljau::point
+{
+
+public:
+
+// x and y coordinates of a 2D point with respect to the standard origin.
+double x;
+double y;
+
+// Easy way to create a point from 2 doubles
+point(double _x = 0, double _y = 0) : x(_x), y(_y)
+{
+}
+
+// Easy way to calculate the Euclidean distance between two points.
+double dist(point& pt) const
+{
+  return sqrt( (x - pt.x) * (x - pt.x) + (y - pt.y) * (y - pt.y) );
+}
+
+// Easy way to check if two points correspond to the same pixel.
+bool operator== (point& pt)const
+{
+  return fti(x) == fti(pt.x) && fti(y) == fti(pt.y);
+}
+
+bool operator!= (point& pt) const
+{
+  return fti(x) != fti(pt.x) || fti(y) != fti(pt.y);
+}
+
+}; // class deCasteljau::point
+#endif
+
 class deCasteljau // class deCasteljau
 {
+
+public:
 
 // Epsilon:
 //    If num - floor(num)<= E, then num = floor(num).
@@ -148,8 +195,8 @@ typedef dequeP::iterator iteratorDP;
 double t;
 
 // r and s define the affine frame(r, s).
-double r;
-double s;
+double frameR;
+double frameS;
 
 // This variable tells the program which control point the user is
 // manipulating.  The value can range from 1 to N, N being the current
@@ -173,6 +220,8 @@ bool shellBl;
 
 // If the control points are visible then this variable is set to true.
 bool ctrlBl;
+
+unsigned char padding1[6];
 
 // A marker, used to tell the subdivision algorithm which part of
 // the curve to render next.  Most importantly, this variable is
@@ -204,7 +253,7 @@ point inputPrv;
 //
 // Currently only the x coordinate of the points { inputPT, minPt, maxPt } are
 // used to determine the actual value of t of F(t).
-point minPt
+point minPt;
 point maxPt;
 
 // The different colors used for each shell and control point(in RGB).
@@ -229,11 +278,11 @@ void(*lineDrawingPrimitive)(int x0, int y0, int x1, int y1, int color0RGB, int c
 // A pointer to a client supplied point drawing function, set in setPrimitiveDrawingFunctions().
 void(*pointDrawingPrimitive)(int x0, int y0, int color0RGB);
 
-public:
+//public:
 
 // Initialize the de Casteljau algorithm when the user inputs the
 // first control point.
-deCasteljau() : t(0.5), r(0), s(1), capturedControlPt(0), numControlPts(0), iterateConstant(16), shellT(0), shellBl(true), ctrlBl(true), minMaxT(0), shelPt(), tranPt(), tempPt(), subdWt(), inputCur(0, 0), inputPrv(0, 0), minPt(0, 0), maxPt(0, 0), halfWidth(0.5), halfHeight(0.5), captureAction(0), circleDrawingPrimitive(0), lineDrawingPrimitive(0), pointDrawingPrimitive(0) // deCasteljau::deCasteljau()
+deCasteljau() : t(0.5), frameR(0), frameS(1), capturedControlPt(0), numControlPts(0), iterateConstant(16), shellT(0), shellBl(true), ctrlBl(true), padding1{0}, minMaxT(0), shelPt(), tranPt(), tempPt(), subdWt(), inputCur(0, 0), inputPrv(0, 0), minPt(0, 0), maxPt(0, 0), halfWidth(0.5), halfHeight(0.5), captureAction(0), circleDrawingPrimitive(0), lineDrawingPrimitive(0), pointDrawingPrimitive(0) // deCasteljau::deCasteljau()
 {
   // Create some different colors to view the shells and control points with.
   for(int i = 0, c0 = 0, c1 = 0; i < 100; i++)
@@ -460,7 +509,7 @@ int updateInput(int inputEvent, double x, double y) // int deCasteljau::updateIn
   {
     retVal = 1;
     dumpAllCaptures();
-    captureAction = dragTranslate;
+    captureAction = &deCasteljau::dragTranslate;
   }
   break; // switch(inputEvent) CAPTURE_TRANSLATE
 
@@ -468,7 +517,7 @@ int updateInput(int inputEvent, double x, double y) // int deCasteljau::updateIn
   {
     retVal = 1;
     dumpAllCaptures();
-    captureAction = dragScale;
+    captureAction = &deCasteljau::dragScale;
   }
   break; // switch(inputEvent) CAPTURE_SCALE
   ////////////////////////////////////////////////////////
@@ -477,7 +526,7 @@ int updateInput(int inputEvent, double x, double y) // int deCasteljau::updateIn
   {
     retVal = 1;
     dumpAllCaptures();
-    captureAction = dragRotate;
+    captureAction = &deCasteljau::dragRotate;
   }
   break; // switch(inputEvent) CAPTURE_ROTATE
 
@@ -567,10 +616,10 @@ int updateInput(int inputEvent, double x, double y) // int deCasteljau::updateIn
       break;
     }
 
-    r = p[9];
-    s = p[10];
+    frameR = p[9];
+    frameS = p[10];
 
-    t = (s - r) / 2.0;
+    t = (frameS - frameR) / 2.0;
 
     inputPrv = inputCur;
 
@@ -611,13 +660,13 @@ int updateInput(int inputEvent, double x, double y) // int deCasteljau::updateIn
       // p0 = (fx(r), fy(r) )
       // p1 = (fx(s), fy(s) )
 
-      inputCur.x = blossom(1, p[2], p[1], r);
-      inputCur.y = -blossom(1, p[6], p[5], r);
+      inputCur.x = blossom(1, p[2], p[1], frameR);
+      inputCur.y = -blossom(1, p[6], p[5], frameR);
 
       addControlPoint();
 
-      inputCur.x = blossom(1, p[2], p[1], s);
-      inputCur.y = -blossom(1, p[6], p[5], s);
+      inputCur.x = blossom(1, p[2], p[1], frameS);
+      inputCur.y = -blossom(1, p[6], p[5], frameS);
 
       addControlPoint();
 
@@ -637,18 +686,18 @@ int updateInput(int inputEvent, double x, double y) // int deCasteljau::updateIn
       // p1 = (fx(r, s), fy(r, s) )
       // p2 = (fx(s, s), fy(s, s) )
 
-      inputCur.x = blossom(2, p[3], p[2], p[1], r, r);
-      inputCur.y = -blossom(2, p[7], p[6], p[5], r, r);
+      inputCur.x = blossom(2, p[3], p[2], p[1], frameR, frameR);
+      inputCur.y = -blossom(2, p[7], p[6], p[5], frameR, frameR);
 
       addControlPoint();
 
-      inputCur.x = blossom(2, p[3], p[2], p[1], r, s);
-      inputCur.y = -blossom(2, p[7], p[6], p[5], r, s);
+      inputCur.x = blossom(2, p[3], p[2], p[1], frameR, frameS);
+      inputCur.y = -blossom(2, p[7], p[6], p[5], frameR, frameS);
 
       addControlPoint();
 
-      inputCur.x = blossom(2, p[3], p[2], p[1], s, s);
-      inputCur.y = -blossom(2, p[7], p[6], p[5], s, s);
+      inputCur.x = blossom(2, p[3], p[2], p[1], frameS, frameS);
+      inputCur.y = -blossom(2, p[7], p[6], p[5], frameS, frameS);
 
       addControlPoint();
 
@@ -675,23 +724,23 @@ int updateInput(int inputEvent, double x, double y) // int deCasteljau::updateIn
       // p2 = (fx(r, s, s), fy(r, s, s) )
       // p3 = (fx(s, s, s), fy(s, s, s) )
 
-      inputCur.x = blossom(3, p[4], p[3], p[2], p[1], r, r, r);
-      inputCur.y = -blossom(3, p[8], p[7], p[6], p[5], r, r, r);
+      inputCur.x = blossom(3, p[4], p[3], p[2], p[1], frameR, frameR, frameR);
+      inputCur.y = -blossom(3, p[8], p[7], p[6], p[5], frameR, frameR, frameR);
 
       addControlPoint();
 
-      inputCur.x = blossom(3, p[4], p[3], p[2], p[1], r, r, s);
-      inputCur.y = -blossom(3, p[8], p[7], p[6], p[5], r, r, s);
+      inputCur.x = blossom(3, p[4], p[3], p[2], p[1], frameR, frameR, frameS);
+      inputCur.y = -blossom(3, p[8], p[7], p[6], p[5], frameR, frameR, frameS);
 
       addControlPoint();
 
-      inputCur.x = blossom(3, p[4], p[3], p[2], p[1], r, s, s);
-      inputCur.y = -blossom(3, p[8], p[7], p[6], p[5], r, s, s);
+      inputCur.x = blossom(3, p[4], p[3], p[2], p[1], frameR, frameS, frameS);
+      inputCur.y = -blossom(3, p[8], p[7], p[6], p[5], frameR, frameS, frameS);
 
       addControlPoint();
 
-      inputCur.x = blossom(3, p[4], p[3], p[2], p[1], s, s, s);
-      inputCur.y = -blossom(3, p[8], p[7], p[6], p[5], s, s, s);
+      inputCur.x = blossom(3, p[4], p[3], p[2], p[1], frameS, frameS, frameS);
+      inputCur.y = -blossom(3, p[8], p[7], p[6], p[5], frameS, frameS, frameS);
 
       addControlPoint();
 
@@ -779,6 +828,12 @@ label_return:
 // F(t), and the shells for F(t).
 void updateDraw() // void deCasteljau::updateDraw()
 {
+  point p0, p1;
+
+  point weight;
+
+  int loop = -1;
+
   if( !numControlPts)
     goto label_return;
 
@@ -788,10 +843,6 @@ void updateDraw() // void deCasteljau::updateDraw()
 
     goto label_return;
   }
-
-  point p0, p1;
-
-  point weight;
 
   if( !fti(minMaxT) )
   {
@@ -808,8 +859,6 @@ void updateDraw() // void deCasteljau::updateDraw()
 
     minMaxT = 1;
   }
-
-  int loop = -1;
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
   while(++loop < 40 * (1 + iterateConstant) )
@@ -902,7 +951,7 @@ void updateDraw() // void deCasteljau::updateDraw()
     {
       for(int currentPtIndex = 0; currentPtIndex < numControlPts; currentPtIndex++)
       {
-        drawCircle(tranPt[currentPtIndex], (currentPtIndex == (capturedControlPt - 1) ) ? 15 : 10, currentPtIndex + 1);
+        drawCircle(tranPt[ (uint32_t)currentPtIndex], (currentPtIndex == (capturedControlPt - 1) ) ? 15 : 10, currentPtIndex + 1);
       }
     }
 
@@ -1160,13 +1209,13 @@ void captureControlPoint() // void deCasteljau::captureControlPoint()
   // and the captureAction()function is activated to point to the dragControlPoint()
   // function.
   capturedControlPt = 0;
-  distMin = inputCur.dist(tranPt[capturedControlPt] );
+  distMin = inputCur.dist(tranPt[ (uint32_t)capturedControlPt] );
 
   for(int currentPtIndex = 1; currentPtIndex < numControlPts; currentPtIndex++)
   {
-    if(distMin > inputCur.dist(tranPt[currentPtIndex] ) )
+    if(distMin > inputCur.dist(tranPt[ (uint32_t)currentPtIndex] ) )
     {
-      distMin = inputCur.dist(tranPt[currentPtIndex] );
+      distMin = inputCur.dist(tranPt[ (uint32_t)currentPtIndex] );
 
       capturedControlPt = currentPtIndex;
     }
@@ -1174,7 +1223,7 @@ void captureControlPoint() // void deCasteljau::captureControlPoint()
 
   capturedControlPt++;
 
-  captureAction = dragControlPoint;
+  captureAction = &deCasteljau::dragControlPoint;
 
 } // void deCasteljau::captureControlPoint()
 
@@ -1191,14 +1240,14 @@ void capture_t_of_F_of_t() // void deCasteljau::capture_t_of_F_of_t()
 
   for(int currentPtIndex = 1; currentPtIndex < numControlPts; currentPtIndex++)
   {
-    if(minPt.x > tranPt[currentPtIndex].x)
+    if(minPt.x > tranPt[ (uint32_t)currentPtIndex].x)
     {
-      minPt.x = tranPt[currentPtIndex].x;
+      minPt.x = tranPt[ (uint32_t)currentPtIndex].x;
     }
 
-    if(maxPt.x < tranPt[currentPtIndex].x)
+    if(maxPt.x < tranPt[ (uint32_t)currentPtIndex].x)
     {
-      maxPt.x = tranPt[currentPtIndex].x;
+      maxPt.x = tranPt[ (uint32_t)currentPtIndex].x;
     }
   }
 
@@ -1206,7 +1255,7 @@ void capture_t_of_F_of_t() // void deCasteljau::capture_t_of_F_of_t()
   // point to the drag_t_of_F_of_t()function.
   //
   // The new t will be calculated in the drag_t_of_F_of_t()function.
-  captureAction = drag_t_of_F_of_t;
+  captureAction = &deCasteljau::drag_t_of_F_of_t;
 
 } // void deCasteljau::capture_t_of_F_of_t()
 
@@ -1241,8 +1290,8 @@ void dragControlPoint() // void deCasteljau::dragControlPoint()
 {
   // Drag the captured ctrl pt relative to input movement between
   // the current input pt and the previous input pt.
-  tranPt[capturedControlPt - 1].x += inputCur.x - inputPrv.x;
-  tranPt[capturedControlPt - 1].y += inputCur.y - inputPrv.y;
+  tranPt[ (int64_t)capturedControlPt - 1].x += inputCur.x - inputPrv.x;
+  tranPt[ (int64_t)capturedControlPt - 1].y += inputCur.y - inputPrv.y;
 
 } // void deCasteljau::dragControlPoint()
 
@@ -1276,10 +1325,10 @@ void dragTranslate() // void deCasteljau::dragTranslate()
 
 void dragScale() // void deCasteljau::dragScale()
 {
-  double s = 1.0 + (inputCur.y - inputPrv.y) / (halfWidth * 2);
+  double scale = 1.0 + (inputCur.y - inputPrv.y) / (halfWidth * 2);
 
-  double tx = (1 - s) * halfWidth;
-  double ty = (1 - s) * halfHeight;
+  double tx = (1 - scale) * halfWidth;
+  double ty = (1 - scale) * halfHeight;
 
   point p;
 
@@ -1289,8 +1338,8 @@ void dragScale() // void deCasteljau::dragScale()
   {
     p = *a;
 
-    a->x = p.x * s + tx;
-    a->y = p.y * s + ty;
+    a->x = p.x * scale + tx;
+    a->y = p.y * scale + ty;
   }
 
 } // void deCasteljau::dragScale()
@@ -1299,11 +1348,11 @@ void dragRotate() // void deCasteljau::dragRotate()
 {
   double angle = (inputCur.x - inputPrv.x) / 180.0;
 
-  double c = cos(angle);
-  double s = sin(angle);
+  double cosine = cos(angle);
+  double sine = sin(angle);
 
-  double tx = (1 - c) * halfWidth + s * halfHeight;
-  double ty = -s * halfWidth + (1 - c) * halfHeight;
+  double tx = (1 - cosine) * halfWidth + sine * halfHeight;
+  double ty = -sine * halfWidth + (1 - cosine) * halfHeight;
 
   point p;
 
@@ -1313,8 +1362,8 @@ void dragRotate() // void deCasteljau::dragRotate()
   {
     p = *a;
 
-    a->x = p.x * c + p.y * -s + tx;
-    a->y = p.x * s + p.y * c + ty;
+    a->x = p.x * cosine + p.y * -sine + tx;
+    a->y = p.x * sine + p.y * cosine + ty;
   }
 
 } // void deCasteljau::dragRotate()
@@ -1330,13 +1379,13 @@ void removeControlPoint() // void deCasteljau::removeControlPoint()
   //
   // The ctrl pt that is closest to the input pt is the pt that is deleted.
   ctrlPt = 0;
-  distMin = inputCur.dist(tranPt[ctrlPt] );
+  distMin = inputCur.dist(tranPt[ (uint32_t)ctrlPt] );
 
   for(int currentPtIndex = 1; currentPtIndex < numControlPts; currentPtIndex++)
   {
-    if(distMin > inputCur.dist(tranPt[currentPtIndex] ) )
+    if(distMin > inputCur.dist(tranPt[ (uint32_t)currentPtIndex] ) )
     {
-      distMin = inputCur.dist(tranPt[currentPtIndex] );
+      distMin = inputCur.dist(tranPt[ (uint32_t)currentPtIndex] );
 
       ctrlPt = currentPtIndex;
     }
@@ -1366,12 +1415,12 @@ enum
   OK = 0
 };
 
-extern "C" int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int) ) // int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int) )
+extern "C" int init2(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int) ) // int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int) )
 {
   int result = ERROR;
 
   // Initialize the random number generator.
-  srand(time(0) );
+  srand( (unsigned int)time(0) );
 
   if( !deCastList)
   {
@@ -1403,9 +1452,15 @@ label_return:
 
 } // int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int) )
 
-extern "C" int main(int inputEvent, double x, double y, double _halfWidth, double _halfHeight) // int main(int inputEvent, double x, double y, double _halfWidth, double _halfHeight)
+extern "C" int main2(int inputEvent, double x, double y, double _halfWidth, double _halfHeight) // int main(int inputEvent, double x, double y, double _halfWidth, double _halfHeight)
 {
   int result = OK;
+
+  iteratorDC temp;
+
+  deCasteljau* curve = 0;
+
+  iteratorDC loop;
 
   if( !deCastList || !deCastList->size() )
   {
@@ -1421,10 +1476,6 @@ extern "C" int main(int inputEvent, double x, double y, double _halfWidth, doubl
     result = ERROR;
     goto label_return;
   }
-
-  iteratorDC temp;
-
-  deCasteljau *curve;
 
   switch(inputEvent) // switch(inputEvent)
   {
@@ -1478,8 +1529,6 @@ extern "C" int main(int inputEvent, double x, double y, double _halfWidth, doubl
 
   } // switch(inputEvent)
 
-  iteratorDC loop;
-
   deCastIter[0]->setPrimitiveDrawingFunctions(_halfWidth, _halfHeight, 0, 0, 0);
 
   deCastIter[0]->updateDraw();
@@ -1504,7 +1553,7 @@ label_return:
 
 } // int main(int inputEvent, double x, double y, double _halfWidth, double _halfHeight)
 
-extern "C" int term() // int term()
+extern "C" int term2() // int term()
 {
   int result = ERROR;
 
@@ -1531,7 +1580,6 @@ extern "C" int term() // int term()
 
   result = OK;
 
-label_return:
   return result;
 
 } // int term()

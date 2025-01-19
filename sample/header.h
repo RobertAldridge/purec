@@ -19,7 +19,13 @@ struct COLOR;
 
 struct VECTOR;
 
-struct rect
+struct pointInteger
+{
+  int x;
+  int y;
+};
+
+struct rectInteger
 {
   int left;
   int top;
@@ -51,3 +57,6 @@ struct rect
 
 //#include <stdnoreturn.h>
 //#include <threads.h>
+
+#pragma warning(disable: 4365)
+#pragma warning(disable: 4514)
