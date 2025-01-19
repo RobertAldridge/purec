@@ -13,7 +13,7 @@
 #include "BlahAlloc.h"
 #include "BlahLog.h"
 
-#if 0/*defined(_MSC_VER)*/
+#if 0/*defined(_MSC_VER) */
 
 #include <windows.h>
 

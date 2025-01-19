@@ -63,7 +63,7 @@ bool SsSetInsertLevel2(ssSet* _this, SsSetNode* x, SsSetCompare lessThan)
       y = xP->parent->right;
 
       if( !y)
-        _this->debug[81]++;
+        _this->debug[81] ++;
 
       if(y && y->color == SsSetRed)
       {
@@ -99,7 +99,7 @@ bool SsSetInsertLevel2(ssSet* _this, SsSetNode* x, SsSetCompare lessThan)
       y = xP->parent->left;
 
       if( !y)
-        _this->debug[82]++;
+        _this->debug[82] ++;
 
       if(y && y->color == SsSetRed)
       {
@@ -221,7 +221,7 @@ int64_t SsSetInsert(ssSet* _this, void* key, SsSetCompare lessThan, void* client
   if(_this->root.right || _this->root.color)
   {
     BlahLog("insert");
-    _this->debug[68]++;
+    _this->debug[68] ++;
   }
 
   result = true;

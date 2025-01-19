@@ -18,7 +18,7 @@ using std::uint32_t;
 
 #include "BlahPlatformAlloc.h"
 
-#if 0/*defined(_MSC_VER)*/
+#if 0/*defined(_MSC_VER) */
 
 #include <windows.h>
 #include <ntsecapi.h>

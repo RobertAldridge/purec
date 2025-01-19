@@ -11,23 +11,23 @@ void SsSetRotateLeftRightInsertLevel3(ssSet* _this, SsSetNode* x)
   SsSetNode* xPP = xP->parent;
 
   if(x->left)
-    x->left->parent = xP, _this->debug[8]++;
+    x->left->parent = xP, _this->debug[8] ++;
   else
-    _this->debug[9]++;
+    _this->debug[9] ++;
 
   xP->right = x->left;
 
   if(x->right)
-    x->right->parent = xPP, _this->debug[10]++;
+    x->right->parent = xPP, _this->debug[10] ++;
   else
-    _this->debug[11]++;
+    _this->debug[11] ++;
 
   xPP->left = x->right;
 
   if(xPP == xPP->parent->right)
-    xPP->parent->right = x, _this->debug[48]++;
+    xPP->parent->right = x, _this->debug[48] ++;
   else
-    xPP->parent->left = x, _this->debug[49]++;
+    xPP->parent->left = x, _this->debug[49] ++;
 
   x->left = xP;
 
@@ -47,16 +47,16 @@ void SsSetRotateLeftRightEraseLevel4(ssSet* _this, SsSetNode* xP)
   SsSetNode* xPLR = xPL->right;
 
   if(xPLR->right)
-    xPLR->right->parent = xP, _this->debug[12]++;
+    xPLR->right->parent = xP, _this->debug[12] ++;
   else
-    _this->debug[13]++;
+    _this->debug[13] ++;
 
   xP->left = xPLR->right;
 
   if(xPLR->left)
-    xPLR->left->parent = xPL, _this->debug[14]++;
+    xPLR->left->parent = xPL, _this->debug[14] ++;
   else
-    _this->debug[15]++;
+    _this->debug[15] ++;
 
   xPL->right = xPLR->left;
 
@@ -65,9 +65,9 @@ void SsSetRotateLeftRightEraseLevel4(ssSet* _this, SsSetNode* xP)
   xPLR->left = xPL;
 
   if(xP == xP->parent->right)
-    xP->parent->right = xPLR, _this->debug[50]++;
+    xP->parent->right = xPLR, _this->debug[50] ++;
   else
-    xP->parent->left = xPLR, _this->debug[51]++;
+    xP->parent->left = xPLR, _this->debug[51] ++;
 
   xPLR->parent = xP->parent;
 

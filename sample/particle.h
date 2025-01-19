@@ -62,14 +62,14 @@ ParticleSystemsAddFileAndActivate
 // adds a particle system to the list
 // input is assumed to be normalized between -1 and 1 for x, y, z
 // and between 0 and 1 for r, g, b
-// clipping is x:[-1, 1] y:[-1, 1] z:[0, 1]
+// clipping is x:[ -1, 1] y:[ -1, 1] z:[0, 1]
 //
 // angles are specified in radians
 // speed and force are normalized
 //
 // if input is not normalized, set first two characters
 // of name to "OS" to have variables normalized
-// from x:[0, BackBufferViewPortWidth - 1] y:[0, BackBufferViewPortHeight - 1] z:[-1, 1]
+// from x:[0, BackBufferViewPortWidth - 1] y:[0, BackBufferViewPortHeight - 1] z:[ -1, 1]
 // r:[0, 255] g:[0, 255] b:[0, 255]
 //
 // converts angles from degrees to radians

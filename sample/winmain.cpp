@@ -119,7 +119,7 @@ struct point
 
 #include "BlahLog.h"
 
-#if 0/*defined(_MSC_VER)*/
+#if 0/*defined(_MSC_VER) */
 
 #include <crtdbg.h>
 
@@ -1016,7 +1016,7 @@ Graphics(Graphics& ) { }
 
 virtual ~Graphics() = 0;
 
-virtual Graphics& operator=(Graphics& ) = 0;
+virtual Graphics& operator= (Graphics& ) = 0;
 //////////////////////////////////////////////////////////////////
 
 static enum GRAPHICS_IMPLEMENTATION graphicsImplementation()
@@ -2902,7 +2902,7 @@ void Graphics::_RenderLine32(int x0, int y0, int x1, int y1, int xi, int yi)
         x0 += dxstep;
         y0 += yi;
 
-      }while(--count != 0);
+      }while( --count != 0);
     }
   }
   else
@@ -2946,7 +2946,7 @@ void Graphics::_RenderLine32(int x0, int y0, int x1, int y1, int xi, int yi)
         y0 += dystep;
         x0 += xi;
 
-      }while(--count != 0);
+      }while( --count != 0);
     }
   }
 }
@@ -2997,9 +2997,9 @@ void Graphics::_RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
   x = 0;
   y = r;
 
-  r8 =(r0(c1) - r0(c0) ) / 4;
-  g8 =(g0(c1) - g0(c0) ) / 4;
-  b8 =(b0(c1) - b0(c0) ) / 4;
+  r8 = (r0(c1) - r0(c0) ) / 4;
+  g8 = (g0(c1) - g0(c0) ) / 4;
+  b8 = (b0(c1) - b0(c0) ) / 4;
 
   if( (num_pixels / 4) == 0)
   {
@@ -3089,7 +3089,7 @@ void Graphics::_RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
 
       c0 = xcen - x;
 
-      while(--local_length > 0)
+      while( --local_length > 0)
       {
         if(c0 >= 0 && c0 < _width)
         {
@@ -3130,7 +3130,7 @@ void Graphics::_RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
 
       c0 = xcen - x;
 
-      while(--local_length > 0)
+      while( --local_length > 0)
       {
         if(c0 >= 0 && c0 < _width)
         {
@@ -3171,7 +3171,7 @@ void Graphics::_RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
 
       c0 = xcen - y;
 
-      while(--local_length > 0)
+      while( --local_length > 0)
       {
         if(c0 >= 0 && c0 < _width)
         {
@@ -3212,7 +3212,7 @@ void Graphics::_RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
 
       c0 = xcen - y;
 
-      while(--local_length > 0)
+      while( --local_length > 0)
       {
         if(c0 >= 0 && c0 < _width)
         {
@@ -3964,7 +3964,7 @@ WindowStyle(WindowStyle& )
 
 virtual ~WindowStyle() = 0;
 
-virtual WindowStyle& operator=(WindowStyle& ) = 0;
+virtual WindowStyle& operator= (WindowStyle& ) = 0;
 //////////////////////////////////////////////////////////////////
 
 public:
@@ -4177,7 +4177,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
     //long long slkdjgasdlkjfg = GetWindowLongPtrA(hwnd, 0);
     //BlahLog2("abc %lli\n", slkdjgasdlkjfg);
 
-    hInstance = ( (CREATESTRUCTA*)lParam)->hInstance;
+    hInstance = ( (CREATESTRUCTA*)lParam) ->hInstance;
   }
   return 0; // switch(msg) - WM_CREATE
 
@@ -5883,7 +5883,7 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
     return 0;
   }
 
-  WindowStyle::setMenuRect(-windowRect.left, -windowRect.top, windowRect.right - Graphics::graphicsClientWidth(), windowRect.bottom - Graphics::graphicsClientHeight() );
+  WindowStyle::setMenuRect( -windowRect.left, -windowRect.top, windowRect.right - Graphics::graphicsClientWidth(), windowRect.bottom - Graphics::graphicsClientHeight() );
 
   // The left and top of WindowRect will be less than or equal to
   // zero.  Reposition the window so that WindowRect starts at 0, 0.

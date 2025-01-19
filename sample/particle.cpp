@@ -32,10 +32,12 @@ static float* matrix;
 
 static int32_t Dead(CLIENT_POTYPE /*Obj1*/, CLIENT_POTYPE Obj2)
 {
-  if( !Obj2.particleSystem)
-    return 1;
+  int32_t result = 0;
 
-  return 0;
+  if( !Obj2.particleSystem)
+    result = 1;
+
+  return result;
 }
 
 static int32_t Equal(CLIENT_POTYPE Obj1, CLIENT_POTYPE Obj2)
@@ -231,8 +233,7 @@ static int ParticleSystemsInternalLoad(LIST_HEAD* particleSystems, FILE* file)
 // destroys existing particle system if not 0
 // return new particle system
 // does nothing else if filename is 0
-PARTICLE_SYSTEMS_HEAD*
-ParticleSystemsLoadFileAndActivate
+PARTICLE_SYSTEMS_HEAD* ParticleSystemsLoadFileAndActivate
 (
   PARTICLE_SYSTEMS_HEAD** _particleSystems,
   char* filename,
@@ -248,15 +249,15 @@ ParticleSystemsLoadFileAndActivate
 
   currentTime = _currentTime;
 
-  ParticleSystemsTerminate(_particleSystems, 0);
+  ParticleSystemsTerminate(_particleSystems, 0); // ? terminate before verify function parameters ? todo
 
   if( !filename)
-    return 0;
+    goto label_return;
 
   file = fopen(filename, "rb");
 
   if( !file)
-    return 0;
+    goto label_return;
 
   result += fscanf(file, "%i\n\n", &Num);  // NUMBER OF PARTICLE SYSTEMS
 
@@ -264,7 +265,7 @@ ParticleSystemsLoadFileAndActivate
   {
     fclose(file);
 
-    return 0;
+    goto label_return;
   }
 
   if(Num < 16)
@@ -276,7 +277,7 @@ ParticleSystemsLoadFileAndActivate
   {
     fclose(file);
 
-    return 0;
+    goto label_return;
   }
 
   do
@@ -287,13 +288,13 @@ ParticleSystemsLoadFileAndActivate
 
   fclose(file);
 
+label_return:
   return (PARTICLE_SYSTEMS_HEAD*)particleSystems;
 }
 
 // adds a particle system specified in the
 // file, does nothing if filename is 0
-void
-ParticleSystemsAddFileAndActivate
+void ParticleSystemsAddFileAndActivate
 (
   PARTICLE_SYSTEMS_HEAD** particleSystemsRef,
   char* filename,
@@ -311,14 +312,14 @@ ParticleSystemsAddFileAndActivate
   currentTime = _currentTime;
 
   if( !particleSystemsRef || !filename)
-    return;
+    goto label_return;
 
   particleSystems = (LIST_HEAD**)particleSystemsRef;
 
   file = fopen(filename, "rb");
 
   if( !file)
-    return;
+    goto label_return;
 
   result += fscanf(file, "%i\n\n", &Num);  // NUMBER OF PARTICLE SYSTEMS
 
@@ -326,7 +327,7 @@ ParticleSystemsAddFileAndActivate
   {
     fclose(file);
 
-    return;
+    goto label_return;
   }
 
   if( !particleSystems[0] )
@@ -336,7 +337,7 @@ ParticleSystemsAddFileAndActivate
   {
     fclose(file);
 
-    return;
+    goto label_return;
   }
 
   do
@@ -346,26 +347,28 @@ ParticleSystemsAddFileAndActivate
   }while( --Num);
 
   fclose(file);
+
+label_return:
+  return;
 }
 
 // adds a particle system to the list
 // input is assumed to be normalized between -1 and 1 for x, y, z
 // and between 0 and 1 for r, g, b
-// clipping is x:[-1, 1] y:[-1, 1] z:[0, 1]
+// clipping is x:[ -1, 1] y:[ -1, 1] z:[0, 1]
 //
 // angles are specified in radians
 // speed and force are normalized
 //
 // if input is not normalized, set first two characters
 // of name to "OS" to have variables normalized
-// from x:[0, BackBufferViewPortWidth - 1] y:[0, BackBufferViewPortHeight - 1] z:[-1, 1]
+// from x:[0, BackBufferViewPortWidth - 1] y:[0, BackBufferViewPortHeight - 1] z:[ -1, 1]
 // r:[0, 255] g:[0, 255] b:[0, 255]
 //
 // converts angles from degrees to radians
 // speed is normalized based on BackBufferViewPortWidth
 // force is normalized based on BackBufferViewPortWidth and BackBufferViewPortHeight
-void
-ParticleSystemsAddAndActivate
+void ParticleSystemsAddAndActivate
 (
   PARTICLE_SYSTEMS_HEAD** particleSystemsRef,
 
@@ -443,7 +446,7 @@ ParticleSystemsAddAndActivate
   LIST_HEAD** particleSystems = 0;
 
   if( !particleSystemsRef)
-    return;
+    goto label_return;
 
   particleSystems = (LIST_HEAD**)particleSystemsRef;
 
@@ -451,7 +454,7 @@ ParticleSystemsAddAndActivate
     particleSystems[0] = ListInit(0, 16);
 
   if( !particleSystems[0] )
-    return;
+    goto label_return;
 
   strcpy(Obj.name, name);
 
@@ -542,6 +545,9 @@ ParticleSystemsAddAndActivate
   Obj.arg3 = regeneration;
 
   ListInsert(particleSystems[0], Obj, 0);
+
+label_return:
+  return;
 }
 
 // reactivates the particle system which has the name
@@ -549,8 +555,7 @@ ParticleSystemsAddAndActivate
 //
 // if particleSystemName is 0, all particle
 // systems are reactivated
-void
-ParticleSystemsReActivate
+void ParticleSystemsReActivate
 (
   PARTICLE_SYSTEMS_HEAD** particleSystemsRef,
   char* particleSystemName,
@@ -565,12 +570,12 @@ ParticleSystemsReActivate
   currentTime = _currentTime;
 
   if( !particleSystemsRef)
-    return;
+    goto label_return;
 
   particleSystems = (LIST_HEAD**)particleSystemsRef;
 
   if( !particleSystems[0] )
-    return;
+    goto label_return;
 
   if(ListIsEmpty(particleSystems[0], 0) )
   {
@@ -578,7 +583,7 @@ ParticleSystemsReActivate
 
     particleSystems[0] = 0;
 
-    return;
+    goto label_num;
   }
 
   if(particleSystemName)
@@ -602,6 +607,11 @@ ParticleSystemsReActivate
       /* nop */
     }
   }
+
+label_num:
+
+label_return:
+  return;
 }
 
 // updates the particle system which has the name
@@ -609,8 +619,7 @@ ParticleSystemsReActivate
 //
 // if particleSystemName is 0, all particle
 // systems are updated
-void
-ParticleSystemsUpdate
+void ParticleSystemsUpdate
 (
   PARTICLE_SYSTEMS_HEAD** particleSystemsRef,
   char* particleSystemName,
@@ -625,20 +634,19 @@ ParticleSystemsUpdate
   currentTime = _currentTime;
 
   if( !particleSystemsRef)
-    return;
+    goto label_return;
 
   particleSystems = (LIST_HEAD**)particleSystemsRef;
 
   if( !particleSystems[0] )
-    return;
+    goto label_return;
 
   if(ListIsEmpty(particleSystems[0], 0) )
   {
     ListTerminate(particleSystems[0] );
-
     particleSystems[0] = 0;
 
-    return;
+    goto label_num;
   }
 
   if(particleSystemName)
@@ -662,6 +670,11 @@ ParticleSystemsUpdate
       /* nop */
     }
   }
+
+label_num:
+
+label_return:
+  return;
 }
 
 // draws the particle system which has the name
@@ -669,8 +682,7 @@ ParticleSystemsUpdate
 //
 // if particleSystemName is 0, all particle
 // systems are drawn
-void
-ParticleSystemsDraw
+void ParticleSystemsDraw
 (
   PARTICLE_SYSTEMS_HEAD** particleSystemsRef,
   char* particleSystemName,
@@ -686,20 +698,19 @@ ParticleSystemsDraw
   matrix = _matrix;
 
   if( !particleSystemsRef)
-    return;
+    goto label_return;
 
   particleSystems = (LIST_HEAD**)particleSystemsRef;
 
   if( !particleSystems[0] )
-    return;
+    goto label_return;
 
   if(ListIsEmpty(particleSystems[0], 0) )
   {
     ListTerminate(particleSystems[0] );
-
     particleSystems[0] = 0;
 
-    return;
+    goto label_num;
   }
 
   if(particleSystemName)
@@ -713,6 +724,11 @@ ParticleSystemsDraw
   {
     ListDump(particleSystems[0], Draw, 0);
   }
+
+label_num:
+
+label_return:
+  return;
 }
 
 // updates and draws the particle system which has the name
@@ -720,8 +736,7 @@ ParticleSystemsDraw
 //
 // if particleSystemName is 0, all particle
 // systems are updated and drawn
-void
-ParticleSystemsUpdateAndDraw
+void ParticleSystemsUpdateAndDraw
 (
   PARTICLE_SYSTEMS_HEAD** particleSystemsRef,
   char* particleSystemName,
@@ -741,20 +756,19 @@ ParticleSystemsUpdateAndDraw
   currentTime = _currentTime;
 
   if( !particleSystemsRef)
-    return;
+    goto label_return;
 
   particleSystems = (LIST_HEAD**)particleSystemsRef;
 
   if( !particleSystems[0] )
-    return;
+    goto label_return;
 
   if(ListIsEmpty(particleSystems[0], 0) )
   {
     ListTerminate(particleSystems[0] );
-
     particleSystems[0] = 0;
 
-    return;
+    goto label_num;
   }
 
   if(particleSystemName)
@@ -764,7 +778,7 @@ ParticleSystemsUpdateAndDraw
     if( !ListFind(particleSystems[0], Equal, &Obj) )
     {
       Update( &Obj);
-      Draw ( &Obj);
+      Draw( &Obj);
 
       if( !Obj.particleSystem)
         ListRemove(particleSystems[0], Equal, &Obj);
@@ -780,6 +794,11 @@ ParticleSystemsUpdateAndDraw
       /* nop */
     }
   }
+
+label_num:
+
+label_return:
+  return;
 }
 
 // terminates the particle system which has the name
@@ -787,8 +806,7 @@ ParticleSystemsUpdateAndDraw
 //
 // if particleSystemName is 0, all particle
 // systems are terminated
-void
-ParticleSystemsTerminate
+void ParticleSystemsTerminate
 (
   PARTICLE_SYSTEMS_HEAD** particleSystemsRef,
   char* particleSystemName
@@ -799,20 +817,19 @@ ParticleSystemsTerminate
   LIST_HEAD** particleSystems = 0;
 
   if( !particleSystemsRef)
-    return;
+    goto label_return;
 
   particleSystems = (LIST_HEAD**)particleSystemsRef;
 
   if( !particleSystems[0] )
-    return;
+    goto label_return;
 
   if(ListIsEmpty(particleSystems[0], 0) )
   {
     ListTerminate(particleSystems[0] );
-
     particleSystems[0] = 0;
 
-    return;
+    goto label_num;
   }
 
   if(particleSystemName)
@@ -830,4 +847,9 @@ ParticleSystemsTerminate
 
     particleSystems[0] = 0;
   }
+
+label_num:
+
+label_return:
+  return;
 }

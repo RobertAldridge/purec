@@ -91,13 +91,13 @@ ListInit
   if(MaxNumberOfObjects<0)
     return 0;
 
-  Head=(LIST_HEAD*)calloc(1, sizeof(LIST_HEAD) );
+  Head= (LIST_HEAD*)calloc(1, sizeof(LIST_HEAD) );
 
   if(Head)
   {
     Head->ObjectArray = (CLIENT_POTYPE*)calloc(1, sizeof(CLIENT_POTYPE) * (MaxNumberOfObjects * 2) );
 
-    if(!Head->ObjectArray)
+    if( !Head->ObjectArray)
     {
       free(Head);
       return 0;
@@ -207,12 +207,12 @@ ListInsert
       return ERROR;
     }
 
-    GrowArray=(CLIENT_POTYPE*)calloc(1, sizeof(CLIENT_POTYPE) * (Head->MaxNumberOfObjects * 4) );
+    GrowArray= (CLIENT_POTYPE*)calloc(1, sizeof(CLIENT_POTYPE) * (Head->MaxNumberOfObjects * 4) );
 
-    if(!GrowArray)
+    if( !GrowArray)
       return ERROR;
 
-    memcpy(GrowArray,Head->ObjectArray,sizeof(CLIENT_POTYPE)*Head->CurrentIndex);
+    memcpy(GrowArray,Head->ObjectArray,sizeof(CLIENT_POTYPE) *Head->CurrentIndex);
 
     Head->MaxNumberOfObjects+=Head->MaxNumberOfObjects;
 
@@ -272,14 +272,14 @@ ListRemove
   if(Num<1)
     return ERROR;
 
-  if(!ClientEquality)
+  if( !ClientEquality)
   {
     *ClientObject=Head->ObjectArray[0];
 
-    if(--Head->CurrentIndex>0)
-      memcpy(&Head->ObjectArray[0],&Head->ObjectArray[1],sizeof(CLIENT_POTYPE)*Head->CurrentIndex);
+    if( --Head->CurrentIndex>0)
+      memcpy( &Head->ObjectArray[0],&Head->ObjectArray[1],sizeof(CLIENT_POTYPE) *Head->CurrentIndex);
 
-    memset(&Head->ObjectArray[Head->CurrentIndex],0,sizeof(CLIENT_POTYPE));
+    memset( &Head->ObjectArray[Head->CurrentIndex],0,sizeof(CLIENT_POTYPE) );
 
     Head->CurrentTraverseIndex=0;
 
@@ -290,14 +290,14 @@ ListRemove
   {
     Head->Remove=1;
 
-    if(ClientEquality(*ClientObject,Head->ObjectArray[loop])!=0)
+    if(ClientEquality(*ClientObject,Head->ObjectArray[loop] )!=0)
     {
-      memcpy(ClientObject,&Head->ObjectArray[loop],sizeof(CLIENT_POTYPE));
+      memcpy(ClientObject,&Head->ObjectArray[loop],sizeof(CLIENT_POTYPE) );
 
-      if(--Head->CurrentIndex>0)
-        memcpy(&Head->ObjectArray[loop],&Head->ObjectArray[loop+1],sizeof(CLIENT_POTYPE) * ( (size_t)Head->CurrentIndex - loop) );
+      if( --Head->CurrentIndex>0)
+        memcpy( &Head->ObjectArray[loop],&Head->ObjectArray[loop+1],sizeof(CLIENT_POTYPE) * ( (size_t)Head->CurrentIndex - loop) );
 
-      memset(&Head->ObjectArray[Head->CurrentIndex],0,sizeof(CLIENT_POTYPE));
+      memset( &Head->ObjectArray[Head->CurrentIndex],0,sizeof(CLIENT_POTYPE) );
 
       Head->CurrentTraverseIndex=0;
 
@@ -359,7 +359,7 @@ ListFind
   if(Num<1)
     return ERROR;
 
-  if(!ClientEquality)
+  if( !ClientEquality)
   {
     *ClientObject=Head->ObjectArray[0];
     return NO_ERROR;
@@ -372,7 +372,7 @@ ListFind
 
     Head->Find=1;
 
-    if(ClientEquality(*ClientObject,Head->ObjectArray[loop])!=0)
+    if(ClientEquality(*ClientObject,Head->ObjectArray[loop] )!=0)
     {
       *ClientObject=Head->ObjectArray[loop];
 
@@ -425,7 +425,7 @@ ListGetNext
     Head->CurrentTraverseIndex = 0;
 
   if(Head->CurrentIndex < 1 ||
-     (!ClientObject)      ||
+     ( !ClientObject)      ||
      Head->CurrentTraverseIndex >= (Head->MaxNumberOfObjects-1)
     )
     return ERROR;
@@ -567,7 +567,7 @@ insertion
       ObjectArray[innerCount] = sentinel;
 
       //
-      //  For this implementation, the number of comparisons is n*(n+1)/4.
+      //  For this implementation, the number of comparisons is n*(n+1) /4.
       //
         }
 }
@@ -601,7 +601,7 @@ mergeAB
       continue;
     }
 
-    c[k]=(ClientCompare(a[i],b[j])!=0)?
+    c[k]= (ClientCompare(a[i],b[j] )!=0) ?
         a[i++]:
         b[j++];
   }
@@ -620,7 +620,7 @@ mergesortABr
   CLIENT_COMPARE ClientCompare
 )
 {
-  INDEX_TYPE m=(l+r)/2;
+  INDEX_TYPE m= (l+r) /2;
 
   if(r-l<=10)
   {
@@ -670,7 +670,7 @@ ListSort
   if(ClientCompare)
     Head->ClientCompare=ClientCompare;
 
-  if(!Head->ClientCompare||Head->CurrentIndex<2)
+  if( !Head->ClientCompare||Head->CurrentIndex<2)
   {
     Head->ClientCompare=TempClientCompare;
 
@@ -730,10 +730,10 @@ ListGetExtrema
   if(Num<1)
     return temp;
 
-  if(!ClientCompare)
+  if( !ClientCompare)
     ClientCompare=Head->ClientCompare;
 
-  if(!ClientCompare)
+  if( !ClientCompare)
     return temp;
 
   temp=Head->ObjectArray[loop++];
@@ -744,7 +744,7 @@ ListGetExtrema
   {
     do
     {
-      if(ClientCompare(temp,Head->ObjectArray[loop])==0)
+      if(ClientCompare(temp,Head->ObjectArray[loop] ) ==0)
         temp=Head->ObjectArray[loop];
 
     }while(++loop!=Num);
@@ -753,7 +753,7 @@ ListGetExtrema
   {
     do
     {
-      if(ClientCompare(temp,Head->ObjectArray[loop])!=0)
+      if(ClientCompare(temp,Head->ObjectArray[loop] )!=0)
         temp=Head->ObjectArray[loop];
 
     }while(++loop!=Num);
@@ -813,7 +813,7 @@ ListDump
   else
     ClientEvaluate=Head->ClientEvaluate;
 
-  if(!ClientEvaluate)
+  if( !ClientEvaluate)
     return ERROR;
 
   Head->Dump=1;
@@ -824,7 +824,7 @@ ListDump
 
     do
     {
-      if(ClientEvaluate(&Head->ObjectArray[Num])!=0)
+      if(ClientEvaluate( &Head->ObjectArray[Num] )!=0)
       {
         Head->Dump=0;
 
@@ -839,7 +839,7 @@ ListDump
   {
     do
     {
-      if(ClientEvaluate(&Head->ObjectArray[loop])!=0)
+      if(ClientEvaluate( &Head->ObjectArray[loop] )!=0)
       {
         Head->Dump=0;
 

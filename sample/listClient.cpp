@@ -16,7 +16,7 @@
 #include "listObject.h"
 #include "list.h"
 
-#if 0/*defined(_MSC_VER)*/
+#if 0/*defined(_MSC_VER) */
 
 #include <windows.h>
 
@@ -169,7 +169,7 @@ mainListTest(
     ProcessList(listHead, input, "Random input");
 
     for(count = 0; count < NUMBER; ++count)
-        ListRemove(listHead, AreEqual, &(input[count]));
+        ListRemove(listHead, AreEqual, &(input[count] ) );
 
     for(count = 0; count < NUMBER; ++count)
         input[count].integer = (int) ( (2 * count + (input[count].integer / 16385) ) / 2);

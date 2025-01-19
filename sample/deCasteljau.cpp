@@ -86,7 +86,7 @@ class deCasteljau // class deCasteljau
 
 // Epsilon:
 //    If num - floor(num)<= E, then num = floor(num).
-//    If ceiling(num)- num <= E, then num = ceiling(num).
+//    If ceiling(num) - num <= E, then num = ceiling(num).
 //
 // Both are always true, even when truncating from double to int.
 static const double E;
@@ -120,12 +120,12 @@ double dist(point& pt) const
 }
 
 // Easy way to check if two points correspond to the same pixel.
-bool operator==(point& pt)const
+bool operator== (point& pt)const
 {
   return fti(x) == fti(pt.x) && fti(y) == fti(pt.y);
 }
 
-bool operator!=(point& pt) const
+bool operator!= (point& pt) const
 {
   return fti(x) != fti(pt.x) || fti(y) != fti(pt.y);
 }
@@ -522,7 +522,7 @@ int updateInput(int inputEvent, double x, double y) // int deCasteljau::updateIn
 
     }menu;
 
-    memset(&menu, 0, sizeof(menu) );
+    memset( &menu, 0, sizeof(menu) );
 
 #define f menu.f
 #define p menu.p
@@ -896,8 +896,8 @@ void updateDraw() // void deCasteljau::updateDraw()
       // This is used for iterative shell drawing of t of f(t).
       for(int index = 0; index < numControlPts - 1; index++, a++, b++)
       {
-        a->x = (1.0 - t) * b->x + t * (b + 1)->x;
-        a->y = (1.0 - t) * b->y + t * (b + 1)->y;
+        a->x = (1.0 - t) * b->x + t * (b + 1) ->x;
+        a->y = (1.0 - t) * b->y + t * (b + 1) ->y;
 
         drawLine( *b, *(b + 1), 1);
       }
@@ -907,7 +907,7 @@ void updateDraw() // void deCasteljau::updateDraw()
     {
       for(int currentPtIndex = 0; currentPtIndex < numControlPts; currentPtIndex++)
       {
-        drawCircle(tranPt[currentPtIndex], (currentPtIndex == (capturedControlPt - 1) )? 15 : 10, currentPtIndex + 1);
+        drawCircle(tranPt[currentPtIndex], (currentPtIndex == (capturedControlPt - 1) ) ? 15 : 10, currentPtIndex + 1);
       }
     }
 

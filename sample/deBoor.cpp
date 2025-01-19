@@ -195,7 +195,7 @@ point projectTo2D() const // point::projectTo2D
 {
   if(eq(z, 0) )
   {
-    return point(-1, -1, -1);
+    return point( -1, -1, -1);
   }
 
   return point(x / z, y / z, 1);
@@ -203,13 +203,13 @@ point projectTo2D() const // point::projectTo2D
 } // point::projectTo2D
 
 // Easy way to check if two points correspond to the same pixel.
-bool operator==(const point& pt) const // point::operator==
+bool operator== (const point& pt) const // point::operator==
 {
   return fti(x) == fti(pt.x) && fti(y) == fti(pt.y) && fti(z) == fti(pt.z);
 
 } // point::operator==
 
-bool operator!=(const point& pt) const // point::operator!=
+bool operator!= (const point& pt) const // point::operator!=
 {
   return fti(x) != fti(pt.x) || fti(y) != fti(pt.y) || fti(z) != fti(pt.z);
 
@@ -221,7 +221,7 @@ point operator+(const point& rhs) const // point::operator+
 
 } // point::operator+
 
-point operator+=(const point& rhs) // point::operator+=
+point operator+= (const point& rhs) // point::operator+=
 {
   *this = *this + rhs;
 
@@ -793,7 +793,7 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
     frameR = p[15];
     frameS = p[16];
 
-    double* _knotList = *(double**)&p[13];
+    double* _knotList = *(double**) &p[13];
 
     int _numKnots = (int)(p[14] + 0.5); // cast todo
 
@@ -1127,7 +1127,7 @@ void updateDraw() // deBoor::updateDraw
         {
           _temp = _temp.projectTo2D();
 
-          textDrawingPrimitive(font, (int)(_temp.x + 0.5)/*cast todo*/, (int)(_temp.y + 0.5)/*cast todo*/, "d0,%i", (int)loop);
+          textDrawingPrimitive(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "d0,%i", (int)loop);
 
           _temp.y += 14.0;
 
@@ -1135,7 +1135,7 @@ void updateDraw() // deBoor::updateDraw
             double knots_loop_p1 = 0;
             SsStackGetAt(knots, (uint32_t)loop + 1, &knots_loop_p1);
 
-            textDrawingPrimitive(font, (int)(_temp.x + 0.5)/*cast todo*/, (int)(_temp.y + 0.5)/*cast todo*/, "%i", (int)knots_loop_p1);
+            textDrawingPrimitive(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "%i", (int)knots_loop_p1);
           }
 
           int loopDegree = 0;
@@ -1147,7 +1147,7 @@ void updateDraw() // deBoor::updateDraw
             double knots_loop_degree_p1 = 0;
             SsStackGetAt(knots, ( (uint32_t)loop + loopDegree) + 1, &knots_loop_degree_p1);
 
-            textDrawingPrimitive(font, (int)(_temp.x + 0.5)/*cast todo*/, (int)(_temp.y + 0.5)/*cast todo*/, "%i", (int)knots_loop_degree_p1);
+            textDrawingPrimitive(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "%i", (int)knots_loop_degree_p1);
           }
         }
       }
@@ -1310,14 +1310,14 @@ void updateDraw() // deBoor::updateDraw
         {
           _temp = _temp.projectTo2D();
 
-          textDrawingPrimitive(font, (int)(_temp.x + 0.5)/*cast todo*/, (int)(_temp.y + 0.5)/*cast todo*/, "d0,%i", (int)currentIndex);
+          textDrawingPrimitive(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "d0,%i", (int)currentIndex);
 
           _temp.y += 14.0;
 
           double knots_ci_p1 = 0;
           SsStackGetAt(knots, (uint32_t)currentIndex + 1, &knots_ci_p1);
 
-          textDrawingPrimitive(font, (int)(_temp.x + 0.5)/*cast todo*/, (int)(_temp.y + 0.5)/*cast todo*/, "%i", (int)knots_ci_p1);
+          textDrawingPrimitive(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "%i", (int)knots_ci_p1);
 
           int loopDegree = 0;
 
@@ -1328,7 +1328,7 @@ void updateDraw() // deBoor::updateDraw
             double knots_ci_ld_p1 = 0;
             SsStackGetAt(knots, ( (int64_t)currentIndex + loopDegree) + 1, &knots_ci_ld_p1);
 
-            textDrawingPrimitive(font, (int)(_temp.x + 0.5)/*cast todo*/, (int)(_temp.y + 0.5)/*cast todo*/, "%i", (int)knots_ci_ld_p1);
+            textDrawingPrimitive(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "%i", (int)knots_ci_ld_p1);
           }
         }
       }
@@ -1431,7 +1431,7 @@ point do_deBoor(double dt, bool draw = false) // deBoor::do_deBoor
 {
   int degree = blahDegree;
 
-  point temp(-1, -1);
+  point temp( -1, -1);
 
   double knots_front = 0;
   SsStackGetAt(knots, 0, &knots_front);
@@ -1965,7 +1965,7 @@ void dragRotate() // deBoor::dragRotate
     memset( &p, 0, sizeof(point) );
     SsArrayGetAt(tranPt, (uint32_t)index, &p);
 
-    a.x = sine * (-p.y + ty) + cosine * (p.x - tx) + tx;
+    a.x = sine * ( -p.y + ty) + cosine * (p.x - tx) + tx;
     a.y = sine * (p.x - tx) + cosine * (p.y - ty) + ty;
     a.z = p.z;
 

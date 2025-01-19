@@ -24,10 +24,10 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
         w = w->left;
 
         if( !w->left)
-          _this->debug[70]++;
+          _this->debug[70] ++;
 
         if( !w->right)
-          _this->debug[71]++;
+          _this->debug[71] ++;
 
         if( ( !w->left || w->left->color == SsSetBlack) && ( !w->right || w->right->color == SsSetBlack) )
         {
@@ -89,10 +89,10 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
       else
       {
         if( !w->left)
-          _this->debug[72]++;
+          _this->debug[72] ++;
 
         if( !w->right)
-          _this->debug[73]++;
+          _this->debug[73] ++;
 
         if( ( !w->left || w->left->color == SsSetBlack) && ( !w->right || w->right->color == SsSetBlack) )
         {
@@ -141,10 +141,10 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
         w = w->right;
 
         if( !w->left)
-          _this->debug[74]++;
+          _this->debug[74] ++;
 
         if( !w->right)
-          _this->debug[75]++;
+          _this->debug[75] ++;
 
         if( ( !w->right || w->right->color == SsSetBlack) && ( !w->left || w->left->color == SsSetBlack) )
         {
@@ -206,10 +206,10 @@ void SsSetEraseLevel3(ssSet* _this, SsSetNode* x)
       else
       {
         if( !w->left)
-          _this->debug[76]++;
+          _this->debug[76] ++;
 
         if( !w->right)
-          _this->debug[77]++;
+          _this->debug[77] ++;
 
         if( ( !w->right || w->right->color == SsSetBlack) && ( !w->left || w->left->color == SsSetBlack) )
         {
@@ -282,7 +282,7 @@ SsSetNode* SsSetEraseLevel2(ssSet* _this, SsSetNode* z)
 
   // check if y is ever sentinelRoot (should never get here)
   if(y == GETSENTINELFROMTREE(_this) )
-    _this->debug[79]++;
+    _this->debug[79] ++;
 
 // check if y is ever sentinelRoot
 
@@ -322,10 +322,10 @@ SsSetNode* SsSetEraseLevel2(ssSet* _this, SsSetNode* z)
   // z not root sentinel
 
   if(x == y)
-    _this->debug[86]++;
+    _this->debug[86] ++;
 
   if(x == z)
-    _this->debug[87]++;
+    _this->debug[87] ++;
 
   // swap nodes instead of swapping clients.  we have use cases where it's important for the lifetime of the node to
   // match the lifetime of the client data.  for example if the client is a sentinel.
@@ -342,13 +342,13 @@ SsSetNode* SsSetEraseLevel2(ssSet* _this, SsSetNode* z)
     SsSetNode* right = blahOld->right;
 
     if( !parent)
-      _this->debug[83]++;
+      _this->debug[83] ++;
 
     if( !left)
-      _this->debug[84]++;
+      _this->debug[84] ++;
 
     if( !right)
-      _this->debug[85]++;
+      _this->debug[85] ++;
 
     //     parent
     //      | ^
@@ -482,7 +482,7 @@ SsSetNode* SsSetEraseLevel2(ssSet* _this, SsSetNode* z)
 // Sentinel }
 
   if(y == GETSENTINELFROMTREE(_this) )
-    _this->debug[80]++;
+    _this->debug[80] ++;
 
 label_return:
   return y;
@@ -559,7 +559,7 @@ int64_t SsSetErase(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
       goto label_return;
     }
 
-    if( !SsMmFree(_this->allocator, (void**)&node) )
+    if( !SsMmFree(_this->allocator, (void**) &node) )
     {
       BlahLog("error");
       goto label_return;
@@ -575,7 +575,7 @@ int64_t SsSetErase(ssSet* _this, void* key, SsSetCompare lessThan, void* client)
     if(_this->root.right || _this->root.color)
     {
       BlahLog("erase");
-      _this->debug[69]++;
+      _this->debug[69] ++;
     }
   }
 
