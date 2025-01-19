@@ -463,13 +463,10 @@ int updateInput(int inputEvent, double x, double y) // int deCasteljau::updateIn
   switch(inputEvent) // switch(inputEvent)
   {
 
-  ////////////////////////////////////////////////////////
-
   case UPDATE_INPUT: // switch(inputEvent) UPDATE_INPUT
   {
   }
   break; // switch(inputEvent) UPDATE_INPUT
-  ////////////////////////////////////////////////////////
 
   case CAPTURE_CONTROL_POINT: // switch(inputEvent) CAPTURE_CONTROL_POINT
   {
@@ -486,7 +483,6 @@ int updateInput(int inputEvent, double x, double y) // int deCasteljau::updateIn
     addControlPoint();
   }
   break; // switch(inputEvent) ADD_CONTROL_POINT
-  ////////////////////////////////////////////////////////
 
   case CAPTURE_T_OF_F_OF_T: // switch(inputEvent) CAPTURE_T_OF_F_OF_T
   {
@@ -503,7 +499,6 @@ int updateInput(int inputEvent, double x, double y) // int deCasteljau::updateIn
     clearAllControlPoint();
   }
   break; // switch(inputEvent) DUMP_ALL_CONTROL_POINTS
-  ////////////////////////////////////////////////////////
 
   case CAPTURE_TRANSLATE: // switch(inputEvent) CAPTURE_TRANSLATE
   {
@@ -520,7 +515,6 @@ int updateInput(int inputEvent, double x, double y) // int deCasteljau::updateIn
     captureAction = &deCasteljau::dragScale;
   }
   break; // switch(inputEvent) CAPTURE_SCALE
-  ////////////////////////////////////////////////////////
 
   case CAPTURE_ROTATE: // switch(inputEvent) CAPTURE_ROTATE
   {
@@ -537,7 +531,6 @@ int updateInput(int inputEvent, double x, double y) // int deCasteljau::updateIn
     removeControlPoint();
   }
   break; // switch(inputEvent) REMOVE_CONTROL_POINT
-  ////////////////////////////////////////////////////////
 
   case TOGGLE_SHELLS: // switch(inputEvent) TOGGLE_SHELLS
   {
@@ -554,7 +547,6 @@ int updateInput(int inputEvent, double x, double y) // int deCasteljau::updateIn
     }
   }
   break; // switch(inputEvent) TOGGLE_SHELLS
-  ////////////////////////////////////////////////////////
 
   case MENU_INPUT: // switch(inputEvent) MENU_INPUT
   {
@@ -753,7 +745,6 @@ int updateInput(int inputEvent, double x, double y) // int deCasteljau::updateIn
 #undef f
   }
   break; // switch(inputEvent) MENU_INPUT
-  ////////////////////////////////////////////////////////
 
   case DUMP_ALL_CAPTURES: // switch(inputEvent) DUMP_ALL_CAPTURES
   {
@@ -761,7 +752,6 @@ int updateInput(int inputEvent, double x, double y) // int deCasteljau::updateIn
     dumpAllCaptures();
   }
   break; // switch(inputEvent) DUMP_ALL_CAPTURES
-  ////////////////////////////////////////////////////////
 
   case TOGGLE_CONTROL_POINTS: // switch(inputEvent) TOGGLE_CONTROL_POINTS
   {
@@ -778,14 +768,12 @@ int updateInput(int inputEvent, double x, double y) // int deCasteljau::updateIn
     }
   }
   break; // switch(inputEvent) TOGGLE_CONTROL_POINTS
-  ////////////////////////////////////////////////////////
 
   case INCREASE_ITERATION_CONSTANT: // switch(inputEvent) INCREASE_ITERATION_CONSTANT
   {
     ++iterateConstant;
   }
   break; // switch(inputEvent) INCREASE_ITERATION_CONSTANT
-  ////////////////////////////////////////////////////////
 
   case DECREASE_ITERATION_CONSTANT: // switch(inputEvent) DECREASE_ITERATION_CONSTANT
   {
@@ -795,13 +783,11 @@ int updateInput(int inputEvent, double x, double y) // int deCasteljau::updateIn
     }
   }
   break; // switch(inputEvent) DECREASE_ITERATION_CONSTANT
-  ////////////////////////////////////////////////////////
 
   default: // switch(inputEvent) default
   {
   }
   goto label_return; // switch(inputEvent) default
-  ////////////////////////////////////////////////////////
 
   } // switch(inputEvent)
 
@@ -860,7 +846,6 @@ void updateDraw() // void deCasteljau::updateDraw()
     minMaxT = 1;
   }
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////
   while(++loop < 40 * (1 + iterateConstant) )
   {
     // get parent point
@@ -918,7 +903,6 @@ void updateDraw() // void deCasteljau::updateDraw()
       minMaxT += 1;
     }
   }
-  ////////////////////////////////////////////////////////////////////////////////////////////////
 
   loop = -1;
 
@@ -963,7 +947,7 @@ void updateDraw() // void deCasteljau::updateDraw()
 
   while(++loop < 1 + iterateConstant)
   {
-    if(shellBl == true && shellT >= 2 && shellT <= numControlPts - 1)
+    if(shellBl && shellT >= 2 && shellT <= numControlPts - 1)
     {
       int size;
       int index;

@@ -881,11 +881,11 @@ void DrawParticleSystem
         }
 
 #define xmin -1
-#define xmax  1
+#define xmax 1
 #define ymin -1
-#define ymax  1
-#define zmin  0
-#define zmax  1
+#define ymax 1
+#define zmin 0
+#define zmax 1
 
         if( !( (x0 < xmin && x1 < xmin) ||
           (y0 < ymin && y1 < ymin) ||

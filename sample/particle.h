@@ -19,8 +19,7 @@
 //
 // call it every program loop if necessary!
 
-extern void
-ParticleSystemsInitGraphics
+extern void ParticleSystemsInitGraphics
 (
   void* backBufferPixelPointer,
   int backBufferViewPortWidth,
@@ -29,35 +28,27 @@ ParticleSystemsInitGraphics
   int backBufferPitch
 );
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 // loads the particle systems specified in the file
 // destroys existing particle system if not 0
 // return new particle system
 // does nothing else if filename is 0
-extern PARTICLE_SYSTEMS_HEAD*
-ParticleSystemsLoadFileAndActivate
+extern PARTICLE_SYSTEMS_HEAD* ParticleSystemsLoadFileAndActivate
 (
   PARTICLE_SYSTEMS_HEAD** particleSystems,
   char* filename,
 
   float currentTime
 );
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // adds a particle system specified in the
 // file, does nothing if filename is 0
-extern void
-ParticleSystemsAddFileAndActivate
+extern void ParticleSystemsAddFileAndActivate
 (
   PARTICLE_SYSTEMS_HEAD** particleSystems,
   char* filename,
 
   float currentTime
 );
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // adds a particle system to the list
 // input is assumed to be normalized between -1 and 1 for x, y, z
@@ -75,8 +66,7 @@ ParticleSystemsAddFileAndActivate
 // converts angles from degrees to radians
 // speed is normalized based on BackBufferViewPortWidth
 // force is normalized based on BackBufferViewPortWidth and BackBufferViewPortHeight
-extern void
-ParticleSystemsAddAndActivate
+extern void ParticleSystemsAddAndActivate
 (
   PARTICLE_SYSTEMS_HEAD** particleSystems,
 
@@ -149,31 +139,25 @@ ParticleSystemsAddAndActivate
   unsigned char regeneration
 );
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 // reactivates the particle system which has the name
 // specified in particleSystemName
 //
 // if particleSystemName is 0, all particle
 // systems are reactivated
-extern void
-ParticleSystemsReActivate
+extern void ParticleSystemsReActivate
 (
   PARTICLE_SYSTEMS_HEAD** particleSystems,
   char* particleSystemName,
 
   float currentTime
 );
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // updates the particle system which has the name
 // specified in particleSystemName
 //
 // if particleSystemName is 0, all particle
 // systems are updated
-extern void
-ParticleSystemsUpdate
+extern void ParticleSystemsUpdate
 (
   PARTICLE_SYSTEMS_HEAD** particleSystems,
   char* particleSystemName,
@@ -181,15 +165,12 @@ ParticleSystemsUpdate
   float currentTime
 );
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 // draws the particle system which has the name
 // specified in particleSystemName
 //
 // if particleSystemName is 0, all particle
 // systems are drawn
-extern void
-ParticleSystemsDraw
+extern void ParticleSystemsDraw
 (
   PARTICLE_SYSTEMS_HEAD** particleSystems,
   char* particleSystemName,
@@ -198,15 +179,12 @@ ParticleSystemsDraw
   float* matrix
 );
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 // updates and draws the particle system which has the name
 // specified in particleSystemName
 //
 // if particleSystemName is 0, all particle
 // systems are updated and drawn
-extern void
-ParticleSystemsUpdateAndDraw
+extern void ParticleSystemsUpdateAndDraw
 (
   PARTICLE_SYSTEMS_HEAD** particleSystems,
   char* particleSystemName,
@@ -217,15 +195,12 @@ ParticleSystemsUpdateAndDraw
   float currentTime
 );
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 // terminates the particle system which has the name
 // specified in particleSystemName
 //
 // if particleSystemName is 0, all particle
 // systems are terminated
-extern void
-ParticleSystemsTerminate
+extern void ParticleSystemsTerminate
 (
   PARTICLE_SYSTEMS_HEAD** particleSystems,
   char* particleSystemName

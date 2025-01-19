@@ -155,7 +155,7 @@ double dist2D(const point &pt) const // point::dist2D
 {
   double result = -3.402823466e+38;
 
-  if(isProjectable() == true && pt.isProjectable() == true)
+  if(isProjectable() && pt.isProjectable() )
   {
     double _x = x / z - pt.x / pt.z;
     double _y = y / z - pt.y / pt.z;
@@ -611,14 +611,12 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
   switch(inputEvent) // switch(inputEvent)
   {
 
-  ////////////////////////////////////////////////////////
   case UPDATE_INPUT: // switch(inputEvent) - UPDATE_INPUT
   {
     /* nop */
   }
   break; // switch(inputEvent) - UPDATE_INPUT
 
-  ////////////////////////////////////////////////////////
   case CAPTURE_CONTROL_POINT: // switch(inputEvent) - CAPTURE_CONTROL_POINT
   {
     result = 1;
@@ -635,7 +633,6 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
   }
   break; // switch(inputEvent) - ADD_CONTROL_POINT
 
-  ////////////////////////////////////////////////////////
   case CAPTURE_T_OF_F_OF_T: // switch(inputEvent) - CAPTURE_T_OF_F_OF_T
   {
     result = 1;
@@ -652,7 +649,6 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
   }
   break; // switch(inputEvent) - DUMP_ALL_CONTROL_POINTS
 
-  ////////////////////////////////////////////////////////
   case CAPTURE_TRANSLATE: // switch(inputEvent) - CAPTURE_TRANSLATE
   {
     result = 1;
@@ -669,7 +665,6 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
   }
   break; // switch(inputEvent) - CAPTURE_SCALE
 
-  ////////////////////////////////////////////////////////
   case CAPTURE_ROTATE: // switch(inputEvent) - CAPTURE_ROTATE
   {
     result = 1;
@@ -685,13 +680,13 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
     removeControlPoint();
   }
   break; // switch(inputEvent) - REMOVE_CONTROL_POINT
-  ////////////////////////////////////////////////////////
+
   case TOGGLE_SHELLS: // switch(inputEvent) - TOGGLE_SHELLS
   {
     result = 1;
     dumpAllCaptures();
 
-    if(shellBl == true)
+    if(shellBl)
     {
       shellBl = false;
     }
@@ -702,7 +697,6 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
   }
   break; // switch(inputEvent) - TOGGLE_SHELLS
 
-  ////////////////////////////////////////////////////////
   case MENU_INPUT: // switch(inputEvent) - MENU_INPUT
   {
     result = 1;
@@ -720,7 +714,6 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
 
 #define f menu.f
 #define p menu.p
-
     f = yB;
 
     // p[0] == degree
@@ -979,13 +972,11 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
     break; // switch(inputEvent) - MENU_INPUT; switch(degree) - 3
 
     } // switch(inputEvent) - MENU_INPUT; switch(degree)
-
 #undef p
 #undef f
   }
   break; // switch(inputEvent) - MENU_INPUT
 
-  ////////////////////////////////////////////////////////
   case DUMP_ALL_CAPTURES: // switch(inputEvent) - DUMP_ALL_CAPTURES
   {
     result = 1;
@@ -993,27 +984,24 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
   }
   break; // switch(inputEvent) - DUMP_ALL_CAPTURES
 
-  ////////////////////////////////////////////////////////
   case TOGGLE_CONTROL_POINTS: // switch(inputEvent) - TOGGLE_CONTROL_POINTS
   {
     result = 1;
     dumpAllCaptures();
 
-    if(ctrlBl == true)
+    if(ctrlBl)
       ctrlBl = false;
     else
       ctrlBl = true;
   }
   break; // switch(inputEvent) - TOGGLE_CONTROL_POINTS
 
-  ////////////////////////////////////////////////////////
   case INCREASE_ITERATION_CONSTANT: // switch(inputEvent) - INCREASE_ITERATION_CONSTANT
   {
     ++iterateConstant;
   }
   break; // switch(inputEvent) - INCREASE_ITERATION_CONSTANT
 
-  ////////////////////////////////////////////////////////
   case DECREASE_ITERATION_CONSTANT: // switch(inputEvent) - DECREASE_ITERATION_CONSTANT
   {
     if(iterateConstant > 1)
@@ -1021,27 +1009,23 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
   }
   break; // switch(inputEvent) - DECREASE_ITERATION_CONSTANT
 
-  ////////////////////////////////////////////////////////
   case TOGGLE_CONTROL_POINT_TEXT: // switch(inputEvent) - TOGGLE_CONTROL_POINT_TEXT
   {
     result = 1;
     dumpAllCaptures();
 
-    if(dispK == true)
+    if(dispK)
       dispK = false;
     else
       dispK = true;
   }
   break; // switch(inputEvent) - TOGGLE_CONTROL_POINT_TEXT
 
-  ////////////////////////////////////////////////////////
   default: // switch(inputEvent) - default
   {
     /* nop */
   }
   goto label_return; // switch(inputEvent) - default
-
-  ////////////////////////////////////////////////////////
 
   } // switch(inputEvent)
 
@@ -1077,13 +1061,9 @@ void updateDraw() // deBoor::updateDraw
 
   degree = blahDegree;
 
-  //////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////
   if(numControlPts < 2 * degree + 1)
   {
-    if(ctrlBl == true && fti(minMaxT) == 0)
+    if(ctrlBl && fti(minMaxT) == 0)
     {
       point _temp;
 
@@ -1094,7 +1074,7 @@ void updateDraw() // deBoor::updateDraw
 
         drawCircle(_temp, (loop == (capturedControlPt - 1) ) ? 15: 10, loop + 1);
 
-        if(dispK == true && _temp.isProjectable() )
+        if(dispK && _temp.isProjectable() )
         {
           _temp = _temp.projectTo2D();
 
@@ -1155,7 +1135,6 @@ void updateDraw() // deBoor::updateDraw
 
   loop = -1;
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////
   while(SsQueueNum(subdWt) > 0 && ++loop < 20 * (1 + iterateConstant) )
   {
     pairQS client = { {0}, {0} };
@@ -1209,7 +1188,6 @@ void updateDraw() // deBoor::updateDraw
       SsQueuePushBack(subdWt, &client);
     }
   }
-  ////////////////////////////////////////////////////////////////////////////////////////////////
 
   loop = -1;
 
@@ -1219,7 +1197,7 @@ void updateDraw() // deBoor::updateDraw
 
     shellT = 2;
 
-    if(shellBl == true)
+    if(shellBl)
     {
       int u1 = 0;
 
@@ -1265,7 +1243,7 @@ void updateDraw() // deBoor::updateDraw
       }
     }
 
-    if(ctrlBl == true)
+    if(ctrlBl)
     {
       point _temp; // init todo
 
@@ -1277,7 +1255,7 @@ void updateDraw() // deBoor::updateDraw
 
         drawCircle(_temp, (currentIndex == (capturedControlPt - 1) ) ? 15 : 10, currentIndex + 1);
 
-        if(dispK == true && _temp.isProjectable() )
+        if(dispK && _temp.isProjectable() )
         {
           _temp = _temp.projectTo2D();
 
@@ -1569,7 +1547,7 @@ point do_deBoor(double dt, bool draw = false) // deBoor::do_deBoor
       SsArraySetAt(tempPt, (uint32_t)k, &tempPt_k_prime);
     }
 
-    if(draw == true)
+    if(draw)
     {
       for(i = I - degree + j, k = 0; i <= I - r - 1; i++, k++)
       {
@@ -1587,7 +1565,7 @@ point do_deBoor(double dt, bool draw = false) // deBoor::do_deBoor
   memset( &temporary, 0, sizeof(point) );
   SsArrayGetAt(tempPt, 0, &temporary);
 
-  if(draw == true)
+  if(draw)
   {
     drawCircle(temporary, 5, I);
   }
@@ -1609,7 +1587,7 @@ void drawCircle(point center, int radius, int knotIndex) // deBoor::drawCircle
     if(center.x < -2000000000 || center.x > 2000000000 || center.y < -2000000000 || center.y > 2000000000)
       goto label_return;
 
-    if(center.isProjectable() == true)
+    if(center.isProjectable() )
     {
       center = center.projectTo2D();
 
@@ -1633,7 +1611,7 @@ void drawLine(point start, point end, int knotIndex) // deBoor::drawLine
     if(start.x < -2000000000 || start.x > 2000000000 || start.y < -2000000000 || start.y > 2000000000 || end.x < -2000000000 || end.x > 2000000000 || end.y < -2000000000 || end.y > 2000000000)
       goto label_return;
 
-    if(start.isProjectable() == true && end.isProjectable() == true)
+    if(start.isProjectable() && end.isProjectable() )
     {
       start = start.projectTo2D();
 
@@ -1659,7 +1637,7 @@ void drawPoint(point center, int knotIndex) // deBoor::drawPoint
     if(center.x < -2000000000 || center.x > 2000000000 || center.y < -2000000000 || center.y > 2000000000)
       goto label_return;
 
-    if(center.isProjectable() == true)
+    if(center.isProjectable() )
     {
       center = center.projectTo2D();
 

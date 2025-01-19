@@ -1002,6 +1002,7 @@ static HGDIOBJ backbufferCleanUp;
 static HWND _hWindow;
 
 // These function prototypes are used to stop class instantiation
+
 Graphics() { }
 
 Graphics(Graphics& ) { }
@@ -1009,7 +1010,6 @@ Graphics(Graphics& ) { }
 virtual ~Graphics() = 0;
 
 virtual Graphics& operator= (Graphics& ) = 0;
-//////////////////////////////////////////////////////////////////
 
 static enum GRAPHICS_IMPLEMENTATION graphicsImplementation()
 {
@@ -1482,7 +1482,7 @@ static int graphicsSetBitDepthTo32()
   DEVMODEA DMode;
   memset( &DMode, 0, sizeof(DEVMODEA) );
 
-  if( (oldWidth >= graphicsWidth() || oldHeight >= graphicsHeight() ) && oldBitDepth == 32 && forceFullScreen == false)
+  if( (oldWidth >= graphicsWidth() || oldHeight >= graphicsHeight() ) && oldBitDepth == 32 && !forceFullScreen)
   {
     result = GRAPHICS_OK;
 
@@ -1500,7 +1500,7 @@ static int graphicsSetBitDepthTo32()
   }
   else
   {
-    if(forceFullScreen == true)
+    if(forceFullScreen)
     {
       DMode.dmPelsWidth  = (unsigned long)graphicsWidth();
       DMode.dmPelsHeight = (unsigned long)graphicsHeight();
@@ -2395,7 +2395,7 @@ static int graphicsInitScreenAndBackBuffer(HWND hWindow)
 
   graphicsSaveOldMode();
 
-  if(beNice == false)
+  if( !beNice)
   {
     graphicsSetBitDepthTo32();
   }
@@ -2485,7 +2485,7 @@ static int graphicsCheckIsFullScreen()
   if(screenWidth  <= 0 || screenHeight <= 0 || screenBitDepth <= 0)
     goto label_return;
 
-  if( (screenWidth <= graphicsWidth() && screenHeight <= graphicsHeight() ) || (beNice == false && forceFullScreen == true) )
+  if( (screenWidth <= graphicsWidth() && screenHeight <= graphicsHeight() ) || ( !beNice && forceFullScreen) )
   {
     int  modeTestCounter = 0;
 
@@ -2512,7 +2512,7 @@ static int graphicsCheckIsFullScreen()
       }
     }
 
-    if(modeTest == true)
+    if(modeTest)
     {
       result = GRAPHICS_FULLSCREEN;
       goto label_return;
@@ -2533,7 +2533,7 @@ static int graphicsCheckIsFullScreen()
       }
     }
 
-    if(modeTest == true)
+    if(modeTest)
     {
       result = GRAPHICS_FULLSCREEN;
       goto label_return;
@@ -2587,7 +2587,6 @@ HGDIOBJ Graphics::backbufferCleanUp = 0;
 HWND Graphics::_hWindow = 0;
 // End initialization of Graphics class static variables.
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // special function for de Casteljau algorithm
 
 #define S 8
@@ -3281,7 +3280,6 @@ void Graphics::RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
 #undef r0
 #undef g0
 #undef b0
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 static const char appClassName[] = /*{'H', 0, 'e', 0, 'l', 0, 'l', 0, ' ', 0, 'o', 0, 'n', 0, ' ', 0, 'E', 0, 'a', 0, 'r', 0, 't', 0, 'h', 0, 0, 0}*/"Hell on Earth";
 
@@ -3411,7 +3409,7 @@ long long __stdcall Graphics::AboutDlgProc(HWND hDlg, unsigned int msg, unsigned
 
   } // switch(msg)
 
-  if(Graphics::_hWindow && Graphics::graphicsIsModeChangeActive() == false && IsApplicationMinimized == false)
+  if(Graphics::_hWindow && !Graphics::graphicsIsModeChangeActive() && !IsApplicationMinimized)
   {
     pointInteger mousePt = {0};
 
@@ -3541,11 +3539,11 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
     {
       menuArray[0] = 3;
 
-      //////////////////////////////////////////////////
+      //
       memset(item, 0, sizeof(char) * 256);
       GetDlgItemTextA(hDlg, EDITX3_INT, item, 255);
 
-      if(checkString(item) == false)
+      if( !checkString(item) )
         goto _IDCANCEL;
 
       menuArray[4] = atof(item);
@@ -3555,11 +3553,11 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       GetDlgItemTextA(hDlg, EDITX3_DEC, item + 1, 254);
       plusDecimal(menuArray[4], atof(item) );
 
-      //////////////////////////////////////////////////
+      //
       memset(item, 0, sizeof(char) * 256);
       GetDlgItemTextA(hDlg, EDITX2_INT, item, 255);
 
-      if(checkString(item) == false)
+      if( !checkString(item) )
         goto _IDCANCEL;
 
       menuArray[3] = atof(item);
@@ -3569,11 +3567,11 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       GetDlgItemTextA(hDlg, EDITX2_DEC, item + 1, 254);
       plusDecimal(menuArray[3], atof(item) );
 
-      //////////////////////////////////////////////////
+      //
       memset(item, 0, sizeof(char) * 256);
       GetDlgItemTextA(hDlg, EDITX1_INT, item, 255);
 
-      if(checkString(item) == false)
+      if( !checkString(item) )
         goto _IDCANCEL;
 
       menuArray[2] = atof(item);
@@ -3583,11 +3581,11 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       GetDlgItemTextA(hDlg, EDITX1_DEC, item + 1, 254);
       plusDecimal(menuArray[2], atof(item) );
 
-      //////////////////////////////////////////////////
+      //
       memset(item, 0, sizeof(char) * 256);
       GetDlgItemTextA(hDlg, EDITX0_INT, item, 255);
 
-      if(checkString(item) == false)
+      if( !checkString(item) )
         goto _IDCANCEL;
 
       menuArray[1] = atof(item);
@@ -3597,11 +3595,11 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       GetDlgItemTextA(hDlg, EDITX0_DEC, item + 1, 254);
       plusDecimal(menuArray[1], atof(item) );
 
-      //////////////////////////////////////////////////
+      //
       memset(item, 0, sizeof(char) * 256);
       GetDlgItemTextA(hDlg, EDITY3_INT, item, 255);
 
-      if(checkString(item) == false)
+      if( !checkString(item) )
         goto _IDCANCEL;
 
       menuArray[8] = atof(item);
@@ -3611,11 +3609,11 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       GetDlgItemTextA(hDlg, EDITY3_DEC, item + 1, 254);
       plusDecimal(menuArray[8], atof(item) );
 
-      //////////////////////////////////////////////////
+      //
       memset(item, 0, sizeof(char) * 256);
       GetDlgItemTextA(hDlg, EDITY2_INT, item, 255);
 
-      if(checkString(item) == false)
+      if( !checkString(item) )
         goto _IDCANCEL;
 
       menuArray[7] = atof(item);
@@ -3625,11 +3623,11 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       GetDlgItemTextA(hDlg, EDITY2_DEC, item + 1, 254);
       plusDecimal(menuArray[7], atof(item) );
 
-      //////////////////////////////////////////////////
+      //
       memset(item, 0, sizeof(char) * 256);
       GetDlgItemTextA(hDlg, EDITY1_INT, item, 255);
 
-      if(checkString(item) == false)
+      if( !checkString(item) )
         goto _IDCANCEL;
 
       menuArray[6] = atof(item);
@@ -3639,11 +3637,11 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       GetDlgItemTextA(hDlg, EDITY1_DEC, item + 1, 254);
       plusDecimal(menuArray[6], atof(item) );
 
-      //////////////////////////////////////////////////
+      //
       memset(item, 0, sizeof(char) * 256);
       GetDlgItemTextA(hDlg, EDITY0_INT, item, 255);
 
-      if(checkString(item) == false)
+      if( !checkString(item) )
         goto _IDCANCEL;
 
       menuArray[5] = atof(item);
@@ -3653,11 +3651,11 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       GetDlgItemTextA(hDlg, EDITY0_DEC, item + 1, 254);
       plusDecimal(menuArray[5], atof(item) );
 
-      //////////////////////////////////////////////////
+      //
       memset(item, 0, sizeof(char) * 256);
       GetDlgItemTextA(hDlg, EDITZ3_INT, item, 255);
 
-      if(checkString(item) == false)
+      if( !checkString(item) )
         goto _IDCANCEL;
 
       menuArray[12] = atof(item);
@@ -3667,11 +3665,11 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       GetDlgItemTextA(hDlg, EDITZ3_DEC, item + 1, 254);
       plusDecimal(menuArray[12], atof(item) );
 
-      //////////////////////////////////////////////////
+      //
       memset(item, 0, sizeof(char) * 256);
       GetDlgItemTextA(hDlg, EDITZ2_INT, item, 255);
 
-      if(checkString(item) == false)
+      if( !checkString(item) )
         goto _IDCANCEL;
 
       menuArray[11] = atof(item);
@@ -3681,11 +3679,11 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       GetDlgItemTextA(hDlg, EDITZ2_DEC, item + 1, 254);
       plusDecimal(menuArray[11], atof(item) );
 
-      //////////////////////////////////////////////////
+      //
       memset(item, 0, sizeof(char) * 256);
       GetDlgItemTextA(hDlg, EDITZ1_INT, item, 255);
 
-      if(checkString(item) == false)
+      if( !checkString(item) )
         goto _IDCANCEL;
 
       menuArray[10] = atof(item);
@@ -3695,11 +3693,11 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       GetDlgItemTextA(hDlg, EDITZ1_DEC, item + 1, 254);
       plusDecimal(menuArray[10], atof(item) );
 
-      //////////////////////////////////////////////////
+      //
       memset(item, 0, sizeof(char) * 256);
       GetDlgItemTextA(hDlg, EDITZ0_INT, item, 255);
 
-      if(checkString(item) == false)
+      if( !checkString(item) )
         goto _IDCANCEL;
 
       menuArray[9] = atof(item);
@@ -3709,11 +3707,11 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       GetDlgItemTextA(hDlg, EDITZ0_DEC, item + 1, 254);
       plusDecimal(menuArray[9], atof(item) );
 
-      //////////////////////////////////////////////////
+      //
       memset(item, 0, sizeof(char) * 256);
       GetDlgItemTextA(hDlg, EDITR_INT, item, 255);
 
-      if(checkString(item) == false)
+      if( !checkString(item) )
         goto _IDCANCEL;
 
       menuArray[9] = atof(item);
@@ -3723,11 +3721,11 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       GetDlgItemTextA(hDlg, EDITR_DEC, item + 1, 254);
       plusDecimal(menuArray[9], atof(item) );
 
-      //////////////////////////////////////////////////
+      //
       memset(item, 0, sizeof(char) * 256);
       GetDlgItemTextA(hDlg, EDITS_INT, item, 255);
 
-      if(checkString(item) == false)
+      if( !checkString(item) )
         goto _IDCANCEL;
 
       menuArray[10] = atof(item);
@@ -3737,7 +3735,7 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       GetDlgItemTextA(hDlg, EDITS_DEC, item + 1, 254);
       plusDecimal(menuArray[10], atof(item) );
 
-      //////////////////////////////////////////////////
+      //
       EndDialog(hDlg, 0);
 
       isMenuActive = false;
@@ -3903,7 +3901,7 @@ _IDCANCEL:
 
   } // switch(msg)
 
-  if(Graphics::_hWindow && Graphics::graphicsIsModeChangeActive() == false && IsApplicationMinimized == false)
+  if(Graphics::_hWindow && !Graphics::graphicsIsModeChangeActive() && !IsApplicationMinimized)
   {
     pointInteger mousePt = {0};
 
@@ -3941,7 +3939,7 @@ static rectInteger menu;
 static int style;
 
 // These function prototypes are used to stop class instantiation.
-//////////////////////////////////////////////////////////////////
+
 WindowStyle()
 {
   /* nop */
@@ -3955,7 +3953,6 @@ WindowStyle(WindowStyle& )
 virtual ~WindowStyle() = 0;
 
 virtual WindowStyle& operator= (WindowStyle& ) = 0;
-//////////////////////////////////////////////////////////////////
 
 public:
 
@@ -3968,7 +3965,7 @@ static pointInteger getSize(bool clamp) // pointInteger WindowStyle::getSize(boo
 {
   pointInteger temporary = {0, 0};
 
-  if(clamp == false || style == WINDOWSTYLE_FULLSCREEN)
+  if( !clamp || style == WINDOWSTYLE_FULLSCREEN)
   {
     temporary = size;
     goto label_return;
@@ -4207,7 +4204,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
   case WM_CHANGEWINDOWSTYLE: // switch(msg) - WM_CHANGEWINDOWSTYLE
   {
-    if(IsApplicationMinimized == false)
+    if( !IsApplicationMinimized)
     {
       IsWindowStyleChanging = true;
 
@@ -4488,7 +4485,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
         pairQI client = {menu.pt, MENU_INPUT};
         SsQueuePushBack(input, &client);
 
-        //////////////////////////////////////////////////////////////////
+        //
 
         client.first = mousePt;
         client.second = UPDATE_INPUT;
@@ -4508,7 +4505,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
         client.second = DUMP_ALL_CAPTURES;
         SsQueuePushBack(input, &client);
 
-        //////////////////////////////////////////////////////////////////
+        //
 
         client.first = mousePt;
         client.second = UPDATE_INPUT;
@@ -4540,7 +4537,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
         client.second = DUMP_ALL_CAPTURES;
         SsQueuePushBack(input, &client);
 
-        //////////////////////////////////////////////////////////////////
+        //
 
         client.first = mousePt;
         client.second = UPDATE_INPUT;
@@ -4698,7 +4695,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
   /* nop */
   case WM_MOVING: // switch(msg) - WM_MOVE, WM_MOVING
   {
-    if(Graphics::graphicsBackBufferFunction() && Graphics::graphicsIsModeChangeActive() == false && WindowStyle::getStyle() != Graphics::GRAPHICS_FULLSCREEN && IsWindowStyleChanging == false)
+    if(Graphics::graphicsBackBufferFunction() && !Graphics::graphicsIsModeChangeActive() && WindowStyle::getStyle() != Graphics::GRAPHICS_FULLSCREEN && !IsWindowStyleChanging)
     {
       pointInteger trans = {0, 0};
 
@@ -4826,7 +4823,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
   case WM_SIZING: // switch(msg) - WM_SIZING
   {
-    if(Graphics::graphicsBackBufferFunction() && Graphics::graphicsIsModeChangeActive() == false && IsWindowStyleChanging == false)
+    if(Graphics::graphicsBackBufferFunction() && !Graphics::graphicsIsModeChangeActive() && !IsWindowStyleChanging)
     {
       static double scaleTime = 0;
 
@@ -4964,9 +4961,9 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
   case WM_DISPLAYCHANGE: // switch(msg) - WM_DISPLAYCHANGE
   {
-    if(Graphics::graphicsIsModeChangeActive() == false)
+    if( !Graphics::graphicsIsModeChangeActive() )
     {
-      if(IsApplicationMinimized == true)
+      if(IsApplicationMinimized)
       {
         Graphics::oldBitDepth = (int)wParam;
         Graphics::oldWidth = LOWORD(lParam);
@@ -5023,7 +5020,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
       InsertHandle(RobsTextOutInitSystem);
 
-      if(isMenuActive == true)
+      if(isMenuActive)
       {
         main(DUMP_ALL_CAPTURES, mousePt.x, mousePt.y, 1, (double)Graphics::graphicsClientWidth() * 0.5, (double)Graphics::graphicsClientHeight() * 0.5, _font);
       }
@@ -5062,7 +5059,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
   // If an application processes this message, it should return zero.
   case WM_DESTROY: // switch(msg) - WM_DESTROY
   {
-    if(IsWindowStyleChanging == true)
+    if(IsWindowStyleChanging)
       goto label_return;
 
     mainTerm(hwnd);
@@ -6152,7 +6149,7 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
     // message is not 0, lParam points to a function that is called instead of the window procedure.
     DispatchMessageA( &Message);
 
-    if(IsApplicationMinimized == true)
+    if(IsApplicationMinimized)
     {
       Sleep(2);
 

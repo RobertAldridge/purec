@@ -44,7 +44,6 @@ struct FontBlah
   uint8_t* text_white;
 };
 
-////////////////////////////////////////
 static uint32_t GetIdealFontWidth();
 static uint32_t GetIdealFontHeight();
 
@@ -53,7 +52,6 @@ static uint8_t CharTrivialAcceptance(FontBlah* _this, const int32_t x, const int
 static void _RobsTextOut(FontBlah* _this, int32_t x, int32_t y, const char* const dest_buffer);
 
 static rectInteger _RobsTextOutRect(FontBlah* _this, int32_t x, int32_t y, const char* const dest_buffer);
-////////////////////////////////////////
 
 uint32_t GetIdealFontWidth()
 {
