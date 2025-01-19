@@ -5,18 +5,18 @@
 //
 // Author: Bruce McQuistan (brucemc@digipen.edu) and Robert Aldridge (raldridg@digipen.edu)
 
-#include <cstdint>
-#include <cstdlib>
-#include <cstdio>
-#include <cstring>
-#include <ctime>
-
-//#include <crtdbg.h>
+//#include <cstdint>
+//#include <cstdlib>
+//#include <cstdio>
+//#include <cstring>
+//#include <ctime>
 
 #include "listObject.h"
 #include "list.h"
 
 #if 0/*defined(_MSC_VER) */
+
+//#include <crtdbg.h>
 
 #include <windows.h>
 
@@ -61,122 +61,102 @@ static int Evaluate(CLIENT_POTYPE* Object)
   return 0;
 }
 
-static int
-LessThan(
-    CLIENT_POTYPE  Arg1,
-    CLIENT_POTYPE  Arg2
-    )
+static int LessThan(CLIENT_POTYPE Arg1, CLIENT_POTYPE Arg2)
 {
-    return (Arg1.integer > Arg2.integer);
+  return (Arg1.integer > Arg2.integer);
 }
 
-static int
-GreaterThan(
-    CLIENT_POTYPE  Arg1,
-    CLIENT_POTYPE  Arg2
-    )
+static int GreaterThan(CLIENT_POTYPE Arg1, CLIENT_POTYPE Arg2)
 {
-    return (Arg1.integer > Arg2.integer);
+  return (Arg1.integer > Arg2.integer);
 }
 
 static int AreEqual(CLIENT_POTYPE Arg1, CLIENT_POTYPE Arg2)
 {
-  return(Arg1.integer == Arg2.integer);
+  return (Arg1.integer == Arg2.integer);
 }
 
 //#define NUMBER 16384
 //#define NUMBER 1024
 #define NUMBER 1
 
-
-
-static void
-ProcessList(
-    LIST_HEAD*    ListHead,
-    CLIENT_POTYPE InputArray[NUMBER],
-    const char     *    IdentifierString
-    )
+static void ProcessList(LIST_HEAD* ListHead, CLIENT_POTYPE InputArray[NUMBER], const char* IdentifierString)
 {
-    unsigned int    count;
-    unsigned long   insertTime, sortTime;
-    uint64_t   t0 = 0, t1 = 0;
+  unsigned int count = 0;
 
-    //
-    //  Time insertions
-    //
+  unsigned long insertTime = 0;
+  unsigned long sortTime = 0;
 
-    t0 = 0;
-    QueryPerformanceCounter( (LARGE_INTEGER*) &t0);
-    for(count = 0; count < NUMBER; ++count)
-        ListInsert(ListHead, InputArray[count], LessThan);
+  uint64_t t0 = 0;
+  uint64_t t1 = 0;
 
-    t1 = 0;
-    QueryPerformanceCounter( (LARGE_INTEGER*) &t1);
+  // time insertions
 
-    insertTime = (uint32_t)t1 - (uint32_t)t0;
+  t0 = 0;
+  QueryPerformanceCounter( (LARGE_INTEGER*) &t0);
 
-    //
-    //  Time sorting
-    //
+  for(count = 0; count < NUMBER; ++count)
+    ListInsert(ListHead, InputArray[count], LessThan);
 
-    t0 = 0;
-    QueryPerformanceCounter( (LARGE_INTEGER*) &t0);
+  t1 = 0;
+  QueryPerformanceCounter( (LARGE_INTEGER*) &t1);
 
-    ListSort(ListHead, GreaterThan);
+  insertTime = (uint32_t)t1 - (uint32_t)t0;
 
-    t1 = 0;
-    QueryPerformanceCounter( (LARGE_INTEGER*) &t1);
+  // time sorting
 
-    sortTime = (uint32_t)t1 - (uint32_t)t0;
+  t0 = 0;
+  QueryPerformanceCounter( (LARGE_INTEGER*) &t0);
 
-    ListDump(ListHead, Evaluate, 0);
+  ListSort(ListHead, GreaterThan);
 
-    printf("InsertTime taken is %i microseconds for %s \n",
-           (int)insertTime,
-           IdentifierString);
+  t1 = 0;
+  QueryPerformanceCounter( (LARGE_INTEGER*) &t1);
 
-    printf("SortTime taken is %i microseconds for %s\n",
-            (int)sortTime,
-            IdentifierString);
+  sortTime = (uint32_t)t1 - (uint32_t)t0;
+
+  ListDump(ListHead, Evaluate, 0);
+
+  printf("InsertTime taken is %i microseconds for %s\n", (int)insertTime, IdentifierString);
+
+  printf("SortTime taken is %i microseconds for %s\n", (int)sortTime, IdentifierString);
 }
 
-static int
-mainListTest(
-    void
-    )
+static int mainListTest()
 {
-//long          OldValue;
-    unsigned int  count;
-  LIST_HEAD*    listHead;
-    CLIENT_POTYPE input[NUMBER];
+  //long oldValue = 0;
 
-    memset( &input, 0, countof(input) );
+  unsigned int count = 0;
+  LIST_HEAD* listHead = 0;
 
-  #ifndef NDEBUG
-//OldValue = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
-//_CrtSetDbgFlag(OldValue | _CRTDBG_LEAK_CHECK_DF);
-  #else
-//OldValue = OldValue;
-  #endif
+  CLIENT_POTYPE input[NUMBER];
+  memset( &input, 0, NUMBER * sizeof(CLIENT_POTYPE) );
 
-    listHead = ListInit(LessThan, NUMBER);
+#ifndef NDEBUG
+  //oldValue = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
+  //_CrtSetDbgFlag(oldValue | _CRTDBG_LEAK_CHECK_DF);
+#else
+  //oldValue = oldValue;
+#endif
 
-    srand(12345);
+  listHead = ListInit(LessThan, NUMBER);
 
-    for(count = 0; count < NUMBER; ++count)
-        input[count].integer = rand();
+  srand(12345);
 
-    ProcessList(listHead, input, "Random input");
+  for(count = 0; count < NUMBER; ++count)
+    input[count].integer = rand();
 
-    for(count = 0; count < NUMBER; ++count)
-        ListRemove(listHead, AreEqual, &(input[count] ) );
+  ProcessList(listHead, input, "Random input");
 
-    for(count = 0; count < NUMBER; ++count)
-        input[count].integer = (int) ( (2 * count + (input[count].integer / 16385) ) / 2);
+  for(count = 0; count < NUMBER; ++count)
+    ListRemove(listHead, AreEqual, &(input[count] ) );
 
-    ProcessList(listHead, input, "QuasiInverse input");
+  for(count = 0; count < NUMBER; ++count)
+    input[count].integer = (int) ( (2 * count + (input[count].integer / 16385) ) / 2);
 
-    ListTerminate(listHead);
+  ProcessList(listHead, input, "QuasiInverse input");
 
-    return 0;
+  ListTerminate(listHead);
+
+  return 0;
 }

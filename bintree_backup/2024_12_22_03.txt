@@ -656,11 +656,8 @@ static bool gBlahLargePageSupportEnabled = false;
 static bool gBlahLargePageSupportFailed = false;
 static uint32_t gLargePageMinimum = 0;
 
-// consolidate return statements
-// deBoor.cpp
-// deCastlejau.cpp
-// winmain.cpp
-
+// whitespace cleanup
+listClient.cpp
 
 BLACKNESS
 DM_DISPLAYFREQUENCY

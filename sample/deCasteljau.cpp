@@ -401,9 +401,7 @@ int updateInput(int inputEvent, double x, double y) // int deCasteljau::updateIn
   int retVal = 0;
 
   if( !numControlPts && inputEvent != ADD_CONTROL_POINT && inputEvent != MENU_INPUT)
-  {
-    return retVal;
-  }
+    goto label_return;
 
   if(inputEvent != MENU_INPUT)
   {
@@ -753,15 +751,13 @@ int updateInput(int inputEvent, double x, double y) // int deCasteljau::updateIn
   default: // switch(inputEvent) default
   {
   }
-  return retVal; // switch(inputEvent) default
+  goto label_return; // switch(inputEvent) default
   ////////////////////////////////////////////////////////
 
   } // switch(inputEvent)
 
   if( !numControlPts)
-  {
-    return retVal;
-  }
+    goto label_return;
 
   // Call capture action function pointer.
   if(captureAction && inputPrv != inputCur)
@@ -774,6 +770,7 @@ int updateInput(int inputEvent, double x, double y) // int deCasteljau::updateIn
     (this->*captureAction)();
   }
 
+label_return:
   return retVal;
 
 } // int deCasteljau::updateInput(int inputEvent, double x, double y)
@@ -783,15 +780,13 @@ int updateInput(int inputEvent, double x, double y) // int deCasteljau::updateIn
 void updateDraw() // void deCasteljau::updateDraw()
 {
   if( !numControlPts)
-  {
-    return;
-  }
+    goto label_return;
 
   if(numControlPts == 1)
   {
     drawCircle(tranPt[0], (0 == (capturedControlPt - 1) ) ? 15 : 10, 1);
 
-    return;
+    goto label_return;
   }
 
   point p0, p1;
@@ -946,6 +941,9 @@ void updateDraw() // void deCasteljau::updateDraw()
     }
   }
 
+label_return:
+  return;
+
 } // void deCasteljau::updateDraw()
 
 private:
@@ -959,6 +957,8 @@ private:
 // blossom(3, a, b, c, d, t1, t2, t3);
 double blossom(int degree, ...) // double deCasteljau::blossom(int degree, ...)
 {
+  double result = 0;
+
   double a = 0;
   double b = 0;
   double c = 0;
@@ -970,7 +970,7 @@ double blossom(int degree, ...) // double deCasteljau::blossom(int degree, ...)
 
   if(degree < 0 || degree > 3)
   {
-  assert(0 && "Bad blossom()degree");
+    assert(0 && "bad blossom degree");
   }
 
   va_list argptr = 0;
@@ -985,8 +985,10 @@ double blossom(int degree, ...) // double deCasteljau::blossom(int degree, ...)
     d = va_arg(argptr, double);
 
     va_end(argptr);
+
+    result = d;
   }
-  return d; // switch(degree) 0
+  break; // switch(degree) 0
 
   case 1: // switch(degree) 1
   {
@@ -996,8 +998,10 @@ double blossom(int degree, ...) // double deCasteljau::blossom(int degree, ...)
     t1 = va_arg(argptr, double);
 
     va_end(argptr);
+
+    result = c * t1 + d;
   }
-  return c * t1 + d; // switch(degree) 1
+  break; // switch(degree) 1
 
   case 2: // switch(degree) 2
   {
@@ -1009,8 +1013,10 @@ double blossom(int degree, ...) // double deCasteljau::blossom(int degree, ...)
     t2 = va_arg(argptr, double);
 
     va_end(argptr);
+
+    result = b * t1 * t2 + c * (t1 + t2) / 2.0 + d;
   }
-  return b * t1 * t2 + c * (t1 + t2) / 2.0 + d; // switch(degree) 2
+  break; // switch(degree) 2
 
   case 3: // switch(degree) 3
   {
@@ -1024,14 +1030,20 @@ double blossom(int degree, ...) // double deCasteljau::blossom(int degree, ...)
     t3 = va_arg(argptr, double);
 
     va_end(argptr);
+
+    result = a * t1 * t2 * t3 + b * (t1 * t2 + t1 * t3 + t2 * t3) / 3.0 + c * (t1 + t2 + t3) / 3.0 + d;
   }
-  return a * t1 * t2 * t3 + b * (t1 * t2 + t1 * t3 + t2 * t3) / 3.0 + c * (t1 + t2 + t3) / 3.0 + d; // switch(degree) 3
+  break; // switch(degree) 3
+
+  default: // switch(degree) default
+  {
+    assert(0 && "bad blossom degree");
+  }
+  break; // switch(degree) default
 
   } // switch(degree)
 
-  assert(0 && "Bad blossom()degree");
-
-  return 0;
+  return result;
 
 } // double deCasteljau::blossom(int degree, ...)
 
@@ -1077,12 +1089,13 @@ void drawCircle(point center, int radius, int currentNum) // void deCasteljau::d
   if(circleDrawingPrimitive)
   {
     if(center.x < -2000000000 || center.x > 2000000000 || center.y < -2000000000 || center.y > 2000000000)
-    {
-      return;
-    }
+      goto label_return;
 
     circleDrawingPrimitive(fti(center.x), fti(center.y), radius, colors0[currentNum % 100], colors1[currentNum % 100] );
   }
+
+label_return:
+  return;
 
 }  // void deCasteljau::drawCircle(point center, int radius, int currentNum)
 
@@ -1092,12 +1105,13 @@ void drawLine(point start, point end, int currentNum) // void deCasteljau::drawL
   if(lineDrawingPrimitive)
   {
     if(start.x < -2000000000 || start.x > 2000000000 || start.y < -2000000000 || start.y > 2000000000 || end.x < -2000000000 || end.x > 2000000000 || end.y < -2000000000 || end.y > 2000000000)
-    {
-      return;
-    }
+      goto label_return;
 
     lineDrawingPrimitive(fti(start.x), fti(start.y), fti(end.x), fti(end.y), colors0[currentNum % 100], colors1[currentNum % 100] );
   }
+
+label_return:
+  return;
 
 } // void deCasteljau::drawLine(point start, point end, int currentNum)
 
@@ -1107,12 +1121,13 @@ void drawPoint(point center, int currentNum) // void deCasteljau::drawPoint(poin
   if(pointDrawingPrimitive)
   {
     if(center.x < -2000000000 || center.x > 2000000000 || center.y < -2000000000 || center.y > 2000000000)
-    {
-      return;
-    }
+      goto label_return;
 
     pointDrawingPrimitive(fti(center.x), fti(center.y), colors0[currentNum % 100] );
   }
+
+label_return:
+  return;
 
 } // void deCasteljau::drawPoint(point center, int currentNum)
 
@@ -1353,29 +1368,25 @@ enum
 
 extern "C" int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int) ) // int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int) )
 {
+  int result = ERROR;
+
   // Initialize the random number generator.
   srand(time(0) );
 
   if( !deCastList)
   {
     if(_halfWidth <= 0 || _halfHeight <= 0 || !_circleDrawingPrimitive || !_lineDrawingPrimitive || !_pointDrawingPrimitive)
-    {
-      return ERROR;
-    }
+      goto label_return;
 
     deCastList = new dequeC;
 
     if( !deCastList)
-    {
-      return ERROR;
-    }
+      goto label_return;
 
     deCastList->push_back(new deCasteljau);
 
     if( !( *deCastList)[0] )
-    {
-      return ERROR;
-    }
+      goto label_return;
 
     ( *deCastList)[0]->setPrimitiveDrawingFunctions(_halfWidth, _halfHeight, _circleDrawingPrimitive, _lineDrawingPrimitive, _pointDrawingPrimitive);
 
@@ -1383,32 +1394,33 @@ extern "C" int init(double _halfWidth, double _halfHeight, void(*_circleDrawingP
   }
 
   if( !( *deCastList)[0] || deCastIter != deCastList->begin() )
-  {
-    return ERROR;
-  }
+    goto label_return;
 
-  return OK;
+  result = OK;
+
+label_return:
+  return result;
 
 } // int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int) )
 
 extern "C" int main(int inputEvent, double x, double y, double _halfWidth, double _halfHeight) // int main(int inputEvent, double x, double y, double _halfWidth, double _halfHeight)
 {
+  int result = OK;
+
   if( !deCastList || !deCastList->size() )
   {
-    return ERROR;
+    result = ERROR;
+    goto label_return;
   }
 
   if(deCastIter == deCastList->end() || !deCastIter[0] )
-  {
     deCastIter = deCastList->begin();
-  }
 
   if(_halfWidth <= 0 || _halfHeight <= 0)
   {
-    return ERROR;
+    result = ERROR;
+    goto label_return;
   }
-
-  int retVal = 0;
 
   iteratorDC temp;
 
@@ -1420,10 +1432,10 @@ extern "C" int main(int inputEvent, double x, double y, double _halfWidth, doubl
   case deCasteljau::ADD_DE_CASTELJAU_CURVE: // switch(inputEvent) ADD_DE_CASTELJAU_CURVE
   {
     curve = new deCasteljau;
-
     if( !curve)
     {
-      return ERROR;
+      result = ERROR;
+      goto label_return;
     }
 
     curve->setPrimitiveDrawingFunctions( **deCastIter);
@@ -1448,7 +1460,7 @@ extern "C" int main(int inputEvent, double x, double y, double _halfWidth, doubl
 
       deCastIter = deCastList->begin();
 
-      retVal |= 1;
+      result |= 1;
 
       inputEvent = deCasteljau::DUMP_ALL_CAPTURES;
     }
@@ -1460,9 +1472,7 @@ extern "C" int main(int inputEvent, double x, double y, double _halfWidth, doubl
     ++deCastIter;
 
     if(deCastIter == deCastList->end() )
-    {
       deCastIter = deCastList->begin();
-    }
   }
   break; // switch(inputEvent) TRAVERSE_DE_CASTELJAU_CURVE_LIST
 
@@ -1474,7 +1484,7 @@ extern "C" int main(int inputEvent, double x, double y, double _halfWidth, doubl
 
   deCastIter[0]->updateDraw();
 
-  retVal |= deCastIter[0]->updateInput(inputEvent, x, y);
+  result |= deCastIter[0]->updateInput(inputEvent, x, y);
 
   for(loop = deCastList->begin(); loop != deCastList->end(); loop++)
   {
@@ -1485,18 +1495,19 @@ extern "C" int main(int inputEvent, double x, double y, double _halfWidth, doubl
       loop[0]->updateDraw();
     }
 
-    if( (retVal || inputEvent == deCasteljau::DUMP_ALL_CAPTURES) && loop != deCastIter)
-    {
-      retVal |= loop[0]->updateInput(deCasteljau::DUMP_ALL_CAPTURES, x, y);
-    }
+    if( (result || inputEvent == deCasteljau::DUMP_ALL_CAPTURES) && loop != deCastIter)
+      result |= loop[0]->updateInput(deCasteljau::DUMP_ALL_CAPTURES, x, y);
   }
 
-  return retVal;
+label_return:
+  return result;
 
 } // int main(int inputEvent, double x, double y, double _halfWidth, double _halfHeight)
 
 extern "C" int term() // int term()
 {
+  int result = ERROR;
+
   iteratorDC loop;
 
   if(deCastList)
@@ -1518,6 +1529,9 @@ extern "C" int term() // int term()
     deCastList = 0;
   }
 
-  return OK;
+  result = OK;
+
+label_return:
+  return result;
 
 } // int term()

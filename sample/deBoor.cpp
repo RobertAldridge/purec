@@ -79,10 +79,10 @@
 #pragma warning (disable : 4365)
 #endif
 
-#include <cassert>
-#include <cmath>
-#include <ctime>
-#include <cstdarg>
+//#include <cassert>
+//#include <cmath>
+//#include <ctime>
+//#include <cstdarg>
 
 //#include <iostream>
 //#include <deque>
@@ -159,16 +159,17 @@ point(double _x = 0, double _y = 0, double _z = 1) : x(_x), y(_y), z(_z) // poin
 #if 0
 double dist2D(const point &pt) const // point::dist2D
 {
+  double result = -3.402823466e+38;
+
   if(isProjectable() == true && pt.isProjectable() == true)
   {
     double _x = x / z - pt.x / pt.z;
-
     double _y = y / z - pt.y / pt.z;
 
-    return sqrt(_x * _x + _y * _y);
+    result = sqrt(_x * _x + _y * _y);
   }
 
-  return -3.402823466e+38;
+  return result;
 
 } // point::dist2D
 #endif
@@ -182,23 +183,29 @@ double dist(const point &pt) const // point::dist
 
 bool isProjectable() const // point::isProjectable
 {
-  if(z > 1 || eq(z, 1) )
-  {
-    return true;
-  }
+  bool result = false;
 
-  return false;
+  if(z > 1 || eq(z, 1) )
+    result = true;
+
+  return result;
 
 } // point::isProjectable
 
 point projectTo2D() const // point::projectTo2D
 {
+  point result = {0};
+
   if(eq(z, 0) )
   {
-    return point( -1, -1, -1);
+    result = point( -1, -1, -1);
+  }
+  else
+  {
+    result = point(x / z, y / z, 1);
   }
 
-  return point(x / z, y / z, 1);
+  return result;
 
 } // point::projectTo2D
 
@@ -402,9 +409,7 @@ deBoor(int _degree = 3, int _iterateConstant = 16) : t(0.5), frameR(0), frameS(1
   int degree = blahDegree;
 
   if(degree <= 0)
-  {
     degree = 1;
-  }
 
   tempPt = SsArrayConstruct(sizeof(point), 10, 4000000000, 10000);
 
@@ -416,9 +421,7 @@ deBoor(int _degree = 3, int _iterateConstant = 16) : t(0.5), frameR(0), frameS(1
   }
 
   if(iterateConstant < 1)
-  {
     iterateConstant = 1;
-  }
 
   // Create some different colors to view the shells and control points with.
   for(int i = 0, c0 = 0, c1 = 0; i < 100; i++)
@@ -484,24 +487,16 @@ void setPrimitiveDrawingFunctions(double _halfWidth, double _halfHeight, void(*_
   halfHeight = _halfHeight;
 
   if(_circleDrawingPrimitive)
-  {
     circleDrawingPrimitive = _circleDrawingPrimitive;
-  }
 
   if(_lineDrawingPrimitive)
-  {
     lineDrawingPrimitive = _lineDrawingPrimitive;
-  }
 
   if(_pointDrawingPrimitive)
-  {
     pointDrawingPrimitive = _pointDrawingPrimitive;
-  }
 
   if(_textDrawingPrimitive)
-  {
     textDrawingPrimitive = _textDrawingPrimitive;
-  }
 
   font = _font;
 
@@ -513,24 +508,16 @@ void setPrimitiveDrawingFunctions(deBoor& rhs, void* _font) // deBoor::setPrimit
   halfHeight = rhs.halfHeight;
 
   if(rhs.circleDrawingPrimitive)
-  {
     circleDrawingPrimitive = rhs.circleDrawingPrimitive;
-  }
 
   if(rhs.lineDrawingPrimitive)
-  {
     lineDrawingPrimitive = rhs.lineDrawingPrimitive;
-  }
 
   if(rhs.pointDrawingPrimitive)
-  {
     pointDrawingPrimitive = rhs.pointDrawingPrimitive;
-  }
 
   if(rhs.textDrawingPrimitive)
-  {
     textDrawingPrimitive = rhs.textDrawingPrimitive;
-  }
 
   font = _font;
 
@@ -610,12 +597,10 @@ enum INPUT_EVENT // deBoor::INPUT_EVENT
 // to update the de Boor algorithm.
 int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updateInput
 {
-  int retVal = 0;
+  int result = 0;
 
   if(numControlPts == 0 && inputEvent != ADD_CONTROL_POINT && inputEvent != MENU_INPUT)
-  {
-    return retVal;
-  }
+    goto label_return;
 
   if(inputEvent != MENU_INPUT)
   {
@@ -638,7 +623,7 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
   ////////////////////////////////////////////////////////
   case CAPTURE_CONTROL_POINT: // switch(inputEvent) - CAPTURE_CONTROL_POINT
   {
-    retVal = 1;
+    result = 1;
     dumpAllCaptures();
     captureControlPoint();
   }
@@ -646,7 +631,7 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
 
   case ADD_CONTROL_POINT: // switch(inputEvent) - ADD_CONTROL_POINT
   {
-    retVal = 1;
+    result = 1;
     dumpAllCaptures();
     addControlPoint();
   }
@@ -655,7 +640,7 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
   ////////////////////////////////////////////////////////
   case CAPTURE_T_OF_F_OF_T: // switch(inputEvent) - CAPTURE_T_OF_F_OF_T
   {
-    retVal = 1;
+    result = 1;
     dumpAllCaptures();
     capture_t_of_F_of_t();
   }
@@ -663,7 +648,7 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
 
   case DUMP_ALL_CONTROL_POINTS: // switch(inputEvent) - DUMP_ALL_CONTROL_POINTS
   {
-    retVal = 1;
+    result = 1;
     dumpAllCaptures();
     clearAllControlPoint();
   }
@@ -672,7 +657,7 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
   ////////////////////////////////////////////////////////
   case CAPTURE_TRANSLATE: // switch(inputEvent) - CAPTURE_TRANSLATE
   {
-    retVal = 1;
+    result = 1;
     dumpAllCaptures();
     captureAction = &deBoor::dragTranslate;
   }
@@ -680,7 +665,7 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
 
   case CAPTURE_SCALE: // switch(inputEvent) - CAPTURE_SCALE
   {
-    retVal = 1;
+    result = 1;
     dumpAllCaptures();
     captureAction = &deBoor::dragScale;
   }
@@ -689,7 +674,7 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
   ////////////////////////////////////////////////////////
   case CAPTURE_ROTATE: // switch(inputEvent) - CAPTURE_ROTATE
   {
-    retVal = 1;
+    result = 1;
     dumpAllCaptures();
     captureAction = &deBoor::dragRotate;
   }
@@ -697,7 +682,7 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
 
   case REMOVE_CONTROL_POINT: // switch(inputEvent) - REMOVE_CONTROL_POINT
   {
-    retVal = 1;
+    result = 1;
     dumpAllCaptures();
     removeControlPoint();
   }
@@ -705,7 +690,7 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
   ////////////////////////////////////////////////////////
   case TOGGLE_SHELLS: // switch(inputEvent) - TOGGLE_SHELLS
   {
-    retVal = 1;
+    result = 1;
     dumpAllCaptures();
 
     if(shellBl == true)
@@ -722,7 +707,7 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
   ////////////////////////////////////////////////////////
   case MENU_INPUT: // switch(inputEvent) - MENU_INPUT
   {
-    retVal = 1;
+    result = 1;
     dumpAllCaptures();
     clearAllControlPoint();
 
@@ -987,8 +972,7 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
 
       addControlPoint();
 
-      inputCur = point(blossom(3, p[4], p[3], p[2], p[1], frameS, frameS, frameS), -blossom(3, p[8], p[7], p[6], p[5], frameS, frameS, frameS), blossom(3, p[12], p[11], p[10], p[9], frameS, frameS, frameS)
-      );
+      inputCur = point(blossom(3, p[4], p[3], p[2], p[1], frameS, frameS, frameS), -blossom(3, p[8], p[7], p[6], p[5], frameS, frameS, frameS), blossom(3, p[12], p[11], p[10], p[9], frameS, frameS, frameS) );
 
       addControlPoint();
 
@@ -1006,7 +990,7 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
   ////////////////////////////////////////////////////////
   case DUMP_ALL_CAPTURES: // switch(inputEvent) - DUMP_ALL_CAPTURES
   {
-    retVal = 1;
+    result = 1;
     dumpAllCaptures();
   }
   break; // switch(inputEvent) - DUMP_ALL_CAPTURES
@@ -1014,17 +998,13 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
   ////////////////////////////////////////////////////////
   case TOGGLE_CONTROL_POINTS: // switch(inputEvent) - TOGGLE_CONTROL_POINTS
   {
-    retVal = 1;
+    result = 1;
     dumpAllCaptures();
 
     if(ctrlBl == true)
-    {
       ctrlBl = false;
-    }
     else
-    {
       ctrlBl = true;
-    }
   }
   break; // switch(inputEvent) - TOGGLE_CONTROL_POINTS
 
@@ -1039,26 +1019,20 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
   case DECREASE_ITERATION_CONSTANT: // switch(inputEvent) - DECREASE_ITERATION_CONSTANT
   {
     if(iterateConstant > 1)
-    {
       --iterateConstant;
-    }
   }
   break; // switch(inputEvent) - DECREASE_ITERATION_CONSTANT
 
   ////////////////////////////////////////////////////////
   case TOGGLE_CONTROL_POINT_TEXT: // switch(inputEvent) - TOGGLE_CONTROL_POINT_TEXT
   {
-    retVal = 1;
+    result = 1;
     dumpAllCaptures();
 
     if(dispK == true)
-    {
       dispK = false;
-    }
     else
-    {
       dispK = true;
-    }
   }
   break; // switch(inputEvent) - TOGGLE_CONTROL_POINT_TEXT
 
@@ -1067,16 +1041,14 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
   {
     /* nop */
   }
-  return retVal; // switch(inputEvent) - default
+  goto label_return; // switch(inputEvent) - default
 
   ////////////////////////////////////////////////////////
 
   } // switch(inputEvent)
 
-  if(numControlPts == 0)
-  {
-    return retVal;
-  }
+  if( !numControlPts)
+    goto label_return;
 
   // Call capture action function pointer.
   if(captureAction && inputPrv != inputCur)
@@ -1084,12 +1056,13 @@ int updateInput(int inputEvent, double xB, double yB, double B) // deBoor::updat
     minMaxT = 0;
     shellT = 0;
 
-    retVal = 1;
+    result = 1;
 
     (this->*captureAction)();
   }
 
-  return retVal;
+label_return:
+  return result;
 
 } // deBoor::updateInput
 
@@ -1099,10 +1072,10 @@ void updateDraw() // deBoor::updateDraw
 {
   int degree = 0;
 
-  if(numControlPts == 0)
-  {
-    return;
-  }
+  int loop = 0;
+
+  if( !numControlPts)
+    goto label_return;
 
   degree = blahDegree;
 
@@ -1116,7 +1089,7 @@ void updateDraw() // deBoor::updateDraw
     {
       point _temp;
 
-      for(int loop = 0; loop < numControlPts; loop++)
+      for(loop = 0; loop < numControlPts; loop++)
       {
         memset( &_temp, 0, sizeof(point) );
         SsArrayGetAt(tranPt, (uint32_t)loop, &_temp);
@@ -1155,7 +1128,7 @@ void updateDraw() // deBoor::updateDraw
 
     minMaxT = 1;
 
-    return;
+    goto label_return;
   }
 
   if(fti(minMaxT) == 0)
@@ -1182,7 +1155,7 @@ void updateDraw() // deBoor::updateDraw
     minMaxT = 1;
   }
 
-  int loop = -1;
+  loop = -1;
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
   while(SsQueueNum(subdWt) > 0 && ++loop < 20 * (1 + iterateConstant) )
@@ -1338,6 +1311,9 @@ void updateDraw() // deBoor::updateDraw
     do_deBoor(t, true);
   }
 
+label_return:
+  return;
+
 } // deBoor::updateDraw
 
 private:
@@ -1351,6 +1327,8 @@ private:
 // blossom(3, a, b, c, d, t1, t2, t3);
 double blossom(int degree, ...) // deBoor::blossom
 {
+  double result = 0;
+
   double a = 0;
   double b = 0;
   double c = 0;
@@ -1362,7 +1340,7 @@ double blossom(int degree, ...) // deBoor::blossom
 
   if(degree < 0 || degree > 3)
   {
-    assert(0 && "Bad blossom() degree");
+    assert(0 && "bad blossom degree");
   }
 
   va_list argptr = 0;
@@ -1377,8 +1355,10 @@ double blossom(int degree, ...) // deBoor::blossom
     d = va_arg(argptr, double);
 
     va_end(argptr);
+
+    result = d;
   }
-  return d; // switch(degree) - 0
+  break; // switch(degree) - 0
 
   case 1: // switch(degree) - 1
   {
@@ -1388,8 +1368,10 @@ double blossom(int degree, ...) // deBoor::blossom
     t1 = va_arg(argptr, double);
 
     va_end(argptr);
+
+    result = c * t1 + d;
   }
-  return c * t1 + d; // switch(degree) - 1
+  break; // switch(degree) - 1
 
   case 2: // switch(degree) - 2
   {
@@ -1401,8 +1383,10 @@ double blossom(int degree, ...) // deBoor::blossom
     t2 = va_arg(argptr, double);
 
     va_end(argptr);
+
+    result = b * t1 * t2 + c * (t1 + t2) / 2.0 + d;
   }
-  return b * t1 * t2 + c * (t1 + t2) / 2.0 + d; // switch(degree) - 2
+  break; // switch(degree) - 2
 
   case 3: // switch(degree) - 3
   {
@@ -1416,14 +1400,20 @@ double blossom(int degree, ...) // deBoor::blossom
     t3 = va_arg(argptr, double);
 
     va_end(argptr);
+
+    result = a * t1 * t2 * t3 + b * (t1 * t2 + t1 * t3 + t2 * t3) / 3.0 + c * (t1 + t2 + t3) / 3.0 + d;
   }
-  return a * t1 * t2 * t3 + b * (t1 * t2 + t1 * t3 + t2 * t3) / 3.0 + c * (t1 + t2 + t3) / 3.0 + d; // switch(degree) - 3
+  break; // switch(degree) - 3
+
+  default:
+  {
+    assert(0 && "bad blossom degree");
+  }
+  break;
 
   } // switch(degree)
 
-  assert(0 && "Bad blossom() degree");
-
-  return 0;
+  return result;
 
 } // deBoor::blossom
 
@@ -1431,7 +1421,7 @@ point do_deBoor(double dt, bool draw = false) // deBoor::do_deBoor
 {
   int degree = blahDegree;
 
-  point temp( -1, -1);
+  point temporary( -1, -1);
 
   double knots_front = 0;
   SsStackGetAt(knots, 0, &knots_front);
@@ -1439,24 +1429,30 @@ point do_deBoor(double dt, bool draw = false) // deBoor::do_deBoor
   double knots_back = 0;
   SsStackGet(knots, &knots_back);
 
+  int I = -1;
+
+  int i = 0;
+  int j = 0;
+  int k = 0;
+
+  int r = 0;
+
+  double knots_I = 0;
+
   if(dt < knots_front || dt > knots_back || eq(dt, knots_back) )
-  {
-    return temp;
-  }
+    goto label_return;
 
   if( (int)SsStackNum(knots) < degree + 1 || (int)SsArrayNum(tranPt) < degree + 1)
-  {
-    return temp;
-  }
+    goto label_return;
 
   // get the middle interval of the knots
   // get k of [u(k), u(k+1) )
-  int I = -1;
+  I = -1;
 
   // binary search, i is left, j is right, k is middle
-  int i = 0;
-  int j = (int)SsStackNum(knots) - 1;
-  int k = 0;
+  i = 0;
+  j = (int)SsStackNum(knots) - 1;
+  k = 0;
 
   while(j >= i)
   {
@@ -1486,13 +1482,11 @@ point do_deBoor(double dt, bool draw = false) // deBoor::do_deBoor
   }
 
   if(I - degree < 0)
-  {
-    return temp;
-  }
+    goto label_return;
 
-  int r = 0;
+  r = 0;
 
-  double knots_I = 0;
+  knots_I = 0;
   SsStackGetAt(knots, (uint32_t)I, &knots_I);
 
   if(eq(dt, knots_I) )
@@ -1545,9 +1539,7 @@ point do_deBoor(double dt, bool draw = false) // deBoor::do_deBoor
     }
 
     if(r < 1 || r > degree + 1)
-    {
-      return temp;
-    }
+      goto label_return;
   }
 
   for(i = I - degree, j = 0; i <= I - r; i++, j++)
@@ -1594,19 +1586,20 @@ point do_deBoor(double dt, bool draw = false) // deBoor::do_deBoor
     }
   }
 
-  memset( &temp, 0, sizeof(point) );
-  SsArrayGetAt(tempPt, 0, &temp);
+  memset( &temporary, 0, sizeof(point) );
+  SsArrayGetAt(tempPt, 0, &temporary);
 
   if(draw == true)
   {
-    drawCircle(temp, 5, I);
+    drawCircle(temporary, 5, I);
   }
   else
   {
-    drawPoint(temp, I);
+    drawPoint(temporary, I);
   }
 
-  return temp;
+label_return:
+  return temporary;
 
 } // deBoor::do_deBoor
 
@@ -1616,9 +1609,7 @@ void drawCircle(point center, int radius, int knotIndex) // deBoor::drawCircle
   if(circleDrawingPrimitive)
   {
     if(center.x < -2000000000 || center.x > 2000000000 || center.y < -2000000000 || center.y > 2000000000)
-    {
-      return;
-    }
+      goto label_return;
 
     if(center.isProjectable() == true)
     {
@@ -1631,6 +1622,9 @@ void drawCircle(point center, int radius, int knotIndex) // deBoor::drawCircle
     }
   }
 
+label_return:
+  return;
+
 } // deBoor::drawCircle
 
 // Wrapper for easily calling lineDrawingPrimitive().
@@ -1639,9 +1633,7 @@ void drawLine(point start, point end, int knotIndex) // deBoor::drawLine
   if(lineDrawingPrimitive)
   {
     if(start.x < -2000000000 || start.x > 2000000000 || start.y < -2000000000 || start.y > 2000000000 || end.x < -2000000000 || end.x > 2000000000 || end.y < -2000000000 || end.y > 2000000000)
-    {
-      return;
-    }
+      goto label_return;
 
     if(start.isProjectable() == true && end.isProjectable() == true)
     {
@@ -1656,6 +1648,9 @@ void drawLine(point start, point end, int knotIndex) // deBoor::drawLine
     }
   }
 
+label_return:
+  return;
+
 } // deBoor::drawLine
 
 // Wrapper for easily calling pointDrawingPrimitive().
@@ -1664,9 +1659,7 @@ void drawPoint(point center, int knotIndex) // deBoor::drawPoint
   if(pointDrawingPrimitive)
   {
     if(center.x < -2000000000 || center.x > 2000000000 || center.y < -2000000000 || center.y > 2000000000)
-    {
-      return;
-    }
+      goto label_return;
 
     if(center.isProjectable() == true)
     {
@@ -1678,6 +1671,9 @@ void drawPoint(point center, int knotIndex) // deBoor::drawPoint
       pointDrawingPrimitive(fti(center.x), fti(center.y), colors0[ (int)knots_ki % 100] );
     }
   }
+
+label_return:
+  return;
 
 } // deBoor::drawPoint
 
@@ -2205,15 +2201,15 @@ enum
 
 int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int), void(*_textDrawingPrimitive)(void*, int, int, const char* const, ...), void* _font) // init
 {
+  int result = ERROR;
+
   // Initialize the random number generator.
   srand( (uint32_t)time(0) );
 
   if( !deBoorList)
   {
     if(_halfWidth <= 0 || _halfHeight <= 0 || !_circleDrawingPrimitive || !_lineDrawingPrimitive || !_pointDrawingPrimitive || !_textDrawingPrimitive || !_font)
-    {
-      return ERROR;
-    }
+      goto label_return;
 
     BlahLog2("create root deBoorList before\n");
 
@@ -2223,9 +2219,7 @@ int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(i
     BlahLog2("create root deBoorList after\n");
 
     if( !deBoorList)
-    {
-      return ERROR;
-    }
+      goto label_return;
 
     //deBoorList->push_back(new de_Boor);
     deBoorIter.first = new deBoor;
@@ -2234,9 +2228,7 @@ int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(i
 
     //if( !(*deBoorList)[0] )
     if( !deBoorIter.first)
-    {
-      return ERROR;
-    }
+      goto label_return;
 
     //(*deBoorList)[0]->setPrimitiveDrawingFunctions
     deBoorIter.first->setPrimitiveDrawingFunctions(_halfWidth, _halfHeight, _circleDrawingPrimitive, _lineDrawingPrimitive, _pointDrawingPrimitive, _textDrawingPrimitive, _font);
@@ -2249,20 +2241,26 @@ int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(i
 
   //if( !(*deBoorList)[0] || deBoorIter != deBoorList->begin() )
   if( !deBoorIter.first || !SsSetIsBegin(deBoorList) )
-  {
-    return ERROR;
-  }
+    goto label_return;
 
-  return OK;
+  result = OK;
+
+label_return:
+  return result;
 
 } // init
 
 int main(int inputEvent, double x, double y, double B, double _halfWidth, double _halfHeight, void* _font) // main
 {
+  int result = OK;
+
+  pairDI loop = {0, 0};
+
   // if( !deBoorList || deBoorList->size() == 0)
   if( !deBoorList || !SsSetNum(deBoorList) || !deBoorIter.first)
   {
-    return ERROR;
+    result = ERROR;
+    goto label_return;
   }
 
 #if 0
@@ -2278,12 +2276,11 @@ int main(int inputEvent, double x, double y, double B, double _halfWidth, double
 
   if(_halfWidth <= 0 || _halfHeight <= 0)
   {
-    return ERROR;
+    result = ERROR;
+    goto label_return;
   }
 
   //deBoorIter.first->setPrimitiveDrawingFunctions(_halfWidth, _halfHeight, 0, 0, 0, 0, _font);
-
-  int retVal = 0;
 
   //iteratorDB temp; // init todo
 
@@ -2296,7 +2293,8 @@ int main(int inputEvent, double x, double y, double B, double _halfWidth, double
 
     if( !curve.first)
     {
-      return ERROR;
+      result = ERROR;
+      goto label_return;
     }
 
     //curve->setPrimitiveDrawingFunctions(**deBoorIter);
@@ -2371,7 +2369,7 @@ int main(int inputEvent, double x, double y, double B, double _halfWidth, double
         SsSetGetNext(deBoorList, false, &deBoorIter);
       }
 
-      retVal |= 1;
+      result |= 1;
 
       inputEvent = deBoor::DUMP_ALL_CAPTURES;
     }
@@ -2401,10 +2399,11 @@ int main(int inputEvent, double x, double y, double B, double _halfWidth, double
 
   deBoorIter.first->updateDraw();
 
-  retVal |= deBoorIter.first->updateInput(inputEvent, x * B, y * B, B);
+  result |= deBoorIter.first->updateInput(inputEvent, x * B, y * B, B);
 
   //loop = deBoorList->begin()
-  pairDI loop = {0, 0};
+  loop.first = 0;
+  loop.second = 0;
   SsSetGetNext(deBoorList, true, &loop);
 
   //for(loop = deBoorList->begin(); loop != deBoorList->end(); loop++)
@@ -2417,9 +2416,9 @@ int main(int inputEvent, double x, double y, double B, double _halfWidth, double
       loop.first->updateDraw();
     }
 
-    if( (retVal != 0 || inputEvent == deBoor::DUMP_ALL_CAPTURES) && loop.first != deBoorIter.first)
+    if( (result || inputEvent == deBoor::DUMP_ALL_CAPTURES) && loop.first != deBoorIter.first)
     {
-      retVal |= loop.first->updateInput(deBoor::DUMP_ALL_CAPTURES, x * B, y * B, B);
+      result |= loop.first->updateInput(deBoor::DUMP_ALL_CAPTURES, x * B, y * B, B);
     }
 
     loop.first = 0;
@@ -2438,7 +2437,8 @@ int main(int inputEvent, double x, double y, double B, double _halfWidth, double
     SsSetGetNext(deBoorList, false, &loop);
   }
 
-  return retVal;
+label_return:
+  return result;
 
 } // main
 

@@ -11,10 +11,10 @@
 //   5/3/99 - Created. brucemc.
 //   4/13/00 - List sort using mergesort added. brucemc.
 
-#include <cstdio>
-#include <cstdlib>
-#include <cassert>
-#include <cstring>
+//#include <cstdio>
+//#include <cstdlib>
+//#include <cassert>
+//#include <cstring>
 
 #define ERROR -1
 
@@ -86,7 +86,7 @@ LIST_HEAD* ListInit(CLIENT_COMPARE ClientCompare, INDEX_TYPE MaxNumberOfObjects)
     goto label_return;
 
   // times 2 for the buffer for the sorting routine
-  Head->ObjectArray = (CLIENT_POTYPE*)calloc(1, sizeof(CLIENT_POTYPE) * (MaxNumberOfObjects * 2) );
+  Head->ObjectArray = (CLIENT_POTYPE*)calloc(1, sizeof(CLIENT_POTYPE) * ( (size_t)MaxNumberOfObjects * 2) );
   if( !Head->ObjectArray)
   {
     free(Head);
@@ -129,7 +129,7 @@ INDEX_TYPE ListIsEmpty(LIST_HEAD* Head, INDEX_TYPE* NumberOfClientObjects)
   if(NumberOfClientObjects)
     *NumberOfClientObjects = Head->CurrentIndex;
 
-  result = ( !Head->CurrentIndex);
+  result = (Head->CurrentIndex == 0);
 
 label_return:
   return result;
@@ -186,7 +186,7 @@ INDEX_TYPE ListInsert(LIST_HEAD* Head, CLIENT_POTYPE ClientObject, CLIENT_COMPAR
       goto label_return;
     }
 
-    GrowArray = (CLIENT_POTYPE*)calloc(1, sizeof(CLIENT_POTYPE) * (Head->MaxNumberOfObjects * 4) );
+    GrowArray = (CLIENT_POTYPE*)calloc(1, sizeof(CLIENT_POTYPE) * ( (size_t)Head->MaxNumberOfObjects * 4) );
     if( !GrowArray)
       goto label_return;
 

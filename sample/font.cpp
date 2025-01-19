@@ -3,11 +3,11 @@
 // Robert Aldridge
 // all code by Robert
 
-#include <cassert>
-#include <cstdarg>
-#include <cstdio>
-#include <cstdint>
-#include <cstring>
+//#include <cassert>
+//#include <cstdarg>
+//#include <cstdio>
+//#include <cstdint>
+//#include <cstring>
 
 #include "font.h"
 #include "fontUtil.h"

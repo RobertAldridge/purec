@@ -1,11 +1,11 @@
 
 // sample.cpp
 
-#include <cstdint>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <ctime>
+//#include <cstdint>
+//#include <cstdio>
+//#include <cstdlib>
+//#include <cstring>
+//#include <ctime>
 
 // int thrd_sleep(const struct timespec* duration, struct timespec* remaining)
 //#include <threads.h>

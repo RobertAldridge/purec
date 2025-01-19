@@ -2,12 +2,12 @@
 // BlahLog.cpp
 // Robert Aldridge
 
-#include <cctype>
-#include <cstdarg>
-#include <cstdio>
-#include <cstring>
+//#include <cctype>
+//#include <cstdarg>
+//#include <cstdio>
+//#include <cstring>
 
-using namespace std;
+//using namespace std;
 
 // tolower
 // snprintf

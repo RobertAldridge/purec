@@ -11,12 +11,12 @@
 // ...
 // because of static global variables currentTime and matrix
 
-#include <cassert>
-#include <cmath>
-#include <cstdlib>
-#include <cstdio>
-#include <cstring>
-#include <cstdint>
+//#include <cassert>
+//#include <cmath>
+//#include <cstdlib>
+//#include <cstdio>
+//#include <cstring>
+//#include <cstdint>
 
 #include "listObject.h"
 #include "list.h"

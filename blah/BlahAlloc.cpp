@@ -2,14 +2,14 @@
 // BlahAlloc.cpp
 // Robert Aldridge
 
-#include <cstdint> // uint32_t
-#include <cstdlib> // free, malloc
-#include <cstring> // memset
+//#include <cstdint> // uint32_t
+//#include <cstdlib> // free, malloc
+//#include <cstring> // memset
 
-using std::free;
-using std::malloc;
-using std::memset;
-using std::uint32_t;
+//using std::free;
+//using std::malloc;
+//using std::memset;
+//using std::uint32_t;
 
 #include "BlahAlloc.h"
 

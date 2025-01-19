@@ -67,11 +67,11 @@ extern int term();
 
 //#include <crtdbg.h>
 
-#include <cassert> // assert
-#include <cstdint> // int64_t, uint32_t
-#include <cstdio> // FILE
-#include <cstdlib> // free, malloc
-#include <cstring> // memcpy, memset
+//#include <cassert> // assert
+//#include <cstdint> // int64_t, uint32_t
+//#include <cstdio> // FILE
+//#include <cstdlib> // free, malloc
+//#include <cstring> // memcpy, memset
 //#include <cfloat>
 //#include <cmath>
 //#include <ctime>
@@ -119,10 +119,10 @@ struct point
 
 #include "BlahLog.h"
 
-#if 0/*defined(_MSC_VER) */
+#if 0//defined(_MSC_VER)
 
+#define _CRTDBG_MAP_ALLOC
 #include <crtdbg.h>
-
 #include <windows.h>
 
 #else
@@ -741,20 +741,20 @@ ParticleSystemsInitGraphics
 {
 }
 
-static INDEX_TYPE TestObject(CLIENT_POTYPE ClientObject1, CLIENT_POTYPE ClientObject2)
+static INDEX_TYPE TestObjectEquivalent(CLIENT_POTYPE ClientObject1, CLIENT_POTYPE ClientObject2)
 {
+  INDEX_TYPE result = 0;
+
   if( !ClientObject1.object || !ClientObject2.object)
   {
     Error("ClientObject.object == 0");
-
-    return 0;
   }
   else if(ClientObject1.object == ClientObject2.object)
   {
-    return 1;
+    result = 1;
   }
 
-  return 0;
+  return result;
 }
 
 static struct FontBlah* _font = 0;
@@ -1889,7 +1889,6 @@ static int graphicsTermScreenAndBackBufferGDI()
   if( !error)
     result = GRAPHICS_OK;
 
-//label_return:
   return result;
 }
 
@@ -2170,12 +2169,7 @@ static int graphicsInitScreenAndBackBufferDIRECTDRAW(HWND /*hWindow*/)
 //HRESULT __stdcall D2D1CreateFactory(D2D1_FACTORY_TYPE factoryType, REFIID riid, CONST D2D1_FACTORY_OPTIONS* pFactoryOptions, void** ppIFactory);
   D2D1_FACTORY_OPTIONS blahFactoryOptions = {0};
   void* m_d2dFactory = 0;
-  D2D1CreateFactory(
-            D2D1_FACTORY_TYPE_SINGLE_THREADED,
-            __uuidof(ID2D1Factory1),
-            &blahFactoryOptions,
-            &m_d2dFactory
-            )
+  D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, __uuidof(ID2D1Factory1), &blahFactoryOptions, &m_d2dFactory);
 
   hResult = DirectDrawCreate(0, &ddraw_obj, 0);
 
@@ -2403,6 +2397,8 @@ public:
 
 static int graphicsInitScreenAndBackBuffer(HWND hWindow)
 {
+  int result = GRAPHICS_ERROR;
+
   Graphics::_hWindow = hWindow;
 
   graphicsSaveOldMode();
@@ -2428,16 +2424,15 @@ static int graphicsInitScreenAndBackBuffer(HWND hWindow)
   }
 
   if( !backbufferArray)
-  {
-    return GRAPHICS_ERROR;
-  }
+    goto label_return;
 
   switch(graphicsImplementation() ) // switch(graphicsImplementation() )
   {
 
   case GRAPHICS_IMPLEMENTATION::GDI: // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::GDI
   {
-    return graphicsInitScreenAndBackBufferGDI(hWindow);
+    result = graphicsInitScreenAndBackBufferGDI(hWindow);
+    goto label_return;
   }
   break; // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::GDI
 
@@ -2447,11 +2442,13 @@ static int graphicsInitScreenAndBackBuffer(HWND hWindow)
     {
       Implementation = GRAPHICS_IMPLEMENTATION::GDI;
 
-      return graphicsInitScreenAndBackBuffer(hWindow);
+      result = graphicsInitScreenAndBackBuffer(hWindow);
+      goto label_return;
     }
     else
     {
-      return GRAPHICS_OK;
+      result = GRAPHICS_OK;
+      goto label_return;
     }
   }
   break; // switch(graphicsImplementation() ) - GRAPHICS_IMPLEMENTATION::DIRECTDRAW
@@ -2460,11 +2457,16 @@ static int graphicsInitScreenAndBackBuffer(HWND hWindow)
 
   Error("The OS code is using an invalid graphics implementation.");
 
-  return GRAPHICS_ERROR;
+  result = GRAPHICS_ERROR;
+
+label_return:
+  return result;
 }
 
 static int graphicsCheckIsFullScreen()
 {
+  int result = GRAPHICS_ERROR;
+
   int screenWidth = 0;
   int screenHeight = 0;
   int screenBitDepth = 0;
@@ -2476,8 +2478,7 @@ static int graphicsCheckIsFullScreen()
   if( !screen)
   {
     Error("(screen = GetDC(0) ) == 0");
-
-    return GRAPHICS_ERROR;
+    goto label_return;
   }
 
   screenWidth = GetDeviceCaps(screen, HORZRES);
@@ -2487,14 +2488,10 @@ static int graphicsCheckIsFullScreen()
   screenBitDepth = GetDeviceCaps(screen, BITSPIXEL);
 
   if(ReleaseDC(0, screen) != 1)
-  {
     Error("ReleaseDC(...) function failure");
-  }
 
   if(screenWidth  <= 0 || screenHeight <= 0 || screenBitDepth <= 0)
-  {
-    return GRAPHICS_ERROR;
-  }
+    goto label_return;
 
   if( (screenWidth <= graphicsWidth() && screenHeight <= graphicsHeight() ) || (beNice == false && forceFullScreen == true) )
   {
@@ -2525,7 +2522,8 @@ static int graphicsCheckIsFullScreen()
 
     if(modeTest == true)
     {
-      return GRAPHICS_FULLSCREEN;
+      result = GRAPHICS_FULLSCREEN;
+      goto label_return;
     }
 
     DMode.dmPelsWidth  = (unsigned long)graphicsWidth();
@@ -2545,15 +2543,17 @@ static int graphicsCheckIsFullScreen()
 
     if(modeTest == true)
     {
-      return GRAPHICS_FULLSCREEN;
+      result = GRAPHICS_FULLSCREEN;
+      goto label_return;
     }
 
     forceFullScreen = false;
-
-    return GRAPHICS_WINDOW;
   }
 
-  return GRAPHICS_WINDOW;
+  result = GRAPHICS_WINDOW;
+
+label_return:
+  return result;
 }
 
 };
@@ -2666,7 +2666,7 @@ void Graphics::_RenderLine32(int x0, int y0, int x1, int y1, int xi, int yi)
   // out - out
   if(x0 < left && x1 < left)
   {
-    return;
+    goto label_return;
   }
   // in - in
   else if(x0 >= left && x1 >= left)
@@ -2704,7 +2704,7 @@ void Graphics::_RenderLine32(int x0, int y0, int x1, int y1, int xi, int yi)
   // out - out
   if(x0 > right && x1 > right)
   {
-    return;
+    goto label_return;
   }
   // in - in
   else if(x0 <= right && x1 <= right)
@@ -2742,7 +2742,7 @@ void Graphics::_RenderLine32(int x0, int y0, int x1, int y1, int xi, int yi)
   // out - out
   if(y0 < top && y1 < top)
   {
-    return;
+    goto label_return;
   }
   // in - in
   else if(y0 >= top && y1 >= top)
@@ -2780,7 +2780,7 @@ void Graphics::_RenderLine32(int x0, int y0, int x1, int y1, int xi, int yi)
   // out - out
   if(y0 > bottom && y1 > bottom)
   {
-    return;
+    goto label_return;
   }
   // in - in
   else if(y0 <= bottom && y1 <= bottom)
@@ -2818,7 +2818,7 @@ void Graphics::_RenderLine32(int x0, int y0, int x1, int y1, int xi, int yi)
 
   if(x0 < left || x0 > right || x1 < left || x1 > right || y0 < top || y0 > bottom || y1 < top || y1 > bottom || r0 < 0 || r0 > 255 || g0 < 0 || g0 > 255 || b0 < 0 || b0 > 255 || r1 < 0 || r1 > 255 || g1 < 0 || g1 > 255 || b1 < 0 || b1 > 255)
   {
-    return;
+    goto label_return;
   }
 
   x0 <<= 8;
@@ -2949,6 +2949,9 @@ void Graphics::_RenderLine32(int x0, int y0, int x1, int y1, int xi, int yi)
       }while( --count != 0);
     }
   }
+
+label_return:
+  return;
 }
 
 void Graphics::RenderLine32(int x0, int y0, int x1, int y1, int xi, int yi)
@@ -2982,7 +2985,7 @@ void Graphics::_RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
 
   if(xcen + r < 0 || xcen - r >= _width || ycen + r < 0 || ycen - r >= _height)
   {
-    return;
+    goto label_return;
   }
 
   pi = 804 << (S - 8);
@@ -3059,7 +3062,7 @@ void Graphics::_RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
     if(xcen >= 0 && ycen >= 0 && xcen < _width && ycen < _height)
       *(bb[ycen] + xcen) = r( ( (s2rs / 2) + (s2re / 2) ) ) | g( ( (s2gs / 2) + (s2ge / 2) ) ) | b( ( (s2bs / 2) + (s2be / 2) ) );
 
-    return;
+    goto label_return;
   }
 
   do
@@ -3258,6 +3261,9 @@ void Graphics::_RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
     }
 
   }while(++x <= y);
+
+label_return:
+  return;
 }
 
 void Graphics::RenderCircle32(int xcen, int ycen, int r, int c0, int c1)
@@ -3377,14 +3383,18 @@ enum INPUT_EVENT
 
 long long __stdcall Graphics::AboutDlgProc(HWND hDlg, unsigned int msg, unsigned long long wParam, long long /*lParam*/)
 {
+  long long result = false;
+
   switch(msg) // switch(msg)
   {
 
   case WM_INITDIALOG: // switch(msg) - WM_INITDIALOG
   {
     isMenuActive = true;
+
+    result = true;
   }
-  return true; // switch(msg) - WM_INITDIALOG
+  goto label_return; // switch(msg) - WM_INITDIALOG
 
   case WM_COMMAND: // switch(msg) - WM_COMMAND
   {
@@ -3398,8 +3408,10 @@ long long __stdcall Graphics::AboutDlgProc(HWND hDlg, unsigned int msg, unsigned
       EndDialog(hDlg, 0);
 
       isMenuActive = false;
+
+      result = true;
     }
-    return true; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDOK, case IDCANCEL
+    goto label_return; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDOK, case IDCANCEL
 
     } // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) )
   }
@@ -3421,11 +3433,14 @@ long long __stdcall Graphics::AboutDlgProc(HWND hDlg, unsigned int msg, unsigned
     Sleep(1);
   }
 
-  return false;
+label_return:
+  return result;
 }
 
 static bool checkString(char* string)
 {
+  bool result = false;
+
   char charCur = *string;
 
   int stringI = 1;
@@ -3440,7 +3455,7 @@ static bool checkString(char* string)
   }
   else
   {
-    return false;
+    goto label_return;
   }
 
   for(charCur = string[1]; charCur != 0 && stringI < 256; charCur = string[ ++stringI] )
@@ -3451,11 +3466,14 @@ static bool checkString(char* string)
     }
     else
     {
-      return false;
+      goto label_return;
     }
   }
 
-  return true;
+  result = true;
+
+label_return:
+  return result;
 }
 
 static void plusDecimal(double& lhs, double rhs)
@@ -3472,6 +3490,8 @@ static void plusDecimal(double& lhs, double rhs)
 
 long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned long long wParam, long long /*lParam*/)
 {
+  long long result = false;
+
   char item[256] = {0};
 
   switch(msg) // switch(msg)
@@ -3515,8 +3535,10 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
 
     SetDlgItemTextA(hDlg, EDITS_INT, "1");
     SetDlgItemTextA(hDlg, EDITS_DEC, "0");
+
+    result = true;
   }
-  return true; // switch(msg) - WM_INITDIALOG
+  goto label_return; // switch(msg) - WM_INITDIALOG
 
   case WM_COMMAND: // switch(msg) - WM_COMMAND
   {
@@ -3532,9 +3554,7 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       GetDlgItemTextA(hDlg, EDITX3_INT, item, 255);
 
       if(checkString(item) == false)
-      {
         goto _IDCANCEL;
-      }
 
       menuArray[4] = atof(item);
 
@@ -3548,9 +3568,7 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       GetDlgItemTextA(hDlg, EDITX2_INT, item, 255);
 
       if(checkString(item) == false)
-      {
         goto _IDCANCEL;
-      }
 
       menuArray[3] = atof(item);
 
@@ -3564,9 +3582,7 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       GetDlgItemTextA(hDlg, EDITX1_INT, item, 255);
 
       if(checkString(item) == false)
-      {
         goto _IDCANCEL;
-      }
 
       menuArray[2] = atof(item);
 
@@ -3580,9 +3596,7 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       GetDlgItemTextA(hDlg, EDITX0_INT, item, 255);
 
       if(checkString(item) == false)
-      {
         goto _IDCANCEL;
-      }
 
       menuArray[1] = atof(item);
 
@@ -3596,9 +3610,7 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       GetDlgItemTextA(hDlg, EDITY3_INT, item, 255);
 
       if(checkString(item) == false)
-      {
         goto _IDCANCEL;
-      }
 
       menuArray[8] = atof(item);
 
@@ -3612,9 +3624,7 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       GetDlgItemTextA(hDlg, EDITY2_INT, item, 255);
 
       if(checkString(item) == false)
-      {
         goto _IDCANCEL;
-      }
 
       menuArray[7] = atof(item);
 
@@ -3628,9 +3638,7 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       GetDlgItemTextA(hDlg, EDITY1_INT, item, 255);
 
       if(checkString(item) == false)
-      {
         goto _IDCANCEL;
-      }
 
       menuArray[6] = atof(item);
 
@@ -3644,9 +3652,7 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       GetDlgItemTextA(hDlg, EDITY0_INT, item, 255);
 
       if(checkString(item) == false)
-      {
         goto _IDCANCEL;
-      }
 
       menuArray[5] = atof(item);
 
@@ -3660,9 +3666,7 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       GetDlgItemTextA(hDlg, EDITZ3_INT, item, 255);
 
       if(checkString(item) == false)
-      {
         goto _IDCANCEL;
-      }
 
       menuArray[12] = atof(item);
 
@@ -3676,9 +3680,7 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       GetDlgItemTextA(hDlg, EDITZ2_INT, item, 255);
 
       if(checkString(item) == false)
-      {
         goto _IDCANCEL;
-      }
 
       menuArray[11] = atof(item);
 
@@ -3692,9 +3694,7 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       GetDlgItemTextA(hDlg, EDITZ1_INT, item, 255);
 
       if(checkString(item) == false)
-      {
         goto _IDCANCEL;
-      }
 
       menuArray[10] = atof(item);
 
@@ -3708,9 +3708,7 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       GetDlgItemTextA(hDlg, EDITZ0_INT, item, 255);
 
       if(checkString(item) == false)
-      {
         goto _IDCANCEL;
-      }
 
       menuArray[9] = atof(item);
 
@@ -3724,9 +3722,7 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       GetDlgItemTextA(hDlg, EDITR_INT, item, 255);
 
       if(checkString(item) == false)
-      {
         goto _IDCANCEL;
-      }
 
       menuArray[9] = atof(item);
 
@@ -3740,9 +3736,7 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       GetDlgItemTextA(hDlg, EDITS_INT, item, 255);
 
       if(checkString(item) == false)
-      {
         goto _IDCANCEL;
-      }
 
       menuArray[10] = atof(item);
 
@@ -3755,18 +3749,21 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       EndDialog(hDlg, 0);
 
       isMenuActive = false;
+
+      result = true;
     }
-    return true; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDOK
+    goto label_return; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDOK
 
     case IDCANCEL: // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDCANCEL
     {
-      _IDCANCEL:
-
+_IDCANCEL:
       EndDialog(hDlg, -1);
 
       isMenuActive = false;
+
+      result = true;
     }
-    return true; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDCANCEL
+    goto label_return; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDCANCEL
 
     case IDEX1: // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX1
     {
@@ -3794,7 +3791,7 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       SetDlgItemTextA(hDlg, EDITS_INT, "1");
       SetDlgItemTextA(hDlg, EDITS_DEC, "0");
     }
-    return false; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX1
+    goto label_return; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX1
 
     case IDEX2: // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX2
     {
@@ -3822,7 +3819,7 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       SetDlgItemTextA(hDlg, EDITS_INT, "1");
       SetDlgItemTextA(hDlg, EDITS_DEC, "0");
     }
-    return false; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX2
+    goto label_return; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX2
 
     case IDEX3: // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX3
     {
@@ -3850,7 +3847,7 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       SetDlgItemTextA(hDlg, EDITS_INT, "2");
       SetDlgItemTextA(hDlg, EDITS_DEC, "0");
     }
-    return false; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX3
+    goto label_return; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX3
 
     case IDEX4: // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX4
     {
@@ -3878,7 +3875,7 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       SetDlgItemTextA(hDlg, EDITS_INT, "2");
       SetDlgItemTextA(hDlg, EDITS_DEC, "0");
     }
-    return false; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX4
+    goto label_return; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX4
 
     case IDEX5: // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX5
     {
@@ -3906,7 +3903,7 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
       SetDlgItemTextA(hDlg, EDITS_INT, "3");
       SetDlgItemTextA(hDlg, EDITS_DEC, "0");
     }
-    return false; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX5
+    goto label_return; // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) ) - IDEX5
 
     } // switch(msg) - WM_COMMAND; switch(LOWORD(wParam) )
   }
@@ -3928,7 +3925,8 @@ long long __stdcall Graphics::InputDlgProc(HWND hDlg, unsigned int msg, unsigned
     Sleep(1);
   }
 
-  return false;
+label_return:
+  return result;
 }
 
 class WindowStyle
@@ -3969,48 +3967,52 @@ virtual WindowStyle& operator= (WindowStyle& ) = 0;
 
 public:
 
-static point getOrigin()
+static point getOrigin() // point WindowStyle::getOrigin()
 {
   return origin;
 }
 
-static point getSize(bool clamp)
+static point getSize(bool clamp) // point WindowStyle::getSize(bool clamp)
 {
+  point temporary = {0, 0};
+
   if(clamp == false || style == WINDOWSTYLE_FULLSCREEN)
   {
-    return size;
+    temporary = size;
+    goto label_return;
   }
 
-  point temp = { size.x + menu.left + menu.right, size.y + menu.top + menu.bottom
-  };
+  temporary.x = size.x + menu.left + menu.right;
+  temporary.y = size.y + menu.top + menu.bottom;
 
-  if(temp.x >= Graphics::oldWidth)
+  if(temporary.x >= Graphics::oldWidth)
   {
-    temp.x = Graphics::oldWidth - menu.left - menu.right - 1;
+    temporary.x = Graphics::oldWidth - menu.left - menu.right - 1;
   }
 
-  if(temp.y >= Graphics::oldHeight)
+  if(temporary.y >= Graphics::oldHeight)
   {
-    temp.y = Graphics::oldHeight - menu.top - menu.bottom - 1;
+    temporary.y = Graphics::oldHeight - menu.top - menu.bottom - 1;
   }
 
-  temp.x -= menu.left + menu.right;
-  temp.y -= menu.top + menu.bottom;
+  temporary.x -= menu.left + menu.right;
+  temporary.y -= menu.top + menu.bottom;
 
-  return temp;
+label_return:
+  return temporary;
 }
 
-static rect getMenuRect()
+static rect getMenuRect() // rect WindowStyle::getMenuRect()
 {
   return menu;
 }
 
-static int getStyle()
+static int getStyle() // int WindowStyle::getStyle()
 {
   return style;
 }
 
-static point setOrigin(int x, int y)
+static point setOrigin(int x, int y) // point WindowStyle::setOrigin(int x, int y)
 {
   origin.x = x;
   origin.y = y;
@@ -4018,30 +4020,28 @@ static point setOrigin(int x, int y)
   return origin;
 }
 
-static int setSize(int width, int height)
+static int setSize(int width, int height) // int WindowStyle::setSize(int width, int height)
 {
   width += menu.left + menu.right;
   height += menu.top + menu.bottom;
 
   if(width <= 0 || height <= 0)
-  {
-    return style;
-  }
+    goto label_return;
 
   if(width >= Graphics::oldWidth || height >= Graphics::oldHeight)
   {
     style = WINDOWSTYLE_FULLSCREEN;
-
-    return style;
+    goto label_return;
   }
 
   size.x = width - menu.left - menu.right;
   size.y = height - menu.top - menu.bottom;
 
+label_return:
   return style;
 }
 
-static rect setMenuRect(int leftEdgeMenuThickness, int topEdgeMenuThickness, int rightEdgeMenuThickness, int bottomEdgeMenuThickness)
+static rect setMenuRect(int leftEdgeMenuThickness, int topEdgeMenuThickness, int rightEdgeMenuThickness, int bottomEdgeMenuThickness) // rect WindowStyle::setMenuRect(int leftEdgeMenuThickness, int topEdgeMenuThickness, int rightEdgeMenuThickness, int bottomEdgeMenuThickness)
 {
   menu.left = leftEdgeMenuThickness;
   menu.top = topEdgeMenuThickness;
@@ -4051,7 +4051,7 @@ static rect setMenuRect(int leftEdgeMenuThickness, int topEdgeMenuThickness, int
   return menu;
 }
 
-static int setStyle()
+static int setStyle() // int WindowStyle::setStyle()
 {
   if(style == WINDOWSTYLE_WINDOW)
   {
@@ -4065,7 +4065,7 @@ static int setStyle()
   return style;
 }
 
-};
+}; // class WindowStyle
 
 // Give the WindowStyle class static variables default values.
 point WindowStyle::origin = {-1, -1};
@@ -4089,64 +4089,75 @@ static bool IsApplicationEntry = false;
 
 extern void* operator new(size_t size)
 {
-  if(IsApplicationEntry == false)
+  void* memory = 0;
+
+  if( !IsApplicationEntry)
   {
-    void* result = Allocate(size);
+    memory = Allocate(size);
 
-BlahLog2("3 %i %llu\n", (int)size, (uint64_t)result);
+BlahLog2("3 %i %llu\n", (int)size, (uint64_t)memory);
 
-    return result;
+    goto label_return;
   }
 
-  void* new_memory = InsertHeapAllocation(size);
+  memory = InsertHeapAllocation(size);
 
-  return new_memory;
+label_return:
+  return memory;
 }
 
 extern void* operator new[](size_t size)
 {
-  if(IsApplicationEntry == false)
+  void* memory = 0;
+
+  if( !IsApplicationEntry)
   {
-    return Allocate(size);
+    memory = Allocate(size);
+    goto label_return;
   }
 
-  void* new_memory = InsertHeapAllocation(size);
+  memory = InsertHeapAllocation(size);
 
-  return new_memory;
+label_return:
+  return memory;
 }
 
 extern void operator delete(void* ptr)
 {
-  if(IsApplicationEntry == false)
+  if( !IsApplicationEntry)
   {
     DeAllocate(ptr);
-
-    return;
+    goto label_return;
   }
 
   if(ptr)
-  {
     RemoveHeapAllocation(ptr);
-  }
+
+label_return:
+  return;
 }
 
 extern void operator delete[](void* ptr)
 {
-  if(IsApplicationEntry == false)
+  if( !IsApplicationEntry)
   {
     DeAllocate(ptr);
-
-    return;
+    goto label_return;
   }
 
   if(ptr)
   {
     RemoveHeapAllocation(ptr);
   }
+
+label_return:
+  return;
 }
 
 long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned long long wParam, long long lParam)
 {
+  long long result = 0;
+
   point mousePt = {0, 0};
 
   static point prevPt = {0, 0};
@@ -4179,7 +4190,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
     hInstance = ( (CREATESTRUCTA*)lParam) ->hInstance;
   }
-  return 0; // switch(msg) - WM_CREATE
+  goto label_return; // switch(msg) - WM_CREATE
 
   case WM_SETWIDTHHEIGHT: // switch(msg) - WM_SETWIDTHHEIGHT
   {
@@ -4200,7 +4211,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
       }
     }
   }
-  return 0; // switch(msg) - WM_SETWIDTHHEIGHT
+  goto label_return; // switch(msg) - WM_SETWIDTHHEIGHT
 
   case WM_CHANGEWINDOWSTYLE: // switch(msg) - WM_CHANGEWINDOWSTYLE
   {
@@ -4258,7 +4269,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
       IsWindowStyleChanging = false;
     }
   }
-  return 0; // switch(msg) - WM_CHANGEWINDOWSTYLE
+  goto label_return; // switch(msg) - WM_CHANGEWINDOWSTYLE
 
   case WM_MOUSEMOVE: // switch(msg) - WM_MOUSEMOVE
   {
@@ -4267,7 +4278,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
     prevPt = mousePt;
   }
-  return 0; // switch(msg) - WM_MOUSEMOVE
+  goto label_return; // switch(msg) - WM_MOUSEMOVE
 
   case WM_LBUTTONDOWN: // switch(msg) - WM_LBUTTONDOWN
   {
@@ -4278,7 +4289,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
     SetCapture(hwnd);
   }
-  return 0; // switch(msg) - WM_LBUTTONDOWN
+  goto label_return; // switch(msg) - WM_LBUTTONDOWN
 
   case WM_LBUTTONUP: // switch(msg) - WM_LBUTTONUP
   {
@@ -4289,7 +4300,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
     ReleaseCapture();
   }
-  return 0; // switch(msg) - WM_LBUTTONUP
+  goto label_return; // switch(msg) - WM_LBUTTONUP
 
   case WM_RBUTTONDOWN: // switch(msg) - WM_RBUTTONDOWN
   {
@@ -4300,7 +4311,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
     SetCapture(hwnd);
   }
-  return 0; // switch(msg) - WM_RBUTTONDOWN
+  goto label_return; // switch(msg) - WM_RBUTTONDOWN
 
   case WM_RBUTTONUP: // switch(msg) - WM_RBUTTONUP
   {
@@ -4311,13 +4322,13 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
     ReleaseCapture();
   }
-  return 0; // switch(msg) - WM_RBUTTONUP
+  goto label_return; // switch(msg) - WM_RBUTTONUP
 
   case WM_SETFOCUS: // switch(msg) - WM_SETFOCUS
   {
     IsApplicationTopMost = true;
   }
-  return 0; // switch(msg) - WM_SETFOCUS
+  goto label_return; // switch(msg) - WM_SETFOCUS
 
   case WM_KILLFOCUS: // switch(msg) - WM_KILLFOCUS
   {
@@ -4329,13 +4340,13 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
     ReleaseCapture();
   }
   // ? are we supposed to pass through here ? verify todo
-  return 0; // switch(msg) - WM_KILLFOCUS
+  goto label_return; // switch(msg) - WM_KILLFOCUS
 
   case WM_CAPTURECHANGED: // switch(msg) - WM_CAPTURECHANGED
   {
     /* nop */
   }
-  return 0; // switch(msg) - WM_CAPTURECHANGED
+  goto label_return; // switch(msg) - WM_CAPTURECHANGED
 
   case WM_SYSCOMMAND: // switch(msg) - WM_SYSCOMMAND
   {
@@ -4349,7 +4360,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
     WindowProc(hwnd, (unsigned int)WM_CHANGEWINDOWSTYLE, 0, 0);
   }
-  return 0; // switch(msg) - WM_SYSCOMMAND
+  goto label_return; // switch(msg) - WM_SYSCOMMAND
 
   case WM_NCLBUTTONDBLCLK: // switch(msg) - WM_NCLBUTTONDBLCLK
   {
@@ -4363,7 +4374,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
     WindowProc(hwnd, (unsigned int)WM_CHANGEWINDOWSTYLE, 0, 0);
   }
-  return 0; // switch(msg) - WM_NCLBUTTONDBLCLK
+  goto label_return; // switch(msg) - WM_NCLBUTTONDBLCLK
 
   case WM_SYSKEYDOWN: // switch(msg) - WM_SYSKEYDOWN
   {
@@ -4384,7 +4395,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
       // WinExec("deBoorExtraBox.exe", 0);
 
-      return 0;
+      goto label_return;
     }
   }
   break; // switch(msg) - WM_SYSKEYDOWN
@@ -4400,31 +4411,31 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
       PostMessageA(hwnd, WM_DESTROY, 0, 0);
     }
-    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_ESCAPE
+    goto label_return; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_ESCAPE
 
     case VK_F1: // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F1
     {
       orInput = 0;
     }
-    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F1
+    goto label_return; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F1
 
     case VK_F2: // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F2
     {
       orInput = 1;
     }
-    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F2
+    goto label_return; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F2
 
     case VK_F3: // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F3
     {
       orInput = 2;
     }
-    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F3
+    goto label_return; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F3
 
     case VK_F4: // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F4
     {
       orInput = 4;
     }
-    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F4
+    goto label_return; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F4
 
     case VK_F5: // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F5
     {
@@ -4436,7 +4447,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
       ReleaseCapture();
     }
-    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F5
+    goto label_return; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F5
 
     case VK_F6: // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F6
     {
@@ -4448,7 +4459,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
       ReleaseCapture();
     }
-    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F6
+    goto label_return; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F6
 
     case VK_F7: // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F7
     {
@@ -4546,7 +4557,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
         ReleaseCapture();
       }
     }
-    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F7
+    goto label_return; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F7
 
     case VK_F8: // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F8
     {
@@ -4554,7 +4565,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
       /* WinExec("deBoorHelpBox.exe", 0); */
     }
-    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F8
+    goto label_return; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F8
 
     case VK_F9: // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F9
     {
@@ -4562,7 +4573,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
       /* WinExec("deBoorAboutBox.exe", 0); */
     }
-    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F9
+    goto label_return; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F9
 
     case 49: // switch(msg) - WM_KEYDOWN; switch(wParam) - 49
     /* nop */
@@ -4576,7 +4587,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
       ReleaseCapture();
     }
-    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - 49, VK_NUMPAD1
+    goto label_return; // switch(msg) - WM_KEYDOWN; switch(wParam) - 49, VK_NUMPAD1
 
     case 50: // switch(msg) - WM_KEYDOWN; switch(wParam) - 50
     /* nop */
@@ -4590,7 +4601,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
       ReleaseCapture();
     }
-    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - 50, VK_NUMPAD2
+    goto label_return; // switch(msg) - WM_KEYDOWN; switch(wParam) - 50, VK_NUMPAD2
 
     case 51: // switch(msg) - WM_KEYDOWN; switch(wParam) - 51
     /* nop */
@@ -4601,7 +4612,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
       ReleaseCapture();
     }
-    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - 51, VK_NUMPAD3
+    goto label_return; // switch(msg) - WM_KEYDOWN; switch(wParam) - 51, VK_NUMPAD3
 
     case 52: // switch(msg) - WM_KEYDOWN; switch(wParam) - 52
     /* nop */
@@ -4615,7 +4626,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
       ReleaseCapture();
     }
-    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - 52, VK_NUMPAD4
+    goto label_return; // switch(msg) - WM_KEYDOWN; switch(wParam) - 52, VK_NUMPAD4
 
     case 53: // switch(msg) - WM_KEYDOWN; switch(wParam) - 53
     /* nop */
@@ -4629,7 +4640,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
       ReleaseCapture();
     }
-    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - 53, VK_NUMPAD5
+    goto label_return; // switch(msg) - WM_KEYDOWN; switch(wParam) - 53, VK_NUMPAD5
 
     case 54: // switch(msg) - WM_KEYDOWN; switch(wParam) - 54
     /* nop */
@@ -4637,7 +4648,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
     {
       /* nop */
     }
-    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - 54, VK_NUMPAD6
+    goto label_return; // switch(msg) - WM_KEYDOWN; switch(wParam) - 54, VK_NUMPAD6
 
     case 55: // switch(msg) - WM_KEYDOWN; switch(wParam) - 55
     /* nop */
@@ -4645,7 +4656,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
     {
       /* nop */
     }
-    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - 55, VK_NUMPAD7
+    goto label_return; // switch(msg) - WM_KEYDOWN; switch(wParam) - 55, VK_NUMPAD7
 
     case 56: // switch(msg) - WM_KEYDOWN; switch(wParam) - 56
     /* nop */
@@ -4653,7 +4664,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
     {
       /* nop */
     }
-    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - 56, VK_NUMPAD8
+    goto label_return; // switch(msg) - WM_KEYDOWN; switch(wParam) - 56, VK_NUMPAD8
 
     case 57: // switch(msg) - WM_KEYDOWN; switch(wParam) - 57
     /* nop */
@@ -4661,7 +4672,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
     {
       /* nop */
     }
-    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - 57, VK_NUMPAD9
+    goto label_return; // switch(msg) - WM_KEYDOWN; switch(wParam) - 57, VK_NUMPAD9
 
     case VK_ADD: // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_ADD
     {
@@ -4673,7 +4684,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
       ReleaseCapture();
     }
-    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_ADD
+    goto label_return; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_ADD
 
     case VK_SUBTRACT: // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_SUBTRACT
     {
@@ -4685,11 +4696,11 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
       ReleaseCapture();
     }
-    return 0; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_SUBTRACT
+    goto label_return; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_SUBTRACT
 
     } // switch(msg) - WM_KEYDOWN; switch(wParam)
   }
-  return 0; // switch(msg) - WM_KEYDOWN
+  goto label_return; // switch(msg) - WM_KEYDOWN
 
   case WM_MOVE: // switch(msg) - WM_MOVE
   /* nop */
@@ -4786,7 +4797,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
     }
   }
   // ? are we supposed to pass through here ? verify todo
-  return 0; // switch(msg) - WM_SIZE
+  goto label_return; // switch(msg) - WM_SIZE
 
 // WM_SIZING
 //
@@ -4885,7 +4896,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
         WindowProc(hwnd, (unsigned int)WM_CHANGEWINDOWSTYLE, 0, 0);
 
-        return 0;
+        goto label_return;
       }
 
       main(DUMP_ALL_CAPTURES, mousePt.x, mousePt.y, 1, (double)Graphics::graphicsClientWidth() * 0.5, (double)Graphics::graphicsClientHeight() * 0.5, _font);
@@ -4914,8 +4925,8 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
           RemoveHeapAllocation(_rect);
         }
 
-        // There is an error, so we do not need held from DefWindowProc(...).
-        return 0;
+        // There is an error, so we do not need help from DefWindowProc(...).
+        goto label_return;
       }
 
       InsertHandle(RobsTextOutInitSystem);
@@ -4943,7 +4954,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
   {
     /* nop */
   }
-  return 0; // switch(msg) - WM_PAINT
+  goto label_return; // switch(msg) - WM_PAINT
 
   // MSDN:
   // An application sends the WM_ERASEBKGND message when the window background
@@ -4954,10 +4965,10 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
   // otherwise, it should return zero.
   case WM_ERASEBKGND: // switch(msg) - WM_ERASEBKGND
   {
-    /* nop */
+    result = 1;
   }
   // return nonzero to make believe the background was erased
-  return 1; // switch(msg) - WM_ERASEBKGND
+  goto label_return; // switch(msg) - WM_ERASEBKGND
 
   case WM_DISPLAYCHANGE: // switch(msg) - WM_DISPLAYCHANGE
   {
@@ -4969,7 +4980,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
         Graphics::oldWidth = LOWORD(lParam);
         Graphics::oldHeight = HIWORD(lParam);
 
-        return 0;
+        goto label_return;
       }
 
       if(_font)
@@ -5003,7 +5014,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
 
         WindowProc(hwnd, (unsigned int)WM_CHANGEWINDOWSTYLE, 0, 0);
 
-        return 0;
+        goto label_return;
       }
 
       if(Graphics::graphicsInitScreenAndBackBuffer(hwnd) != Graphics::GRAPHICS_OK)
@@ -5015,7 +5026,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
           Error("The function DestroyWindow(...) has failed in the function WindowProc(...).");
         }
 
-        return 0;
+        goto label_return;
       }
 
       InsertHandle(RobsTextOutInitSystem);
@@ -5031,7 +5042,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
       }
     }
   }
-  return 0; // switch(msg) - WM_DISPLAYCHANGE
+  goto label_return; // switch(msg) - WM_DISPLAYCHANGE
 
   // MSDN:
   // The WM_CLOSE message is sent as a signal
@@ -5051,7 +5062,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
       Error("The function DestroyWindow(...) has failed in the function WindowProc(...).");
     }
   }
-  return 0; // switch(msg) - WM_CLOSE
+  goto label_return; // switch(msg) - WM_CLOSE
 
   // MSDN:
   // The WM_DESTROY message is sent when a window is being destroyed.
@@ -5060,9 +5071,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
   case WM_DESTROY: // switch(msg) - WM_DESTROY
   {
     if(IsWindowStyleChanging == true)
-    {
-      return 0;
-    }
+      goto label_return;
 
     mainTerm(hwnd);
 
@@ -5085,7 +5094,7 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
     // the process, and exits with the supplied status code.
     exit(0);
   }
-  //return 0; // switch(msg) - WM_DESTROY
+  //goto label_return; // switch(msg) - WM_DESTROY
 
   // MSDN:
   // The WM_QUIT message indicates a request to terminate an application and
@@ -5097,9 +5106,9 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
   // application's window procedure.
   case WM_QUIT: // switch(msg) - WM_QUIT
   {
-    /* nop */
+    result = (long long)wParam;
   }
-  return (long long)wParam; // switch(msg) - WM_QUIT
+  goto label_return; // switch(msg) - WM_QUIT
 
   } // switch(msg)
 
@@ -5112,7 +5121,10 @@ long long __stdcall Graphics::WindowProc(HWND hwnd, unsigned int msg, unsigned l
   //
   // The return value is the result of the message
   // processing and depends on the message.
-  return DefWindowProcA(hwnd, msg, wParam, lParam);
+  result = DefWindowProcA(hwnd, msg, wParam, lParam);
+
+label_return:
+  return result;
 }
 
 static HANDLE mutexHandle = 0;
@@ -5127,72 +5139,74 @@ static LIST_HEAD* listOfHeapAllocations = 0;
 
 static int RemoveHeapAllocation(void* heapAllocation)
 {
+  int result = -1;
+
   int functionReturnValue = 0;
   CLIENT_POTYPE Object = {0};
 
   if( !heapAllocation || heapAllocation == (void*)0xffffffff)
   {
     Error("RemoveHeapAllocation -- heapAllocation == 0");
-
-    return -1;
+    goto label_return;
   }
 
   if( !listOfHeapAllocations)
   {
     Error("RemoveHeapAllocation -- listOfHeapAllocations == 0");
-
-    return -1;
+    goto label_return;
   }
 
   Object.object = heapAllocation;
 
-  functionReturnValue = ListRemove(listOfHeapAllocations, TestObject, &Object);
+  functionReturnValue = ListRemove(listOfHeapAllocations, TestObjectEquivalent, &Object);
 
   if(functionReturnValue || Object.object != heapAllocation)
   {
     Error("ListRemove failure -- unknown heap allocation");
-
-    return -1;
-  }
-  else
-  {
-    DeAllocate(heapAllocation);
+    goto label_return;
   }
 
-  return 0;
+  DeAllocate(heapAllocation);
+
+  result = 0;
+
+label_return:
+  return result;
 }
 
 static int RemoveHandle(void* handle)
 {
+  int result = -1;
+
   int functionReturnValue = 0;
   CLIENT_POTYPE Object = {0};
 
   if( !handle)
   {
     Error("RemoveHandle -- handle == 0");
-
-    return -1;
+    goto label_return;
   }
 
   if( !listOfHandles)
   {
     Error("RemoveHandle -- listOfHandles == 0");
-
-    return -1;
+    goto label_return;
   }
 
   Object.object = handle;
 
-  functionReturnValue = ListRemove(listOfHandles, TestObject, &Object);
+  functionReturnValue = ListRemove(listOfHandles, TestObjectEquivalent, &Object);
 
   if(functionReturnValue || Object.object != handle)
   {
     Error("ListRemove failure -- unknown handle");
-
-    return -1;
+    goto label_return;
   }
 
-  return 0;
+  result = 0;
+
+label_return:
+  return result;
 }
 
 const unsigned int HEAP_ALLOCATION_ERROR = 0xffffffff;
@@ -5209,8 +5223,7 @@ static void* InsertHeapAllocation(size_t numBytesToAllocate)
   if( !listOfHeapAllocations)
   {
     Error("InsertHeapAllocation -- listOfHeapAllocations == 0");
-
-    return 0;
+    goto label_return;
   }
 
   heapAllocation = Allocate(numBytesToAllocate);
@@ -5220,8 +5233,7 @@ BlahLog2("2 %i %llu\n", (int)numBytesToAllocate, (uint64_t)heapAllocation);
   if( !heapAllocation)
   {
     Error("InsertHeapAllocation -- heapAllocation == 0");
-
-    return 0;
+    goto label_return;
   }
 
   memset(heapAllocation, 0, numBytesToAllocate);
@@ -5235,21 +5247,21 @@ BlahLog2("2 %i %llu\n", (int)numBytesToAllocate, (uint64_t)heapAllocation);
     Error("ListInsert failure -- heap allocation not inserted and freed");
 
     free(heapAllocation);
-  }
-  else
-  {
-    SetLastError(ERROR_SUCCESS);
+    heapAllocation = 0;
 
-    return heapAllocation;
+    goto label_return;
   }
 
-  Error("InsertHeapAllocation -- should never get to this line of code.");
+  SetLastError(ERROR_SUCCESS);
 
-  return 0;
+label_return:
+  return heapAllocation;
 }
 
 static int InsertHandle(void* handle)
 {
+  int result = -1;
+
   int functionReturnValue = 0;
 
   CLIENT_POTYPE Object = {0};
@@ -5257,15 +5269,13 @@ static int InsertHandle(void* handle)
   if( !handle)
   {
     Error("InsertHandle -- handle == 0");
-
-    return -1;
+    goto label_return;
   }
 
   if( !listOfHandles)
   {
     Error("InsertHandle -- listOfHandles == 0");
-
-    return -1;
+    goto label_return;
   }
 
   Object.object = handle;
@@ -5275,16 +5285,18 @@ static int InsertHandle(void* handle)
   if(functionReturnValue)
   {
     Error("ListInsert failure -- handle not inserted");
-
-    return -1;
+    goto label_return;
   }
 
-  return 0;
+  result = 0;
+
+label_return:
+  return result;
 }
 
 static int mainTerm(HWND hwnd)
 {
-  int error = 0;
+  int result = 0;
 
   int numberOfObjects = 0;
 
@@ -5342,8 +5354,7 @@ static int mainTerm(HWND hwnd)
   if( !CloseHandle(mutexHandle) )
   {
     Error("CloseHandle(...) failure");
-
-    error = -1;
+    result = -1;
   }
   // If CloseHandle works, remove the handle
   // from the handle list.
@@ -5365,12 +5376,10 @@ static int mainTerm(HWND hwnd)
     while( !ListGetNext(listOfHeapAllocations, &object, 1) )
     {
       if(RemoveHeapAllocation(object.object) )
-      {
         Error("RemoveHeapAllocation(...) function failure");
-      }
     }
 
-    error = -1;
+    result = -1;
   }
 
   // Check if the three handles that should be in the handle list are
@@ -5378,35 +5387,32 @@ static int mainTerm(HWND hwnd)
 
   Object.object = file;
 
-  functionReturnValue = ListFind(listOfHandles, TestObject, &Object);
+  functionReturnValue = ListFind(listOfHandles, TestObjectEquivalent, &Object);
 
   if(functionReturnValue || Object.object != file)
   {
     Error("listOfHandles -- file not in handle list -- why not?");
-
-    error = -1;
+    result = -1;
   }
 
   Object.object = listOfHandles;
 
-  functionReturnValue = ListFind(listOfHandles, TestObject, &Object);
+  functionReturnValue = ListFind(listOfHandles, TestObjectEquivalent, &Object);
 
   if(functionReturnValue || Object.object != listOfHandles)
   {
     Error("listOfHandles -- listOfHandles not in handle list -- why not?");
-
-    error = -1;
+    result = -1;
   }
 
   Object.object = listOfHeapAllocations;
 
-  functionReturnValue = ListFind(listOfHandles, TestObject, &Object);
+  functionReturnValue = ListFind(listOfHandles, TestObjectEquivalent, &Object);
 
   if(functionReturnValue || Object.object != listOfHeapAllocations)
   {
     Error("listOfHandles -- listOfHeapAllocations not in handle list -- why not?");
-
-    error = -1;
+    result = -1;
   }
 
   functionReturnValue = ListIsEmpty(listOfHandles, &numberOfObjects);
@@ -5416,8 +5422,7 @@ static int mainTerm(HWND hwnd)
   if(functionReturnValue || numberOfObjects != 3)
   {
     Error("listOfHandles is not empty");
-
-    error = -1;
+    result = -1;
   }
 
 
@@ -5426,8 +5431,7 @@ static int mainTerm(HWND hwnd)
     if(fclose(file) )
     {
       Error("fclose(...) failure");
-
-      error = -1;
+      result = -1;
     }
   }
 
@@ -5435,7 +5439,7 @@ static int mainTerm(HWND hwnd)
 
   ListTerminate(listOfHandles);
 
-  return error;
+  return result;
 }
 
 static double _timeTicksPerSecond = 0;
@@ -5455,14 +5459,13 @@ static double timeInSeconds()
 
 static int initTime()
 {
-  int error = 0;
+  int result = 0;
 
   uint64_t temporary = 0;
   if( !QueryPerformanceFrequency( (LARGE_INTEGER*) &temporary) )
   {
     Error("QueryPerformanceFrequency(...) function failure");
-
-    error = -1;
+    result = -1;
   }
 
   _timeTicksPerSecond = (double)temporary;
@@ -5471,8 +5474,7 @@ static int initTime()
   if( !QueryPerformanceCounter( (LARGE_INTEGER*) &temporary) )
   {
     Error("QueryPerformanceCounter(...) function failure");
-
-    error = -1;
+    result = -1;
   }
 
   _timeInSeconds = (double)temporary;
@@ -5481,12 +5483,12 @@ static int initTime()
 
   _timeStart = _timeInSeconds;
 
-  return error;
+  return result;
 }
 
 static int updateTime()
 {
-  int error = 0;
+  int result = 0;
 
   double previousTime = 0;
 
@@ -5494,8 +5496,7 @@ static int updateTime()
   if( !QueryPerformanceCounter( (LARGE_INTEGER*) &temporary) )
   {
     Error("QueryPerformanceCounter(...) function failure");
-
-    error = -1;
+    result = -1;
   }
 
   previousTime = _timeInSeconds;
@@ -5506,7 +5507,7 @@ static int updateTime()
 
   _timeDelta = _timeInSeconds - previousTime;
 
-  return error;
+  return result;
 }
 
 // MSDN
@@ -5526,13 +5527,15 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
 {
   int currentFrameNumber = 0;
 
-  int retVal = 0;
+  int result = 0;
 
   int windowType = 0;
 
   rect windowRect = {0};
 
   MSG Message = {0};
+
+  point origin = {0};
 
   _hInstance = hInstance;
 
@@ -5551,7 +5554,7 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
 
     IsApplicationEntry = false;
 
-    return 0;
+    goto label_return;
   }
 
   if(GetLastError() == ERROR_ALREADY_EXISTS)
@@ -5563,7 +5566,7 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
 
     IsApplicationEntry = false;
 
-    return 0;
+    goto label_return;
   }
 
   // 1) Initialize the log file for logging warnings and errors.
@@ -5582,7 +5585,7 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
 
     IsApplicationEntry = false;
 
-    return 0;
+    goto label_return;
   }
 #else
   if( !file)
@@ -5624,7 +5627,7 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
 
     IsApplicationEntry = false;
 
-    return 0;
+    goto label_return;
   }
 
   if( !listOfHeapAllocations)
@@ -5648,7 +5651,7 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
 
     IsApplicationEntry = false;
 
-    return 0;
+    goto label_return;
   }
 
   // -1-
@@ -5732,7 +5735,7 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
 
     IsApplicationEntry = false;
 
-    return 0;
+    goto label_return;
   }
 
   // -5-
@@ -5808,7 +5811,7 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
 
     IsApplicationEntry = false;
 
-    return 0;
+    goto label_return;
   }
 
   if(windowType == Graphics::GRAPHICS_WINDOW)
@@ -5880,7 +5883,7 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
 
     IsApplicationEntry = false;
 
-    return 0;
+    goto label_return;
   }
 
   WindowStyle::setMenuRect( -windowRect.left, -windowRect.top, windowRect.right - Graphics::graphicsClientWidth(), windowRect.bottom - Graphics::graphicsClientHeight() );
@@ -5949,7 +5952,7 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
 
     IsApplicationEntry = false;
 
-    return 0;
+    goto label_return;
   }
 
   if(windowRect.left < 0)
@@ -5968,7 +5971,8 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
   windowRect.left = 0;
   windowRect.top = 0;
 
-  point origin = { (Graphics::graphicsClientWidth() * 2 - windowRect.right) / 2, (Graphics::graphicsClientHeight() * 2 - windowRect.bottom) / 2};
+  origin.x = (Graphics::graphicsClientWidth() * 2 - windowRect.right) / 2;
+  origin.y = (Graphics::graphicsClientHeight() * 2 - windowRect.bottom) / 2;
 
   WindowStyle::setOrigin(origin.x + WindowStyle::getMenuRect().left, origin.y + WindowStyle::getMenuRect().top);
 
@@ -6042,7 +6046,7 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
 
     IsApplicationEntry = false;
 
-    return 0;
+    goto label_return;
   }
 
   // -6-
@@ -6061,7 +6065,7 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
   {
     Error("ShowWindow(...) != 0");
 
-    goto main_term;
+    goto label_num;
   }
 
   {
@@ -6085,7 +6089,7 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
   {
     Error("Graphics::graphicsInitScreenAndBackBuffer(...) != Graphics::GRAPHICS_OK");
 
-    goto main_term;
+    goto label_num;
   }
 
   InsertHandle(RobsTextOutInitSystem);
@@ -6100,7 +6104,7 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
 
     Graphics::graphicsUnlockBackBuffer();
 
-    goto main_term;
+    goto label_num;
   }
 
   Graphics::graphicsUnlockBackBuffer();
@@ -6174,9 +6178,9 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
       GetCursorPos( (POINT*) &mousePt);
       ScreenToClient(hWindow, (POINT*) &mousePt);
 
-      retVal = main(UPDATE_INPUT, mousePt.x, mousePt.y, 1, (double)Graphics::graphicsClientWidth() * 0.5, (double)Graphics::graphicsClientHeight() * 0.5, _font);
+      result = main(UPDATE_INPUT, mousePt.x, mousePt.y, 1, (double)Graphics::graphicsClientWidth() * 0.5, (double)Graphics::graphicsClientHeight() * 0.5, _font);
 
-      if(retVal == 1)
+      if(result == 1)
       {
         Graphics::graphicsUnlockBackBuffer();
 
@@ -6188,13 +6192,13 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
 
         main(UPDATE_INPUT, mousePt.x, mousePt.y, 1, (double)Graphics::graphicsClientWidth() * 0.5, (double)Graphics::graphicsClientHeight() * 0.5, _font);
       }
-      else if(retVal)
+      else if(result)
       {
         Warning("Client main(...) function returns nonzero value, quitting abruptly.");
 
         Graphics::graphicsUnlockBackBuffer();
 
-        goto main_term;
+        goto label_num;
       }
     }
 
@@ -6217,14 +6221,14 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
 
         menu.pt = client.first;
 
-        retVal = main(MENU_INPUT, 0, menu.f, 1, (double)Graphics::graphicsClientWidth() * 0.5, (double)Graphics::graphicsClientHeight() * 0.5, _font);
+        result = main(MENU_INPUT, 0, menu.f, 1, (double)Graphics::graphicsClientWidth() * 0.5, (double)Graphics::graphicsClientHeight() * 0.5, _font);
       }
       else
       {
-        retVal = main(client.second, client.first.x, client.first.y, 1, (double)Graphics::graphicsClientWidth() * 0.5, (double)Graphics::graphicsClientHeight() * 0.5, _font);
+        result = main(client.second, client.first.x, client.first.y, 1, (double)Graphics::graphicsClientWidth() * 0.5, (double)Graphics::graphicsClientHeight() * 0.5, _font);
       }
 
-      if(retVal == 1)
+      if(result == 1)
       {
         Graphics::graphicsUnlockBackBuffer();
 
@@ -6236,13 +6240,13 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
 
         main(UPDATE_INPUT, client.first.x, client.first.y, 1, (double)Graphics::graphicsClientWidth() * 0.5, (double)Graphics::graphicsClientHeight() * 0.5, _font);
       }
-      else if(retVal)
+      else if(result)
       {
         Warning("Client main(...) function returns nonzero value, quitting abruptly.");
 
         Graphics::graphicsUnlockBackBuffer();
 
-        goto main_term;
+        goto label_num;
       }
 
       //input->pop();
@@ -6262,13 +6266,15 @@ extern "C" int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*
     Sleep(1);
   }
 
-  main_term:
-
+label_num:
   PostMessageA(hWindow, WM_DESTROY, 0, 0);
 
   IsApplicationEntry = false;
 
-  return (int)Message.wParam;
+  result = (int)Message.wParam;
+
+label_return:
+  return result;
 }
 
 extern int GetFilesNamed(char* folderPath, int* howManyOutput, LIST_HEAD* fileList)
@@ -6287,7 +6293,8 @@ extern int GetFilesNamed(char* folderPath, int* howManyOutput, LIST_HEAD* fileLi
   {
     Error("The function GetFilesNamed(...) has received an invalid function parameter list.");
 
-    return -1;
+    result = -1;
+    goto label_return;
   }
 
   *howManyOutput = 0;
@@ -6298,7 +6305,8 @@ extern int GetFilesNamed(char* folderPath, int* howManyOutput, LIST_HEAD* fileLi
   {
     Error("The function FindFirstFileA(...) has failed in the function GetFilesNamed(...).");
 
-    return -1;
+    result = -1;
+    goto label_return;
   }
 
   tempStore++;
@@ -6318,14 +6326,16 @@ extern int GetFilesNamed(char* folderPath, int* howManyOutput, LIST_HEAD* fileLi
   {
     Error("The function FindNextFileA(...) in the function GetFilesNamed(...) has indicated an error.");
 
-    return -1;
+    result = -1;
+    goto label_return;
   }
 
   if( !FindClose(Search) )
   {
     Error("The function FindClose(..) has failed in the function GetFilesNamed(...).");
 
-    return -1;
+    result = -1;
+    goto label_return;
   }
 
   Search = FindFirstFileA(folderPath, &data);
@@ -6334,7 +6344,8 @@ extern int GetFilesNamed(char* folderPath, int* howManyOutput, LIST_HEAD* fileLi
   {
     Error("The function FindFirstFileA(...) has failed in the function GetFilesNamed(...).");
 
-    return -1;
+    result = -1;
+    goto label_return;
   }
 
   SetLastError(ERROR_SUCCESS);
@@ -6347,7 +6358,8 @@ extern int GetFilesNamed(char* folderPath, int* howManyOutput, LIST_HEAD* fileLi
 
     FindClose(Search);
 
-    return -1;
+    result = -1;
+    goto label_return;
   }
 
   ListInsert(fileList, object, 0);
@@ -6360,7 +6372,8 @@ extern int GetFilesNamed(char* folderPath, int* howManyOutput, LIST_HEAD* fileLi
 
       FindClose(Search);
 
-      return -1;
+      result = -1;
+      goto label_return;
     }
 
     SetLastError(ERROR_SUCCESS);
@@ -6373,7 +6386,8 @@ extern int GetFilesNamed(char* folderPath, int* howManyOutput, LIST_HEAD* fileLi
 
       FindClose(Search);
 
-      return -1;
+      result = -1;
+      goto label_return;
     }
 
     if(ListInsert(fileList, object, 0) )
@@ -6382,7 +6396,8 @@ extern int GetFilesNamed(char* folderPath, int* howManyOutput, LIST_HEAD* fileLi
 
       FindClose(Search);
 
-      return -1;
+      result = -1;
+      goto label_return;
     }
   }
 
@@ -6392,8 +6407,12 @@ extern int GetFilesNamed(char* folderPath, int* howManyOutput, LIST_HEAD* fileLi
   {
     Error("The function FindClose(...) has failed at the end of the function GetFilesNamed(...).");
 
-    return -1;
+    result = -1;
+    goto label_return;
   }
 
-  return 0;
+  result = 0;
+
+label_return:
+  return result;
 }

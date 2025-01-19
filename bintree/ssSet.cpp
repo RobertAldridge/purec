@@ -4,12 +4,12 @@
 // Robert B. Aldridge III
 // Charlie H. Burns III
 
-#include <cstdint> // int64_t, uint32_t
-#include <cstring> // memcpy
+//#include <cstdint> // int64_t, uint32_t
+//#include <cstring> // memcpy
 
-using std::int64_t;
-using std::memcpy;
-using std::uint32_t;
+//using std::int64_t;
+//using std::memcpy;
+//using std::uint32_t;
 
 #include "BlahAlloc.h"
 

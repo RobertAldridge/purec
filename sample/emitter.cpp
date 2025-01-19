@@ -6,11 +6,11 @@
 //
 // editor Robert Aldridge
 
-#include <cassert>
-#include <cmath>
-#include <cstdlib>
-#include <cstring>
-#include <cstdint>
+//#include <cassert>
+//#include <cmath>
+//#include <cstdlib>
+//#include <cstring>
+//#include <cstdint>
 
 #include "video.h"
 

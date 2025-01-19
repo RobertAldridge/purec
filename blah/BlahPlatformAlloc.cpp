@@ -5,13 +5,13 @@
 // _MSC_VER
 
 //#include <cstddef> // size_t, wchar_t
-#include <cstdint> // uint32_t
-#include <cstdlib> // free, malloc
+//#include <cstdint> // uint32_t
+//#include <cstdlib> // free, malloc
 //#include <cstring>
-#include <cwchar> // wcslen
+//#include <cwchar> // wcslen
 
 //using std::size_t;
-using std::uint32_t;
+//using std::uint32_t;
 //using std::wchar_t;
 
 #include "BlahLog.h"
