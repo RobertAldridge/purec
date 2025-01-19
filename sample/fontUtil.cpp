@@ -8,7 +8,6 @@
 //#include <cstring>
 
 #include "font.h"
-#include "fontUtil.h"
 
 #include "BlahAlloc.h"
 #include "BlahLog.h"
@@ -120,6 +119,14 @@ __declspec(dllimport) HBITMAP __stdcall CreateDIBSection(HDC hdc, const BITMAPIN
 
 struct FontBlah
 {
+  FontClient* ( *TextOutInitSystem)(FontClient* _this, GraphicsClient* _graphics, uint32_t width, uint32_t height, uint32_t idealWidth, uint32_t idealHeight);
+
+  void ( *TextOut)(FontClient* _this, int32_t x, int32_t y, const char* format, ...);
+
+  rectInteger ( *TextOutRect)(FontClient* _this, int32_t x, int32_t y, const char* format, ...);
+
+  void ( *TextOutTermSystem)(FontClient** _this);
+
   // ascii contains source rectInteger of characters on font image
   rectInteger ascii[256];
 
@@ -138,14 +145,14 @@ struct FontBlah
   int32_t idealWidth;
   int32_t idealHeight;
 
-  uint8_t** backbuffer_array_pointer;
-
-  uint8_t** (*_backBufferFunction)();
+  GraphicsClient* _graphics;
 
   uint8_t** text_white_array_pointer;
 
   uint8_t* text_white;
 };
+
+#include "fontUtil.h"
 
 // int* _StartX; input is old dest x, output is new dest x
 // int* _StartY; input is old dest y, output is new dest y

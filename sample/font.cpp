@@ -10,13 +10,26 @@
 //#include <cstring>
 
 #include "font.h"
-#include "fontUtil.h"
 
 #include "BlahAlloc.h"
 #include "BlahLog.h"
 
+extern void RobsTextOut(FontClient* _this, int32_t x, int32_t y, const char* format, ...);
+
+extern rectInteger RobsTextOutRect(FontClient* _this, int32_t x, int32_t y, const char* format, ...);
+
+extern void RobsTextOutTermSystem(FontClient** _this);
+
 struct FontBlah
 {
+  FontClient* ( *TextOutInitSystem)(FontClient* _this, GraphicsClient* _graphics, uint32_t width, uint32_t height, uint32_t idealWidth, uint32_t idealHeight);
+
+  void ( *TextOut)(FontClient* _this, int32_t x, int32_t y, const char* format, ...);
+
+  rectInteger ( *TextOutRect)(FontClient* _this, int32_t x, int32_t y, const char* format, ...);
+
+  void ( *TextOutTermSystem)(FontClient** _this);
+
   // ascii contains source rectInteger of characters on font image
   rectInteger ascii[256];
 
@@ -35,23 +48,23 @@ struct FontBlah
   int32_t idealWidth;
   int32_t idealHeight;
 
-  uint8_t** backbuffer_array_pointer;
-
-  uint8_t** (*_backBufferFunction)();
+  GraphicsClient* _graphics;
 
   uint8_t** text_white_array_pointer;
 
   uint8_t* text_white;
 };
 
+#include "fontUtil.h"
+
 static uint32_t GetIdealFontWidth();
 static uint32_t GetIdealFontHeight();
 
-static uint8_t CharTrivialAcceptance(FontBlah* _this, const int32_t x, const int32_t y);
+static uint8_t CharTrivialAcceptance(FontBlah* _this, int32_t x, int32_t y);
 
-static void _RobsTextOut(FontBlah* _this, int32_t x, int32_t y, const char* const dest_buffer);
+static void _RobsTextOut(FontBlah* _this, int32_t x, int32_t y, const char* dest_buffer);
 
-static rectInteger _RobsTextOutRect(FontBlah* _this, int32_t x, int32_t y, const char* const dest_buffer);
+static rectInteger _RobsTextOutRect(FontBlah* _this, int32_t x, int32_t y, const char* dest_buffer);
 
 uint32_t GetIdealFontWidth()
 {
@@ -63,7 +76,7 @@ uint32_t GetIdealFontHeight()
   return 14;
 }
 
-uint8_t CharTrivialAcceptance(FontBlah* _this, const int32_t x, const int32_t y)
+uint8_t CharTrivialAcceptance(FontBlah* _this, int32_t x, int32_t y)
 {
   uint8_t result = 0;
 
@@ -77,22 +90,24 @@ label_return:
   return result;
 }
 
-void _RobsTextOut(FontBlah* _this, int32_t x, int32_t y, const char* const dest_buffer)
+void _RobsTextOut(FontBlah* _this, int32_t x, int32_t y, const char* dest_buffer)
 {
   char* text = 0;
+
+  uint8_t** backbuffer_array_pointer = 0;
 
   if( !_this)
     goto label_return;
 
-  if( !_this->_backBufferFunction)
+  if( !_this->_graphics)
   {
     BlahLog("Error TextOutLightGray -> !_backBufferFunction()");
     goto label_return;
   }
 
-  _this->backbuffer_array_pointer = _this->_backBufferFunction();
+  backbuffer_array_pointer = _this->_graphics->GraphicsBackBufferFunction(_this->_graphics);
 
-  if( !_this->backbuffer_array_pointer || !_this->backbuffer_array_pointer[0] )
+  if( !backbuffer_array_pointer || !backbuffer_array_pointer[0] )
   {
     BlahLog("Error TextOutLightGray -> !GetBackBuffer()");
     goto label_return;
@@ -136,7 +151,7 @@ void _RobsTextOut(FontBlah* _this, int32_t x, int32_t y, const char* const dest_
     // trivial acceptance and blit
     else if(CharTrivialAcceptance( _this, x, y) )
     {
-      FontUtilCharAntiAliasColorBlit(_this->backbuffer_array_pointer, _this->text_white_array_pointer, x, y, &_this->ascii[ (uint8_t) ( (int16_t)text[0] + 128) ] );
+      FontUtilCharAntiAliasColorBlit(backbuffer_array_pointer, _this->text_white_array_pointer, x, y, &_this->ascii[ (uint8_t) ( (int16_t)text[0] + 128) ] );
     }
     // clip and blit
     else
@@ -145,7 +160,7 @@ void _RobsTextOut(FontBlah* _this, int32_t x, int32_t y, const char* const dest_
 
       // checks output from FontUtilClipSpecial
       if(FontUtilClipSpecial( &x, &y, _this->width, _this->height, &SrcRect) )
-        FontUtilCharAntiAliasColorBlit(_this->backbuffer_array_pointer, _this->text_white_array_pointer, x, y, &SrcRect);
+        FontUtilCharAntiAliasColorBlit(backbuffer_array_pointer, _this->text_white_array_pointer, x, y, &SrcRect);
     }
 
     x += _this->font_width;
@@ -157,7 +172,7 @@ label_return:
   return;
 }
 
-rectInteger _RobsTextOutRect(FontBlah* _this, int32_t x, int32_t y, const char* const dest_buffer)
+rectInteger _RobsTextOutRect(FontBlah* _this, int32_t x, int32_t y, const char* dest_buffer)
 {
   char* text = 0;
 
@@ -165,12 +180,16 @@ rectInteger _RobsTextOutRect(FontBlah* _this, int32_t x, int32_t y, const char* 
   uint32_t chars_per_line = 0;
   uint32_t max_chars_per_line = 0;
 
+  uint8_t** backbuffer_array_pointer = 0;
+
   rectInteger output_rect = {-1, -1, -1, -1};
 
   if( !_this)
     goto label_return;
 
-  if( !_this->backbuffer_array_pointer)
+  backbuffer_array_pointer = _this->_graphics->GraphicsBackBufferFunction(_this->_graphics);
+
+  if( !backbuffer_array_pointer)
   {
     BlahLog("Error _TextOutRect -> !GetBackBuffer()");
     goto label_return;
@@ -210,7 +229,7 @@ label_return:
   return output_rect;
 }
 
-FontBlah* RobsTextOutInitSystem(uint8_t** (*__backBufferFunction)(), const uint32_t _width, const uint32_t _height, const uint32_t _idealWidth, const uint32_t _idealHeight)
+FontClient* RobsTextOutInitSystem(FontClient* /*reference*/, GraphicsClient* _graphics, uint32_t _width, uint32_t _height, uint32_t _idealWidth, uint32_t _idealHeight)
 {
   int32_t Column = 0;
   int32_t Row = 0;
@@ -219,29 +238,27 @@ FontBlah* RobsTextOutInitSystem(uint8_t** (*__backBufferFunction)(), const uint3
 
   _this = (FontBlah*)BlahAlloc(sizeof(FontBlah), true);
   if( !_this)
-    goto label_error;
+    goto label_num;
 
-  if( !__backBufferFunction)
+  if( !_graphics)
   {
     BlahLog("Error TextOutInitSystem -> !__backBufferFunction");
-    goto label_error;
+    goto label_num;
   }
 
   if(_width <= 0)
   {
     BlahLog("Error TextOutInitSystem -> _width <= 0");
-    goto label_error;
+    goto label_num;
   }
 
   if(_height <= 0)
   {
     BlahLog("Error TextOutInitSystem -> _height <= 0");
-    goto label_error;
+    goto label_num;
   }
 
-  _this->_backBufferFunction = __backBufferFunction;
-
-  _this->backbuffer_array_pointer = _this->_backBufferFunction();
+  _this->_graphics = _graphics;
 
   _this->actualWidth = (int32_t)_width;
   _this->actualHeight = (int32_t)_height;
@@ -279,7 +296,7 @@ FontBlah* RobsTextOutInitSystem(uint8_t** (*__backBufferFunction)(), const uint3
 
   goto label_return;
 
-label_error:
+label_num:
   if(_this)
   {
     BlahFree(_this, sizeof(FontBlah), true);
@@ -287,16 +304,26 @@ label_error:
   }
 
 label_return:
-  return _this;
+  if(_this)
+  {
+    _this->TextOutInitSystem = RobsTextOutInitSystem;
+    _this->TextOut = RobsTextOut;
+    _this->TextOutRect = RobsTextOutRect;
+    _this->TextOutTermSystem = RobsTextOutTermSystem;
+  }
+
+  return (FontClient*)_this;
 }
 
-void RobsTextOut(void* reference, int32_t x, int32_t y, const char* const format, ...)
+void RobsTextOut(FontClient* reference, int32_t x, int32_t y, const char* format, ...)
 {
-  FontBlah* _this = (FontBlah*)reference;
+  FontBlah* _this = 0;
 
   char dest_buffer[514] = {0};
 
   va_list argptr = 0;
+
+  _this = (FontBlah*)reference;
 
   if( !_this)
     goto label_return;
@@ -327,13 +354,17 @@ label_return:
   return;
 }
 
-rectInteger RobsTextOutRect(FontBlah* _this, int32_t x, int32_t y, const char* const format, ...)
+rectInteger RobsTextOutRect(FontClient* reference, int32_t x, int32_t y, const char* format, ...)
 {
+  FontBlah* _this = 0;
+
   char dest_buffer[514] = {0};
 
   va_list argptr = 0;
 
   rectInteger output_rect = {-1, -1, -1, -1};
+
+  _this = (FontBlah*)reference;
 
   if( !_this)
     goto label_return;
@@ -375,14 +406,14 @@ label_return:
   return output_rect;
 }
 
-void RobsTextOutTermSystem(FontBlah** reference)
+void RobsTextOutTermSystem(FontClient** reference)
 {
   FontBlah* _this = 0;
 
   if( !reference)
     goto label_return;
 
-  _this = reference[0];
+  _this = (FontBlah*)reference[0];
 
   if( !_this)
     goto label_return;
@@ -407,8 +438,8 @@ void RobsTextOutTermSystem(FontBlah** reference)
     BlahLog("Error TextOutTermSystem -> text_white == 0");
   }
 
-  if(_this->backbuffer_array_pointer)
-    _this->backbuffer_array_pointer = 0;
+  if(_this->_graphics)
+    _this->_graphics = 0;
   else
     BlahLog("Error TextOutTermSystem -> backbuffer_array_pointer == 0");
 

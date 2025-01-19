@@ -379,26 +379,15 @@ double halfHeight;
 // Currently valid/used when manipulating either the control points or the t value for F(t).
 void(deBoor::*captureAction)();
 
-// A pointer to a client supplied circle drawing function, set in setPrimitiveDrawingFunctions().
-void(*circleDrawingPrimitive)(int xCenter, int yCenter, int radius, int color0RGB, int color1RGB);
+GraphicsClient* graphics;
 
-// A pointer to a client supplied line segment drawing function, set in setPrimitiveDrawingFunctions().
-
-void(*lineDrawingPrimitive)(int x0, int y0, int x1, int y1, int color0RGB, int color1RGB);
-
-// A pointer to a client supplied point drawing function, set in setPrimitiveDrawingFunctions().
-void(*pointDrawingPrimitive)(int x0, int y0, int color0RGB);
-
-// A pointer to a client supplied text drawing function, set in setPrimitiveDrawingFunctions().
-void(*textDrawingPrimitive)(void* _font, int x0, int y0, const char* const, ...);
-
-void* font;
+FontClient* font;
 
 public:
 
 // Initialize the de Boor algorithm when the user inputs the
 // first control point.
-deBoor(int _degree = 3, int _iterateConstant = 16) : t(0.5), frameR(0), frameS(1), capturedControlPt(0), numControlPts(0), iterateConstant(_iterateConstant), blahDegree(_degree), dimension(3), shellT(0), shellBl(true), ctrlBl(true), dispK(true), padding{0}, minMaxT(0), /*shelPt(), */tranPt(0), tempPt(0), knots(0), subdWt(0), inputCur(0, 0), inputPrv(0, 0), minPt(0, 0), maxPt(0, 0), halfWidth(0.5), halfHeight(0.5), captureAction(0), circleDrawingPrimitive(0), lineDrawingPrimitive(0), pointDrawingPrimitive(0), textDrawingPrimitive(0), font(0) // deBoor::deBoor
+deBoor(int _degree = 3, int _iterateConstant = 16) : t(0.5), frameR(0), frameS(1), capturedControlPt(0), numControlPts(0), iterateConstant(_iterateConstant), blahDegree(_degree), dimension(3), shellT(0), shellBl(true), ctrlBl(true), dispK(true), padding{0}, minMaxT(0), /*shelPt(), */tranPt(0), tempPt(0), knots(0), subdWt(0), inputCur(0, 0), inputPrv(0, 0), minPt(0, 0), maxPt(0, 0), halfWidth(0.5), halfHeight(0.5), captureAction(0), graphics(0), font(0) // deBoor::deBoor
 {
   int degree = blahDegree;
 
@@ -481,45 +470,29 @@ deBoor(int _degree = 3, int _iterateConstant = 16) : t(0.5), frameR(0), frameS(1
 
 // This function must be called by the client in order for the algorithm to
 // visually output the curve F(x), the control points, and the shells for F(t).
-void setPrimitiveDrawingFunctions(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int), void(*_textDrawingPrimitive)(void*, int, int, const char* const, ...), void* _font) // deBoor::setPrimitiveDrawingFunctions(double, double, void(*)(int, int, int, int, int), void(*)(int, int, int, int, int, int), void(*)(int, int, int), void(*)(void*, int, int, const char* const, ...), void*)
+void setPrimitiveDrawingFunctions(double _halfWidth, double _halfHeight, GraphicsClient* _graphics, FontClient* _font) // deBoor::setPrimitiveDrawingFunctions(double, double, void(*)(int, int, int, int, int), void(*)(int, int, int, int, int, int), void(*)(int, int, int), FontClient*)
 {
   halfWidth = _halfWidth;
   halfHeight = _halfHeight;
 
-  if(_circleDrawingPrimitive)
-    circleDrawingPrimitive = _circleDrawingPrimitive;
+  //if(_graphics)
+    graphics = _graphics;
 
-  if(_lineDrawingPrimitive)
-    lineDrawingPrimitive = _lineDrawingPrimitive;
+  //if(_font)
+    font = _font;
 
-  if(_pointDrawingPrimitive)
-    pointDrawingPrimitive = _pointDrawingPrimitive;
+} // // deBoor::setPrimitiveDrawingFunctions(double, double, void(*)(int, int, int, int, int), void(*)(int, int, int, int, int, int), void(*)(int, int, int), FontClient*)
 
-  if(_textDrawingPrimitive)
-    textDrawingPrimitive = _textDrawingPrimitive;
-
-  font = _font;
-
-} // deBoor::setPrimitiveDrawingFunctions(double, double, void(*)(int, int, int, int, int), void(*)(int, int, int, int, int, int), void(*)(int, int, int), void(*)(void*, int, int, const char* const, ...), void*)
-
-void setPrimitiveDrawingFunctions(deBoor& rhs, void* _font) // deBoor::setPrimitiveDrawingFunctions(deBoor)
+void setPrimitiveDrawingFunctions(deBoor& rhs, GraphicsClient* _graphics, FontClient* _font) // deBoor::setPrimitiveDrawingFunctions(deBoor)
 {
   halfWidth = rhs.halfWidth;
   halfHeight = rhs.halfHeight;
 
-  if(rhs.circleDrawingPrimitive)
-    circleDrawingPrimitive = rhs.circleDrawingPrimitive;
+  //if(_graphics)
+    graphics = _graphics;
 
-  if(rhs.lineDrawingPrimitive)
-    lineDrawingPrimitive = rhs.lineDrawingPrimitive;
-
-  if(rhs.pointDrawingPrimitive)
-    pointDrawingPrimitive = rhs.pointDrawingPrimitive;
-
-  if(rhs.textDrawingPrimitive)
-    textDrawingPrimitive = rhs.textDrawingPrimitive;
-
-  font = _font;
+  //if(_font)
+    font = _font;
 
 } // deBoor::setPrimitiveDrawingFunctions(deBoor)
 
@@ -1071,7 +1044,7 @@ void updateDraw() // deBoor::updateDraw
         {
           _temp = _temp.projectTo2D();
 
-          textDrawingPrimitive(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "d0,%i", (int)loop);
+          font->TextOut(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "d0,%i", (int)loop);
 
           _temp.y += 14.0;
 
@@ -1079,7 +1052,7 @@ void updateDraw() // deBoor::updateDraw
             double knots_loop_p1 = 0;
             SsStackGetAt(knots, (uint32_t)loop + 1, &knots_loop_p1);
 
-            textDrawingPrimitive(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "%i", (int)knots_loop_p1);
+            font->TextOut(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "%i", (int)knots_loop_p1);
           }
 
           int loopDegree = 0;
@@ -1091,7 +1064,7 @@ void updateDraw() // deBoor::updateDraw
             double knots_loop_degree_p1 = 0;
             SsStackGetAt(knots, ( (uint32_t)loop + loopDegree) + 1, &knots_loop_degree_p1);
 
-            textDrawingPrimitive(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "%i", (int)knots_loop_degree_p1);
+            font->TextOut(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "%i", (int)knots_loop_degree_p1);
           }
         }
       }
@@ -1252,14 +1225,14 @@ void updateDraw() // deBoor::updateDraw
         {
           _temp = _temp.projectTo2D();
 
-          textDrawingPrimitive(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "d0,%i", (int)currentIndex);
+          font->TextOut(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "d0,%i", (int)currentIndex);
 
           _temp.y += 14.0;
 
           double knots_ci_p1 = 0;
           SsStackGetAt(knots, (uint32_t)currentIndex + 1, &knots_ci_p1);
 
-          textDrawingPrimitive(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "%i", (int)knots_ci_p1);
+          font->TextOut(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "%i", (int)knots_ci_p1);
 
           int loopDegree = 0;
 
@@ -1270,7 +1243,7 @@ void updateDraw() // deBoor::updateDraw
             double knots_ci_ld_p1 = 0;
             SsStackGetAt(knots, ( (uint32_t)currentIndex + loopDegree) + 1, &knots_ci_ld_p1);
 
-            textDrawingPrimitive(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "%i", (int)knots_ci_ld_p1);
+            font->TextOut(font, (int)(_temp.x + 0.5) /*cast todo*/, (int)(_temp.y + 0.5) /*cast todo*/, "%i", (int)knots_ci_ld_p1);
           }
         }
       }
@@ -1575,7 +1548,7 @@ label_return:
 // Wrapper for easily calling circleDrawingPrimitive().
 void drawCircle(point center, int radius, int knotIndex) // deBoor::drawCircle
 {
-  if(circleDrawingPrimitive)
+  if(graphics)
   {
     if(center.x < -2000000000 || center.x > 2000000000 || center.y < -2000000000 || center.y > 2000000000)
       goto label_return;
@@ -1587,7 +1560,7 @@ void drawCircle(point center, int radius, int knotIndex) // deBoor::drawCircle
       double knots_ki = 0;
       SsStackGetAt(knots, (uint32_t)(knotIndex % 100), &knots_ki);
 
-      circleDrawingPrimitive(fti(center.x), fti(center.y), radius, colors0[ (int)knots_ki % 100], colors0[ (int)knots_ki % 100] );
+      graphics->GraphicsRenderCircle32(graphics, fti(center.x), fti(center.y), radius, colors0[ (int)knots_ki % 100], colors0[ (int)knots_ki % 100] );
     }
   }
 
@@ -1599,7 +1572,7 @@ label_return:
 // Wrapper for easily calling lineDrawingPrimitive().
 void drawLine(point start, point end, int knotIndex) // deBoor::drawLine
 {
-  if(lineDrawingPrimitive)
+  if(graphics)
   {
     if(start.x < -2000000000 || start.x > 2000000000 || start.y < -2000000000 || start.y > 2000000000 || end.x < -2000000000 || end.x > 2000000000 || end.y < -2000000000 || end.y > 2000000000)
       goto label_return;
@@ -1613,7 +1586,7 @@ void drawLine(point start, point end, int knotIndex) // deBoor::drawLine
       double knots_ki = 0;
       SsStackGetAt(knots, (uint32_t)(knotIndex % 100), &knots_ki);
 
-      lineDrawingPrimitive(fti(start.x), fti(start.y), fti(end.x), fti(end.y), colors0[ (int)knots_ki % 100], colors0[ (int)knots_ki % 100] );
+      graphics->GraphicsRenderLine32(graphics, fti(start.x), fti(start.y), fti(end.x), fti(end.y), colors0[ (int)knots_ki % 100], colors0[ (int)knots_ki % 100] );
     }
   }
 
@@ -1625,7 +1598,7 @@ label_return:
 // Wrapper for easily calling pointDrawingPrimitive().
 void drawPoint(point center, int knotIndex) // deBoor::drawPoint
 {
-  if(pointDrawingPrimitive)
+  if(graphics)
   {
     if(center.x < -2000000000 || center.x > 2000000000 || center.y < -2000000000 || center.y > 2000000000)
       goto label_return;
@@ -1637,7 +1610,7 @@ void drawPoint(point center, int knotIndex) // deBoor::drawPoint
       double knots_ki = 0;
       SsStackGetAt(knots, (uint32_t)(knotIndex % 100), &knots_ki);
 
-      pointDrawingPrimitive(fti(center.x), fti(center.y), colors0[ (int)knots_ki % 100] );
+      graphics->GraphicsRenderPoint32(graphics, fti(center.x), fti(center.y), colors0[ (int)knots_ki % 100] );
     }
   }
 
@@ -2168,7 +2141,7 @@ enum
   OK = 0
 };
 
-int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int), void(*_textDrawingPrimitive)(void*, int, int, const char* const, ...), void* _font) // init
+int init(double _halfWidth, double _halfHeight, GraphicsClient* _graphics, FontClient* _font) // init
 {
   int result = ERROR;
 
@@ -2177,7 +2150,7 @@ int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(i
 
   if( !deBoorList)
   {
-    if(_halfWidth <= 0 || _halfHeight <= 0 || !_circleDrawingPrimitive || !_lineDrawingPrimitive || !_pointDrawingPrimitive || !_textDrawingPrimitive || !_font)
+    if(_halfWidth <= 0 || _halfHeight <= 0 || !_graphics || !_font)
       goto label_return;
 
     BlahLog2("create root deBoorList before\n");
@@ -2200,7 +2173,7 @@ int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(i
       goto label_return;
 
     //(*deBoorList)[0]->setPrimitiveDrawingFunctions
-    deBoorIter.first->setPrimitiveDrawingFunctions(_halfWidth, _halfHeight, _circleDrawingPrimitive, _lineDrawingPrimitive, _pointDrawingPrimitive, _textDrawingPrimitive, _font);
+    deBoorIter.first->setPrimitiveDrawingFunctions(_halfWidth, _halfHeight, _graphics, _font);
 
     //deBoorIter = deBoorList->begin();
     deBoorIter.first = 0;
@@ -2219,7 +2192,7 @@ label_return:
 
 } // init
 
-int main(int inputEvent, double x, double y, double B, double _halfWidth, double _halfHeight, void* _font) // main
+int main(int inputEvent, double x, double y, double B, double _halfWidth, double _halfHeight, GraphicsClient* _graphics, FontClient* _font) // main
 {
   int result = OK;
 
@@ -2249,7 +2222,7 @@ int main(int inputEvent, double x, double y, double B, double _halfWidth, double
     goto label_return;
   }
 
-  //deBoorIter.first->setPrimitiveDrawingFunctions(_halfWidth, _halfHeight, 0, 0, 0, 0, _font);
+  //deBoorIter.first->setPrimitiveDrawingFunctions(_halfWidth, _halfHeight, _graphics, _font);
 
   //iteratorDB temp; // init todo
 
@@ -2267,7 +2240,7 @@ int main(int inputEvent, double x, double y, double B, double _halfWidth, double
     }
 
     //curve->setPrimitiveDrawingFunctions(**deBoorIter);
-    curve.first->setPrimitiveDrawingFunctions(*deBoorIter.first, _font);
+    curve.first->setPrimitiveDrawingFunctions(*deBoorIter.first, _graphics, _font);
 
     //deBoorList->push_back(curve);
     SsSetInsert(deBoorList, &curve, 0, 0);
@@ -2364,7 +2337,7 @@ int main(int inputEvent, double x, double y, double B, double _halfWidth, double
 
   } // switch(inputEvent)
 
-  deBoorIter.first->setPrimitiveDrawingFunctions(_halfWidth, _halfHeight, 0, 0, 0, 0, _font);
+  deBoorIter.first->setPrimitiveDrawingFunctions(_halfWidth, _halfHeight, _graphics, _font);
 
   deBoorIter.first->updateDraw();
 
@@ -2380,7 +2353,7 @@ int main(int inputEvent, double x, double y, double B, double _halfWidth, double
   {
     if(loop.first != deBoorIter.first)
     {
-      loop.first->setPrimitiveDrawingFunctions(_halfWidth, _halfHeight, 0, 0, 0, 0, _font);
+      loop.first->setPrimitiveDrawingFunctions(_halfWidth, _halfHeight, _graphics, _font);
 
       loop.first->updateDraw();
     }

@@ -32,8 +32,9 @@
 // during font initialization to match the original aspect ratio of
 // font size to screen size.  All input and output is in the ideal frame of
 // reference.  Coordinate conversion is handled internally by RobsTextOut.
-extern FontBlah* RobsTextOutInitSystem(uint8_t** (*backBufferFunction)(), const uint32_t width, const uint32_t height, const uint32_t idealWidth, const uint32_t idealHeight);
+extern FontClient* RobsTextOutInitSystem(FontClient* _this, GraphicsClient* _graphics, uint32_t width, uint32_t height, uint32_t idealWidth, uint32_t idealHeight);
 
+#if 0
 // The main RobsTextOut function prints clipped characters
 // to the backbuffer.  Characters do not wrap to the next line.
 // Use newline for that.
@@ -45,7 +46,7 @@ extern FontBlah* RobsTextOutInitSystem(uint8_t** (*backBufferFunction)(), const 
 // If the type has not been allocated, it will be when RobsTextOut
 // is called.  RobsTextOut will do nothing if RobsTextOutInitSystem
 // has not been called.
-extern void RobsTextOut(void* _this, int32_t x, int32_t y, const char* const format, ...);
+extern void RobsTextOut(FontClient* _this, int32_t x, int32_t y, const char* format, ...);
 
 // Returns a rectInteger with the upper left and lower right pixel coordinates
 // that contain the text which would be printed if RobsTextOut were called
@@ -59,9 +60,10 @@ extern void RobsTextOut(void* _this, int32_t x, int32_t y, const char* const for
 //
 // RobsTextOutRect will return { -1, -1, -1, -1} if RobsTextOutInitSystem
 // has not been called.
-extern rectInteger RobsTextOutRect(FontBlah* _this, int32_t x, int32_t y, const char* const format, ...);
+extern rectInteger RobsTextOutRect(FontClient* _this, int32_t x, int32_t y, const char* format, ...);
 
 // Terminates the font system and releases all allocated fonts.
 //
 // All released fonts will be reloaded on the next call to RobsTextOutInitSystem
-extern void RobsTextOutTermSystem(FontBlah** _this);
+extern void RobsTextOutTermSystem(FontClient** _this);
+#endif
