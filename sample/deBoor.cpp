@@ -1560,7 +1560,7 @@ void drawCircle(point center, int radius, int knotIndex) // deBoor::drawCircle
       double knots_ki = 0;
       SsStackGetAt(knots, (uint32_t)(knotIndex % 100), &knots_ki);
 
-      graphics->GraphicsRenderCircle32(graphics, fti(center.x), fti(center.y), radius, colors0[ (int)knots_ki % 100], colors0[ (int)knots_ki % 100] );
+      graphics->GraphicsRenderCircle32(graphics, fti(center.x), fti(center.y), radius, colors0[ (int)knots_ki % 100], colors1[ (int)knots_ki % 100] );
     }
   }
 
@@ -1586,7 +1586,7 @@ void drawLine(point start, point end, int knotIndex) // deBoor::drawLine
       double knots_ki = 0;
       SsStackGetAt(knots, (uint32_t)(knotIndex % 100), &knots_ki);
 
-      graphics->GraphicsRenderLine32(graphics, fti(start.x), fti(start.y), fti(end.x), fti(end.y), colors0[ (int)knots_ki % 100], colors0[ (int)knots_ki % 100] );
+      graphics->GraphicsRenderLine32(graphics, fti(start.x), fti(start.y), fti(end.x), fti(end.y), colors0[ (int)knots_ki % 100], colors1[ (int)knots_ki % 100] );
     }
   }
 
@@ -2141,7 +2141,7 @@ enum
   OK = 0
 };
 
-int init2(double _halfWidth, double _halfHeight, GraphicsClient* _graphics, FontClient* _font) // init
+int init(double _halfWidth, double _halfHeight, GraphicsClient* _graphics, FontClient* _font) // init
 {
   int result = ERROR;
 
@@ -2192,7 +2192,7 @@ label_return:
 
 } // init
 
-int main2(int inputEvent, double x, double y, double B, double _halfWidth, double _halfHeight, GraphicsClient* _graphics, FontClient* _font) // main
+int main(int inputEvent, double x, double y, double B, double _halfWidth, double _halfHeight, GraphicsClient* _graphics, FontClient* _font) // main
 {
   int result = OK;
 
@@ -2384,7 +2384,7 @@ label_return:
 
 } // main
 
-int term2() // term
+int term() // term
 {
   int result = ERROR;
 

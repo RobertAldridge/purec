@@ -4872,7 +4872,7 @@ long long __stdcall GraphicsWindowProc(HWND hwnd, unsigned int msg, unsigned lon
 //typedef long long(__stdcall * DLGPROC)(HWND, unsigned int, unsigned long long, long long);
       DialogBoxParamA(hInstance, "ExtraBox", hwnd, GraphicsAboutDlgProc, 0);
 
-      // WinExec("deBoorExtraBox.exe", 0);
+      WinExec("deBoorExtraBox.exe", 0);
 
       goto label_return;
     }
@@ -5042,7 +5042,7 @@ long long __stdcall GraphicsWindowProc(HWND hwnd, unsigned int msg, unsigned lon
     {
       DialogBoxParamA(hInstance, "HelpBox", hwnd, GraphicsAboutDlgProc, 0);
 
-      /* WinExec("deBoorHelpBox.exe", 0); */
+      WinExec("deBoorHelpBox.exe", 0);
     }
     goto label_return; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F8
 
@@ -5050,7 +5050,7 @@ long long __stdcall GraphicsWindowProc(HWND hwnd, unsigned int msg, unsigned lon
     {
       DialogBoxParamA(hInstance, "AboutBox", hwnd, GraphicsAboutDlgProc, 0);
 
-      /* WinExec("deBoorAboutBox.exe", 0); */
+      WinExec("deBoorAboutBox.exe", 0);
     }
     goto label_return; // switch(msg) - WM_KEYDOWN; switch(wParam) - VK_F9
 

@@ -1381,7 +1381,7 @@ enum
   OK = 0
 };
 
-int init(double _halfWidth, double _halfHeight, GraphicsClient* _graphics, FontClient* _font) // int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int) )
+int init2(double _halfWidth, double _halfHeight, GraphicsClient* _graphics, FontClient* _font) // int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int) )
 {
   int result = ERROR;
 
@@ -1418,7 +1418,7 @@ label_return:
 
 } // int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int) )
 
-int main(int inputEvent, double x, double y, double /*B*/, double _halfWidth, double _halfHeight, GraphicsClient* _graphics, FontClient* _font) // int main(int inputEvent, double x, double y, double _halfWidth, double _halfHeight)
+int main2(int inputEvent, double x, double y, double /*B*/, double _halfWidth, double _halfHeight, GraphicsClient* _graphics, FontClient* _font) // int main(int inputEvent, double x, double y, double _halfWidth, double _halfHeight)
 {
   int result = OK;
 
@@ -1519,7 +1519,7 @@ label_return:
 
 } // int main(int inputEvent, double x, double y, double _halfWidth, double _halfHeight)
 
-int term() // int term()
+int term2() // int term()
 {
   int result = ERROR;
 
