@@ -70,6 +70,7 @@ struct VECTOR;
 #pragma warning(disable: 4191)
 #pragma warning(disable: 4365)
 #pragma warning(disable: 4514)
+#pragma warning(disable: 4820)
 
 typedef void* HANDLE;
 typedef void* HGDIOBJ;
