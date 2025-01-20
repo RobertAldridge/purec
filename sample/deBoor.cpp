@@ -2141,7 +2141,7 @@ enum
   OK = 0
 };
 
-int init(double _halfWidth, double _halfHeight, GraphicsClient* _graphics, FontClient* _font) // init
+int init2(double _halfWidth, double _halfHeight, GraphicsClient* _graphics, FontClient* _font) // init
 {
   int result = ERROR;
 
@@ -2192,7 +2192,7 @@ label_return:
 
 } // init
 
-int main(int inputEvent, double x, double y, double B, double _halfWidth, double _halfHeight, GraphicsClient* _graphics, FontClient* _font) // main
+int main2(int inputEvent, double x, double y, double B, double _halfWidth, double _halfHeight, GraphicsClient* _graphics, FontClient* _font) // main
 {
   int result = OK;
 
@@ -2384,7 +2384,7 @@ label_return:
 
 } // main
 
-int term() // term
+int term2() // term
 {
   int result = ERROR;
 

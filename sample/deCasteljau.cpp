@@ -64,6 +64,13 @@
 #include <deque>
 #include <queue>
 
+#include "ssArray.h"
+#include "ssStack.h"
+#include "ssQueue.h"
+#include "ssSet.h"
+
+#include "BlahLog.h"
+
 using std::deque;
 using std::pair;
 using std::queue;
@@ -128,8 +135,6 @@ bool operator!= (point& pt) const
 
 class deCasteljau // class deCasteljau
 {
-
-public:
 
 // Epsilon:
 //    If num - floor(num)<= E, then num = floor(num).
@@ -269,20 +274,15 @@ double halfHeight;
 // Currently valid/used when manipulating either the control points or the t value for F(t).
 void(deCasteljau::*captureAction)();
 
-// A pointer to a client supplied circle drawing function, set in setPrimitiveDrawingFunctions().
-void(*circleDrawingPrimitive)(int xCenter, int yCenter, int radius, int color0RGB, int color1RGB);
+GraphicsClient* graphics;
 
-// A pointer to a client supplied line segment drawing function, set in setPrimitiveDrawingFunctions().
-void(*lineDrawingPrimitive)(int x0, int y0, int x1, int y1, int color0RGB, int color1RGB);
+FontClient* font;
 
-// A pointer to a client supplied point drawing function, set in setPrimitiveDrawingFunctions().
-void(*pointDrawingPrimitive)(int x0, int y0, int color0RGB);
-
-//public:
+public:
 
 // Initialize the de Casteljau algorithm when the user inputs the
 // first control point.
-deCasteljau() : t(0.5), frameR(0), frameS(1), capturedControlPt(0), numControlPts(0), iterateConstant(16), shellT(0), shellBl(true), ctrlBl(true), padding1{0}, minMaxT(0), shelPt(), tranPt(), tempPt(), subdWt(), inputCur(0, 0), inputPrv(0, 0), minPt(0, 0), maxPt(0, 0), halfWidth(0.5), halfHeight(0.5), captureAction(0), circleDrawingPrimitive(0), lineDrawingPrimitive(0), pointDrawingPrimitive(0) // deCasteljau::deCasteljau()
+deCasteljau() : t(0.5), frameR(0), frameS(1), capturedControlPt(0), numControlPts(0), iterateConstant(16), shellT(0), shellBl(true), ctrlBl(true), padding1{0}, minMaxT(0), shelPt(), tranPt(), tempPt(), subdWt(), inputCur(0, 0), inputPrv(0, 0), minPt(0, 0), maxPt(0, 0), halfWidth(0.5), halfHeight(0.5), captureAction(0), graphics(0), font(0) // deCasteljau::deCasteljau()
 {
   // Create some different colors to view the shells and control points with.
   for(int i = 0, c0 = 0, c1 = 0; i < 100; i++)
@@ -332,47 +332,29 @@ deCasteljau() : t(0.5), frameR(0), frameS(1), capturedControlPt(0), numControlPt
 
 // This function must be called by the client in order for the algorithm to
 // visually output the curve F(x), the control points, and the shells for F(t).
-void setPrimitiveDrawingFunctions(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int) ) // void deCasteljau::setPrimitiveDrawingFunctions(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int) )
+void setPrimitiveDrawingFunctions(double _halfWidth, double _halfHeight, GraphicsClient* _graphics, FontClient* _font) // void deCasteljau::setPrimitiveDrawingFunctions(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int) )
 {
   halfWidth = _halfWidth;
   halfHeight = _halfHeight;
 
-  if(_circleDrawingPrimitive)
-  {
-    circleDrawingPrimitive = _circleDrawingPrimitive;
-  }
+  //if(_graphics)
+    graphics = _graphics;
 
-  if(_lineDrawingPrimitive)
-  {
-    lineDrawingPrimitive = _lineDrawingPrimitive;
-  }
-
-  if(_pointDrawingPrimitive)
-  {
-    pointDrawingPrimitive = _pointDrawingPrimitive;
-  }
+  //if(_font)
+    font = _font;
 
 } // void deCasteljau::setPrimitiveDrawingFunctions(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int) )
 
-void setPrimitiveDrawingFunctions(deCasteljau& rhs) // void deCasteljau::setPrimitiveDrawingFunctions(deCasteljau & rhs)
+void setPrimitiveDrawingFunctions(deCasteljau& rhs, GraphicsClient* _graphics, FontClient* _font) // void deCasteljau::setPrimitiveDrawingFunctions(deCasteljau & rhs)
 {
   halfWidth = rhs.halfWidth;
   halfHeight = rhs.halfHeight;
 
-  if(rhs.circleDrawingPrimitive)
-  {
-    circleDrawingPrimitive = rhs.circleDrawingPrimitive;
-  }
+  //if(_graphics)
+    graphics = _graphics;
 
-  if(rhs.lineDrawingPrimitive)
-  {
-    lineDrawingPrimitive = rhs.lineDrawingPrimitive;
-  }
-
-  if(rhs.pointDrawingPrimitive)
-  {
-    pointDrawingPrimitive = rhs.pointDrawingPrimitive;
-  }
+  //if(_font)
+    font = _font;
 
 } // void deCasteljau::setPrimitiveDrawingFunctions(deCasteljau & rhs)
 
@@ -1119,12 +1101,12 @@ point do_deCasteljau(double dt) // point deCasteljau::do_deCasteljau(double dt)
 // Wrapper for easily calling circleDrawingPrimitive().
 void drawCircle(point center, int radius, int currentNum) // void deCasteljau::drawCircle(point center, int radius, int currentNum)
 {
-  if(circleDrawingPrimitive)
+  if(graphics)
   {
     if(center.x < -2000000000 || center.x > 2000000000 || center.y < -2000000000 || center.y > 2000000000)
       goto label_return;
 
-    circleDrawingPrimitive(fti(center.x), fti(center.y), radius, colors0[currentNum % 100], colors1[currentNum % 100] );
+    graphics->GraphicsRenderCircle32(graphics, fti(center.x), fti(center.y), radius, colors0[currentNum % 100], colors1[currentNum % 100] );
   }
 
 label_return:
@@ -1135,12 +1117,12 @@ label_return:
 // Wrapper for easily calling lineDrawingPrimitive().
 void drawLine(point start, point end, int currentNum) // void deCasteljau::drawLine(point start, point end, int currentNum)
 {
-  if(lineDrawingPrimitive)
+  if(graphics)
   {
     if(start.x < -2000000000 || start.x > 2000000000 || start.y < -2000000000 || start.y > 2000000000 || end.x < -2000000000 || end.x > 2000000000 || end.y < -2000000000 || end.y > 2000000000)
       goto label_return;
 
-    lineDrawingPrimitive(fti(start.x), fti(start.y), fti(end.x), fti(end.y), colors0[currentNum % 100], colors1[currentNum % 100] );
+    graphics->GraphicsRenderLine32(graphics, fti(start.x), fti(start.y), fti(end.x), fti(end.y), colors0[currentNum % 100], colors1[currentNum % 100] );
   }
 
 label_return:
@@ -1151,12 +1133,12 @@ label_return:
 // Wrapper for easily calling pointDrawingPrimitive().
 void drawPoint(point center, int currentNum) // void deCasteljau::drawPoint(point center, int currentNum)
 {
-  if(pointDrawingPrimitive)
+  if(graphics)
   {
     if(center.x < -2000000000 || center.x > 2000000000 || center.y < -2000000000 || center.y > 2000000000)
       goto label_return;
 
-    pointDrawingPrimitive(fti(center.x), fti(center.y), colors0[currentNum % 100] );
+    graphics->GraphicsRenderPoint32(graphics, fti(center.x), fti(center.y), colors0[currentNum % 100] );
   }
 
 label_return:
@@ -1399,7 +1381,7 @@ enum
   OK = 0
 };
 
-extern "C" int init2(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int) ) // int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int) )
+int init(double _halfWidth, double _halfHeight, GraphicsClient* _graphics, FontClient* _font) // int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int) )
 {
   int result = ERROR;
 
@@ -1408,7 +1390,7 @@ extern "C" int init2(double _halfWidth, double _halfHeight, void(*_circleDrawing
 
   if( !deCastList)
   {
-    if(_halfWidth <= 0 || _halfHeight <= 0 || !_circleDrawingPrimitive || !_lineDrawingPrimitive || !_pointDrawingPrimitive)
+    if(_halfWidth <= 0 || _halfHeight <= 0 || !_graphics || !_font)
       goto label_return;
 
     deCastList = new dequeC;
@@ -1421,7 +1403,7 @@ extern "C" int init2(double _halfWidth, double _halfHeight, void(*_circleDrawing
     if( !( *deCastList)[0] )
       goto label_return;
 
-    ( *deCastList)[0]->setPrimitiveDrawingFunctions(_halfWidth, _halfHeight, _circleDrawingPrimitive, _lineDrawingPrimitive, _pointDrawingPrimitive);
+    ( *deCastList)[0]->setPrimitiveDrawingFunctions(_halfWidth, _halfHeight, _graphics, _font);
 
     deCastIter = deCastList->begin();
   }
@@ -1436,7 +1418,7 @@ label_return:
 
 } // int init(double _halfWidth, double _halfHeight, void(*_circleDrawingPrimitive)(int, int, int, int, int), void(*_lineDrawingPrimitive)(int, int, int, int, int, int), void(*_pointDrawingPrimitive)(int, int, int) )
 
-extern "C" int main2(int inputEvent, double x, double y, double _halfWidth, double _halfHeight) // int main(int inputEvent, double x, double y, double _halfWidth, double _halfHeight)
+int main(int inputEvent, double x, double y, double /*B*/, double _halfWidth, double _halfHeight, GraphicsClient* _graphics, FontClient* _font) // int main(int inputEvent, double x, double y, double _halfWidth, double _halfHeight)
 {
   int result = OK;
 
@@ -1473,7 +1455,7 @@ extern "C" int main2(int inputEvent, double x, double y, double _halfWidth, doub
       goto label_return;
     }
 
-    curve->setPrimitiveDrawingFunctions( **deCastIter);
+    curve->setPrimitiveDrawingFunctions( **deCastIter, _graphics, _font);
 
     deCastList->push_back(curve);
 
@@ -1513,7 +1495,7 @@ extern "C" int main2(int inputEvent, double x, double y, double _halfWidth, doub
 
   } // switch(inputEvent)
 
-  deCastIter[0]->setPrimitiveDrawingFunctions(_halfWidth, _halfHeight, 0, 0, 0);
+  deCastIter[0]->setPrimitiveDrawingFunctions(_halfWidth, _halfHeight, _graphics, _font);
 
   deCastIter[0]->updateDraw();
 
@@ -1523,7 +1505,7 @@ extern "C" int main2(int inputEvent, double x, double y, double _halfWidth, doub
   {
     if(loop != deCastIter)
     {
-      loop[0]->setPrimitiveDrawingFunctions(_halfWidth, _halfHeight, 0, 0, 0);
+      loop[0]->setPrimitiveDrawingFunctions(_halfWidth, _halfHeight, _graphics, _font);
 
       loop[0]->updateDraw();
     }
@@ -1537,7 +1519,7 @@ label_return:
 
 } // int main(int inputEvent, double x, double y, double _halfWidth, double _halfHeight)
 
-extern "C" int term2() // int term()
+int term() // int term()
 {
   int result = ERROR;
 
