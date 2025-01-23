@@ -44,10 +44,6 @@ option(
     OFF
 )
 
-if(BUILD_FORCE_GENERATION AND NOT Python3_EXECUTABLE)
-    message(FATAL_ERROR "BUILD_FORCE_GENERATION requires Python")
-endif()
-
 string(TOUPPER "${CMAKE_GENERATOR_PLATFORM}" CMAKE_GENERATOR_PLATFORM_UPPER)
 
 # Artifact organization

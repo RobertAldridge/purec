@@ -49,7 +49,7 @@ macro(gen_xr_runtime_json filename libfile)
     add_custom_command(
         OUTPUT ${filename}
         COMMAND
-            "${Python3_EXECUTABLE}"
+            "C:/Users/RobertLocalAldridge/AppData/Local/Programs/Python/Python313/python.exe"
             "${PROJECT_SOURCE_DIR}/src/scripts/generate_runtime_manifest.py" -f
             ${filename} -l ${libfile} ${ARGN}
         DEPENDS "${PROJECT_SOURCE_DIR}/src/scripts/generate_runtime_manifest.py"

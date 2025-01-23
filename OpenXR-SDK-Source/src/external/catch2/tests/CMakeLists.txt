@@ -355,7 +355,7 @@ set_tests_properties(FilteredSection::GeneratorsDontCauseInfiniteLoop-2
 # AppVeyor has a Python 2.7 in path, but doesn't have .py files as autorunnable
 add_test(NAME ApprovalTests
   COMMAND
-    ${PYTHON_EXECUTABLE}
+    C:/Users/RobertLocalAldridge/AppData/Local/Programs/Python/Python313/python.exe
     ${CATCH_DIR}/tools/scripts/approvalTests.py
     $<TARGET_FILE:SelfTest>
     "${CMAKE_CURRENT_BINARY_DIR}"
@@ -418,7 +418,7 @@ set_tests_properties(TagAlias PROPERTIES
   FAIL_REGULAR_EXPRESSION "0 matching test cases"
 )
 
-add_test(NAME RandomTestOrdering COMMAND ${PYTHON_EXECUTABLE}
+add_test(NAME RandomTestOrdering COMMAND C:/Users/RobertLocalAldridge/AppData/Local/Programs/Python/Python313/python.exe
   ${CATCH_DIR}/tests/TestScripts/testRandomOrder.py $<TARGET_FILE:SelfTest>)
 set_tests_properties(RandomTestOrdering
   PROPERTIES
@@ -427,7 +427,7 @@ set_tests_properties(RandomTestOrdering
 
 add_test(NAME CheckConvenienceHeaders
   COMMAND
-    ${PYTHON_EXECUTABLE} ${CATCH_DIR}/tools/scripts/checkConvenienceHeaders.py
+    C:/Users/RobertLocalAldridge/AppData/Local/Programs/Python/Python313/python.exe ${CATCH_DIR}/tools/scripts/checkConvenienceHeaders.py
 )
 set_tests_properties(CheckConvenienceHeaders
   PROPERTIES
@@ -614,7 +614,7 @@ if (CATCH_ENABLE_CONFIGURE_TESTS)
 
         add_test(NAME "CMakeConfig::${testName}"
           COMMAND
-            "${PYTHON_EXECUTABLE}" "${CMAKE_CURRENT_LIST_DIR}/TestScripts/testConfigure${testName}.py" "${CATCH_DIR}" "${CMAKE_CURRENT_BINARY_DIR}"
+            "C:/Users/RobertLocalAldridge/AppData/Local/Programs/Python/Python313/python.exe" "${CMAKE_CURRENT_LIST_DIR}/TestScripts/testConfigure${testName}.py" "${CATCH_DIR}" "${CMAKE_CURRENT_BINARY_DIR}"
         )
         set_tests_properties("CMakeConfig::${testName}"
           PROPERTIES
@@ -628,7 +628,7 @@ endif()
 if (CATCH_ENABLE_CMAKE_HELPER_TESTS)
     add_test(NAME "CMakeHelper::DiscoverTests"
       COMMAND
-        "${PYTHON_EXECUTABLE}" "${CMAKE_CURRENT_LIST_DIR}/TestScripts/DiscoverTests/VerifyRegistration.py" "${CATCH_DIR}" "${CMAKE_CURRENT_BINARY_DIR}"
+        "C:/Users/RobertLocalAldridge/AppData/Local/Programs/Python/Python313/python.exe" "${CMAKE_CURRENT_LIST_DIR}/TestScripts/DiscoverTests/VerifyRegistration.py" "${CATCH_DIR}" "${CMAKE_CURRENT_BINARY_DIR}"
     )
     set_tests_properties("CMakeHelper::DiscoverTests"
       PROPERTIES

@@ -79,7 +79,7 @@ else()
             OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${output}"
             COMMAND
                 "${CMAKE_COMMAND}" -E env "PYTHONPATH=${CODEGEN_PYTHON_PATH}"
-                "${Python3_EXECUTABLE}"
+                "C:/Users/RobertLocalAldridge/AppData/Local/Programs/Python/Python313/python.exe"
                 "${PROJECT_SOURCE_DIR}/specification/scripts/genxr.py" -registry
                 "${PROJECT_SOURCE_DIR}/specification/registry/xr.xml" -o
                 "${CMAKE_CURRENT_BINARY_DIR}" ${output}
