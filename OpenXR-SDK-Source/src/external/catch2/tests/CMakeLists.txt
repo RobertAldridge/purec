@@ -66,11 +66,11 @@ endif()
 # We need to disable <UseFullPaths> property, but CMake doesn't support it
 # until 3.13 (not yet released)
 ####
-if (MSVC)
-configure_file(${CATCH_DIR}/tools/misc/SelfTest.vcxproj.user
-               ${CMAKE_BINARY_DIR}/tests
-               COPYONLY)
-endif() #Temporary workaround
+#if (MSVC)
+#configure_file(${CATCH_DIR}/tools/misc/SelfTest.vcxproj.user
+#               ${CMAKE_BINARY_DIR}/tests
+#               COPYONLY)
+#endif() #Temporary workaround
 
 
 # define the sources of the self test
@@ -510,11 +510,11 @@ set_tests_properties("ErrorHandling::InvalidTestSpecExitsEarly"
     FAIL_REGULAR_EXPRESSION "No tests ran"
 )
 
-if (MSVC)
-  set(_NullFile "NUL")
-else()
+#if (MSVC)
+#  set(_NullFile "NUL")
+#else()
   set(_NullFile "/dev/null")
-endif()
+#endif()
 
 # This test checks that there is nothing written out from the process,
 # but if CMake is running the tests under Valgrind or similar tool, then

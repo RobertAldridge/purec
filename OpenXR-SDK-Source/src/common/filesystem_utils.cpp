@@ -29,10 +29,6 @@
 #elif USE_EXPERIMENTAL_FS == 1
 #include <experimental/filesystem>
 #define FS_PREFIX std::experimental::filesystem
-#elif defined(XR_USE_PLATFORM_WIN32)
-// Windows fallback includes
-#include <stdint.h>
-#include <direct.h>
 #else
 // Linux/Apple fallback includes
 #include <sys/stat.h>

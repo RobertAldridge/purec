@@ -1,15 +1,9 @@
-#ifdef _WIN32
-# define WIN32_LEAN_AND_MEAN 1
 
-  // Windows Dependencies
-# include <windows.h>
-#else
   // UNIX Dependencies
 # include <dlfcn.h>
 # include <unistd.h>
 # include <tuple>
 # include <stdlib.h>
-#endif
 
 // External Dependencies
 #include <jni.h>
@@ -89,17 +83,6 @@ namespace jni
         Helper Functions
      */
 
-#ifdef _WIN32
-
-    static bool fileExists(const std::string& filePath)
-    {
-        DWORD attr = ::GetFileAttributesA(filePath.c_str());
-
-        return attr != INVALID_FILE_ATTRIBUTES && !(attr & FILE_ATTRIBUTE_DIRECTORY);
-    }
-
-#else
-
      /**
          Convert from a UTF-16 Java string to a UTF-32 string.
       */
@@ -156,8 +139,6 @@ namespace jni
 
         return result;
     }
-
-#endif // _WIN32
 
     static ScopedEnv &scopedEnvInstance() noexcept
     {
@@ -252,11 +233,9 @@ namespace jni
             JNIEnv* env = jni::env();
 
             const jchar* chars = env->GetStringChars(jstring(handle), nullptr);
-#ifdef _WIN32
-            result.assign((const wchar_t*) chars, env->GetStringLength(jstring(handle)));
-#else
+
             result = toWString(chars, env->GetStringLength(jstring(handle)));
-#endif
+
             env->ReleaseStringChars(jstring(handle), chars);
 
             if (deleteLocal)
@@ -595,12 +574,9 @@ namespace jni
     {
         JNIEnv* env = jni::env();
 
-#ifdef _WIN32
-        jobject handle = env->NewString((const jchar*) value.c_str(), jsize(value.length()));
-#else
         auto jstr = toJString(value.c_str(), value.length());
         jobject handle = env->NewString(jstr.data(), jsize(jstr.size()));
-#endif
+
         env->SetObjectField(_handle, field, handle);
         env->DeleteLocalRef(handle);
     }
@@ -608,12 +584,10 @@ namespace jni
     template <> void Object::set(field_t field, const wchar_t* const& value)
     {
         JNIEnv* env = jni::env();
-#ifdef _WIN32
-        jobject handle = env->NewString((const jchar*) value, jsize(std::wcslen(value)));
-#else
+
         auto jstr = toJString(value, std::wcslen(value));
         jobject handle = env->NewString(jstr.data(), jsize(jstr.size()));
-#endif
+
         env->SetObjectField(_handle, field, handle);
         env->DeleteLocalRef(handle);
     }
@@ -892,12 +866,9 @@ namespace jni
     {
         JNIEnv* env = jni::env();
 
-#ifdef _WIN32
-        jobject handle = env->NewString((const jchar*) value.c_str(), jsize(value.length()));
-#else
         auto jstr = toJString(value.c_str(), value.length());
         jobject handle = env->NewString(jstr.data(), jsize(jstr.size()));
-#endif
+
         env->SetStaticObjectField(getHandle(), field, handle);
         env->DeleteLocalRef(handle);
     }
@@ -1298,12 +1269,9 @@ namespace jni
     {
         JNIEnv* env = jni::env();
 
-#ifdef _WIN32
-        jobject jvalue = env->NewString((const jchar*) value.c_str(), jsize(value.length()));
-#else
         auto jstr = toJString(value.c_str(), value.length());
         jobject jvalue = env->NewString(jstr.data(), jsize(jstr.size()));
-#endif
+
         env->SetObjectArrayElement(jobjectArray(getHandle()), index, jvalue);
         env->DeleteLocalRef(jvalue);
         handleJavaExceptions();
@@ -1321,7 +1289,6 @@ namespace jni
 
     typedef jint (JNICALL *CreateVm_t)(JavaVM**, void**, void*);
 
-#ifndef _WIN32
     static bool fileExists(const std::string& filePath)
     {
         return access(filePath.c_str(), F_OK) != -1;
@@ -1371,64 +1338,10 @@ namespace jni
         }
         return std::string{path.c_str(), slash_pos};
     }
-#endif
+
     static std::string detectJvmPath()
     {
         std::string result;
-
-#ifdef _WIN32
-
-        BYTE buffer[1024];
-        DWORD size = sizeof(buffer);
-        HKEY versionKey;
-
-        // Search via registry entries.
-        if (::RegOpenKeyA(HKEY_LOCAL_MACHINE, "Software\\JavaSoft\\Java Runtime Environment\\", &versionKey) == ERROR_SUCCESS)
-        {
-            if (::RegQueryValueEx(versionKey, "CurrentVersion", NULL, NULL, buffer, &size) == ERROR_SUCCESS)
-            {
-                HKEY libKey;
-
-                std::string keyName = std::string("Software\\JavaSoft\\Java Runtime Environment\\") + (const char*)buffer;
-
-                ::RegCloseKey(versionKey);
-
-                if (::RegOpenKeyA(HKEY_LOCAL_MACHINE, keyName.c_str(), &libKey) == ERROR_SUCCESS)
-                {
-                    size = sizeof(buffer);
-
-                    if (::RegQueryValueEx(libKey, "RuntimeLib", NULL, NULL, buffer, &size) == ERROR_SUCCESS)
-                    {
-                        result = (const char*)buffer;
-                    }
-
-                    ::RegCloseKey(libKey);
-                }
-            }
-        }
-
-        if (result.length() == 0)
-        {
-            // Could not locate via registry. Try the JAVA_HOME environment variable.
-            if ((size = ::GetEnvironmentVariableA("JAVA_HOME", (LPSTR) buffer, sizeof(buffer))) != 0)
-            {
-                std::string javaHome((const char*) buffer, size);
-
-                // Different installers put in different relative locations.
-                std::string options[] = {
-                    javaHome + "\\jre\\bin\\client\\jvm.dll",
-                    javaHome + "\\jre\\bin\\server\\jvm.dll",
-                    javaHome + "\\bin\\client\\jvm.dll",
-                    javaHome + "\\bin\\server\\jvm.dll"
-                };
-
-                for (auto const& i : options)
-                    if (fileExists(i))
-                        return i;
-            }
-        }
-
-#else
 
         const char* javaHome = getenv("JAVA_HOME");
         if (javaHome != nullptr) {
@@ -1465,8 +1378,6 @@ namespace jni
             result = "/usr/lib/jvm/default-java/jre/lib/amd64/server/libjvm.so";
         }
 
-#endif // _WIN32
-
         return result;
     }
 
@@ -1487,31 +1398,6 @@ namespace jni
             JavaVMInitArgs args = {};
             args.version = JNI_VERSION_1_2;
 
-#ifdef _WIN32
-
-            HMODULE lib = ::LoadLibraryA(path.c_str());
-
-            if (lib == NULL)
-            {
-                isVm.store(false);
-                throw InitializationException("Could not load JVM library");
-            }
-
-            CreateVm_t JNI_CreateJavaVM = (CreateVm_t) ::GetProcAddress(lib, "JNI_CreateJavaVM");
-
-            /**
-                Is your debugger catching an error here?  This is normal.  Just continue. The JVM
-                intentionally does this to test how the OS handles memory-reference exceptions.
-             */
-            if (JNI_CreateJavaVM == NULL || JNI_CreateJavaVM(&javaVm, (void**) &env, &args) != 0)
-            {
-                isVm.store(false);
-                ::FreeLibrary(lib);
-                throw InitializationException("Java Virtual Machine failed during creation");
-            }
-
-#else
-
             void* lib = ::dlopen(path.c_str(), RTLD_NOW | RTLD_GLOBAL);
 
             if (lib == NULL)
@@ -1528,8 +1414,6 @@ namespace jni
                 ::dlclose(lib);
                 throw InitializationException("Java Virtual Machine failed during creation");
             }
-
-#endif // _WIN32
         }
     }
 
@@ -1546,9 +1430,7 @@ namespace jni
     // Forward Declarations
     JNIEnv* env();
 
-#ifndef _WIN32
     extern std::vector<jchar> toJString(const wchar_t* str, size_t length);
-#endif
 
     namespace internal
     {

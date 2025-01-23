@@ -925,12 +925,6 @@ maintained in the default branch of the Khronos OpenXR GitHub project.
             <member><type>XrBool32</type>        <name>orientationTracking</name></member>
             <member><type>XrBool32</type>        <name>positionTracking</name></member>
         </type>
-        <type category="struct" name="XrGraphicsBindingOpenGLWin32KHR" structextends="XrSessionCreateInfo" protect="XR_USE_PLATFORM_WIN32">
-            <member values="XR_TYPE_GRAPHICS_BINDING_OPENGL_WIN32_KHR"><type>XrStructureType</type> <name>type</name></member>
-            <member>const <type>void</type>* <name>next</name></member>
-            <member><type>HDC</type> <name>hDC</name></member>
-            <member><type>HGLRC</type> <name>hGLRC</name></member>
-        </type>
         <type category="struct" name="XrGraphicsBindingOpenGLXlibKHR" structextends="XrSessionCreateInfo" protect="XR_USE_PLATFORM_XLIB">
             <member values="XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR"><type>XrStructureType</type> <name>type</name></member>
             <member>const <type>void</type>* <name>next</name></member>
@@ -2021,14 +2015,6 @@ typedef XrResult (XRAPI_PTR *<name>PFN_xrCreateApiLayerInstance</name>)(
             <member values="XR_TYPE_SECONDARY_VIEW_CONFIGURATION_SWAPCHAIN_CREATE_INFO_MSFT"><type>XrStructureType</type> <name>type</name></member>
             <member>const <type>void</type>* <name>next</name></member>
             <member><type>XrViewConfigurationType</type> <name>viewConfigurationType</name></member>
-        </type>
-
-        <!-- XR_MSFT_holographic_window_attachment -->
-        <type category="struct" name="XrHolographicWindowAttachmentMSFT" structextends="XrSessionCreateInfo" protect="XR_USE_PLATFORM_WIN32">
-            <member values="XR_TYPE_HOLOGRAPHIC_WINDOW_ATTACHMENT_MSFT"><type>XrStructureType</type> <name>type</name></member>
-            <member>const <type>void</type>* <name>next</name></member>
-            <member><type>IUnknown</type>* <name>holographicSpace</name></member>
-            <member><type>IUnknown</type>* <name>coreWindow</name></member>
         </type>
 
         <!-- XR_FB_android_surface_swapchain_create -->
@@ -6172,20 +6158,6 @@ typedef XrResult (XRAPI_PTR *<name>PFN_xrCreateApiLayerInstance</name>)(
             <proto><type>XrResult</type> <name>xrSessionInsertDebugUtilsLabelEXT</name></proto>
             <param><type>XrSession</type> <name>session</name></param>
             <param>const <type>XrDebugUtilsLabelEXT</type>* <name>labelInfo</name></param>
-        </command>
-
-        <!-- commands for XR_KHR_win32_convert_performance_counter_time -->
-        <command successcodes="XR_SUCCESS" errorcodes="XR_ERROR_FUNCTION_UNSUPPORTED,XR_ERROR_VALIDATION_FAILURE,XR_ERROR_RUNTIME_FAILURE,XR_ERROR_HANDLE_INVALID,XR_ERROR_INSTANCE_LOST,XR_ERROR_TIME_INVALID">
-            <proto><type>XrResult</type> <name>xrConvertTimeToWin32PerformanceCounterKHR</name></proto>
-            <param><type>XrInstance</type> <name>instance</name></param>
-            <param><type>XrTime</type>   <name>time</name></param>
-            <param><type>LARGE_INTEGER</type>* <name>performanceCounter</name></param>
-        </command>
-        <command successcodes="XR_SUCCESS" errorcodes="XR_ERROR_FUNCTION_UNSUPPORTED,XR_ERROR_VALIDATION_FAILURE,XR_ERROR_RUNTIME_FAILURE,XR_ERROR_HANDLE_INVALID,XR_ERROR_INSTANCE_LOST,XR_ERROR_TIME_INVALID">
-            <proto><type>XrResult</type> <name>xrConvertWin32PerformanceCounterToTimeKHR</name></proto>
-            <param><type>XrInstance</type> <name>instance</name></param>
-            <param>const <type>LARGE_INTEGER</type>* <name>performanceCounter</name></param>
-            <param><type>XrTime</type>* <name>time</name></param>
         </command>
 
         <!-- commands for XR_KHR_vulkan_enable2 -->
@@ -11473,16 +11445,6 @@ typedef XrResult (XRAPI_PTR *<name>PFN_xrCreateApiLayerInstance</name>)(
 
             <command name="xrSaveSpaceFB"/>
             <command name="xrEraseSpaceFB"/>
-        </require>
-    </extension>
-
-    <extension name="XR_OCULUS_audio_device_guid" number="160" type="instance" supported="openxr" protect="XR_USE_PLATFORM_WIN32">
-        <require>
-            <enum value="1"                                       name="XR_OCULUS_audio_device_guid_SPEC_VERSION"/>
-            <enum value="&quot;XR_OCULUS_audio_device_guid&quot;" name="XR_OCULUS_AUDIO_DEVICE_GUID_EXTENSION_NAME"/>
-            <enum value="128"                                     name="XR_MAX_AUDIO_DEVICE_STR_SIZE_OCULUS"/>
-            <command name="xrGetAudioOutputDeviceGuidOculus"/>
-            <command name="xrGetAudioInputDeviceGuidOculus"/>
         </require>
     </extension>
 

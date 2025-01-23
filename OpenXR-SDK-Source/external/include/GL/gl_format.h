@@ -91,16 +91,6 @@ static inline void glGetFormatSize( const GLenum internalFormat, GlFormatSize * 
 
 #include <assert.h>
 
-#if defined(_WIN32)
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#if defined(_MSC_VER) && !defined(__cplusplus)
-#undef inline
-#define inline __inline
-#endif // defined(_MSC_VER) && !defined(__cplusplus)
-#endif
-
 typedef unsigned int GLenum;
 typedef unsigned char GLboolean;
 typedef unsigned int GLuint;
@@ -145,7 +135,7 @@ Format to glTexImage2D and glTexImage3D.
 #define GL_INTENSITY									0x8049	// deprecated, same as GL_INTENSITY_EXT
 #endif
 #if !defined( GL_RG )
-#define GL_RG											0x8227	// same as GL_RG_EXT  
+#define GL_RG											0x8227	// same as GL_RG_EXT
 #endif
 #if !defined( GL_RGB )
 #define GL_RGB											0x1907
@@ -468,7 +458,7 @@ Internal format to glTexImage2D, glTexImage3D, glCompressedTexImage2D, glCompres
 #define GL_RG32I										0x823B
 #endif
 #if !defined( GL_RGB32I )
-#define GL_RGB32I										0x8D83	// same as GL_RGB32I_EXT 
+#define GL_RGB32I										0x8D83	// same as GL_RGB32I_EXT
 #endif
 #if !defined( GL_RGBA32I )
 #define GL_RGBA32I										0x8D82	// same as GL_RGBA32I_EXT
@@ -849,7 +839,7 @@ Internal format to glTexImage2D, glTexImage3D, glCompressedTexImage2D, glCompres
 #define GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT			0x8E8F	// same as GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT_ARB
 #endif
 #if !defined( GL_COMPRESSED_RGBA_BPTC_UNORM )
-#define GL_COMPRESSED_RGBA_BPTC_UNORM					0x8E8C	// same as GL_COMPRESSED_RGBA_BPTC_UNORM_ARB	
+#define GL_COMPRESSED_RGBA_BPTC_UNORM					0x8E8C	// same as GL_COMPRESSED_RGBA_BPTC_UNORM_ARB
 #endif
 #if !defined( GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM )
 #define GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM				0x8E8D	// same as GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM_ARB

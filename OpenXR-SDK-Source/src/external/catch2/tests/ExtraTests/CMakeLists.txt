@@ -176,14 +176,14 @@ set_tests_properties(BazelEnv::Sharding
 # The default handler on Windows leads to the just-in-time debugger firing,
 # which makes this test unsuitable for CI and headless runs, as it opens
 # up an interactive dialog.
-if (NOT WIN32)
+#if (NOT WIN32)
   add_test(NAME CATCH_CONFIG_DISABLE_EXCEPTIONS-2 COMMAND DisabledExceptions-DefaultHandler "Tests that abort")
   set_tests_properties(
       CATCH_CONFIG_DISABLE_EXCEPTIONS-2
     PROPERTIES
       PASS_REGULAR_EXPRESSION "Catch will terminate"
   )
-endif()
+#endif()
 
 
 add_test(NAME CATCH_CONFIG_DISABLE_EXCEPTIONS-3 COMMAND DisabledExceptions-CustomHandler "Tests that run")
@@ -239,13 +239,13 @@ set_tests_properties(
 
 
 # This test touches windows.h, so it should only be compiled under msvc
-if (MSVC)
-    # This test fails if it does not compile and succeeds otherwise
-    add_executable(WindowsHeader ${TESTS_DIR}/X90-WindowsHeaderInclusion.cpp)
-    target_link_libraries( WindowsHeader Catch2WithMain )
-    add_test(NAME WindowsHeader COMMAND WindowsHeader -r compact)
-    list(APPEND CATCH_WARNING_TARGETS ${EXTRA_TEST_BINARIES} WindowsHeader)
-endif()
+#if (MSVC)
+#    # This test fails if it does not compile and succeeds otherwise
+#    add_executable(WindowsHeader ${TESTS_DIR}/X90-WindowsHeaderInclusion.cpp)
+#    target_link_libraries( WindowsHeader Catch2WithMain )
+#    add_test(NAME WindowsHeader COMMAND WindowsHeader -r compact)
+#    list(APPEND CATCH_WARNING_TARGETS ${EXTRA_TEST_BINARIES} WindowsHeader)
+#endif()
 
 
 add_executable(PartialTestCaseEvents ${TESTS_DIR}/X21-PartialTestCaseEvents.cpp)
@@ -309,11 +309,11 @@ set_tests_properties(
 )
 
 
-if (MSVC)
-  set(_NullFile "NUL")
-else()
+#if (MSVC)
+#  set(_NullFile "NUL")
+#else()
   set(_NullFile "/dev/null")
-endif()
+#endif()
 
 add_executable(ListenerStdoutCaptureInMultireporter ${TESTS_DIR}/X24-ListenerStdoutCaptureInMultireporter.cpp)
 target_link_libraries(ListenerStdoutCaptureInMultireporter PRIVATE Catch2::Catch2WithMain)

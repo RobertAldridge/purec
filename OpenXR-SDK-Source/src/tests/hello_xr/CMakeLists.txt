@@ -18,8 +18,7 @@
 set(LOCAL_HEADERS
     check.h
     common.h
-    d3d_common.h
-    geometry.h
+        geometry.h
     graphicsapi.h
     graphicsplugin.h
     logger.h
@@ -30,23 +29,17 @@ set(LOCAL_HEADERS
     platformplugin.h
 )
 set(LOCAL_SOURCE
-    d3d_common.cpp
-    graphicsplugin_d3d11.cpp
-    graphicsplugin_d3d12.cpp
-    graphicsplugin_factory.cpp
-    graphicsplugin_opengl.cpp
-    graphicsplugin_opengles.cpp
+        graphicsplugin_factory.cpp
+        graphicsplugin_opengles.cpp
     graphicsplugin_vulkan.cpp
-    graphicsplugin_metal.cpp
-    logger.cpp
+        logger.cpp
     main.cpp
     openxr_program.cpp
     pch.cpp
     platformplugin_android.cpp
     platformplugin_factory.cpp
     platformplugin_posix.cpp
-    platformplugin_win32.cpp
-)
+        )
 set(VULKAN_SHADERS vulkan_shaders/frag.glsl vulkan_shaders/vert.glsl)
 
 if(ANDROID)

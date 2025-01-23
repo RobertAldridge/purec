@@ -45,48 +45,6 @@ By default, the OpenXR loader is built as a static library on Windows and a dyna
 To specify alternate behavior, define the CMake option `DYNAMIC_LOADER`,
 e.g. by adding `-DDYNAMIC_LOADER=ON` or `-DDYNAMIC_LOADER=OFF` to your CMake command line.
 
-### Windows
-
-Building the OpenXR components in this tree on Windows is supported using
-Visual Studio 2013 and newer.  Before beginning, make sure the appropriate
-"msbuild.exe" is in your PATH.  Also, when generating the solutions/projects
-using CMake, be sure to use the correct compiler version number.  The
-following table is provided to help you:
-
-| Visual Studio        | Version Number |
-| -------------------- |:--------------:|
-| Visual Studio 2013   |       12       |
-| Visual Studio 2015   |       14       |
-| Visual Studio 2017   |       15       |
-
-Specific sample command lines for building follow.
-If you're already familiar with the process of building a project with
-CMake, you may skim or skip these instructions.
-
-#### Windows 64-bit
-
-First, generate the 64-bit solution and project files using CMake:
-
-```cmd
-mkdir build\win64
-cd build\win64
-cmake -G "Visual Studio [Version Number] Win64" ..\..
-```
-
-Finally, open the `build\win64\OPENXR.sln` in the Visual Studio to build the loader.
-
-#### Windows 32-bit
-
-First, generate the 32-bit solution and project files using CMake:
-
-```cmd
-mkdir build\win32
-cd build\win32
-cmake -G "Visual Studio [Version Number]" ..\..
-```
-
-Open the `build\win32\OPENXR.sln` in the Visual Studio to build the loader.
-
 ### Linux
 
 The following set of Debian/Ubuntu packages provides all required libs for building for xlib or xcb with OpenGL and Vulkan support.

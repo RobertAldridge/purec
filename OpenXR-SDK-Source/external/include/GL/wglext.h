@@ -36,11 +36,6 @@ extern "C" {
 ** Khronos $Revision: 30969 $ on $Date: 2015-04-29 00:32:44 -0400 (Wed, 29 Apr 2015) $
 */
 
-#if defined(_WIN32) && !defined(APIENTRY) && !defined(__CYGWIN__) && !defined(__SCITECH_SNAP__)
-#define WIN32_LEAN_AND_MEAN 1
-#include <windows.h>
-#endif
-
 #define WGL_WGLEXT_VERSION 20150428
 
 /* Generated C header for:

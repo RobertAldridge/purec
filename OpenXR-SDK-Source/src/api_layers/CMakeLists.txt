@@ -36,19 +36,7 @@ configure_file(
     api_layer_platform_defines.h ${CMAKE_CURRENT_BINARY_DIR} COPYONLY
 )
 
-if(WIN32)
-    # Find the layer library adjacent to the manifest
-    set(LAYER_MANIFEST_PREFIX "./")
-else()
     set(LAYER_MANIFEST_PREFIX)
-endif()
-
-# Windows needs bigobj support since we have generated code.
-if(MSVC)
-    add_compile_options("/bigobj")
-elseif(WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "^Clang|GNU$")
-    add_compile_options("-Wa,-mbig-obj")
-endif()
 
 # Basics for api_dump API Layer
 
@@ -208,72 +196,10 @@ if(BUILD_WITH_WAYLAND_HEADERS)
     )
 endif()
 
-if(WIN32)
-    # Windows api_dump-specific information
-    target_compile_definitions(
-        XrApiLayer_api_dump PRIVATE _CRT_SECURE_NO_WARNINGS
-    )
-    # Turn off transitional "changed behavior" warning message for Visual Studio versions prior to 2015.
-    # The changed behavior is that constructor initializers are now fixed to clear the struct members.
-    target_compile_options(
-        XrApiLayer_api_dump
-        PRIVATE
-            "$<$<AND:$<CXX_COMPILER_ID:MSVC>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,19>>:/wd4351>"
-    )
-
-    # Windows core_validation-specific information
-    target_compile_definitions(
-        XrApiLayer_core_validation PRIVATE _CRT_SECURE_NO_WARNINGS
-    )
-    # Turn off transitional "changed behavior" warning message for Visual Studio versions prior to 2015.
-    # The changed behavior is that constructor initializers are now fixed to clear the struct members.
-    target_compile_options(
-        XrApiLayer_core_validation
-        PRIVATE
-            "$<$<AND:$<CXX_COMPILER_ID:MSVC>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,19>>:/wd4351>"
-    )
-endif()
-
 # Dynamic Library:
 #  - Make build depend on the module definition/version script/export map
 #  - Add the linker flag (except windows)
-if(WIN32)
-    # XrApiLayer_api_dump
-    target_sources(
-        XrApiLayer_api_dump
-        PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/XrApiLayer_api_dump.def"
-    )
 
-    # XrApiLayer_core_validation
-    target_sources(
-        XrApiLayer_core_validation
-        PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/XrApiLayer_core_validation.def"
-    )
-elseif(APPLE)
-    # XrApiLayer_api_dump
-    set_target_properties(
-        XrApiLayer_api_dump
-        PROPERTIES
-            LINK_FLAGS
-            "-Wl,-exported_symbols_list,\"${CMAKE_CURRENT_SOURCE_DIR}/XrApiLayer_api_dump.expsym\""
-    )
-    target_sources(
-        XrApiLayer_api_dump
-        PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/XrApiLayer_api_dump.expsym"
-    )
-
-    # XrApiLayer_core_validation
-    set_target_properties(
-        XrApiLayer_core_validation
-        PROPERTIES
-            LINK_FLAGS
-            "-Wl,-exported_symbols_list,\"${CMAKE_CURRENT_SOURCE_DIR}/XrApiLayer_core_validation.expsym\""
-    )
-    target_sources(
-        XrApiLayer_core_validation
-        PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/XrApiLayer_core_validation.expsym"
-    )
-else()
     # XrApiLayer_api_dump
     set_target_properties(
         XrApiLayer_api_dump
@@ -297,7 +223,6 @@ else()
         XrApiLayer_core_validation
         PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/XrApiLayer_core_validation.map"
     )
-endif()
 
 # Install explicit layers
 set(TARGET_NAMES XrApiLayer_api_dump XrApiLayer_core_validation)
@@ -312,19 +237,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
         install(
             TARGETS ${TARGET_NAME}
             DESTINATION ${CMAKE_INSTALL_LIBDIR}
-            COMPONENT Layers
-        )
-    endforeach()
-elseif(WIN32)
-    foreach(TARGET_NAME ${TARGET_NAMES})
-        install(
-            FILES "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}.json"
-            DESTINATION "${CMAKE_INSTALL_BINDIR}/api_layers"
-            COMPONENT Layers
-        )
-        install(
-            TARGETS ${TARGET_NAME}
-            DESTINATION "${CMAKE_INSTALL_BINDIR}/api_layers"
             COMPONENT Layers
         )
     endforeach()

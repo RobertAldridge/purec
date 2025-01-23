@@ -647,13 +647,7 @@ XRAPI_ATTR XrResult XRAPI_CALL CoreValidationXrCreateSession(XrInstance instance
                 case XR_TYPE_GRAPHICS_BINDING_VULKAN_KHR:
                     num_graphics_bindings_found++;
                     break;
-#ifdef XR_USE_PLATFORM_WIN32
-                case XR_TYPE_GRAPHICS_BINDING_OPENGL_WIN32_KHR:
-                case XR_TYPE_GRAPHICS_BINDING_D3D11_KHR:
-                case XR_TYPE_GRAPHICS_BINDING_D3D12_KHR:
-                    num_graphics_bindings_found++;
-                    break;
-#endif
+
 #if defined(XR_USE_PLATFORM_ANDROID)
                 case XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR:
                     num_graphics_bindings_found++;

@@ -16,10 +16,8 @@
 #include <set>
 
 namespace {
-
-#if !defined(XR_USE_PLATFORM_WIN32)
+    
 #define strcpy_s(dest, source) strncpy((dest), (source), sizeof(dest))
-#endif
 
 namespace Side {
 const int LEFT = 0;

@@ -22,9 +22,6 @@
 #ifndef API_LAYER_PLATFORM_DEFINES_H_
 #define API_LAYER_PLATFORM_DEFINES_H_ 1
 
-#ifdef _WIN32
-#define XR_USE_PLATFORM_WIN32 1  // Win32 platform
-#endif                           // _WIN32
 #if defined(OS_LINUX_XLIB)
 #define XR_USE_PLATFORM_XLIB 1  // Xlib platform
 #endif                          // OS_LINUX_XLIB

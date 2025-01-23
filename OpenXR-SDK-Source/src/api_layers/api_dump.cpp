@@ -50,8 +50,6 @@
 #define LAYER_EXPORT __attribute__((visibility("default")))
 #elif defined(__SUNPRO_C) && (__SUNPRO_C >= 0x590)
 #define LAYER_EXPORT __attribute__((visibility("default")))
-#elif defined(_WIN32)
-#define LAYER_EXPORT __declspec(dllexport)
 #else
 #define LAYER_EXPORT
 #endif

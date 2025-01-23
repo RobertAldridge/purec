@@ -115,9 +115,7 @@ WORK ITEMS
 extern "C" {
 #endif
 
-#if defined(WIN32) || defined(_WIN32) || defined(WIN64) || defined(_WIN64)
-#define OS_WINDOWS
-#elif defined(__ANDROID__)
+#if defined(__ANDROID__)
 #define OS_ANDROID
 #elif defined(__APPLE__)
 #define OS_APPLE

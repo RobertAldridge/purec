@@ -94,7 +94,8 @@ if [ -d "${BUILD_DIR}" ]; then
     find "${BUILD_DIR}" -name "*.pom" -delete
 fi
 
-for arch in x86 x86_64 armeabi-v7a arm64-v8a; do
+#for arch in x86 x86_64 armeabi-v7a arm64-v8a; do
+for arch in arm64-v8a; do
     logMsg "Configuring and building for arch ${arch}"
     cmake -S "${ROOT}" \
     -B "${BUILD_DIR}/${arch}" \

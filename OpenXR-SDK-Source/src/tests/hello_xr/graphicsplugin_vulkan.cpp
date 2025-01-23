@@ -16,11 +16,6 @@
 #include <shaderc/shaderc.hpp>
 #endif
 
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
-// Define USE_MIRROR_WINDOW to open a otherwise-unused window for e.g. RenderDoc
-#define USE_MIRROR_WINDOW
-#endif
-
 // glslangValidator doesn't wrap its output in brackets if you don't have it define the whole array.
 #if defined(USE_GLSLANGVALIDATOR)
 #define SPV_PREFIX {

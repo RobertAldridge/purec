@@ -7,33 +7,9 @@
 
 #pragma once
 
-#ifdef XR_USE_PLATFORM_ANDROID
 #include <android/native_window.h>
 #include <android/window.h>
 #include <android/native_window_jni.h>
-#endif  // XR_USE_PLATFORM_ANDROID
-
-#ifdef XR_USE_PLATFORM_WIN32
-
-#include <winapifamily.h>
-#if !(WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP | WINAPI_PARTITION_SYSTEM))
-// Enable desktop partition APIs, such as RegOpenKeyEx, LoadLibraryEx, PathFileExists etc.
-#undef WINAPI_PARTITION_DESKTOP
-#define WINAPI_PARTITION_DESKTOP 1
-#endif
-
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif  // !NOMINMAX
-
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif  // !WIN32_LEAN_AND_MEAN
-
-#include <windows.h>
-#include <unknwn.h>
-
-#endif  // XR_USE_PLATFORM_WIN32
 
 #ifdef XR_USE_GRAPHICS_API_D3D11
 #include <d3d11.h>

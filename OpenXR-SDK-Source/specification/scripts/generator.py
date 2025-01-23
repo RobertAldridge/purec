@@ -900,9 +900,6 @@ class OutputGenerator:
             # target file.
             if self.genOpts.filename is not None:
                 directory = Path(self.genOpts.directory)
-                if sys.platform == 'win32':
-                    if not Path.exists(directory):
-                        os.makedirs(directory)
                 shutil.copy(self.outFile.name, directory / self.genOpts.filename)
                 os.remove(self.outFile.name)
         self.genOpts = None

@@ -30,59 +30,59 @@ include(StdFilesystemFlags)
 
 set(XR_USE_GRAPHICS_API_OPENGL FALSE)
 set(XR_USE_GRAPHICS_API_OPENGL_ES FALSE)
-set(XR_USE_GRAPHICS_API_VULKAN FALSE)
+set(XR_USE_GRAPHICS_API_VULKAN TRUE)
 set(XR_USE_GRAPHICS_API_D3D11 FALSE)
 set(XR_USE_GRAPHICS_API_D3D12 FALSE)
 set(XR_USE_GRAPHICS_API_METAL FALSE)
 
-set(OPENGLES_INCOMPATIBLE TRUE)
-set(OPENGL_INCOMPATIBLE FALSE)
+set(OPENGLES_INCOMPATIBLE FALSE)
+set(OPENGL_INCOMPATIBLE TRUE)
 set(VULKAN_INCOMPATIBLE FALSE)
 set(METAL_INCOMPATIBLE TRUE)
 
 # CMake will detect OpenGL/Vulkan which are not compatible with UWP and ARM/ARM64 on Windows so skip it in these cases.
-if(CMAKE_SYSTEM_NAME STREQUAL "WindowsStore"
-   OR (WIN32 AND CMAKE_GENERATOR_PLATFORM_UPPER MATCHES "ARM.*")
-)
-    set(OPENGL_INCOMPATIBLE TRUE)
-    set(VULKAN_INCOMPATIBLE TRUE)
-    message(STATUS "OpenGL/Vulkan disabled due to incompatibility")
-
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    set(OPENGL_INCOMPATIBLE TRUE)
-    message(STATUS "OpenGL disabled as no bindings exist for OpenGL on Darwin")
-    set(METAL_INCOMPATIBLE FALSE)
-elseif(ANDROID)
-    set(OPENGL_INCOMPATIBLE TRUE)
+#if(CMAKE_SYSTEM_NAME STREQUAL "WindowsStore"
+#   OR (WIN32 AND CMAKE_GENERATOR_PLATFORM_UPPER MATCHES "ARM.*")
+#)
+#    set(OPENGL_INCOMPATIBLE TRUE)
+#    set(VULKAN_INCOMPATIBLE TRUE)
+#    message(STATUS "OpenGL/Vulkan disabled due to incompatibility")
+#
+#elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+#    set(OPENGL_INCOMPATIBLE TRUE)
+#    message(STATUS "OpenGL disabled as no bindings exist for OpenGL on Darwin")
+#    set(METAL_INCOMPATIBLE FALSE)
+#elseif(ANDROID)
+#    set(OPENGL_INCOMPATIBLE TRUE)
     find_path(
         ANDROID_NATIVE_APP_GLUE android_native_app_glue.h
         PATHS "${ANDROID_NDK}/sources/android/native_app_glue"
     )
-    if(ANDROID_NATIVE_APP_GLUE)
-        # Needed by gfxwrapper
-        set(OPENGLES_INCOMPATIBLE FALSE)
-    endif()
-    if(ANDROID_PLATFORM_LEVEL LESS 24)
-        set(VULKAN_INCOMPATIBLE TRUE)
-        message(
-            STATUS
-                "Vulkan disabled due to incompatibility: need to target at least API 24"
-        )
-    endif()
-endif()
+#    if(ANDROID_NATIVE_APP_GLUE)
+#        # Needed by gfxwrapper
+#        set(OPENGLES_INCOMPATIBLE FALSE)
+#    endif()
+#    if(ANDROID_PLATFORM_LEVEL LESS 24)
+#        set(VULKAN_INCOMPATIBLE TRUE)
+#        message(
+#            STATUS
+#                "Vulkan disabled due to incompatibility: need to target at least API 24"
+#        )
+#    endif()
+#endif()
 
-if(NOT OPENGL_INCOMPATIBLE)
-    set(OpenGL_GL_PREFERENCE GLVND)
-    find_package(OpenGL)
-
-    if(OPENGL_FOUND)
-        set(XR_USE_GRAPHICS_API_OPENGL TRUE)
-        add_definitions(-DXR_USE_GRAPHICS_API_OPENGL)
-        message(STATUS "Enabling OpenGL support")
-    elseif(BUILD_ALL_EXTENSIONS)
-        message(FATAL_ERROR "OpenGL not found")
-    endif()
-endif()
+#if(NOT OPENGL_INCOMPATIBLE)
+#    set(OpenGL_GL_PREFERENCE GLVND)
+#    find_package(OpenGL)
+#
+#    if(OPENGL_FOUND)
+#        set(XR_USE_GRAPHICS_API_OPENGL TRUE)
+#        add_definitions(-DXR_USE_GRAPHICS_API_OPENGL)
+#        message(STATUS "Enabling OpenGL support")
+#    elseif(BUILD_ALL_EXTENSIONS)
+#        message(FATAL_ERROR "OpenGL not found")
+#    endif()
+#endif()
 
 if(NOT OPENGLES_INCOMPATIBLE)
     find_package(OpenGLES COMPONENTS V3 V2)
@@ -108,18 +108,18 @@ if(NOT VULKAN_INCOMPATIBLE)
     endif()
 endif()
 
-if(NOT METAL_INCOMPATIBLE)
-    find_package(MetalTools)
-    if(MetalTools_FOUND)
-        set(XR_USE_GRAPHICS_API_METAL TRUE)
-        add_definitions(-DXR_USE_GRAPHICS_API_METAL)
-        message(STATUS "Enabling Metal support")
-    elseif(BUILD_ALL_EXTENSIONS)
-        message(FATAL_ERROR "Metal not found - full Xcode install required")
-    else()
-        message(STATUS "Metal not found - full Xcode install required")
-    endif()
-endif()
+#if(NOT METAL_INCOMPATIBLE)
+#    find_package(MetalTools)
+#    if(MetalTools_FOUND)
+#        set(XR_USE_GRAPHICS_API_METAL TRUE)
+#        add_definitions(-DXR_USE_GRAPHICS_API_METAL)
+#        message(STATUS "Enabling Metal support")
+#    elseif(BUILD_ALL_EXTENSIONS)
+#        message(FATAL_ERROR "Metal not found - full Xcode install required")
+#    else()
+#        message(STATUS "Metal not found - full Xcode install required")
+#    endif()
+#endif()
 
 find_package(Threads REQUIRED)
 find_package(JsonCpp)
@@ -133,17 +133,17 @@ option(
     ON
 )
 
-if(WIN32)
-    set(OPENXR_DEBUG_POSTFIX
-        d
-        CACHE STRING "OpenXR loader debug postfix."
-    )
-else()
+#if(WIN32)
+#    set(OPENXR_DEBUG_POSTFIX
+#        d
+#        CACHE STRING "OpenXR loader debug postfix."
+#    )
+#else()
     set(OPENXR_DEBUG_POSTFIX
         ""
         CACHE STRING "OpenXR loader debug postfix."
     )
-endif()
+#endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     option(DYNAMIC_LOADER "Build the loader as a .dll library" OFF)
@@ -177,24 +177,25 @@ cmake_dependent_option(
 )
 
 # Several files use these compile time OS switches
-if(WIN32)
-    add_definitions(-DXR_OS_WINDOWS)
-    add_definitions(-DNOMINMAX)
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    add_definitions(-DXR_OS_LINUX)
-elseif(ANDROID)
+#if(WIN32)
+#    add_definitions(-DXR_OS_WINDOWS)
+#    add_definitions(-DNOMINMAX)
+#elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+#    add_definitions(-DXR_OS_LINUX)
+#elseif(ANDROID)
     add_definitions(-DXR_OS_ANDROID)
-elseif(APPLE)
-    add_definitions(-DXR_OS_APPLE)
-endif()
+#elseif(APPLE)
+#    add_definitions(-DXR_OS_APPLE)
+#endif()
 
 # /EHsc (support for C++ exceptions) is default in most configurations but seems missing when building arm/arm64.
-if(MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
-endif()
+#if(MSVC)
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
+#endif()
 
 # This is a little helper library for setting up OpenGL
-if((OPENGL_FOUND OR OpenGLES_FOUND)
+#if((OPENGL_FOUND OR OpenGLES_FOUND)
+if(OpenGLES_FOUND
    AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/common/gfxwrapper_opengl.c"
 )
     add_library(
@@ -204,15 +205,15 @@ if((OPENGL_FOUND OR OpenGLES_FOUND)
     target_include_directories(
         openxr-gfxwrapper PUBLIC "${PROJECT_SOURCE_DIR}/external/include"
     )
-    if(OPENGL_FOUND)
-        if(TARGET OpenGL::OpenGL)
-            target_link_libraries(openxr-gfxwrapper PUBLIC OpenGL::OpenGL)
-        elseif(TARGET OpenGL::GL)
-            target_link_libraries(openxr-gfxwrapper PUBLIC OpenGL::GL)
-        else()
-            target_link_libraries(openxr-gfxwrapper PUBLIC ${OPENGL_LIBRARIES})
-        endif()
-    endif()
+#    if(OPENGL_FOUND)
+#        if(TARGET OpenGL::OpenGL)
+#            target_link_libraries(openxr-gfxwrapper PUBLIC OpenGL::OpenGL)
+#        elseif(TARGET OpenGL::GL)
+#            target_link_libraries(openxr-gfxwrapper PUBLIC OpenGL::GL)
+#        else()
+#            target_link_libraries(openxr-gfxwrapper PUBLIC ${OPENGL_LIBRARIES})
+#        endif()
+#    endif()
     if(OpenGLES_FOUND)
         if(TARGET OpenGLES::OpenGLESv3)
             target_link_libraries(openxr-gfxwrapper PUBLIC OpenGLES::OpenGLESv3)
@@ -223,7 +224,7 @@ if((OPENGL_FOUND OR OpenGLES_FOUND)
         endif()
         target_link_libraries(openxr-gfxwrapper PUBLIC EGL::EGL)
     endif()
-    if(ANDROID)
+#    if(ANDROID)
         target_include_directories(
             openxr-gfxwrapper PUBLIC "${ANDROID_NATIVE_APP_GLUE}"
         )
@@ -240,14 +241,14 @@ if((OPENGL_FOUND OR OpenGLES_FOUND)
         target_compile_options(
             android_native_app_glue PRIVATE -Wno-unused-parameter
         )
-    elseif(APPLE)
-        target_compile_options(openxr-gfxwrapper PRIVATE -x objective-c++)
-        target_link_libraries(
-            openxr-gfxwrapper
-            PUBLIC "-framework AppKit" "-framework Foundation"
-                   "-framework CoreGraphics"
-        )
-    endif()
+#    elseif(APPLE)
+#        target_compile_options(openxr-gfxwrapper PRIVATE -x objective-c++)
+#        target_link_libraries(
+#            openxr-gfxwrapper
+#            PUBLIC "-framework AppKit" "-framework Foundation"
+#                   "-framework CoreGraphics"
+#        )
+#    endif()
     set_target_properties(openxr-gfxwrapper PROPERTIES FOLDER ${HELPER_FOLDER})
     message(
         STATUS
@@ -257,46 +258,46 @@ endif()
 
 # Determine the presentation backend for Linux systems.
 # Use an include because the code is pretty big.
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    include(presentation)
-endif()
+#if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+#    include(presentation)
+#endif()
 
 # Several files use these compile time platform switches
-if(WIN32)
-    add_definitions(-DXR_USE_PLATFORM_WIN32)
-elseif(APPLE)
-    if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-        if(DARWIN_TARGET_OS_NAME STREQUAL "ios")
-            add_definitions(-DXR_USE_PLATFORM_IOS)
-        else()
-            add_definitions(-DXR_USE_PLATFORM_MACOS)
-        endif()
-    endif()
-elseif(ANDROID)
+#if(WIN32)
+#    add_definitions(-DXR_USE_PLATFORM_WIN32)
+#elseif(APPLE)
+#    if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+#        if(DARWIN_TARGET_OS_NAME STREQUAL "ios")
+#            add_definitions(-DXR_USE_PLATFORM_IOS)
+#        else()
+#            add_definitions(-DXR_USE_PLATFORM_MACOS)
+#        endif()
+#    endif()
+#elseif(ANDROID)
     add_definitions(-DXR_USE_PLATFORM_ANDROID)
     set(OPENXR_ANDROID_VERSION_SUFFIX
         ""
         CACHE STRING "Suffix for generated Android artifacts."
     )
-elseif(PRESENTATION_BACKEND MATCHES "xlib")
-    add_definitions(-DXR_USE_PLATFORM_XLIB)
-elseif(PRESENTATION_BACKEND MATCHES "xcb")
-    add_definitions(-DXR_USE_PLATFORM_XCB)
+#elseif(PRESENTATION_BACKEND MATCHES "xlib")
+#    add_definitions(-DXR_USE_PLATFORM_XLIB)
+#elseif(PRESENTATION_BACKEND MATCHES "xcb")
+#    add_definitions(-DXR_USE_PLATFORM_XCB)
+#
+#    # TODO remove once conformance supports XCB
+#    set(BUILD_CONFORMANCE_TESTS OFF)
+#elseif(PRESENTATION_BACKEND MATCHES "wayland")
+#    add_definitions(-DXR_USE_PLATFORM_WAYLAND)
+#
+#    # TODO remove once conformance supports Wayland
+#    set(BUILD_CONFORMANCE_TESTS OFF)
+#endif()
 
-    # TODO remove once conformance supports XCB
-    set(BUILD_CONFORMANCE_TESTS OFF)
-elseif(PRESENTATION_BACKEND MATCHES "wayland")
-    add_definitions(-DXR_USE_PLATFORM_WAYLAND)
-
-    # TODO remove once conformance supports Wayland
-    set(BUILD_CONFORMANCE_TESTS OFF)
-endif()
-
-if(BUILD_CONFORMANCE_TESTS AND NOT ANDROID)
-    set(BUILD_CONFORMANCE_CLI ON)
-else()
+#if(BUILD_CONFORMANCE_TESTS AND NOT ANDROID)
+#    set(BUILD_CONFORMANCE_CLI ON)
+#else()
     set(BUILD_CONFORMANCE_CLI OFF)
-endif()
+#endif()
 
 set(OPENXR_ALL_SUPPORTED_DEFINES)
 if(BUILD_WITH_XLIB_HEADERS)
@@ -313,7 +314,7 @@ endif()
 
 # Find glslc shader compiler.
 # On Android, the NDK includes the binary, so no external dependency.
-if(ANDROID)
+#if(ANDROID)
     file(
         GLOB
         glslc_folders
@@ -325,22 +326,22 @@ if(ANDROID)
         PATHS ${glslc_folders}
         NO_DEFAULT_PATH
     )
-else()
-    if($ENV{VULKAN_SDK})
-        file(TO_CMAKE_PATH "$ENV{VULKAN_SDK}" VULKAN_SDK)
-        file(
-            GLOB
-            glslc_folders
-            CONFIGURE_DEPENDS
-            ${VULKAN_SDK}/*
-        )
-    endif()
-    find_program(
-        GLSL_COMPILER glslc
-        PATHS ${glslc_folders}
-        HINTS "${Vulkan_GLSLC_EXECUTABLE}"
-    )
-endif()
+#else()
+#    if($ENV{VULKAN_SDK})
+#        file(TO_CMAKE_PATH "$ENV{VULKAN_SDK}" VULKAN_SDK)
+#        file(
+#            GLOB
+#            glslc_folders
+#            CONFIGURE_DEPENDS
+#            ${VULKAN_SDK}/*
+#        )
+#    endif()
+#    find_program(
+#        GLSL_COMPILER glslc
+#        PATHS ${glslc_folders}
+#        HINTS "${Vulkan_GLSLC_EXECUTABLE}"
+#    )
+#endif()
 find_program(
     GLSLANG_VALIDATOR glslangValidator
     HINTS "${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE}"
@@ -394,12 +395,12 @@ function(compile_glsl run_target_name)
 endfunction()
 
 # Not available in MinGW
-if(MSVC)
-    set(XR_USE_GRAPHICS_API_D3D11 TRUE)
-    add_definitions(-DXR_USE_GRAPHICS_API_D3D11)
-    set(XR_USE_GRAPHICS_API_D3D12 TRUE)
-    add_definitions(-DXR_USE_GRAPHICS_API_D3D12)
-endif()
+#if(MSVC)
+#    set(XR_USE_GRAPHICS_API_D3D11 TRUE)
+#    add_definitions(-DXR_USE_GRAPHICS_API_D3D11)
+#    set(XR_USE_GRAPHICS_API_D3D12 TRUE)
+#    add_definitions(-DXR_USE_GRAPHICS_API_D3D12)
+#endif()
 
 # Check for the existence of the secure_getenv or __secure_getenv commands
 include(CheckFunctionExists)
@@ -528,7 +529,7 @@ set_target_properties(
     xr_global_generated_files PROPERTIES FOLDER ${CODEGEN_FOLDER}
 )
 
-if(NOT MSVC)
+#if(NOT MSVC)
     include(CheckCXXCompilerFlag)
     include(CheckCCompilerFlag)
     foreach(
@@ -555,21 +556,21 @@ if(NOT MSVC)
             set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAG}")
         endif()
     endforeach()
-    if(APPLE)
-        set(CMAKE_SHARED_LINKER_FLAGS
-            "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-undefined,error"
-        )
-    elseif(NOT WIN32)
+#    if(APPLE)
+#        set(CMAKE_SHARED_LINKER_FLAGS
+#            "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-undefined,error"
+#        )
+#    elseif(NOT WIN32)
         set(CMAKE_SHARED_LINKER_FLAGS
             "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-undefined"
         )
-    endif()
-endif()
+#    endif()
+#endif()
 
-if(ANDROID)
+#if(ANDROID)
     find_library(ANDROID_LIBRARY NAMES android)
     find_library(ANDROID_LOG_LIBRARY NAMES log)
-endif()
+#endif()
 
 if(BUILD_LOADER)
     add_subdirectory(loader)
@@ -587,6 +588,6 @@ if(BUILD_TESTS)
     add_subdirectory(tests)
 endif()
 
-if(BUILD_CONFORMANCE_TESTS)
-    add_subdirectory(conformance)
-endif()
+#if(BUILD_CONFORMANCE_TESTS)
+#    add_subdirectory(conformance)
+#endif()
