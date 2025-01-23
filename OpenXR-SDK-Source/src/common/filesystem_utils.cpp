@@ -79,14 +79,9 @@ bool FileSysUtilsGetAbsolutePath(const std::string& path, std::string& absolute)
 }
 
 bool FileSysUtilsGetCanonicalPath(const std::string& path, std::string& canonical) {
-#if defined(XR_USE_PLATFORM_WIN32)
-    // std::filesystem::canonical fails on UWP and must be avoided. Further, PathCchCanonicalize is not available on Windows 7 and
-    // PathCanonicalizeW is not available on UWP. However, symbolic links are not important on Windows since the loader uses the
-    // registry for indirection instead, and so this function can be a no-op on Windows.
-    canonical = path;
-#else
+
     canonical = FS_PREFIX::canonical(path).string();
-#endif
+
     return true;
 }
 

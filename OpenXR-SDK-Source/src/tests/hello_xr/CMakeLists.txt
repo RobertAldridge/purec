@@ -42,7 +42,6 @@ set(LOCAL_SOURCE
         )
 set(VULKAN_SHADERS vulkan_shaders/frag.glsl vulkan_shaders/vert.glsl)
 
-if(ANDROID)
     add_library(
         hello_xr MODULE
         ${LOCAL_SOURCE}
@@ -81,15 +80,6 @@ if(ANDROID)
         )
 #    endif()
 
-else()
-    add_executable(hello_xr ${LOCAL_SOURCE} ${LOCAL_HEADERS} ${VULKAN_SHADERS})
-endif()
-
-if(APPLE)
-    # use C++17 since there is a dependency on metal-cpp
-    target_compile_features(hello_xr PUBLIC cxx_std_17)
-endif()
-
 set_target_properties(hello_xr PROPERTIES FOLDER ${SAMPLES_FOLDER})
 source_group("Headers" FILES ${LOCAL_HEADERS})
 source_group("Shaders" FILES ${VULKAN_SHADERS})
@@ -126,50 +116,4 @@ endif()
 
 if(TARGET openxr-gfxwrapper)
     target_link_libraries(hello_xr PRIVATE openxr-gfxwrapper)
-endif()
-if(WIN32)
-    target_link_libraries(hello_xr PRIVATE ole32)
-    if(MSVC)
-        target_compile_definitions(hello_xr PRIVATE _CRT_SECURE_NO_WARNINGS)
-        target_compile_options(hello_xr PRIVATE /Zc:wchar_t /Zc:forScope /W4)
-        if(NOT
-           CMAKE_CXX_COMPILER_ID
-           STREQUAL
-           "Clang"
-        )
-            # If actually msvc and not clang-cl
-            target_compile_options(openxr_c_compile_test PRIVATE /WX)
-        endif()
-
-        # Right now can't build d3d features on MinGW because of directxcolors, directxmath, etc.
-        target_link_libraries(
-            hello_xr
-            PRIVATE
-                d3d11
-                d3d12
-                d3dcompiler
-                dxgi
-        )
-    endif()
-endif()
-
-if(APPLE)
-    target_link_libraries(
-        hello_xr PRIVATE "-framework Foundation" "-framework CoreGraphics"
-                         "-framework Metal"
-    )
-endif()
-
-if(NOT ANDROID)
-    install(
-        TARGETS hello_xr RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-                                 COMPONENT hello_xr
-    )
-    if(NOT WIN32)
-        install(
-            FILES hello_xr.1
-            DESTINATION ${CMAKE_INSTALL_MANDIR}/man1/
-            COMPONENT ManPages
-        )
-    endif()
 endif()

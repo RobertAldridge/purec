@@ -1078,18 +1078,6 @@ struct Swapchain {
         }
         swapchainCount = 0;
 
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
-        if (hWnd) {
-            DestroyWindow(hWnd);
-            hWnd = nullptr;
-            UnregisterClassW(L"hello_xr", hInst);
-        }
-        if (hUser32Dll != NULL) {
-            ::FreeLibrary(hUser32Dll);
-            hUser32Dll = NULL;
-        }
-#endif
-
         m_vkDevice = nullptr;
     }
     void Recreate() {
@@ -1098,11 +1086,7 @@ struct Swapchain {
     }
 
    private:
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
-    HINSTANCE hInst{NULL};
-    HWND hWnd{NULL};
-    HINSTANCE hUser32Dll{NULL};
-#endif
+
     const VkExtent2D size{640, 480};
     VkInstance m_vkInstance{VK_NULL_HANDLE};
     VkPhysicalDevice m_vkPhysicalDevice{VK_NULL_HANDLE};
@@ -1116,44 +1100,7 @@ void Swapchain::Create(VkInstance instance, VkPhysicalDevice physDevice, VkDevic
     m_vkDevice = device;
     m_queueFamilyIndex = queueFamilyIndex;
 
-// Create a WSI surface for the window:
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
-    hInst = GetModuleHandle(NULL);
-
-    WNDCLASSW wc{};
-    wc.style = CS_CLASSDC;
-    wc.lpfnWndProc = DefWindowProcW;
-    wc.cbWndExtra = sizeof(this);
-    wc.hInstance = hInst;
-    wc.lpszClassName = L"hello_xr";
-    RegisterClassW(&wc);
-
-// adjust the window size and show at InitDevice time
-#if defined(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)
-    typedef DPI_AWARENESS_CONTEXT(WINAPI * PFN_SetThreadDpiAwarenessContext)(DPI_AWARENESS_CONTEXT);
-    hUser32Dll = ::LoadLibraryA("user32.dll");
-    if (PFN_SetThreadDpiAwarenessContext SetThreadDpiAwarenessContextFn =
-            reinterpret_cast<PFN_SetThreadDpiAwarenessContext>(::GetProcAddress(hUser32Dll, "SetThreadDpiAwarenessContext"))) {
-        // Make sure we're 1:1 for HMD pixels
-        SetThreadDpiAwarenessContextFn(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
-    }
-#endif
-    RECT rect{0, 0, (LONG)size.width, (LONG)size.height};
-    AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false);
-    hWnd = CreateWindowW(wc.lpszClassName, L"hello_xr (Vulkan)", WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT,
-                         rect.right - rect.left, rect.bottom - rect.top, 0, 0, hInst, 0);
-    assert(hWnd != NULL);
-
-    SetWindowLongPtr(hWnd, 0, LONG_PTR(this));
-
-    VkWin32SurfaceCreateInfoKHR surfCreateInfo{VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR};
-    surfCreateInfo.flags = 0;
-    surfCreateInfo.hinstance = hInst;
-    surfCreateInfo.hwnd = hWnd;
-    CHECK_VKCMD(vkCreateWin32SurfaceKHR(m_vkInstance, &surfCreateInfo, nullptr, &surface));
-#else
 #error CreateSurface not supported on this OS
-#endif  // defined(VK_USE_PLATFORM_WIN32_KHR)
 
     VkSurfaceCapabilitiesKHR surfCaps;
     CHECK_VKCMD(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_vkPhysicalDevice, surface, &surfCaps));
@@ -1366,11 +1313,9 @@ struct VulkanGraphicsPlugin : public IGraphicsPlugin {
         }
 #if defined(USE_MIRROR_WINDOW)
         extensions.push_back("VK_KHR_surface");
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
-        extensions.push_back("VK_KHR_win32_surface");
-#else
+
 #error CreateSurface not supported on this OS
-#endif  // defined(VK_USE_PLATFORM_WIN32_KHR)
+
 #endif  // defined(USE_MIRROR_WINDOW)
 
         VkDebugUtilsMessengerCreateInfoEXT debugInfo{VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT};

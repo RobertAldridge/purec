@@ -48,36 +48,8 @@ if(XR_USE_GRAPHICS_API_VULKAN)
     target_link_libraries(openxr_runtime_list_json PRIVATE ${Vulkan_LIBRARY})
 endif()
 
-if(WIN32)
-    if(MSVC)
-        target_compile_definitions(
-            openxr_runtime_list_json PRIVATE _CRT_SECURE_NO_WARNINGS
-        )
-        target_compile_options(
-            openxr_runtime_list_json PRIVATE /Zc:wchar_t /Zc:forScope /W4
-        )
-        if(NOT
-           CMAKE_CXX_COMPILER_ID
-           STREQUAL
-           "Clang"
-        )
-            # If actually msvc and not clang-cl
-            target_compile_options(openxr_runtime_list_json PRIVATE /WX)
-        endif()
-    endif()
-endif()
-
-if(NOT ANDROID)
-    install(
-        TARGETS openxr_runtime_list_json
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-                COMPONENT openxr_runtime_list_json
-    )
-endif()
-if(NOT WIN32)
     install(
         FILES openxr_runtime_list_json.1
         DESTINATION ${CMAKE_INSTALL_MANDIR}/man1/
         COMPONENT ManPages
     )
-endif()

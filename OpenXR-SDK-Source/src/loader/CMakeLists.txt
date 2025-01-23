@@ -357,11 +357,7 @@ export(
 # Create alias so that it can be used the same whether vendored as source or found with CMake.
 add_library(OpenXR::openxr_loader ALIAS openxr_loader)
 
-if(WIN32 AND NOT INSTALL_TO_ARCHITECTURE_PREFIXES)
-    set(TARGET_DESTINATION cmake)
-else()
     set(TARGET_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/openxr/)
-endif()
 
 install(
     EXPORT openxr_loader_export
@@ -389,17 +385,6 @@ install(
     DESTINATION ${TARGET_DESTINATION}
     COMPONENT CMakeConfigs
 )
-
-if(WIN32
-   AND NOT MINGW
-   AND DYNAMIC_LOADER
-)
-    install(
-        FILES $<TARGET_PDB_FILE:openxr_loader>
-        DESTINATION ${CMAKE_INSTALL_BINDIR}
-        OPTIONAL
-    )
-endif()
 
 # Make the "meta" cmake config/version file to redirect to the right arch/build
 if(ANDROID AND INSTALL_TO_ARCHITECTURE_PREFIXES)

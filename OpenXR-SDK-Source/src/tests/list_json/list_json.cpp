@@ -163,11 +163,7 @@ static int main_body() {
     LOGI("    \"name\": \"TODO\",\n");
     LOGI("    \"conformance_submission\": 0,\n");
 
-#if defined(WIN32)
-    LOGI("    \"platform\": \"Windows (Desktop)\",\n");
-#elif defined(__ANDROID__)
     LOGI("    \"platform\": \"Android (All-in-one)\",\n");
-#endif
 
     std::string vendorName = vendorNameFromRuntimeName(instanceProperties.runtimeName);
     LOGI("    \"vendor\": \"%s\",\n", vendorName.c_str());

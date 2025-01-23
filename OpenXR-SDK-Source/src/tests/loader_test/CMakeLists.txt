@@ -58,22 +58,6 @@ if(XR_USE_GRAPHICS_API_VULKAN)
     target_include_directories(loader_test PRIVATE ${Vulkan_INCLUDE_DIRS})
 endif()
 
-if(WIN32)
-    if(MSVC)
-        target_compile_definitions(loader_test PRIVATE _CRT_SECURE_NO_WARNINGS)
-        target_compile_options(loader_test PRIVATE /Zc:wchar_t /Zc:forScope /W4)
-        if(NOT
-           CMAKE_CXX_COMPILER_ID
-           STREQUAL
-           "Clang"
-        )
-            # If actually msvc and not clang-cl
-            target_compile_options(loader_test PRIVATE /WX)
-        endif()
-        target_link_libraries(loader_test PRIVATE d3d11)
-    endif()
-endif()
-
 add_test(
     NAME loader_test
     COMMAND loader_test

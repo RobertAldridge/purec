@@ -35,11 +35,6 @@
 #cmakedefine CATCH_CONFIG_COLOUR_WIN32
 #cmakedefine CATCH_CONFIG_NO_COLOUR_WIN32
 
-#if defined( CATCH_CONFIG_COLOUR_WIN32 ) && \
-    defined( CATCH_CONFIG_NO_COLOUR_WIN32 )
-#    error Cannot force COLOUR_WIN32 to be ON and OFF
-#endif
-
 #cmakedefine CATCH_CONFIG_COUNTER
 #cmakedefine CATCH_CONFIG_NO_COUNTER
 

@@ -97,70 +97,6 @@ namespace Catch {
 
 } // namespace Catch
 
-
-#if defined ( CATCH_CONFIG_COLOUR_WIN32 ) /////////////////////////////////////////
-
-namespace Catch {
-namespace {
-
-    class Win32ColourImpl final : public ColourImpl {
-    public:
-        Win32ColourImpl(IStream* stream):
-            ColourImpl(stream) {
-            CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
-            GetConsoleScreenBufferInfo( GetStdHandle( STD_OUTPUT_HANDLE ),
-                                        &csbiInfo );
-            originalForegroundAttributes = csbiInfo.wAttributes & ~( BACKGROUND_GREEN | BACKGROUND_RED | BACKGROUND_BLUE | BACKGROUND_INTENSITY );
-            originalBackgroundAttributes = csbiInfo.wAttributes & ~( FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY );
-        }
-
-        static bool useImplementationForStream(IStream const& stream) {
-            // Win32 text colour APIs can only be used on console streams
-            // We cannot check that the output hasn't been redirected,
-            // so we just check that the original stream is console stream.
-            return stream.isConsole();
-        }
-
-    private:
-        void use( Colour::Code _colourCode ) const override {
-            switch( _colourCode ) {
-                case Colour::None:      return setTextAttribute( originalForegroundAttributes );
-                case Colour::White:     return setTextAttribute( FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE );
-                case Colour::Red:       return setTextAttribute( FOREGROUND_RED );
-                case Colour::Green:     return setTextAttribute( FOREGROUND_GREEN );
-                case Colour::Blue:      return setTextAttribute( FOREGROUND_BLUE );
-                case Colour::Cyan:      return setTextAttribute( FOREGROUND_BLUE | FOREGROUND_GREEN );
-                case Colour::Yellow:    return setTextAttribute( FOREGROUND_RED | FOREGROUND_GREEN );
-                case Colour::Grey:      return setTextAttribute( 0 );
-
-                case Colour::LightGrey:     return setTextAttribute( FOREGROUND_INTENSITY );
-                case Colour::BrightRed:     return setTextAttribute( FOREGROUND_INTENSITY | FOREGROUND_RED );
-                case Colour::BrightGreen:   return setTextAttribute( FOREGROUND_INTENSITY | FOREGROUND_GREEN );
-                case Colour::BrightWhite:   return setTextAttribute( FOREGROUND_INTENSITY | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE );
-                case Colour::BrightYellow:  return setTextAttribute( FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN );
-
-                case Colour::Bright: CATCH_INTERNAL_ERROR( "not a colour" );
-
-                default:
-                    CATCH_ERROR( "Unknown colour requested" );
-            }
-        }
-
-        void setTextAttribute( WORD _textAttribute ) const {
-            SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ),
-                                     _textAttribute |
-                                         originalBackgroundAttributes );
-        }
-        WORD originalForegroundAttributes;
-        WORD originalBackgroundAttributes;
-    };
-
-} // end anon namespace
-} // end namespace Catch
-
-#endif // Windows/ ANSI/ None
-
-
 #if defined( CATCH_PLATFORM_LINUX ) || defined( CATCH_PLATFORM_MAC )
 #    define CATCH_INTERNAL_HAS_ISATTY
 #    include <unistd.h>
@@ -232,11 +168,7 @@ namespace Catch {
 
     Detail::unique_ptr<ColourImpl> makeColourImpl( ColourMode colourSelection,
                                                    IStream* stream ) {
-#if defined( CATCH_CONFIG_COLOUR_WIN32 )
-        if ( colourSelection == ColourMode::Win32 ) {
-            return Detail::make_unique<Win32ColourImpl>( stream );
-        }
-#endif
+
         if ( colourSelection == ColourMode::ANSI ) {
             return Detail::make_unique<ANSIColourImpl>( stream );
         }
@@ -245,11 +177,7 @@ namespace Catch {
         }
 
         if ( colourSelection == ColourMode::PlatformDefault) {
-#if defined( CATCH_CONFIG_COLOUR_WIN32 )
-            if ( Win32ColourImpl::useImplementationForStream( *stream ) ) {
-                return Detail::make_unique<Win32ColourImpl>( stream );
-            }
-#endif
+
             if ( ANSIColourImpl::useImplementationForStream( *stream ) ) {
                 return Detail::make_unique<ANSIColourImpl>( stream );
             }
@@ -261,9 +189,6 @@ namespace Catch {
 
     bool isColourImplAvailable( ColourMode colourSelection ) {
         switch ( colourSelection ) {
-#if defined( CATCH_CONFIG_COLOUR_WIN32 )
-        case ColourMode::Win32:
-#endif
         case ColourMode::ANSI:
         case ColourMode::None:
         case ColourMode::PlatformDefault:

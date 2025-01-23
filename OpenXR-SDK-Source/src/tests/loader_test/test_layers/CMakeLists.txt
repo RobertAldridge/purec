@@ -59,23 +59,7 @@ endif()
 # Dynamic Library:
 #  - Make build depend on the module definition/version script/export map
 #  - Add the linker flag (except windows)
-if(WIN32)
-    target_sources(
-        XrApiLayer_test
-        PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/XrApiLayer_test.def"
-    )
-elseif(APPLE)
-    set_target_properties(
-        XrApiLayer_test
-        PROPERTIES
-            LINK_FLAGS
-            "-Wl,-exported_symbols_list,${CMAKE_CURRENT_SOURCE_DIR}/XrApiLayer_test.expsym"
-    )
-    target_sources(
-        XrApiLayer_test
-        PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/XrApiLayer_test.expsym"
-    )
-else()
+
     set_target_properties(
         XrApiLayer_test
         PROPERTIES
@@ -86,7 +70,6 @@ else()
         XrApiLayer_test
         PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/XrApiLayer_test.map"
     )
-endif()
 
 gen_xr_layer_json(
     "${PROJECT_BINARY_DIR}/src/tests/loader_test/resources/layers/XrApiLayer_test.json"

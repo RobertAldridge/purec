@@ -28,19 +28,6 @@ if(XR_USE_GRAPHICS_API_VULKAN)
 endif()
 
 target_link_libraries(openxr_runtime_list OpenXR::openxr_loader)
-if(MSVC)
-    target_compile_options(
-        openxr_runtime_list PRIVATE /Zc:wchar_t /Zc:forScope /W4
-    )
-    if(NOT
-       CMAKE_CXX_COMPILER_ID
-       STREQUAL
-       "Clang"
-    )
-        # If actually msvc and not clang-cl
-        target_compile_options(openxr_runtime_list PRIVATE /WX)
-    endif()
-endif()
 
 set_target_properties(openxr_runtime_list PROPERTIES FOLDER ${TESTS_FOLDER})
 
@@ -48,10 +35,9 @@ install(
     TARGETS openxr_runtime_list RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
                                         COMPONENT openxr_runtime_list
 )
-if(NOT WIN32)
+
     install(
         FILES openxr_runtime_list.1
         DESTINATION ${CMAKE_INSTALL_MANDIR}/man1/
         COMPONENT ManPages
     )
-endif()

@@ -58,35 +58,10 @@ macro(gen_xr_runtime_json filename libfile)
     )
 endmacro()
 
-if(WIN32)
-    target_compile_definitions(test_runtime PRIVATE _CRT_SECURE_NO_WARNINGS)
-    # Turn off transitional "changed behavior" warning message for Visual Studio versions prior to 2015.
-    # The changed behavior is that constructor initializers are now fixed to clear the struct members.
-    target_compile_options(
-        test_runtime
-        PRIVATE
-            "$<$<AND:$<CXX_COMPILER_ID:MSVC>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,19>>:/wd4351>"
-    )
-endif()
-
 # Dynamic Library:
 #  - Make build depend on the module definition/version script/export map
 #  - Add the linker flag (except windows)
-if(WIN32)
-    target_sources(
-        test_runtime PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/test_runtime.def"
-    )
-elseif(APPLE)
-    set_target_properties(
-        test_runtime
-        PROPERTIES
-            LINK_FLAGS
-            "-Wl,-exported_symbols_list,${CMAKE_CURRENT_SOURCE_DIR}/test_runtime.expsym"
-    )
-    target_sources(
-        test_runtime PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/test_runtime.expsym"
-    )
-else()
+
     set_target_properties(
         test_runtime
         PROPERTIES
@@ -96,7 +71,6 @@ else()
     target_sources(
         test_runtime PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/test_runtime.map"
     )
-endif()
 
 gen_xr_runtime_json(
     "${PROJECT_BINARY_DIR}/src/tests/loader_test/resources/runtimes/test_runtime.json"

@@ -22,9 +22,7 @@
 #endif
 
 #ifdef XR_USE_GRAPHICS_API_VULKAN
-#ifdef XR_USE_PLATFORM_WIN32
-#define VK_USE_PLATFORM_WIN32_KHR
-#endif
+
 #ifdef XR_USE_PLATFORM_ANDROID
 #define VK_USE_PLATFORM_ANDROID_KHR
 #endif
@@ -46,10 +44,7 @@
 #ifdef XR_USE_PLATFORM_XCB
 #include <xcb/glx.h>
 #endif
-#ifdef XR_USE_PLATFORM_WIN32
-#include <wingdi.h>  // For HGLRC
-#include <GL/gl.h>
-#endif
+
 #endif
 
 #ifdef XR_USE_GRAPHICS_API_OPENGL_ES

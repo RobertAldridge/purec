@@ -176,15 +176,13 @@ set_tests_properties(BazelEnv::Sharding
 # The default handler on Windows leads to the just-in-time debugger firing,
 # which makes this test unsuitable for CI and headless runs, as it opens
 # up an interactive dialog.
-#if (NOT WIN32)
+
   add_test(NAME CATCH_CONFIG_DISABLE_EXCEPTIONS-2 COMMAND DisabledExceptions-DefaultHandler "Tests that abort")
   set_tests_properties(
       CATCH_CONFIG_DISABLE_EXCEPTIONS-2
     PROPERTIES
       PASS_REGULAR_EXPRESSION "Catch will terminate"
   )
-#endif()
-
 
 add_test(NAME CATCH_CONFIG_DISABLE_EXCEPTIONS-3 COMMAND DisabledExceptions-CustomHandler "Tests that run")
 set_tests_properties(

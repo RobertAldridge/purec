@@ -42,13 +42,7 @@ function(catch_discover_tests_impl)
   set(suite)
   set(tests)
 
-  if(WIN32)
-    set(dl_paths_variable_name PATH)
-  elseif(APPLE)
-    set(dl_paths_variable_name DYLD_LIBRARY_PATH)
-  else()
     set(dl_paths_variable_name LD_LIBRARY_PATH)
-  endif()
 
   # Run test executable to get list of available tests
   if(NOT EXISTS "${_TEST_EXECUTABLE}")

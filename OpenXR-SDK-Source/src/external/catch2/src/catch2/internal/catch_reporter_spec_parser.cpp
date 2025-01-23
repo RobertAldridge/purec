@@ -85,9 +85,8 @@ namespace Catch {
                 return ColourMode::PlatformDefault;
             } else if ( colourMode == "ansi" ) {
                 return ColourMode::ANSI;
-            } else if ( colourMode == "win32" ) {
-                return ColourMode::Win32;
-            } else if ( colourMode == "none" ) {
+            }
+            else if ( colourMode == "none" ) {
                 return ColourMode::None;
             } else {
                 return {};

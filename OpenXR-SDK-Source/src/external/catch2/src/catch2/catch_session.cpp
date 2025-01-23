@@ -232,30 +232,6 @@ namespace Catch {
         return 0;
     }
 
-#if defined(CATCH_CONFIG_WCHAR) && defined(_WIN32) && defined(UNICODE)
-    int Session::applyCommandLine( int argc, wchar_t const * const * argv ) {
-
-        char **utf8Argv = new char *[ argc ];
-
-        for ( int i = 0; i < argc; ++i ) {
-            int bufSize = WideCharToMultiByte( CP_UTF8, 0, argv[i], -1, nullptr, 0, nullptr, nullptr );
-
-            utf8Argv[ i ] = new char[ bufSize ];
-
-            WideCharToMultiByte( CP_UTF8, 0, argv[i], -1, utf8Argv[i], bufSize, nullptr, nullptr );
-        }
-
-        int returnCode = applyCommandLine( argc, utf8Argv );
-
-        for ( int i = 0; i < argc; ++i )
-            delete [] utf8Argv[ i ];
-
-        delete [] utf8Argv;
-
-        return returnCode;
-    }
-#endif
-
     void Session::useConfigData( ConfigData const& configData ) {
         m_configData = configData;
         m_config.reset();

@@ -1494,18 +1494,6 @@ namespace jni
         {
             env()->DeleteLocalRef(((jvalue*) v)->l);
         }
-#ifdef _WIN32
-
-        void valueArg(value_t* v, const std::wstring& a)
-        {
-            ((jvalue*) v)->l = env()->NewString((const jchar*) a.c_str(), jsize(a.length()));
-        }
-
-        void valueArg(value_t* v, const wchar_t* a)
-        {
-            ((jvalue*) v)->l = env()->NewString((const jchar*) a, jsize(std::wcslen(a)));
-        }
-#else
 
         void valueArg(value_t* v, const std::wstring& a)
         {
@@ -1518,8 +1506,6 @@ namespace jni
             auto jstr = toJString(a, std::wcslen(a));
             ((jvalue*) v)->l = env()->NewString(jstr.data(), jsize(jstr.size()));
         }
-
-#endif
 
         template <> void cleanupArg<const std::wstring*>(value_t* v)
         {

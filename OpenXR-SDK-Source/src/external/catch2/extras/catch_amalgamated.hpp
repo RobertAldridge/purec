@@ -101,13 +101,6 @@
 #elif defined(linux) || defined(__linux) || defined(__linux__)
 #  define CATCH_PLATFORM_LINUX
 
-#elif defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) || defined(__MINGW32__)
-#  define CATCH_PLATFORM_WINDOWS
-
-#  if defined( WINAPI_FAMILY ) && ( WINAPI_FAMILY == WINAPI_FAMILY_APP )
-#      define CATCH_PLATFORM_WINDOWS_UWP
-#  endif
-
 #elif defined(__ORBIS__) || defined(__PROSPERO__)
 #  define CATCH_PLATFORM_PLAYSTATION
 
@@ -512,13 +505,6 @@
 
 #if defined(CATCH_INTERNAL_CONFIG_TRADITIONAL_MSVC_PREPROCESSOR) && !defined(CATCH_CONFIG_NO_TRADITIONAL_MSVC_PREPROCESSOR) && !defined(CATCH_CONFIG_TRADITIONAL_MSVC_PREPROCESSOR)
 #define CATCH_CONFIG_TRADITIONAL_MSVC_PREPROCESSOR
-#endif
-
-#if defined( CATCH_PLATFORM_WINDOWS ) &&       \
-    !defined( CATCH_CONFIG_COLOUR_WIN32 ) && \
-    !defined( CATCH_CONFIG_NO_COLOUR_WIN32 ) && \
-    !defined( CATCH_INTERNAL_CONFIG_NO_COLOUR_WIN32 )
-#    define CATCH_CONFIG_COLOUR_WIN32
 #endif
 
 #if defined( CATCH_CONFIG_SHARED_LIBRARY ) && defined( _MSC_VER ) && \
@@ -4922,9 +4908,6 @@ namespace Catch {
         void libIdentify();
 
         int applyCommandLine( int argc, char const * const * argv );
-    #if defined(CATCH_CONFIG_WCHAR) && defined(_WIN32) && defined(UNICODE)
-        int applyCommandLine( int argc, wchar_t const * const * argv );
-    #endif
 
         void useConfigData( ConfigData const& configData );
 
