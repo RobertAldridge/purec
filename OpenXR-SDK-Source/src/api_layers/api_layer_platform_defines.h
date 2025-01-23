@@ -22,26 +22,6 @@
 #ifndef API_LAYER_PLATFORM_DEFINES_H_
 #define API_LAYER_PLATFORM_DEFINES_H_ 1
 
-#if defined(OS_LINUX_XLIB)
-#define XR_USE_PLATFORM_XLIB 1  // Xlib platform
-#endif                          // OS_LINUX_XLIB
-#if defined(OS_LINUX_XCB) || defined(OS_LINUX_XCB_GLX)
-#define XR_USE_PLATFORM_XCB 1  // Xcb platform
-#endif                         // OS_LINUX_XCB || OS_LINUX_XCB_GLX
-#if defined(OS_LINUX_WAYLAND)
-#define XR_USE_PLATFORM_WAYLAND 1  // Wayland platform
-#endif                             // OS_LINUX_WAYLAND
-#if defined(XR_OS_APPLE_IOS)
-#define XR_USE_PLATFORM_IOS 1            // iOS platform
-#define XR_USE_GRAPHICS_API_OPENGL_ES 1  // OpenGLES exists
-#define XR_USE_GRAPHICS_API_METAL 1      // Metal exists
-#endif                                   // XR_OS_APPLE_IOS
-#if defined(XR_OS_APPLE_MACOS)
-#define XR_USE_PLATFORM_MACOS 1       // MacOS platform
-#define XR_USE_GRAPHICS_API_OPENGL 1  // OpenGL exists
-#define XR_USE_GRAPHICS_API_METAL 1   // Metal exists
-#endif                                // XR_OS_APPLE_MACOS
-
 #include "xr_dependencies.h"  // IWYU pragma: export
 
 #endif  // API_LAYER_PLATFORM_DEFINES_H_

@@ -28,22 +28,6 @@
 #include <xcb/xcb.h>
 #endif  // XR_USE_PLATFORM_XCB
 
-#ifdef XR_USE_GRAPHICS_API_OPENGL
-#if defined(XR_USE_PLATFORM_XLIB) || defined(XR_USE_PLATFORM_XCB)
-#include <GL/glx.h>
-#endif  // (XR_USE_PLATFORM_XLIB || XR_USE_PLATFORM_XCB)
-#ifdef XR_USE_PLATFORM_XCB
-#include <xcb/glx.h>
-#endif  // XR_USE_PLATFORM_XCB
-#ifdef XR_USE_PLATFORM_MACOS
-#include <OpenCL/cl_gl_ext.h>
-#endif  // XR_USE_PLATFORM_MACOS
-#endif  // XR_USE_GRAPHICS_API_OPENGL
-
-#ifdef XR_USE_GRAPHICS_API_OPENGL_ES
-#include <EGL/egl.h>
-#endif  // XR_USE_GRAPHICS_API_OPENGL_ES
-
 #ifdef XR_USE_GRAPHICS_API_VULKAN
 #include <vulkan/vulkan.h>
 #endif  // XR_USE_GRAPHICS_API_VULKAN

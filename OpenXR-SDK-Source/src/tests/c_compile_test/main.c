@@ -36,16 +36,6 @@
 #include <d3d12.h>
 #endif
 
-#ifdef XR_USE_GRAPHICS_API_OPENGL
-#if defined(XR_USE_PLATFORM_XLIB) || defined(XR_USE_PLATFORM_XCB)
-#include <GL/glx.h>
-#endif
-#ifdef XR_USE_PLATFORM_XCB
-#include <xcb/glx.h>
-#endif
-
-#endif
-
 #ifdef XR_USE_GRAPHICS_API_OPENGL_ES
 #include <EGL/egl.h>
 #endif
