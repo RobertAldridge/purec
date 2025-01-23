@@ -28,10 +28,6 @@ jobs:
       # matrix: "${{fromJson(needs.generate_matrix.outputs.matrix)}}"
       matrix:
         preset:
-          - win32
-          - x64
-          - win32_uwp
-          - x64_uwp
           - arm64_uwp
           # - arm_uwp
 

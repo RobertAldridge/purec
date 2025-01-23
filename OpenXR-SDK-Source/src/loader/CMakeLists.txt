@@ -189,49 +189,6 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
             libopenxr_loader.so.${MAJOR}.${MINOR}
     )
 
-elseif(WIN32)
-
-    # Pass version fields as preprocessor for .rc resource version on Windows.
-    target_compile_definitions(
-        openxr_loader
-        PRIVATE
-            XR_CURRENT_API_MAJOR_VERSION=${MAJOR}
-            XR_CURRENT_API_MINOR_VERSION=${MINOR}
-            XR_CURRENT_API_PATCH_VERSION=${PATCH}
-    )
-
-    target_sources(
-        openxr_loader PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/loader.rc"
-    )
-
-    if(MSVC)
-        if(DYNAMIC_LOADER)
-            target_sources(
-                openxr_loader
-                PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/openxr-loader.def"
-            )
-        endif()
-
-        if(DYNAMIC_LOADER AND NOT (CMAKE_SYSTEM_NAME STREQUAL "WindowsStore"))
-            # If building DLLs, force static CRT linkage
-            set_target_properties(
-                openxr_loader
-                PROPERTIES MSVC_RUNTIME_LIBRARY
-                           "MultiThreaded$<$<CONFIG:Debug>:Debug>"
-            )
-        else()
-            # WindowsStore (UWP) apps must be compiled with dynamic CRT linkage (default)
-            # Otherwise for static libs, link the CRT dynamically
-            set_target_properties(
-                openxr_loader
-                PROPERTIES MSVC_RUNTIME_LIBRARY
-                           "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL"
-            )
-        endif()
-        target_compile_options(openxr_loader PRIVATE /wd6386)
-    endif()
-
-    target_link_libraries(openxr_loader PUBLIC advapi32)
 endif()
 
 # Need to copy DLL to client directories so clients can easily load it.
@@ -445,33 +402,7 @@ if(WIN32
 endif()
 
 # Make the "meta" cmake config/version file to redirect to the right arch/build
-if(WIN32 AND INSTALL_TO_ARCHITECTURE_PREFIXES)
-    set(TARGET_SUBDIR cmake/openxr)
-    set(WARNING "This is a generated file - do not edit!")
-    set(FN OpenXRConfig)
-    configure_file(
-        ../cmake/metaconfig.cmake.in
-        ${CMAKE_CURRENT_BINARY_DIR}/metaconfig.cmake @ONLY
-    )
-    install(
-        FILES ${CMAKE_CURRENT_BINARY_DIR}/metaconfig.cmake
-        DESTINATION .
-        RENAME OpenXRConfig.cmake
-        COMPONENT CMakeConfigs
-    )
-
-    set(FN OpenXRConfigVersion)
-    configure_file(
-        ../cmake/metaconfig.cmake.in
-        ${CMAKE_CURRENT_BINARY_DIR}/metaconfigversion.cmake @ONLY
-    )
-    install(
-        FILES ${CMAKE_CURRENT_BINARY_DIR}/metaconfigversion.cmake
-        DESTINATION .
-        RENAME OpenXRConfigVersion.cmake
-        COMPONENT CMakeConfigs
-    )
-elseif(ANDROID AND INSTALL_TO_ARCHITECTURE_PREFIXES)
+if(ANDROID AND INSTALL_TO_ARCHITECTURE_PREFIXES)
 
     # json data files for a "prefab" AAR
     configure_file(abi.json "${CMAKE_CURRENT_BINARY_DIR}/abi.json" @ONLY)

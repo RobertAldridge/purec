@@ -783,7 +783,7 @@ class ExtensionMetaDocOutputGenerator(OutputGenerator):
         return attrib
 
     def numbersToWords(self, name):
-        allowlist = ['WIN32', 'INT16', 'D3D1']
+        allowlist = ['INT16', 'D3D1']
 
         # temporarily replace allowlist items
         for i, w in enumerate(allowlist):

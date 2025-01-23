@@ -6,7 +6,7 @@ import sys
 
 VS_VERSION = 'Visual Studio 17 2022'
 
-PLATFORMS = ('Win32', 'x64', 'ARM', 'ARM64')
+PLATFORMS = ('ARM64')
 
 TRUE_FALSE = (True, False)
 

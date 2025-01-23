@@ -9512,15 +9512,6 @@ typedef XrResult (XRAPI_PTR *<name>PFN_xrCreateApiLayerInstance</name>)(
         </require>
     </extension>
 
-    <extension name="XR_KHR_win32_convert_performance_counter_time" number="36" type="instance" supported="openxr" protect="XR_USE_PLATFORM_WIN32">
-        <require>
-            <enum value="1"                                                         name="XR_KHR_win32_convert_performance_counter_time_SPEC_VERSION"/>
-            <enum value="&quot;XR_KHR_win32_convert_performance_counter_time&quot;" name="XR_KHR_WIN32_CONVERT_PERFORMANCE_COUNTER_TIME_EXTENSION_NAME"/>
-            <command name="xrConvertWin32PerformanceCounterToTimeKHR"/>
-            <command name="xrConvertTimeToWin32PerformanceCounterKHR"/>
-        </require>
-    </extension>
-
     <extension name="XR_KHR_convert_timespec_time" number="37" type="instance" supported="openxr" protect="XR_USE_TIMESPEC">
         <require>
             <enum value="1"                                        name="XR_KHR_convert_timespec_time_SPEC_VERSION"/>
@@ -9798,24 +9789,6 @@ typedef XrResult (XRAPI_PTR *<name>PFN_xrCreateApiLayerInstance</name>)(
         </require>
     </extension>
 
-    <extension name="XR_MSFT_perception_anchor_interop" number="57" type="instance" supported="openxr" depends="XR_VERSION_1_0+XR_MSFT_spatial_anchor" protect="XR_USE_PLATFORM_WIN32">
-        <require>
-            <enum value="1"                                             name="XR_MSFT_perception_anchor_interop_SPEC_VERSION"/>
-            <enum value="&quot;XR_MSFT_perception_anchor_interop&quot;" name="XR_MSFT_PERCEPTION_ANCHOR_INTEROP_EXTENSION_NAME"/>
-
-            <command name="xrCreateSpatialAnchorFromPerceptionAnchorMSFT"/>
-            <command name="xrTryGetPerceptionAnchorFromSpatialAnchorMSFT"/>
-
-        </require>
-    </extension>
-
-    <extension name="XR_EXT_win32_appcontainer_compatible" number="58" type="instance" supported="openxr">
-        <require>
-            <enum value="1"                                                name="XR_EXT_win32_appcontainer_compatible_SPEC_VERSION"/>
-            <enum value="&quot;XR_EXT_win32_appcontainer_compatible&quot;" name="XR_EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME"/>
-        </require>
-    </extension>
-
     <extension name="XR_ML_extension_59" number="59" type="instance" supported="disabled">
         <require>
             <enum value="1"                              name="XR_ML_extension_59_SPEC_VERSION"/>
@@ -9836,15 +9809,6 @@ typedef XrResult (XRAPI_PTR *<name>PFN_xrCreateApiLayerInstance</name>)(
         <require>
             <enum value="1"                                name="XR_MSFT_extension_63_SPEC_VERSION"/>
             <enum value="&quot;XR_MSFT_extension_63&quot;" name="XR_MSFT_extension_63_EXTENSION_NAME"/>
-        </require>
-    </extension>
-
-    <extension name="XR_MSFT_holographic_window_attachment" number="64" type="instance" supported="openxr" protect="XR_USE_PLATFORM_WIN32">
-        <require>
-            <enum value="1"                                                 name="XR_MSFT_holographic_window_attachment_SPEC_VERSION"/>
-            <enum value="&quot;XR_MSFT_holographic_window_attachment&quot;" name="XR_MSFT_HOLOGRAPHIC_WINDOW_ATTACHMENT_EXTENSION_NAME"/>
-            <type name="XrHolographicWindowAttachmentMSFT"/>
-            <enum offset="0" extends="XrStructureType" name="XR_TYPE_HOLOGRAPHIC_WINDOW_ATTACHMENT_MSFT"/>
         </require>
     </extension>
 

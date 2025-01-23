@@ -431,11 +431,7 @@ TEST_CASE("Win32 colour implementation is compile-time optional",
 
     auto result = cli.parse( { "test", "--colour-mode", "win32" } );
 
-#if defined( CATCH_CONFIG_COLOUR_WIN32 )
-    REQUIRE( result );
-#else
     REQUIRE_FALSE( result );
-#endif
 }
 
 TEST_CASE( "Parse rng seed in different formats", "[approvals][cli][rng-seed]" ) {

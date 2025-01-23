@@ -137,49 +137,7 @@ Platform headers / declarations
 ================================
 */
 
-#if defined(OS_WINDOWS)
-
-#define XR_USE_PLATFORM_WIN32 1
-
-#if !defined(_CRT_SECURE_NO_WARNINGS)
-#define _CRT_SECURE_NO_WARNINGS
-#endif
-
-#if defined(_MSC_VER)
-#pragma warning(disable : 4204)  // nonstandard extension used : non-constant aggregate initializer
-#pragma warning(disable : 4221)  // nonstandard extension used: 'layers': cannot be initialized using address of automatic variable
-                                 // 'layerProjection'
-#pragma warning(disable : 4255)  // '<name>' : no function prototype given: converting '()' to '(void)'
-#pragma warning(disable : 4668)  // '__cplusplus' is not defined as a preprocessor macro, replacing with '0' for '#if/#elif'
-#pragma warning(disable : 4710)  // 'int printf(const char *const ,...)': function not inlined
-#pragma warning(disable : 4711)  // function '<name>' selected for automatic inline expansion
-#pragma warning(disable : 4738)  // storing 32-bit float result in memory, possible loss of performance
-#pragma warning(disable : 4820)  // '<name>' : 'X' bytes padding added after data member '<member>'
-#pragma warning(disable : 4505)  // unreferenced local function has been removed
-#endif
-
-#if _MSC_VER >= 1900
-#pragma warning(disable : 4464)  // relative include path contains '..'
-#pragma warning(disable : 4774)  // 'printf' : format string expected in argument 1 is not a string literal
-#endif
-
-#define OPENGL_VERSION_MAJOR 4
-#define OPENGL_VERSION_MINOR 3
-#define GLSL_VERSION "430"
-#define SPIRV_VERSION "99"
-#define USE_SYNC_OBJECT 0  // 0 = GLsync, 1 = EGLSyncKHR, 2 = storage buffer
-
-#include <windows.h>
-#include <GL/gl.h>
-#define GL_EXT_color_subtable
-#include <GL/glext.h>
-#include <GL/wglext.h>
-#include <GL/gl_format.h>
-
-#define GRAPHICS_API_OPENGL 1
-#define OUTPUT_PATH ""
-
-#elif defined(OS_LINUX)
+#if defined(OS_LINUX)
 
 #define OPENGL_VERSION_MAJOR 4
 #define OPENGL_VERSION_MINOR 5

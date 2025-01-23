@@ -12,7 +12,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">Apache-2.0 OR MIT</license>
     <projectUrl>https://github.com/KhronosGroup/OpenXR-SDK</projectUrl>
-    <description>Khronos OpenXR loader and headers required to build a Win32 or UWP OpenXR application</description>
+    <description>Khronos OpenXR loader and headers required to build a UWP OpenXR application</description>
     <tags>native khronos openxr loader</tags>
   </metadata>
 </package>

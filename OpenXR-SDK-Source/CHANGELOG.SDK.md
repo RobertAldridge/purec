@@ -1900,8 +1900,6 @@ extensions.
     ([internal MR 1912](https://gitlab.khronos.org/openxr/openxr/merge_requests/1912))
   - loader: Fix issues around `xrInitializeLoaderKHR`.
     ([internal MR 1922](https://gitlab.khronos.org/openxr/openxr/merge_requests/1922))
-  - loader: Replace `#if _WIN32` with `#ifdef _WIN32`.
-    ([OpenXR-SDK-Source/#215](https://github.com/KhronosGroup/OpenXR-SDK-Source/pull/215))
 
 ## OpenXR SDK 1.0.12 (2020-09-25)
 
@@ -1979,9 +1977,6 @@ convenience.
     `PathCanonicalize` with `PathCchCanonicalize` and adds the appropriate library
     for linking in.
     ([OpenXR-SDK-Source/#198](https://github.com/KhronosGroup/OpenXR-SDK-Source/pull/198))
-  - Support for building more projects when targeting UWP, and support for all
-    architectures when targeting Win32.
-    ([OpenXR-SDK-Source/#199](https://github.com/KhronosGroup/OpenXR-SDK-Source/pull/199))
   - hello_xr: fix Vulkan image layout transitions.
     ([internal MR 1876](https://gitlab.khronos.org/openxr/openxr/merge_requests/1876))
   - validation: Enable three additional checks (on optional arrays with non-
@@ -2131,10 +2126,6 @@ file. This is still in progress but mostly complete.
     available and what its requirements are.
     ([OpenXR-SDK-Source/#192](https://github.com/KhronosGroup/OpenXR-SDK-Source/pull/192),
     [OpenXR-SDK-Source/#188](https://github.com/KhronosGroup/OpenXR-SDK-Source/pull/188))
-  - CI: Modifications to Azure DevOps build pipeline. Now builds UWP loader DLLs in
-    addition to Win32 loader DLLs. No longer builds static loader libraries due to
-    linkability concerns. Re-arranged release artifact zip to distinguish
-    architecture from 32-bit or 64-bit.
   - Loader: Replace global static initializers with functions that return static
     locals. With this change, code that includes OpenXR doesn't have to page in
     this code and initialize these during startup.
@@ -2297,7 +2288,6 @@ These had been integrated into the public repo incrementally.
 
 - Registry
   - Fix typo in visibility mesh enum comment.
-  - Add `XR_EXT_win32_appcontainer_compatible` extension.
 - Scripts
   - Fix comment typos.
   - Sync scripts with Vulkan. (internal MR 1625)
@@ -2391,7 +2381,6 @@ These had been integrated into the public repo incrementally.
   - #130 - Fix exporting of symbols on Windows.
   - #129 - Remove debug ext only when added by loader - fixes usage of debug ext
     on runtimes that do not provide it themselves.
-  - #125 - Include a `OutputDebugString` logger for Win32
 - Layers
   - #138 - Don't validate output enum buffer values
   - #137 - Fix incorrect filenames in the generated API layer JSON
@@ -2500,8 +2489,6 @@ These had been integrated into the public repo incrementally.
 - Registry
   - Reserve Oculus extension numbers (internal MR 1493)
   - Add Monado headless (vendor extension) (internal MR 1482)
-- Loader
-  - Remove unnecessary `#ifdef _WIN32` in loader. (internal MR 1487)
 
 ### New extensions
 

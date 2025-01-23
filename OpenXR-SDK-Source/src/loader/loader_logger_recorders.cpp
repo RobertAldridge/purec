@@ -20,13 +20,7 @@
 #include <iostream>
 #include <sstream>
 
-#ifdef __ANDROID__
 #include "android/log.h"
-#endif
-
-#ifdef _WIN32
-#include <windows.h>
-#endif
 
 // Anonymous namespace to keep these types private
 namespace {

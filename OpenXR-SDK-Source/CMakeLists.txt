@@ -47,7 +47,7 @@ option(
 string(TOUPPER "${CMAKE_GENERATOR_PLATFORM}" CMAKE_GENERATOR_PLATFORM_UPPER)
 
 # Artifact organization
-if(WIN32 OR ANDROID)
+if(ANDROID)
     option(
         INSTALL_TO_ARCHITECTURE_PREFIXES
         "Install platform-specific files to architecture-specific directories, for packaging"
@@ -55,30 +55,7 @@ if(WIN32 OR ANDROID)
     )
 endif()
 
-if(WIN32 AND INSTALL_TO_ARCHITECTURE_PREFIXES)
-    unset(_UWP_SUFFIX)
-    if(CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
-        set(_UWP_SUFFIX _uwp)
-    endif()
-    if(CMAKE_GENERATOR_PLATFORM_UPPER MATCHES "ARM.*")
-        if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-            set(_PLATFORM ARM64)
-        else()
-            set(_PLATFORM ARM)
-        endif()
-    else()
-        if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-            set(_PLATFORM x64)
-        else()
-            set(_PLATFORM Win32)
-        endif()
-    endif()
-
-    include(GNUInstallDirs)
-    set(CMAKE_INSTALL_BINDIR ${_PLATFORM}${_UWP_SUFFIX}/${CMAKE_INSTALL_BINDIR})
-    set(CMAKE_INSTALL_LIBDIR ${_PLATFORM}${_UWP_SUFFIX}/${CMAKE_INSTALL_LIBDIR})
-
-elseif(ANDROID AND INSTALL_TO_ARCHITECTURE_PREFIXES)
+if(ANDROID AND INSTALL_TO_ARCHITECTURE_PREFIXES)
     # This organizes things like a prefab module
     set(PREFAB_INSTALL_DIR prefab)
     set(PREFAB_HEADER_MODULE_INSTALL_DIR
@@ -116,8 +93,6 @@ elseif(ANDROID AND INSTALL_TO_ARCHITECTURE_PREFIXES)
         )
     endif()
 
-elseif(NOT ANDROID)
-    include(GNUInstallDirs)
 endif()
 
 # Path separators ( : or ; ) are not handled well in CMake.
