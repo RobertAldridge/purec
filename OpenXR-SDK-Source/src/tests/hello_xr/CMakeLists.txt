@@ -63,7 +63,8 @@ if(ANDROID)
 
     # Only for Android because it lacks a command line
     set(HELLOXR_DEFAULT_GRAPHICS_PLUGIN
-        "OpenGLES"
+        "Vulkan"
+#        "OpenGLES"
         CACHE
             STRING
             "Which graphics plugin should be used by default for Hello XR artifacts?"
@@ -75,17 +76,17 @@ if(ANDROID)
     )
 
     # Now handle the value, normally provided by Gradle
-    if(HELLOXR_DEFAULT_GRAPHICS_PLUGIN STREQUAL "OpenGLES")
-        message(STATUS "hello_xr will default to OpenGL ES graphics plugin")
-        target_compile_definitions(
-            hello_xr PRIVATE DEFAULT_GRAPHICS_PLUGIN_OPENGLES
-        )
-    elseif(HELLOXR_DEFAULT_GRAPHICS_PLUGIN STREQUAL "Vulkan")
+#    if(HELLOXR_DEFAULT_GRAPHICS_PLUGIN STREQUAL "OpenGLES")
+#        message(STATUS "hello_xr will default to OpenGL ES graphics plugin")
+#        target_compile_definitions(
+#            hello_xr PRIVATE DEFAULT_GRAPHICS_PLUGIN_OPENGLES
+#        )
+#    elseif(HELLOXR_DEFAULT_GRAPHICS_PLUGIN STREQUAL "Vulkan")
         message(STATUS "hello_xr will default to Vulkan graphics plugin")
         target_compile_definitions(
             hello_xr PRIVATE DEFAULT_GRAPHICS_PLUGIN_VULKAN
         )
-    endif()
+#    endif()
 
 else()
     add_executable(hello_xr ${LOCAL_SOURCE} ${LOCAL_HEADERS} ${VULKAN_SHADERS})
