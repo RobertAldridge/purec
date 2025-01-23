@@ -36,7 +36,7 @@ Copyright : Copyright (c) Meta Platforms, Inc. and affiliates. All rights reserv
 #include <unistd.h>
 #include <android/log.h>
 #include <android/native_window_jni.h> // for native window JNI
-#include <android_native_app_glue.h>
+#include "anag.h"
 #endif // defined(ANDROID)
 
 #include <assert.h>

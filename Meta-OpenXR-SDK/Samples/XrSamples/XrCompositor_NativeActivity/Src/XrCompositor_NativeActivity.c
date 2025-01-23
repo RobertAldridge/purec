@@ -38,7 +38,7 @@ Authors   :
 #include <android/asset_manager.h>
 #include <android/log.h>
 #include <android/native_window_jni.h>
-#include <android_native_app_glue.h>
+#include "anag.h"
 #include <assert.h>
 
 #include <EGL/egl.h>
@@ -2711,7 +2711,7 @@ static LocVel GetSpaceLocVel(XrSpace space, XrTime time) {
 
 /**
  * This is the main entry point of a native application that is using
- * android_native_app_glue.  It runs in its own thread, with its own
+ * anag.  It runs in its own thread, with its own
  * event loop for receiving input events and doing other things.
  */
 void android_main(struct android_app* app) {
@@ -3857,7 +3857,8 @@ void android_main(struct android_app* app) {
 
         // Compose the layers for this frame.
         const XrCompositionLayerBaseHeader* layers[ovrMaxLayerCount] = {0};
-        for (int i = 0; i < appState.LayerCount; i++) {
+        for (int i = 0; i < appState.LayerCount; i++)
+        {
             layers[i] = (const XrCompositionLayerBaseHeader*)&appState.Layers[i];
         }
 
@@ -3887,7 +3888,9 @@ void android_main(struct android_app* app) {
     OXR(xrDestroySpace(appState.FakeStageSpace));
     appState.CurrentSpace = XR_NULL_HANDLE;
     OXR(xrDestroySession(appState.Session));
-    OXR(xrDestroyInstance(appState.Instance));
+
+    //OXR(xrDestroyInstance(appState.Instance));
+    OXR_CheckErrors(ovrApp_GetInstance(), xrDestroyInstance(appState.Instance), "xrDestroyInstance(appState.Instance)", true);
 
     ovrApp_Destroy(&appState);
 

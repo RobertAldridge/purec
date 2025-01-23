@@ -43,7 +43,7 @@ Language    :   c++
 #if defined(ANDROID)
 #include <android/window.h>
 #include <android/native_window_jni.h>
-#include <android_native_app_glue.h>
+#include "anag.h"
 #include <android/keycodes.h>
 
 #include <EGL/egl.h>

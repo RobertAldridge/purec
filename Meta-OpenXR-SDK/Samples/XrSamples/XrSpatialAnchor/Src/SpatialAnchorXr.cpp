@@ -50,7 +50,7 @@ Copyright : Copyright (c) Meta Platforms, Inc. and its affiliates. All rights re
 #include <sys/prctl.h> // for prctl( PR_SET_NAME )
 #include <android/log.h>
 #include <android/native_window_jni.h> // for native window JNI
-#include <android_native_app_glue.h>
+#include "anag.h"
 #else
 #include <thread>
 #endif
@@ -102,8 +102,8 @@ using namespace OVR;
     printf("\n")
 #endif
 
-static const int CPU_LEVEL = 2;
-static const int GPU_LEVEL = 3;
+static const int CPU_LEVEL = 4;
+static const int GPU_LEVEL = 4;
 static const int NUM_MULTI_SAMPLES = 4;
 
 static const uint32_t MAX_PERSISTENT_SPACES = 20;
@@ -1360,7 +1360,7 @@ void PlaceAnchor(ovrApp& app, SimpleXrInput* input, const XrFrameState& frameSta
 #if defined(XR_USE_PLATFORM_ANDROID)
 /**
  * This is the main entry point of a native application that is using
- * android_native_app_glue.  It runs in its own thread, with its own
+ * anag.  It runs in its own thread, with its own
  * event loop for receiving input events and doing other things.
  */
 void android_main(struct android_app* androidApp) {

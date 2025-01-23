@@ -27,7 +27,7 @@ file(GLOB_RECURSE SRC_FILES
 
 if(ANDROID)
     add_library(${PROJECT_NAME} MODULE ${SRC_FILES})
-    target_include_directories(${PROJECT_NAME} PUBLIC ${ANDROID_NDK}/sources/android/native_app_glue)
+    target_include_directories(${PROJECT_NAME} PUBLIC)
     target_link_libraries(${PROJECT_NAME} PRIVATE
         android
         EGL

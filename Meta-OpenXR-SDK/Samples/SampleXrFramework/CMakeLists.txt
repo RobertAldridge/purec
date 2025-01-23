@@ -18,10 +18,6 @@ if(NOT TARGET OpenXR::openxr_loader)
     find_package(OpenXR REQUIRED)
 endif()
 
-if(ANDROID)
-    add_library(app_glue STATIC ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
-endif()
-
 set(OPENXR_PREVIEW_HEADER ../../OpenXR)
 
 set(1STPARTY_PATH ../1stParty)
@@ -66,7 +62,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 endif()
 
 if(ANDROID)
-    target_include_directories(samplexrframework PUBLIC ${ANDROID_NDK}/sources/android/native_app_glue)
+    target_include_directories(samplexrframework PUBLIC)
     target_compile_definitions(
         samplexrframework
         PUBLIC
@@ -92,7 +88,6 @@ if(ANDROID)
             EGL
             GLESv3
             log
-            app_glue
     )
     if(USE_ASAN)
         target_compile_options(
@@ -148,14 +143,13 @@ target_include_directories(
 )
 target_link_libraries(samplecommon_gl INTERFACE OpenXR::openxr_loader)
 if(ANDROID)
-    target_include_directories(samplecommon_gl INTERFACE ${ANDROID_NDK}/sources/android/native_app_glue)
+    target_include_directories(samplecommon_gl INTERFACE)
     # Link the interface target to the dependency targets
     target_link_libraries(samplecommon_gl INTERFACE
         android
         EGL
         GLESv3
         log
-        app_glue
     )
 elseif(WIN32)
     target_compile_definitions(samplecommon_gl INTERFACE _USE_MATH_DEFINES)
@@ -174,7 +168,6 @@ if(ANDROID)
             ${3RDPARTY_PATH}/khronos/openxr/OpenXR-SDK/src/common
             # Extra vendor-provided headers
             ${OPENXR_PREVIEW_HEADER}
-            ${ANDROID_NDK}/sources/android/native_app_glue
     )
     # Link the interface target to the dependency targets
     target_link_libraries(native_activity_framework INTERFACE
@@ -182,7 +175,6 @@ if(ANDROID)
         EGL
         GLESv3
         log
-        app_glue
         OpenXR::openxr_loader
     )
 endif()

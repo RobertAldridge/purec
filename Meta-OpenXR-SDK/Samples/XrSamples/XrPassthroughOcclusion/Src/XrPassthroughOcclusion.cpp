@@ -40,7 +40,7 @@ Copyright : Copyright (c) Meta Platforms, Inc. and affiliates. All rights reserv
 #include <sys/prctl.h> // for prctl( PR_SET_NAME )
 #include <android/log.h>
 #include <android/native_window_jni.h> // for native window JNI
-#include <android_native_app_glue.h>
+#include "anag.h"
 #else
 #include <thread>
 #endif // defined(ANDROID)
@@ -672,7 +672,7 @@ bool CheckUseScenePermission(JNIEnv* env, jobject activityObject);
 
 /**
  * This is the main entry point of a native application that is using
- * android_native_app_glue.  It runs in its own thread, with its own
+ * anag.  It runs in its own thread, with its own
  * event loop for receiving input events and doing other things.
  */
 #if defined(XR_USE_PLATFORM_ANDROID)
