@@ -2,6 +2,7 @@ local.properties
 .cxx/
 .gradle/
 .idea/
+Samples/XrSamples/hello_xr/Projects/Android/build/
 Samples/XrSamples/XrBodyFaceEyeSocial/Projects/Android/build/
 Samples/XrSamples/XrColocationDiscovery/Projects/Android/build/
 Samples/XrSamples/XrColorSpaceFB/Projects/Android/build/
