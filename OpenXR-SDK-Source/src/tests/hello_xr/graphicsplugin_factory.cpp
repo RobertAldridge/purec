@@ -11,10 +11,6 @@
 #include "graphicsplugin.h"
 
 // Graphics API factories are forward declared here.
-#ifdef XR_USE_GRAPHICS_API_OPENGL_ES
-std::shared_ptr<IGraphicsPlugin> CreateGraphicsPlugin_OpenGLES(const std::shared_ptr<Options>& options,
-                                                               std::shared_ptr<IPlatformPlugin> platformPlugin);
-#endif
 
 #ifdef XR_USE_GRAPHICS_API_VULKAN
 std::shared_ptr<IGraphicsPlugin> CreateGraphicsPlugin_VulkanLegacy(const std::shared_ptr<Options>& options,
@@ -23,30 +19,12 @@ std::shared_ptr<IGraphicsPlugin> CreateGraphicsPlugin_VulkanLegacy(const std::sh
 std::shared_ptr<IGraphicsPlugin> CreateGraphicsPlugin_Vulkan(const std::shared_ptr<Options>& options,
                                                              std::shared_ptr<IPlatformPlugin> platformPlugin);
 #endif
-#ifdef XR_USE_GRAPHICS_API_D3D11
-std::shared_ptr<IGraphicsPlugin> CreateGraphicsPlugin_D3D11(const std::shared_ptr<Options>& options,
-                                                            std::shared_ptr<IPlatformPlugin> platformPlugin);
-#endif
-#ifdef XR_USE_GRAPHICS_API_D3D12
-std::shared_ptr<IGraphicsPlugin> CreateGraphicsPlugin_D3D12(const std::shared_ptr<Options>& options,
-                                                            std::shared_ptr<IPlatformPlugin> platformPlugin);
-#endif
-#ifdef XR_USE_GRAPHICS_API_METAL
-std::shared_ptr<IGraphicsPlugin> CreateGraphicsPlugin_Metal(const std::shared_ptr<Options>& options,
-                                                            std::shared_ptr<IPlatformPlugin> platformPlugin);
-#endif
 
 namespace {
 using GraphicsPluginFactory = std::function<std::shared_ptr<IGraphicsPlugin>(const std::shared_ptr<Options>& options,
                                                                              std::shared_ptr<IPlatformPlugin> platformPlugin)>;
 
 std::map<std::string, GraphicsPluginFactory, IgnoreCaseStringLess> graphicsPluginMap = {
-#ifdef XR_USE_GRAPHICS_API_OPENGL_ES
-    {"OpenGLES",
-     [](const std::shared_ptr<Options>& options, std::shared_ptr<IPlatformPlugin> platformPlugin) {
-         return CreateGraphicsPlugin_OpenGLES(options, std::move(platformPlugin));
-     }},
-#endif
 
 #ifdef XR_USE_GRAPHICS_API_VULKAN
     {"Vulkan",
@@ -56,24 +34,6 @@ std::map<std::string, GraphicsPluginFactory, IgnoreCaseStringLess> graphicsPlugi
     {"Vulkan2",
      [](const std::shared_ptr<Options>& options, std::shared_ptr<IPlatformPlugin> platformPlugin) {
          return CreateGraphicsPlugin_Vulkan(options, std::move(platformPlugin));
-     }},
-#endif
-#ifdef XR_USE_GRAPHICS_API_D3D11
-    {"D3D11",
-     [](const std::shared_ptr<Options>& options, std::shared_ptr<IPlatformPlugin> platformPlugin) {
-         return CreateGraphicsPlugin_D3D11(options, std::move(platformPlugin));
-     }},
-#endif
-#ifdef XR_USE_GRAPHICS_API_D3D12
-    {"D3D12",
-     [](const std::shared_ptr<Options>& options, std::shared_ptr<IPlatformPlugin> platformPlugin) {
-         return CreateGraphicsPlugin_D3D12(options, std::move(platformPlugin));
-     }},
-#endif
-#ifdef XR_USE_GRAPHICS_API_METAL
-    {"Metal",
-     [](const std::shared_ptr<Options>& options, std::shared_ptr<IPlatformPlugin> platformPlugin) {
-         return CreateGraphicsPlugin_Metal(options, std::move(platformPlugin));
      }},
 #endif
 };

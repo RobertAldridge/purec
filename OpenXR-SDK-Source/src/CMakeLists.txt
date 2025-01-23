@@ -42,23 +42,6 @@ set(METAL_INCOMPATIBLE TRUE)
 
 # CMake will detect OpenGL/Vulkan which are not compatible with UWP and ARM/ARM64 on Windows so skip it in these cases.
 
-#    find_path(
-#        ANDROID_NATIVE_APP_GLUE android_native_app_glue.h
-#        PATHS "${ANDROID_NDK}/sources/android/native_app_glue"
-#    )
-
-#if(NOT OPENGLES_INCOMPATIBLE)
-#    find_package(OpenGLES COMPONENTS V3 V2)
-#    find_package(EGL)
-#    if(OPENGLES_FOUND AND EGL_FOUND)
-#        set(XR_USE_GRAPHICS_API_OPENGL_ES TRUE)
-#        add_definitions(-DXR_USE_GRAPHICS_API_OPENGL_ES)
-#        message(STATUS "Enabling OpenGL|ES support")
-#    elseif(BUILD_ALL_EXTENSIONS)
-#        message(FATAL_ERROR "OpenGL|ES not found")
-#    endif()
-#endif()
-
 if(NOT VULKAN_INCOMPATIBLE)
     # Find the Vulkan headers
     find_package(Vulkan)
@@ -125,32 +108,32 @@ cmake_dependent_option(
 
 # This is a little helper library for setting up OpenGL
 
-if(OpenGLES_FOUND
-   AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/common/gfxwrapper_opengl.c"
-)
-    add_library(
-        openxr-gfxwrapper STATIC common/gfxwrapper_opengl.c
-                                 common/gfxwrapper_opengl.h
-    )
-    target_include_directories(
-        openxr-gfxwrapper PUBLIC "${PROJECT_SOURCE_DIR}/external/include"
-    )
-
-    if(OpenGLES_FOUND)
-        if(TARGET OpenGLES::OpenGLESv3)
-            target_link_libraries(openxr-gfxwrapper PUBLIC OpenGLES::OpenGLESv3)
-        elseif(TARGET OpenGLES::OpenGLESv2)
-            target_link_libraries(openxr-gfxwrapper PUBLIC OpenGLES::OpenGLESv2)
-        else()
-            message(FATAL_ERROR "Should not get here!")
-        endif()
-        target_link_libraries(openxr-gfxwrapper PUBLIC EGL::EGL)
-    endif()
-
-        target_include_directories(
-            openxr-gfxwrapper PUBLIC
+#if(OpenGLES_FOUND
+#   AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/common/gfxwrapper_opengl.c"
+#)
+#    add_library(
+#        openxr-gfxwrapper STATIC common/gfxwrapper_opengl.c
+#                                 common/gfxwrapper_opengl.h
+#    )
+#    target_include_directories(
+#        openxr-gfxwrapper PUBLIC "${PROJECT_SOURCE_DIR}/external/include"
+#    )
+#
+#    if(OpenGLES_FOUND)
+#        if(TARGET OpenGLES::OpenGLESv3)
+#            target_link_libraries(openxr-gfxwrapper PUBLIC OpenGLES::OpenGLESv3)
+#        elseif(TARGET OpenGLES::OpenGLESv2)
+#            target_link_libraries(openxr-gfxwrapper PUBLIC OpenGLES::OpenGLESv2)
+#        else()
+#            message(FATAL_ERROR "Should not get here!")
+#        endif()
+#        target_link_libraries(openxr-gfxwrapper PUBLIC EGL::EGL)
+#    endif()
+#
+#        target_include_directories(
+#            openxr-gfxwrapper PUBLIC
             #"${ANDROID_NATIVE_APP_GLUE}"
-        )
+#        )
 
         # Note: For some reason, just adding this to the gfxwrapper library results in failure at load time.
         # So, each consuming target must add $<TARGET_OBJECTS:android_native_app_glue> to their sources
@@ -165,12 +148,12 @@ if(OpenGLES_FOUND
       #      android_native_app_glue PRIVATE -Wno-unused-parameter
       #  )
 
-    set_target_properties(openxr-gfxwrapper PROPERTIES FOLDER ${HELPER_FOLDER})
-    message(
-        STATUS
-            "Enabling OpenGL support in hello_xr, loader_test, and conformance, if configured"
-    )
-endif()
+#    set_target_properties(openxr-gfxwrapper PROPERTIES FOLDER ${HELPER_FOLDER})
+#    message(
+#        STATUS
+#            "Enabling OpenGL support in hello_xr, loader_test, and conformance, if configured"
+#    )
+#endif()
 
 # Determine the presentation backend for Linux systems.
 # Use an include because the code is pretty big.

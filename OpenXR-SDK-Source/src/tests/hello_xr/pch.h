@@ -39,39 +39,6 @@
 #include <jni.h>
 #include <sys/system_properties.h>
 
-
-#ifdef XR_USE_PLATFORM_WAYLAND
-#include "wayland-client.h"
-#endif
-
-#ifdef XR_USE_PLATFORM_XLIB
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#endif
-
-#ifdef XR_USE_PLATFORM_XCB
-#include <xcb/xcb.h>
-#endif
-
-//
-// Graphics Headers
-//
-#ifdef XR_USE_GRAPHICS_API_D3D11
-#include <d3d11_4.h>
-#endif
-
-#ifdef XR_USE_GRAPHICS_API_D3D12
-#include <d3d12.h>
-#endif
-
-#ifdef XR_USE_GRAPHICS_API_OPENGL_ES
-#include <EGL/egl.h>
-#endif
-
-#ifdef XR_USE_PLATFORM_EGL
-#include <EGL/egl.h>
-#endif  // XR_USE_PLATFORM_EGL
-
 #ifdef XR_USE_GRAPHICS_API_VULKAN
 
 #define VK_USE_PLATFORM_ANDROID_KHR

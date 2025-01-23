@@ -2039,6 +2039,7 @@ typedef XrResult (XRAPI_PTR *<name>PFN_xrCreateApiLayerInstance</name>)(
         </type>
 
         <!-- XR_FB_swapchain_update_state_opengl_es structs -->
+        <!--
         <type category="struct" name="XrSwapchainStateSamplerOpenGLESFB" parentstruct="XrSwapchainStateBaseHeaderFB" protect="XR_USE_GRAPHICS_API_OPENGL_ES">
             <member values="XR_TYPE_SWAPCHAIN_STATE_SAMPLER_OPENGL_ES_FB"><type>XrStructureType</type> <name>type</name></member>
             <member><type>void</type>* <name>next</name></member>
@@ -2053,6 +2054,7 @@ typedef XrResult (XRAPI_PTR *<name>PFN_xrCreateApiLayerInstance</name>)(
             <member><type>float</type> <name>maxAnisotropy</name></member>
             <member><type>XrColor4f</type> <name>borderColor</name></member>
         </type>
+        -->
 
         <!-- XR_FB_swapchain_update_state_vulkan structs -->
         <type category="struct" name="XrSwapchainStateSamplerVulkanFB" parentstruct="XrSwapchainStateBaseHeaderFB" protect="XR_USE_GRAPHICS_API_VULKAN">
@@ -9347,6 +9349,7 @@ typedef XrResult (XRAPI_PTR *<name>PFN_xrCreateApiLayerInstance</name>)(
     </extension>
 
     <!-- OpenGL graphics binding extension -->
+    <!--
     <extension name="XR_KHR_opengl_enable" number="24" type="instance" protect="XR_USE_GRAPHICS_API_OPENGL" supported="openxr">
         <require>
             <enum value="10"                               name="XR_KHR_opengl_enable_SPEC_VERSION"/>
@@ -9366,8 +9369,10 @@ typedef XrResult (XRAPI_PTR *<name>PFN_xrCreateApiLayerInstance</name>)(
             <command name="xrGetOpenGLGraphicsRequirementsKHR"/>
         </require>
     </extension>
+    -->
 
     <!-- OpenGL ES graphics binding extension -->
+    <!--
     <extension name="XR_KHR_opengl_es_enable" number="25" type="instance" protect="XR_USE_GRAPHICS_API_OPENGL_ES" supported="openxr">
         <require>
             <enum value="8"                                   name="XR_KHR_opengl_es_enable_SPEC_VERSION"/>
@@ -9381,6 +9386,7 @@ typedef XrResult (XRAPI_PTR *<name>PFN_xrCreateApiLayerInstance</name>)(
             <command name="xrGetOpenGLESGraphicsRequirementsKHR"/>
         </require>
     </extension>
+    -->
 
     <!-- Vulkan graphics binding extension -->
     <extension name="XR_KHR_vulkan_enable" number="26" type="instance" protect="XR_USE_GRAPHICS_API_VULKAN" supported="openxr">
@@ -9401,14 +9407,17 @@ typedef XrResult (XRAPI_PTR *<name>PFN_xrCreateApiLayerInstance</name>)(
     </extension>
 
     <!-- Value used by obsolete D3D10 graphics binding extension -->
+    <!--
     <extension name="XR_KHR_D3D10_enable_obsolete" number="27" type="instance" supported="disabled">
         <require>
             <enum value="4"                                        name="XR_KHR_D3D10_enable_obsolete_SPEC_VERSION"/>
             <enum value="&quot;XR_KHR_D3D10_enable_obsolete&quot;" name="XR_KHR_D3D10_ENABLE_OBSOLETE_EXTENSION_NAME"/>
         </require>
     </extension>
+    -->
 
     <!-- D3D11 graphics binding extension -->
+    <!--
     <extension name="XR_KHR_D3D11_enable" number="28" type="instance" protect="XR_USE_GRAPHICS_API_D3D11" supported="openxr">
         <require>
             <enum value="9"                               name="XR_KHR_D3D11_enable_SPEC_VERSION"/>
@@ -9422,8 +9431,10 @@ typedef XrResult (XRAPI_PTR *<name>PFN_xrCreateApiLayerInstance</name>)(
             <command name="xrGetD3D11GraphicsRequirementsKHR"/>
         </require>
     </extension>
+    -->
 
     <!-- D3D12 graphics binding extension -->
+    <!--
     <extension name="XR_KHR_D3D12_enable" number="29" type="instance" protect="XR_USE_GRAPHICS_API_D3D12" supported="openxr">
         <require>
             <enum value="9"                               name="XR_KHR_D3D12_enable_SPEC_VERSION"/>
@@ -9437,8 +9448,10 @@ typedef XrResult (XRAPI_PTR *<name>PFN_xrCreateApiLayerInstance</name>)(
             <command name="xrGetD3D12GraphicsRequirementsKHR"/>
         </require>
     </extension>
+    -->
 
     <!-- Metal graphics binding extension -->
+    <!--
     <extension name="XR_KHR_metal_enable" number="30" type="instance" protect="XR_USE_GRAPHICS_API_METAL" supported="openxr">
         <require>
             <enum value="1"                               name="XR_KHR_metal_enable_SPEC_VERSION"/>
@@ -9452,6 +9465,7 @@ typedef XrResult (XRAPI_PTR *<name>PFN_xrCreateApiLayerInstance</name>)(
             <command name="xrGetMetalGraphicsRequirementsKHR"/>
         </require>
     </extension>
+    -->
 
     <!-- Eye gaze interaction extension -->
     <extension name="XR_EXT_eye_gaze_interaction" number="31" type="instance" supported="openxr">
@@ -9621,6 +9635,7 @@ typedef XrResult (XRAPI_PTR *<name>PFN_xrCreateApiLayerInstance</name>)(
         </require>
     </extension>
 
+    <!--
     <extension name="XR_MNDX_egl_enable" number="49" type="instance" provisional="true" protect="XR_USE_PLATFORM_EGL" supported="openxr">
         <require>
             <enum value="2"                              name="XR_MNDX_egl_enable_SPEC_VERSION"/>
@@ -9629,6 +9644,7 @@ typedef XrResult (XRAPI_PTR *<name>PFN_xrCreateApiLayerInstance</name>)(
             <type name="XrGraphicsBindingEGLMNDX"/>
         </require>
     </extension>
+    -->
 
     <extension name="XR_MSFT_spatial_graph_bridge" number="50" type="instance" supported="openxr">
         <require>
@@ -11432,6 +11448,7 @@ typedef XrResult (XRAPI_PTR *<name>PFN_xrCreateApiLayerInstance</name>)(
         </require>
     </extension>
 
+    <!--
     <extension name="XR_FB_swapchain_update_state_opengl_es" number="163" type="instance" supported="openxr" protect="XR_USE_GRAPHICS_API_OPENGL_ES" depends="XR_KHR_opengl_es_enable+XR_FB_swapchain_update_state">
         <require>
             <enum value="1"                                                  name="XR_FB_swapchain_update_state_opengl_es_SPEC_VERSION"/>
@@ -11440,6 +11457,7 @@ typedef XrResult (XRAPI_PTR *<name>PFN_xrCreateApiLayerInstance</name>)(
             <enum offset="0" extends="XrStructureType" name="XR_TYPE_SWAPCHAIN_STATE_SAMPLER_OPENGL_ES_FB"/>
         </require>
     </extension>
+    -->
 
     <extension name="XR_FB_swapchain_update_state_vulkan" number="164" type="instance" supported="openxr" protect="XR_USE_GRAPHICS_API_VULKAN" depends="XR_VERSION_1_0+XR_KHR_vulkan_enable+XR_FB_swapchain_update_state">
         <require>
