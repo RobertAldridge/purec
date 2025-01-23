@@ -35,29 +35,29 @@ set(XR_USE_GRAPHICS_API_D3D11 FALSE)
 set(XR_USE_GRAPHICS_API_D3D12 FALSE)
 set(XR_USE_GRAPHICS_API_METAL FALSE)
 
-set(OPENGLES_INCOMPATIBLE FALSE)
+set(OPENGLES_INCOMPATIBLE TRUE)
 set(OPENGL_INCOMPATIBLE TRUE)
 set(VULKAN_INCOMPATIBLE FALSE)
 set(METAL_INCOMPATIBLE TRUE)
 
 # CMake will detect OpenGL/Vulkan which are not compatible with UWP and ARM/ARM64 on Windows so skip it in these cases.
 
-    find_path(
-        ANDROID_NATIVE_APP_GLUE android_native_app_glue.h
-        PATHS "${ANDROID_NDK}/sources/android/native_app_glue"
-    )
+#    find_path(
+#        ANDROID_NATIVE_APP_GLUE android_native_app_glue.h
+#        PATHS "${ANDROID_NDK}/sources/android/native_app_glue"
+#    )
 
-if(NOT OPENGLES_INCOMPATIBLE)
-    find_package(OpenGLES COMPONENTS V3 V2)
-    find_package(EGL)
-    if(OPENGLES_FOUND AND EGL_FOUND)
-        set(XR_USE_GRAPHICS_API_OPENGL_ES TRUE)
-        add_definitions(-DXR_USE_GRAPHICS_API_OPENGL_ES)
-        message(STATUS "Enabling OpenGL|ES support")
-    elseif(BUILD_ALL_EXTENSIONS)
-        message(FATAL_ERROR "OpenGL|ES not found")
-    endif()
-endif()
+#if(NOT OPENGLES_INCOMPATIBLE)
+#    find_package(OpenGLES COMPONENTS V3 V2)
+#    find_package(EGL)
+#    if(OPENGLES_FOUND AND EGL_FOUND)
+#        set(XR_USE_GRAPHICS_API_OPENGL_ES TRUE)
+#        add_definitions(-DXR_USE_GRAPHICS_API_OPENGL_ES)
+#        message(STATUS "Enabling OpenGL|ES support")
+#    elseif(BUILD_ALL_EXTENSIONS)
+#        message(FATAL_ERROR "OpenGL|ES not found")
+#    endif()
+#endif()
 
 if(NOT VULKAN_INCOMPATIBLE)
     # Find the Vulkan headers
@@ -148,21 +148,22 @@ if(OpenGLES_FOUND
     endif()
 
         target_include_directories(
-            openxr-gfxwrapper PUBLIC "${ANDROID_NATIVE_APP_GLUE}"
+            openxr-gfxwrapper PUBLIC
+            #"${ANDROID_NATIVE_APP_GLUE}"
         )
 
         # Note: For some reason, just adding this to the gfxwrapper library results in failure at load time.
         # So, each consuming target must add $<TARGET_OBJECTS:android_native_app_glue> to their sources
-        add_library(
-            android_native_app_glue OBJECT
-            "${ANDROID_NATIVE_APP_GLUE}/android_native_app_glue.c"
-        )
-        target_include_directories(
-            android_native_app_glue PUBLIC "${ANDROID_NATIVE_APP_GLUE}"
-        )
-        target_compile_options(
-            android_native_app_glue PRIVATE -Wno-unused-parameter
-        )
+      #  add_library(
+      #      android_native_app_glue OBJECT
+      #      "${ANDROID_NATIVE_APP_GLUE}/android_native_app_glue.c"
+      #  )
+      #  target_include_directories(
+      #      android_native_app_glue PUBLIC "${ANDROID_NATIVE_APP_GLUE}"
+      #  )
+      #  target_compile_options(
+      #      android_native_app_glue PRIVATE -Wno-unused-parameter
+      #  )
 
     set_target_properties(openxr-gfxwrapper PROPERTIES FOLDER ${HELPER_FOLDER})
     message(
@@ -173,10 +174,6 @@ endif()
 
 # Determine the presentation backend for Linux systems.
 # Use an include because the code is pretty big.
-
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    include(presentation)
-endif()
 
 # Several files use these compile time platform switches
 

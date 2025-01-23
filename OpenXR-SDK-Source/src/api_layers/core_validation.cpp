@@ -648,11 +648,11 @@ XRAPI_ATTR XrResult XRAPI_CALL CoreValidationXrCreateSession(XrInstance instance
                     num_graphics_bindings_found++;
                     break;
 
-#if defined(XR_USE_PLATFORM_ANDROID)
+
                 case XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR:
                     num_graphics_bindings_found++;
                     break;
-#endif
+
 #ifdef XR_USE_PLATFORM_XLIB
                 case XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR:
                     num_graphics_bindings_found++;

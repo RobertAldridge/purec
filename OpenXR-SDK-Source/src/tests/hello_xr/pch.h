@@ -34,7 +34,7 @@
 //
 
 #include <android/log.h>
-#include <android_native_app_glue.h>
+#include "anag.h"
 #include <android/native_window.h>
 #include <jni.h>
 #include <sys/system_properties.h>
@@ -84,9 +84,8 @@
 
 #ifdef XR_USE_GRAPHICS_API_VULKAN
 
-#ifdef XR_USE_PLATFORM_ANDROID
 #define VK_USE_PLATFORM_ANDROID_KHR
-#endif
+
 #include <vulkan/vulkan.h>
 #endif
 

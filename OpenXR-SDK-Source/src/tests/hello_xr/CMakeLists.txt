@@ -16,6 +16,7 @@
 #
 
 set(LOCAL_HEADERS
+    anag.h
     check.h
     common.h
         geometry.h
@@ -29,16 +30,15 @@ set(LOCAL_HEADERS
     platformplugin.h
 )
 set(LOCAL_SOURCE
+        anag.c
         graphicsplugin_factory.cpp
-        graphicsplugin_opengles.cpp
-    graphicsplugin_vulkan.cpp
+        graphicsplugin_vulkan.cpp
         logger.cpp
     main.cpp
     openxr_program.cpp
     pch.cpp
     platformplugin_android.cpp
     platformplugin_factory.cpp
-    platformplugin_posix.cpp
         )
 set(VULKAN_SHADERS vulkan_shaders/frag.glsl vulkan_shaders/vert.glsl)
 
@@ -47,7 +47,7 @@ set(VULKAN_SHADERS vulkan_shaders/frag.glsl vulkan_shaders/vert.glsl)
         ${LOCAL_SOURCE}
         ${LOCAL_HEADERS}
         ${VULKAN_SHADERS}
-        $<TARGET_OBJECTS:android_native_app_glue>
+#        $<TARGET_OBJECTS:android_native_app_glue>
     )
     target_link_libraries(
         hello_xr PRIVATE ${ANDROID_LIBRARY} ${ANDROID_LOG_LIBRARY}
@@ -80,7 +80,7 @@ set(VULKAN_SHADERS vulkan_shaders/frag.glsl vulkan_shaders/vert.glsl)
         )
 #    endif()
 
-set_target_properties(hello_xr PROPERTIES FOLDER ${SAMPLES_FOLDER})
+set_target_properties(hello_xr PROPERTIES FOLDER ${SAMPLES_FOLDER} LINK_FLAGS "-u ANativeActivity_onCreate")
 source_group("Headers" FILES ${LOCAL_HEADERS})
 source_group("Shaders" FILES ${VULKAN_SHADERS})
 

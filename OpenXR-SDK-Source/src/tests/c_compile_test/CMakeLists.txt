@@ -18,13 +18,14 @@
 if(ANDROID)
     add_library(
         openxr_c_compile_test MODULE main.c
-                                     $<TARGET_OBJECTS:android_native_app_glue>
+                                   #  $<TARGET_OBJECTS:android_native_app_glue>
     )
     target_link_libraries(
         openxr_c_compile_test ${ANDROID_LIBRARY} ${ANDROID_LOG_LIBRARY}
     )
     target_include_directories(
-        openxr_c_compile_test PRIVATE ${ANDROID_NATIVE_APP_GLUE}
+        openxr_c_compile_test PRIVATE
+        #${ANDROID_NATIVE_APP_GLUE}
     )
 else()
     add_executable(openxr_c_compile_test main.c)

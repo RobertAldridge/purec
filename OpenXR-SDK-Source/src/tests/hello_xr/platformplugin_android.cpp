@@ -7,8 +7,6 @@
 #include "platformdata.h"
 #include "platformplugin.h"
 
-#ifdef XR_USE_PLATFORM_ANDROID
-
 namespace {
 struct AndroidPlatformPlugin : public IPlatformPlugin {
     AndroidPlatformPlugin(const std::shared_ptr<Options>& /*unused*/, const std::shared_ptr<PlatformData>& data) {
@@ -31,4 +29,3 @@ std::shared_ptr<IPlatformPlugin> CreatePlatformPlugin_Android(const std::shared_
                                                               const std::shared_ptr<PlatformData>& data) {
     return std::make_shared<AndroidPlatformPlugin>(options, data);
 }
-#endif

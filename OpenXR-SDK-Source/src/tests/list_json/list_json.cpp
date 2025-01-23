@@ -25,17 +25,12 @@
 #include <stdio.h>
 #include <string.h>
 
-#if defined(XR_USE_PLATFORM_ANDROID)
-#include <android_native_app_glue.h>
+#include "anag.h"
 #include <android/log.h>
 
 #define LOG_TAG "list_json"
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
-#else  // !defined(XR_USE_PLATFORM_ANDROID)
-#define LOGE(...) fprintf(stderr, __VA_ARGS__)
-#define LOGI(...) printf(__VA_ARGS__)
-#endif  // defined(XR_USE_PLATFORM_ANDROID)
 
 // The equivalent of C++17 std::size. A helper to get the dimension for an array.
 template <typename T, std::size_t Size>
@@ -297,8 +292,6 @@ static int main_body() {
     return 0;
 }
 
-#if defined(XR_USE_PLATFORM_ANDROID)
-
 static void app_handle_cmd(struct android_app*, int32_t) {}
 
 void android_main(struct android_app* app) {
@@ -321,9 +314,3 @@ void android_main(struct android_app* app) {
     ANativeActivity_finish(app->activity);
     app->activity->vm->DetachCurrentThread();
 }
-
-#else  // !defined(XR_USE_PLATFORM_ANDROID)
-
-int main() { return main_body(); }
-
-#endif  // defined(XR_USE_PLATFORM_ANDROID)

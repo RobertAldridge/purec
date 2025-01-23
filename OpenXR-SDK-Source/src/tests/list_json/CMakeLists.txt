@@ -18,14 +18,16 @@
 if(ANDROID)
     add_library(
         openxr_runtime_list_json MODULE
-        list_json.cpp $<TARGET_OBJECTS:android_native_app_glue>
+        list_json.cpp
+        #$<TARGET_OBJECTS:android_native_app_glue>
     )
     target_link_libraries(
         openxr_runtime_list_json PRIVATE ${ANDROID_LIBRARY}
                                          ${ANDROID_LOG_LIBRARY}
     )
     target_include_directories(
-        openxr_runtime_list_json PRIVATE ${ANDROID_NATIVE_APP_GLUE}
+        openxr_runtime_list_json PRIVATE
+        #${ANDROID_NATIVE_APP_GLUE}
     )
 else()
     add_executable(openxr_runtime_list_json list_json.cpp)

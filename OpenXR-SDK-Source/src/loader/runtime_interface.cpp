@@ -26,15 +26,13 @@
 #include <utility>
 #include <vector>
 
-#ifdef XR_USE_PLATFORM_ANDROID
 #include <json/value.h>
 
 // Needed for the loader init struct
 #include <xr_dependencies.h>
 #include <openxr/openxr_platform.h>
-#endif  // XR_USE_PLATFORM_ANDROID
 
-#if defined(XR_KHR_LOADER_INIT_SUPPORT) && defined(XR_USE_PLATFORM_ANDROID)
+#if defined(XR_KHR_LOADER_INIT_SUPPORT)
 XrResult GetPlatformRuntimeVirtualManifest(Json::Value& out_manifest) {
     using wrap::android::content::Context;
     auto& initData = LoaderInitData::instance();
@@ -52,7 +50,7 @@ XrResult GetPlatformRuntimeVirtualManifest(Json::Value& out_manifest) {
     out_manifest = virtualManifest;
     return XR_SUCCESS;
 }
-#endif  // defined(XR_USE_PLATFORM_ANDROID) && defined(XR_KHR_LOADER_INIT_SUPPORT)
+#endif  // defined(XR_KHR_LOADER_INIT_SUPPORT)
 
 XrResult RuntimeInterface::TryLoadingSingleRuntime(const std::string& openxr_command,
                                                    std::unique_ptr<RuntimeManifestFile>& manifest_file) {

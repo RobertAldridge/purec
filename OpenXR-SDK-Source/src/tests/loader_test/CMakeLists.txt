@@ -18,12 +18,14 @@
 if(ANDROID)
     add_library(
         loader_test MODULE loader_test_utils.cpp loader_test.cpp
-                           $<TARGET_OBJECTS:android_native_app_glue>
+                           #$<TARGET_OBJECTS:android_native_app_glue>
     )
     target_link_libraries(
         loader_test PRIVATE ${ANDROID_LIBRARY} ${ANDROID_LOG_LIBRARY}
     )
-    target_include_directories(loader_test PRIVATE ${ANDROID_NATIVE_APP_GLUE})
+    target_include_directories(loader_test PRIVATE
+    #${ANDROID_NATIVE_APP_GLUE}
+    )
 
     target_compile_definitions(loader_test PRIVATE XR_KHR_LOADER_INIT_SUPPORT=1)
 else()
