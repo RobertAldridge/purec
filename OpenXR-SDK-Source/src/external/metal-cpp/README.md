@@ -102,10 +102,6 @@ If you want to use the QuartzCore wrapper, add:
 
 Purely optional: You can generate a single header file that contains all **metal-cpp** headers via:
 
-```shell
-./SingleHeader/MakeSingleHeader.py Foundation/Foundation.hpp QuartzCore/QuartzCore.hpp Metal/Metal.hpp
-```
-
 By default the generator script writes its output to `./SingleHeader/Metal.hpp`. Use the `-o` option to customize output filename.
 
 ## Global Symbol Visibility

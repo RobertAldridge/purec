@@ -108,53 +108,6 @@ cmake_dependent_option(
 
 # This is a little helper library for setting up OpenGL
 
-#if(OpenGLES_FOUND
-#   AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/common/gfxwrapper_opengl.c"
-#)
-#    add_library(
-#        openxr-gfxwrapper STATIC common/gfxwrapper_opengl.c
-#                                 common/gfxwrapper_opengl.h
-#    )
-#    target_include_directories(
-#        openxr-gfxwrapper PUBLIC "${PROJECT_SOURCE_DIR}/external/include"
-#    )
-#
-#    if(OpenGLES_FOUND)
-#        if(TARGET OpenGLES::OpenGLESv3)
-#            target_link_libraries(openxr-gfxwrapper PUBLIC OpenGLES::OpenGLESv3)
-#        elseif(TARGET OpenGLES::OpenGLESv2)
-#            target_link_libraries(openxr-gfxwrapper PUBLIC OpenGLES::OpenGLESv2)
-#        else()
-#            message(FATAL_ERROR "Should not get here!")
-#        endif()
-#        target_link_libraries(openxr-gfxwrapper PUBLIC EGL::EGL)
-#    endif()
-#
-#        target_include_directories(
-#            openxr-gfxwrapper PUBLIC
-            #"${ANDROID_NATIVE_APP_GLUE}"
-#        )
-
-        # Note: For some reason, just adding this to the gfxwrapper library results in failure at load time.
-        # So, each consuming target must add $<TARGET_OBJECTS:android_native_app_glue> to their sources
-      #  add_library(
-      #      android_native_app_glue OBJECT
-      #      "${ANDROID_NATIVE_APP_GLUE}/android_native_app_glue.c"
-      #  )
-      #  target_include_directories(
-      #      android_native_app_glue PUBLIC "${ANDROID_NATIVE_APP_GLUE}"
-      #  )
-      #  target_compile_options(
-      #      android_native_app_glue PRIVATE -Wno-unused-parameter
-      #  )
-
-#    set_target_properties(openxr-gfxwrapper PROPERTIES FOLDER ${HELPER_FOLDER})
-#    message(
-#        STATUS
-#            "Enabling OpenGL support in hello_xr, loader_test, and conformance, if configured"
-#    )
-#endif()
-
 # Determine the presentation backend for Linux systems.
 # Use an include because the code is pretty big.
 
@@ -169,17 +122,6 @@ cmake_dependent_option(
     set(BUILD_CONFORMANCE_CLI OFF)
 
 set(OPENXR_ALL_SUPPORTED_DEFINES)
-if(BUILD_WITH_XLIB_HEADERS)
-    list(APPEND OPENXR_ALL_SUPPORTED_DEFINES XR_USE_PLATFORM_XLIB)
-endif()
-
-if(BUILD_WITH_XCB_HEADERS)
-    list(APPEND OPENXR_ALL_SUPPORTED_DEFINES XR_USE_PLATFORM_XCB)
-endif()
-
-if(BUILD_WITH_WAYLAND_HEADERS)
-    list(APPEND OPENXR_ALL_SUPPORTED_DEFINES XR_USE_PLATFORM_WAYLAND)
-endif()
 
 # Find glslc shader compiler.
 # On Android, the NDK includes the binary, so no external dependency.
