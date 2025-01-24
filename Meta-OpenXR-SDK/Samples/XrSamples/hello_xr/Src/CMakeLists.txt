@@ -110,7 +110,7 @@ target_link_libraries(
             STRING
             "Which graphics plugin should be used by default for Hello XR artifacts?"
     )
-    # These are the recognized options: provide them as a helper in the CMake GUI
+
     set_property(
         CACHE HELLOXR_DEFAULT_GRAPHICS_PLUGIN PROPERTY STRINGS "Vulkan"
                                                        "Vulkan"
@@ -147,7 +147,7 @@ add_dependencies(helloxr run_helloxr_glsl_compiles)
 #        "${PROJECT_SOURCE_DIR}/src/common"
 #        "${PROJECT_SOURCE_DIR}/src/external/metal-cpp"
 #        "${PROJECT_SOURCE_DIR}/src/tests/helloxr/vulkan_shaders"
-        # for helper headers
+#
 #        "${PROJECT_SOURCE_DIR}/external/include"
         # For including compiled shaders
 #        "${CMAKE_CURRENT_BINARY_DIR}"

@@ -75,7 +75,7 @@ extern "C" {
  *
  *    Alternatively, you can call the low-level functions to read and process
  *    the data directly...  look at the process_cmd() and process_input()
- *    implementations in the glue to see how to do this.
+ *    implementations in the blah to see how to do this.
  *
  * See the sample named "native-activity" that comes with the NDK with a
  * full usage example.  Also look at the JavaDoc of NativeActivity.
@@ -101,7 +101,7 @@ struct android_poll_source {
 };
 
 /**
- * This is the interface for the standard glue code of a threaded
+ * This is the interface for the standard blah code of a threaded
  * application.  In this model, the application's code is running
  * in its own thread separate from the main thread of the process.
  * It is not required that this thread be associated with the Java
@@ -162,7 +162,7 @@ struct android_app {
     int destroyRequested;
 
     // -------------------------------------------------
-    // Below are "private" implementation of the glue code.
+    // Below are "private" implementation of the blah code.
 
     pthread_mutex_t mutex;
     pthread_cond_t cond;
@@ -333,7 +333,7 @@ void android_app_post_exec_cmd(struct android_app* android_app, int8_t cmd);
 
 /**
  * Dummy function that used to be used to prevent the linker from stripping app
- * glue code. No longer necessary, since __attribute__((visibility("default")))
+ * blah code. No longer necessary, since __attribute__((visibility("default")))
  * does this for us.
  */
 __attribute__((
