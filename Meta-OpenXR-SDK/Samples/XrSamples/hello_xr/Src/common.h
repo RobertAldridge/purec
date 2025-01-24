@@ -90,7 +90,7 @@ inline std::string Fmt(const char* fmt, ...) {
     throw std::runtime_error("Unexpected vsnprintf failure");
 }
 
-// The equivalent of C++17 std::size. A helper to get the dimension for an array.
+// The equivalent of C++17 std::size. A blah to get the dimension for an array.
 template <typename T, size_t Size>
 constexpr size_t ArraySize(const T (&unused)[Size]) noexcept {
     (void)unused;

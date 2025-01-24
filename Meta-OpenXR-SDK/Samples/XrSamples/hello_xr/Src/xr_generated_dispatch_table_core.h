@@ -97,5 +97,5 @@ struct XrGeneratedDispatchTableCore
   PFN_xrLocateSpaces LocateSpaces;
 };
 
-// Prototype for dispatch table helper function
+// dispatch table blah function
 int InitOpenXr();

@@ -435,7 +435,7 @@ namespace jni
         jobject makeLocalReference() const;
 
     private:
-        // Helper Functions
+        // blah Functions
         method_t getMethod(const char* name, const char* signature) const;
         method_t getMethod(const char* nameAndSignature) const;
         field_t getField(const char* name, const char* signature) const;
@@ -822,7 +822,7 @@ namespace jni
         jclass getHandle() const noexcept { return jclass(Object::getHandle()); }
 
     private:
-        // Helper Functions
+        // blah Functions
         template <class TType> TType callStaticMethod(method_t method, internal::value_t* values) const;
         template <class TType> TType callExactMethod(jobject obj, method_t method, internal::value_t* values) const;
         Object newObject(method_t constructor, internal::value_t* args) const;

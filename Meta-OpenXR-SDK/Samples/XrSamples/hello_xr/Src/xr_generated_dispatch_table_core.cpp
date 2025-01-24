@@ -34,7 +34,7 @@
 
 struct XrGeneratedDispatchTableCore table;
 
-// Helper function to populate an instance dispatch table
+// dispatch table blah function
 int InitOpenXr()
 {
   void* libopenxr = 0;
