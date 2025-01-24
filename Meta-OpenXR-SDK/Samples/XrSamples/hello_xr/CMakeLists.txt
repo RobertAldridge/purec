@@ -16,15 +16,13 @@
 # limitations under the License.
 project(helloxr)
 
-if(NOT TARGET OpenXR::openxr_loader)
-    find_package(OpenXR REQUIRED)
-endif()
+#if(NOT TARGET OpenXR::openxr_loader)
+#    find_package(OpenXR REQUIRED)
+#endif()
 
-if(ANDROID)
-    file(GLOB_RECURSE SRC_FILES
-        Src/*.c
-        Src/*.cpp
-    )
+    file(GLOB_RECURSE SRC_FILES Src/*.c Src/*.cpp)
+
+    file(TO_CMAKE_PATH "$ENV{VULKAN_SDK}" VULKAN_SDK)
 
     add_library(${PROJECT_NAME} MODULE ${SRC_FILES})
     target_link_libraries(${PROJECT_NAME} PRIVATE native_activity_framework)
@@ -32,4 +30,13 @@ if(ANDROID)
 
     # Common across platforms
     target_include_directories(${PROJECT_NAME} PRIVATE Src)
-endif()
+
+    target_compile_definitions(
+        helloxr
+        PUBLIC
+            VK_NO_PROTOTYPES=1
+            XR_USE_PLATFORM_ANDROID=1
+            XR_USE_GRAPHICS_API_VULKAN=1
+            ANDROID_NDK
+            $<IF:$<CONFIG:Debug>,OVR_BUILD_DEBUG=1,>
+    )

@@ -9,8 +9,8 @@
 
 #include "runtime_interface.hpp"
 
-#include <openxr/openxr.h>
-#include <openxr/openxr_loader_negotiation.h>
+#include "openxr.h"
+#include "openxr_loader_negotiation.h"
 
 #include "manifest_file.hpp"
 #include "loader_init_data.hpp"
@@ -29,8 +29,8 @@
 #include <json/value.h>
 
 // Needed for the loader init struct
-#include <xr_dependencies.h>
-#include <openxr/openxr_platform.h>
+#include "xr_dependencies.h"
+#include "openxr_platform.h"
 
 #if defined(XR_KHR_LOADER_INIT_SUPPORT)
 XrResult GetPlatformRuntimeVirtualManifest(Json::Value& out_manifest) {

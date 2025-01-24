@@ -11,8 +11,8 @@
 
 #include "extra_algorithms.h"
 
-#include <openxr/openxr.h>
-#include <openxr/openxr_loader_negotiation.h>
+#include "openxr.h"
+#include "openxr_loader_negotiation.h"
 
 #include <array>
 #include <cmath>
