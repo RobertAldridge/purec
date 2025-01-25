@@ -103,7 +103,7 @@ android {
             applicationIdSuffix '.vulkan'
             externalNativeBuild.cmake.arguments += '-DHELLOXR_DEFAULT_GRAPHICS_PLUGIN=Vulkan'
 
-            resValue 'string', 'app_name', 'Hello XR (Vulkan)'
+            resValue "string", "app_name", "Hello XR (Vulkan)"
         }
     }
 
@@ -122,18 +122,18 @@ dependencies {
 
 // For signing of release binaries - env var must contain an absolute path
 // CI always does this.
-def keystorePropertiesFilename = System.getenv('KEYSTORE_PROPERTIES')
+def keystorePropertiesFilename = System.getenv("KEYSTORE_PROPERTIES")
 if (keystorePropertiesFilename) {
-    def keystorePropertiesFile = file('${keystorePropertiesFilename}')
+    def keystorePropertiesFile = file("${keystorePropertiesFilename}")
     if (keystorePropertiesFile.exists()) {
-        println('Signing release artifacts for helloxr')
+        println("Signing release artifacts for helloxr")
         def keystoreProperties = new Properties()
         keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
         android.signingConfigs {
             release {
                 keyAlias keystoreProperties['keyAlias']
                 keyPassword keystoreProperties['keyPassword']
-                storeFile file('${project.repoRoot}/' + keystoreProperties['storeFile'])
+                storeFile file("${project.repoRoot}/" + keystoreProperties['storeFile'])
                 storePassword keystoreProperties['storePassword']
             }
         }

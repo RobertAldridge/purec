@@ -82,7 +82,7 @@ set(LOCAL_SOURCE
     vulcan_wrapper.cpp
 )
 
-include_directories(C:/Users/RobertLocalAldridge/AppData/Local/Android/Sdk/ndk/25.1.8937393/sources/third_party/vulkan/src/include/vulkan)
+include_directories("C:/Users/RobertLocalAldridge/AppData/Local/Android/Sdk/ndk/25.1.8937393/sources/third_party/vulkan/src/include/vulkan")
 
 option(
     BUILD_FORCE_GENERATION
@@ -90,7 +90,7 @@ option(
     OFF
 )
 
-set(VULKAN_SHADERS frag.glsl vert.glsl)
+set(VULKAN_SHADERS ../vulkan_shaders/frag.glsl ../vulkan_shaders/vert.glsl)
 
 add_library(
   helloxr MODULE
@@ -166,7 +166,7 @@ add_dependencies(helloxr run_helloxr_glsl_compiles)
 target_include_directories(
     helloxr
     PRIVATE
-        "${PROJECT_SOURCE_DIR}/src"
+        "${PROJECT_SOURCE_DIR}/Samples"
         # For including compiled shaders
         "${CMAKE_CURRENT_BINARY_DIR}"
 )
