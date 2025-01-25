@@ -16,15 +16,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+rootProject.name = "helloxr"
 
-//rootProject.name = ("MetaOpenXRSDK")
-//
-//val folderPath = "XrSamples/"
-//
-//File(folderPath).listFiles()?.forEach { file ->
-//  if (file.isDirectory) {
-//    val dir = File("XrSamples/${file.name}/Projects/Android")
-//    include(":${file.name}")
-//    project(":${file.name}").projectDir = dir
-//  }
-//}
+//makeFile.parentFile = ''
