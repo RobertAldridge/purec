@@ -25,7 +25,7 @@ project(helloxr)
     file(TO_CMAKE_PATH "$ENV{VULKAN_SDK}" VULKAN_SDK)
 
     add_library(${PROJECT_NAME} MODULE ${SRC_FILES})
-    target_link_libraries(${PROJECT_NAME} PRIVATE native_activity_framework)
+#    target_link_libraries(${PROJECT_NAME} PRIVATE native_activity_framework)
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-u ANativeActivity_onCreate")
 
     # Common across platforms

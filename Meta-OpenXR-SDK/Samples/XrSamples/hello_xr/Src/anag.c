@@ -420,24 +420,169 @@ static void onInputQueueDestroyed(ANativeActivity* activity, AInputQueue* queue)
     android_app_set_input((struct android_app*)activity->instance, NULL);
 }
 
+int __android_log_print(int prio, const char* tag, const char* fmt, ... )//__attribute__ ( (__format__ (printf, 3, 4) ) )
+{
+  return 0;
+}
+
+AConfiguration* AConfiguration_new() { return 0; }
+void AConfiguration_delete(AConfiguration* config) { }
+void AConfiguration_fromAssetManager(AConfiguration* out, AAssetManager* am) { }
+//void AConfiguration_copy(AConfiguration* dest, AConfiguration* src);
+int32_t AConfiguration_getMcc(AConfiguration* config) { return 0; }
+//void AConfiguration_setMcc(AConfiguration* config, int32_t mcc);
+int32_t AConfiguration_getMnc(AConfiguration* config) { return 0; }
+//void AConfiguration_setMnc(AConfiguration* config, int32_t mnc);
+void AConfiguration_getLanguage(AConfiguration* config, char* outLanguage) { }
+//void AConfiguration_setLanguage(AConfiguration* config, const char* language);
+void AConfiguration_getCountry(AConfiguration* config, char* outCountry) { }
+//void AConfiguration_setCountry(AConfiguration* config, const char* country);
+int32_t AConfiguration_getOrientation(AConfiguration* config) { return 0; }
+//void AConfiguration_setOrientation(AConfiguration* config, int32_t orientation);
+int32_t AConfiguration_getTouchscreen(AConfiguration* config) { return 0; }
+//void AConfiguration_setTouchscreen(AConfiguration* config, int32_t touchscreen);
+int32_t AConfiguration_getDensity(AConfiguration* config) { return 0; }
+//void AConfiguration_setDensity(AConfiguration* config, int32_t density);
+int32_t AConfiguration_getKeyboard(AConfiguration* config) { return 0; }
+//void AConfiguration_setKeyboard(AConfiguration* config, int32_t keyboard);
+int32_t AConfiguration_getNavigation(AConfiguration* config) { return 0; }
+//void AConfiguration_setNavigation(AConfiguration* config, int32_t navigation);
+int32_t AConfiguration_getKeysHidden(AConfiguration* config) { return 0; }
+//void AConfiguration_setKeysHidden(AConfiguration* config, int32_t keysHidden);
+int32_t AConfiguration_getNavHidden(AConfiguration* config) { return 0; }
+//void AConfiguration_setNavHidden(AConfiguration* config, int32_t navHidden);
+int32_t AConfiguration_getSdkVersion(AConfiguration* config) { return 0; }
+//void AConfiguration_setSdkVersion(AConfiguration* config, int32_t sdkVersion);
+int32_t AConfiguration_getScreenSize(AConfiguration* config) { return 0; }
+//void AConfiguration_setScreenSize(AConfiguration* config, int32_t screenSize);
+int32_t AConfiguration_getScreenLong(AConfiguration* config) { return 0; }
+//void AConfiguration_setScreenLong(AConfiguration* config, int32_t screenLong);
+//int32_t AConfiguration_getScreenRound(AConfiguration* config) __INTRODUCED_IN(30);
+//void AConfiguration_setScreenRound(AConfiguration* config, int32_t screenRound);
+int32_t AConfiguration_getUiModeType(AConfiguration* config) { return 0; }
+//void AConfiguration_setUiModeType(AConfiguration* config, int32_t uiModeType);
+int32_t AConfiguration_getUiModeNight(AConfiguration* config) { return 0; }
+//void AConfiguration_setUiModeNight(AConfiguration* config, int32_t uiModeNight);
+//int32_t AConfiguration_getScreenWidthDp(AConfiguration* config);
+//void AConfiguration_setScreenWidthDp(AConfiguration* config, int32_t value);
+//int32_t AConfiguration_getScreenHeightDp(AConfiguration* config);
+//void AConfiguration_setScreenHeightDp(AConfiguration* config, int32_t value);
+//int32_t AConfiguration_getSmallestScreenWidthDp(AConfiguration* config);
+//void AConfiguration_setSmallestScreenWidthDp(AConfiguration* config, int32_t value);
+//int32_t AConfiguration_getLayoutDirection(AConfiguration* config) __INTRODUCED_IN(17);
+//void AConfiguration_setLayoutDirection(AConfiguration* config, int32_t value) __INTRODUCED_IN(17);
+//int32_t AConfiguration_diff(AConfiguration* config1, AConfiguration* config2);
+//int32_t AConfiguration_match(AConfiguration* base, AConfiguration* requested);
+//int32_t AConfiguration_isBetterThan(AConfiguration* base, AConfiguration* test, AConfiguration* requested);
+
+//struct AInputEvent;
+int32_t AInputEvent_getType(const AInputEvent* event) { return 0; }
+//int32_t AInputEvent_getDeviceId(const AInputEvent* event);
+//int32_t AInputEvent_getSource(const AInputEvent* event);
+//void AInputEvent_release(const AInputEvent* event) __INTRODUCED_IN(31);
+
+//struct AInputQueue;
+//typedef struct AInputQueue AInputQueue;
+void AInputQueue_attachLooper(AInputQueue* queue, ALooper* looper, int ident, ALooper_callbackFunc callback, void* data) { }
+void AInputQueue_detachLooper(AInputQueue* queue) { }
+//int32_t AInputQueue_hasEvents(AInputQueue* queue);
+int32_t AInputQueue_getEvent(AInputQueue* queue, AInputEvent** outEvent) { return 0; }
+int32_t AInputQueue_preDispatchEvent(AInputQueue* queue, AInputEvent* event) { return 0; }
+void AInputQueue_finishEvent(AInputQueue* queue, AInputEvent* event, int handled) { }
+//AInputQueue* AInputQueue_fromJava(JNIEnv* env, jobject inputQueue) __INTRODUCED_IN(33);
+
+//int32_t AKeyEvent_getAction(const AInputEvent* key_event);
+//int32_t AKeyEvent_getFlags(const AInputEvent* key_event);
+//int32_t AKeyEvent_getKeyCode(const AInputEvent* key_event);
+//int32_t AKeyEvent_getScanCode(const AInputEvent* key_event);
+//int32_t AKeyEvent_getMetaState(const AInputEvent* key_event);
+//int32_t AKeyEvent_getRepeatCount(const AInputEvent* key_event);
+//int64_t AKeyEvent_getDownTime(const AInputEvent* key_event);
+//int64_t AKeyEvent_getEventTime(const AInputEvent* key_event);
+//const AInputEvent* AKeyEvent_fromJava(JNIEnv* env, jobject keyEvent) __INTRODUCED_IN(31);
+
+//ALooper* ALooper_forThread();
+ALooper* ALooper_prepare(int opts) { return 0; }
+//void ALooper_acquire(ALooper* looper);
+//void ALooper_release(ALooper* looper);
+//typedef int (*ALooper_callbackFunc)(int fd, int events, void* data);
+//int ALooper_pollOnce(int timeoutMillis, int* outFd, int* outEvents, void** outData);
+int ALooper_pollAll(int timeoutMillis, int* outFd, int* outEvents, void** outData) { return 0; }
+//void ALooper_wake(ALooper* looper);
+int ALooper_addFd(ALooper* looper, int fd, int ident, int events, ALooper_callbackFunc callback, void* data) { return 0; }
+//int ALooper_removeFd(ALooper* looper, int fd);
+
+//int32_t AMotionEvent_getAction(const AInputEvent* motion_event);
+//int32_t AMotionEvent_getFlags(const AInputEvent* motion_event);
+//int32_t AMotionEvent_getMetaState(const AInputEvent* motion_event);
+//int32_t AMotionEvent_getButtonState(const AInputEvent* motion_event);
+//int32_t AMotionEvent_getEdgeFlags(const AInputEvent* motion_event);
+//int64_t AMotionEvent_getDownTime(const AInputEvent* motion_event);
+//int64_t AMotionEvent_getEventTime(const AInputEvent* motion_event);
+//float AMotionEvent_getXOffset(const AInputEvent* motion_event);
+//float AMotionEvent_getYOffset(const AInputEvent* motion_event);
+//float AMotionEvent_getXPrecision(const AInputEvent* motion_event);
+//float AMotionEvent_getYPrecision(const AInputEvent* motion_event);
+//size_t AMotionEvent_getPointerCount(const AInputEvent* motion_event);
+//int32_t AMotionEvent_getPointerId(const AInputEvent* motion_event, size_t pointer_index);
+//int32_t AMotionEvent_getToolType(const AInputEvent* motion_event, size_t pointer_index);
+//float AMotionEvent_getRawX(const AInputEvent* motion_event, size_t pointer_index);
+//float AMotionEvent_getRawY(const AInputEvent* motion_event, size_t pointer_index);
+//float AMotionEvent_getX(const AInputEvent* motion_event, size_t pointer_index);
+//float AMotionEvent_getY(const AInputEvent* motion_event, size_t pointer_index);
+//float AMotionEvent_getPressure(const AInputEvent* motion_event, size_t pointer_index);
+//float AMotionEvent_getSize(const AInputEvent* motion_event, size_t pointer_index);
+//float AMotionEvent_getTouchMajor(const AInputEvent* motion_event, size_t pointer_index);
+//float AMotionEvent_getTouchMinor(const AInputEvent* motion_event, size_t pointer_index);
+//float AMotionEvent_getToolMajor(const AInputEvent* motion_event, size_t pointer_index);
+//float AMotionEvent_getToolMinor(const AInputEvent* motion_event, size_t pointer_index);
+//float AMotionEvent_getOrientation(const AInputEvent* motion_event, size_t pointer_index);
+//float AMotionEvent_getAxisValue(const AInputEvent* motion_event, int32_t axis, size_t pointer_index);
+//size_t AMotionEvent_getHistorySize(const AInputEvent* motion_event);
+//int64_t AMotionEvent_getHistoricalEventTime(const AInputEvent* motion_event, size_t history_index);
+//float AMotionEvent_getHistoricalRawX(const AInputEvent* motion_event, size_t pointer_index, size_t history_index);
+//float AMotionEvent_getHistoricalRawY(const AInputEvent* motion_event, size_t pointer_index, size_t history_index);
+//float AMotionEvent_getHistoricalX(const AInputEvent* motion_event, size_t pointer_index, size_t history_index);
+//float AMotionEvent_getHistoricalY(const AInputEvent* motion_event, size_t pointer_index, size_t history_index);
+//float AMotionEvent_getHistoricalPressure(const AInputEvent* motion_event, size_t pointer_index, size_t history_index);
+//float AMotionEvent_getHistoricalSize(const AInputEvent* motion_event, size_t pointer_index, size_t history_index);
+//float AMotionEvent_getHistoricalTouchMajor(const AInputEvent* motion_event, size_t pointer_index, size_t history_index);
+//float AMotionEvent_getHistoricalTouchMinor(const AInputEvent* motion_event, size_t pointer_index, size_t history_index);
+//float AMotionEvent_getHistoricalToolMajor(const AInputEvent* motion_event, size_t pointer_index, size_t history_index);
+//float AMotionEvent_getHistoricalToolMinor(const AInputEvent* motion_event, size_t pointer_index, size_t history_index);
+//float AMotionEvent_getHistoricalOrientation(const AInputEvent* motion_event, size_t pointer_index, size_t history_index);
+//float AMotionEvent_getHistoricalAxisValue(const AInputEvent* motion_event, int32_t axis, size_t pointer_index, size_t history_index);
+//int32_t AMotionEvent_getActionButton(const AInputEvent* motion_event) __INTRODUCED_IN(__ANDROID_API_T__);
+//int32_t AMotionEvent_getClassification(const AInputEvent* motion_event) __INTRODUCED_IN(__ANDROID_API_T__);
+//const AInputEvent* AMotionEvent_fromJava(JNIEnv* env, jobject motionEvent) __INTRODUCED_IN(31);
+
+//struct ANativeActivityCallbacks;
+//typedef void ANativeActivity_createFunc(ANativeActivity* activity, void* savedState, size_t savedStateSize);
+//extern ANativeActivity_createFunc ANativeActivity_onCreate;
+void ANativeActivity_finish(ANativeActivity* activity) { }
+//void ANativeActivity_setWindowFormat(ANativeActivity* activity, int32_t format);
+//void ANativeActivity_setWindowFlags(ANativeActivity* activity, uint32_t addFlags, uint32_t removeFlags);
+//void ANativeActivity_showSoftInput(ANativeActivity* activity, uint32_t flags);
+//void ANativeActivity_hideSoftInput(ANativeActivity* activity, uint32_t flags);
+
 JNIEXPORT
-void ANativeActivity_onCreate(ANativeActivity* activity, void* savedState,
-                              size_t savedStateSize) {
-    LOGV("Creating: %p\n", activity);
+void ANativeActivity_onCreate(ANativeActivity* activity, void* savedState, size_t savedStateSize)
+{
+  LOGV("Creating: %p\n", activity);
 
-    activity->callbacks->onDestroy = onDestroy;
-    activity->callbacks->onStart = onStart;
-    activity->callbacks->onResume = onResume;
-    activity->callbacks->onSaveInstanceState = onSaveInstanceState;
-    activity->callbacks->onPause = onPause;
-    activity->callbacks->onStop = onStop;
-    activity->callbacks->onConfigurationChanged = onConfigurationChanged;
-    activity->callbacks->onLowMemory = onLowMemory;
-    activity->callbacks->onWindowFocusChanged = onWindowFocusChanged;
-    activity->callbacks->onNativeWindowCreated = onNativeWindowCreated;
-    activity->callbacks->onNativeWindowDestroyed = onNativeWindowDestroyed;
-    activity->callbacks->onInputQueueCreated = onInputQueueCreated;
-    activity->callbacks->onInputQueueDestroyed = onInputQueueDestroyed;
+  activity->callbacks->onDestroy = onDestroy;
+  activity->callbacks->onStart = onStart;
+  activity->callbacks->onResume = onResume;
+  activity->callbacks->onSaveInstanceState = onSaveInstanceState;
+  activity->callbacks->onPause = onPause;
+  activity->callbacks->onStop = onStop;
+  activity->callbacks->onConfigurationChanged = onConfigurationChanged;
+  activity->callbacks->onLowMemory = onLowMemory;
+  activity->callbacks->onWindowFocusChanged = onWindowFocusChanged;
+  activity->callbacks->onNativeWindowCreated = onNativeWindowCreated;
+  activity->callbacks->onNativeWindowDestroyed = onNativeWindowDestroyed;
+  activity->callbacks->onInputQueueCreated = onInputQueueCreated;
+  activity->callbacks->onInputQueueDestroyed = onInputQueueDestroyed;
 
-    activity->instance = android_app_create(activity, savedState, savedStateSize);
+  activity->instance = android_app_create(activity, savedState, savedStateSize);
 }
