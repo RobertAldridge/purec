@@ -144,4 +144,4 @@ find_library(ANDROID_LOG_LIBRARY NAMES log)
 
 #add_subdirectory(3rdParty)
 #add_subdirectory(SampleXrFramework)
-add_subdirectory(helloxr)
+add_subdirectory(XrSamples)

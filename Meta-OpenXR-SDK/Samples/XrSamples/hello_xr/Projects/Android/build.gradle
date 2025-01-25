@@ -69,13 +69,13 @@ android {
   sourceSets {
     main {
       manifest.srcFile 'AndroidManifest.xml'
-      res.srcDir 'android_resources'
-      //java.srcDirs = 'java'
-      //assets.srcDirs = 'assets'
-      //res.srcDirs = 'android_resources'
+      res.srcDir '../../android_resources'
+      //java.srcDirs = ['../../java']
+      //assets.srcDirs = ['../../assets']
+      //res.srcDirs = ['../../android_resources']
     }
     Vulkan {
-            res.srcDir 'android_resources/vulkan'
+            res.srcDir '../../android_resources/vulkan'
         }
   }
 
@@ -89,11 +89,11 @@ android {
     }
   }
 
-//  externalNativeBuild {
-//    cmake {
-//      path file('../../../../CMakeLists.txt')
-//    }
-//  }
+  externalNativeBuild {
+    cmake {
+      path file('../../../../CMakeLists.txt')
+    }
+  }
 
    flavorDimensions 'api'
 
