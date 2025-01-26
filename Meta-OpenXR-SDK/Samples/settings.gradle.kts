@@ -18,11 +18,11 @@
  */
 rootProject.name = ("MetaOpenXRSDK")
 
-val folderPath = "XrSamples/"
+val folderPath = "./"
 
 File(folderPath).listFiles()?.forEach { file ->
-  if (file.isDirectory) {
-    val dir = File("XrSamples/${file.name}/Projects/Android")
+  if (file.isDirectory && file.name == "helloxr") {
+    val dir = File("./${file.name}/Projects/Android")
     include(":${file.name}")
     project(":${file.name}").projectDir = dir
   }
