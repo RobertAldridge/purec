@@ -90,7 +90,7 @@ option(
     OFF
 )
 
-set(VULKAN_SHADERS ../vulkan_shaders/frag.glsl ../vulkan_shaders/vert.glsl)
+set(VULKAN_SHADERS frag.glsl vert.glsl)
 
 add_library(
   helloxr MODULE
@@ -99,9 +99,7 @@ add_library(
   ${VULKAN_SHADERS}
 )
 
-target_link_libraries(
-  helloxr PRIVATE ${ANDROID_LIBRARY} ${ANDROID_LOG_LIBRARY}
-)
+target_link_libraries(helloxr PRIVATE ${ANDROID_LIBRARY} ${ANDROID_LOG_LIBRARY} )
 
     # Only for Android because it lacks a command line
     set(HELLOXR_DEFAULT_GRAPHICS_PLUGIN
@@ -166,7 +164,7 @@ add_dependencies(helloxr run_helloxr_glsl_compiles)
 target_include_directories(
     helloxr
     PRIVATE
-        "${PROJECT_SOURCE_DIR}/Samples"
+        "${PROJECT_SOURCE_DIR}/src"
         # For including compiled shaders
         "${CMAKE_CURRENT_BINARY_DIR}"
 )

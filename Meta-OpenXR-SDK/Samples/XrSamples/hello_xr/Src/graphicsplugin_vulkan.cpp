@@ -1646,7 +1646,8 @@ struct VulkanGraphicsPlugin : public IGraphicsPlugin {
     PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT{nullptr};
     VkDebugUtilsMessengerEXT m_vkDebugUtilsMessenger{VK_NULL_HANDLE};
 
-    static std::string vkObjectTypeToString(VkObjectType objectType) {
+    static std::string vkObjectTypeToString(VkObjectType objectType)
+    {
         std::string objName;
 
 #define LIST_OBJECT_TYPES(_)          \

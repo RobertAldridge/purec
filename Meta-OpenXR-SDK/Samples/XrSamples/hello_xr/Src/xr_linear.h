@@ -134,7 +134,7 @@ static const XrColor4f XrColorCyan = {0.0f, 1.0f, 1.0f, 1.0f};
 static const XrColor4f XrColorLightGrey = {0.7f, 0.7f, 0.7f, 1.0f};
 static const XrColor4f XrColorDarkGrey = {0.3f, 0.3f, 0.3f, 1.0f};
 
-typedef enum GraphicsAPI { GRAPHICS_VULKAN, GRAPHICS_OPENGL, GRAPHICS_OPENGL_ES, GRAPHICS_D3D, GRAPHICS_METAL } GraphicsAPI;
+typedef enum GraphicsAPI { GRAPHICS_VULKAN } GraphicsAPI;
 
 // Column-major, pre-multiplied. This type does not exist in the OpenXR API and is provided for convenience.
 typedef struct XrMatrix4x4f {
@@ -568,11 +568,11 @@ inline static void XrMatrix4x4f_CreateProjection(XrMatrix4x4f* result, GraphicsA
 
     // Set to tanAngleDown - tanAngleUp for a clip space with positive Y down (Vulkan).
     // Set to tanAngleUp - tanAngleDown for a clip space with positive Y up (OpenGL / D3D / Metal).
-    const float tanAngleHeight = graphicsApi == GRAPHICS_VULKAN ? (tanAngleDown - tanAngleUp) : (tanAngleUp - tanAngleDown);
+    const float tanAngleHeight = tanAngleDown - tanAngleUp;
 
     // Set to nearZ for a [-1,1] Z clip space (OpenGL / OpenGL ES).
     // Set to zero for a [0,1] Z clip space (Vulkan / D3D / Metal).
-    const float offsetZ = (graphicsApi == GRAPHICS_OPENGL || graphicsApi == GRAPHICS_OPENGL_ES) ? nearZ : 0;
+    const float offsetZ = 0;
 
     if (farZ <= nearZ) {
         // place the far plane at infinity

@@ -420,6 +420,8 @@ static void onInputQueueDestroyed(ANativeActivity* activity, AInputQueue* queue)
     android_app_set_input((struct android_app*)activity->instance, NULL);
 }
 
+#if 0
+
 int __android_log_print(int prio, const char* tag, const char* fmt, ... )//__attribute__ ( (__format__ (printf, 3, 4) ) )
 {
   return 0;
@@ -564,6 +566,8 @@ void ANativeActivity_finish(ANativeActivity* activity) { }
 //void ANativeActivity_setWindowFlags(ANativeActivity* activity, uint32_t addFlags, uint32_t removeFlags);
 //void ANativeActivity_showSoftInput(ANativeActivity* activity, uint32_t flags);
 //void ANativeActivity_hideSoftInput(ANativeActivity* activity, uint32_t flags);
+
+#endif
 
 JNIEXPORT
 void ANativeActivity_onCreate(ANativeActivity* activity, void* savedState, size_t savedStateSize)
