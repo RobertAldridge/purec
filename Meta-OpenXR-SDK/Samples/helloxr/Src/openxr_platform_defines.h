@@ -25,9 +25,14 @@ extern "C" {
  * Function declaration:  XRAPI_ATTR void XRAPI_CALL xrFunction(void);
  * Function pointer type: typedef void (XRAPI_PTR *PFN_xrFunction)(void);
  */
-#if defined(__ARM_ARCH) && __ARM_ARCH < 7
+#if defined(_WIN32)
+#define XRAPI_ATTR
+// On Windows, functions use the stdcall convention
+#define XRAPI_CALL __stdcall
+#define XRAPI_PTR XRAPI_CALL
+#elif defined(__ANDROID__) && defined(__ARM_ARCH) && __ARM_ARCH < 7
 #error "API not supported for the 'armeabi' NDK ABI"
-#elif defined(__ARM_ARCH) && __ARM_ARCH >= 7 && defined(__ARM_32BIT_STATE)
+#elif defined(__ANDROID__) && defined(__ARM_ARCH) && __ARM_ARCH >= 7 && defined(__ARM_32BIT_STATE)
 // On Android 32-bit ARM targets, functions use the "hardfloat"
 // calling convention, i.e. float parameters are passed in registers. This
 // is true even if the rest of the application passes floats on the stack,

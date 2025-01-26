@@ -38,17 +38,14 @@ set(LOCAL_HEADERS
     openxr_platform_defines.h
     openxr_program.h
     openxr_reflection.h
+    openxr_reflection_parent_structs.h
+    openxr_reflection_structs.h
     options.h
     pch.h
     platformdata.h
     platformplugin.h
     stdfs_conditions.h
     unique_asset.h
-    vk_platform.h
-    vulkan.h
-    vulcan_android.h
-    vulcan_beta.h
-    vulcan_core.h
     vulcan_wrapper.h
     xr_dependencies.h
     xr_generated_dispatch_table_core.h
@@ -99,7 +96,7 @@ add_library(
   ${VULKAN_SHADERS}
 )
 
-target_link_libraries(helloxr PRIVATE ${ANDROID_LIBRARY} ${ANDROID_LOG_LIBRARY} )
+#target_link_libraries(helloxr PRIVATE ${ANDROID_LIBRARY} ${ANDROID_LOG_LIBRARY} )
 
     # Only for Android because it lacks a command line
     set(HELLOXR_DEFAULT_GRAPHICS_PLUGIN
@@ -155,7 +152,7 @@ set_target_properties(helloxr PROPERTIES FOLDER ${SAMPLES_FOLDER})
 source_group("Headers" FILES ${LOCAL_HEADERS})
 source_group("Shaders" FILES ${VULKAN_SHADERS})
 
-target_link_libraries(helloxr PRIVATE libvulkan.so libopenxr_loader.so)
+#target_link_libraries(helloxr PRIVATE libvulkan.so libopenxr_loader.so)
 
 compile_glsl(run_helloxr_glsl_compiles ${VULKAN_SHADERS})
 
@@ -174,7 +171,7 @@ if(GLSLANG_VALIDATOR AND NOT GLSLC_COMMAND)
 endif()
 
     target_include_directories(helloxr PRIVATE ${Vulkan_INCLUDE_DIRS})
-    target_link_libraries(helloxr PRIVATE ${Vulkan_LIBRARY})
+#target_link_libraries(helloxr PRIVATE ${Vulkan_LIBRARY})
 
 #if(TARGET openxr-gfxwrapper)
 #    target_link_libraries(helloxr PRIVATE openxr-gfxwrapper)

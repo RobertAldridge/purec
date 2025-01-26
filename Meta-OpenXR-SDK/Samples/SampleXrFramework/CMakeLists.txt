@@ -41,7 +41,7 @@ target_include_directories(
         ${OPENXR_PREVIEW_HEADER}
 )
 
-include_directories(C:/Users/RobertLocalAldridge/AppData/Local/Android/Sdk/ndk/25.1.8937393/sources/third_party/vulkan/src/include/vulkan)
+include_directories("C:/Users/RobertLocalAldridge/AppData/Local/Android/Sdk/ndk/25.1.8937393/sources/third_party/vulkan/src/include/vulkan")
 
 target_link_libraries(
     samplexrframework

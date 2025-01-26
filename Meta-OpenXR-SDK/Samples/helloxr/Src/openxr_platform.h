@@ -18,6 +18,9 @@
 extern "C" {
 #endif
 
+
+#ifdef XR_USE_PLATFORM_ANDROID
+
 // XR_KHR_android_thread_settings is a preprocessor guard. Do not pass it to API calls.
 #define XR_KHR_android_thread_settings 1
 #define XR_KHR_android_thread_settings_SPEC_VERSION 6
@@ -40,6 +43,9 @@ XRAPI_ATTR XrResult XRAPI_CALL xrSetAndroidApplicationThreadKHR(
     uint32_t                                    threadId);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
+#endif /* XR_USE_PLATFORM_ANDROID */
+
+#ifdef XR_USE_PLATFORM_ANDROID
 
 // XR_KHR_android_surface_swapchain is a preprocessor guard. Do not pass it to API calls.
 #define XR_KHR_android_surface_swapchain 1
@@ -56,6 +62,9 @@ XRAPI_ATTR XrResult XRAPI_CALL xrCreateSwapchainAndroidSurfaceKHR(
     jobject*                                    surface);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
+#endif /* XR_USE_PLATFORM_ANDROID */
+
+#ifdef XR_USE_PLATFORM_ANDROID
 
 // XR_KHR_android_create_instance is a preprocessor guard. Do not pass it to API calls.
 #define XR_KHR_android_create_instance 1
@@ -69,6 +78,10 @@ typedef struct XrInstanceCreateInfoAndroidKHR {
     void* XR_MAY_ALIAS          applicationActivity;
 } XrInstanceCreateInfoAndroidKHR;
 
+#endif /* XR_USE_PLATFORM_ANDROID */
+
+#ifdef XR_USE_GRAPHICS_API_VULKAN
+
 // XR_KHR_vulkan_swapchain_format_list is a preprocessor guard. Do not pass it to API calls.
 #define XR_KHR_vulkan_swapchain_format_list 1
 #define XR_KHR_vulkan_swapchain_format_list_SPEC_VERSION 5
@@ -79,6 +92,129 @@ typedef struct XrVulkanSwapchainFormatListCreateInfoKHR {
     uint32_t                    viewFormatCount;
     const VkFormat*             viewFormats;
 } XrVulkanSwapchainFormatListCreateInfoKHR;
+
+#endif /* XR_USE_GRAPHICS_API_VULKAN */
+
+#ifdef XR_USE_GRAPHICS_API_OPENGL
+
+// XR_KHR_opengl_enable is a preprocessor guard. Do not pass it to API calls.
+#define XR_KHR_opengl_enable 1
+#define XR_KHR_opengl_enable_SPEC_VERSION 10
+#define XR_KHR_OPENGL_ENABLE_EXTENSION_NAME "XR_KHR_opengl_enable"
+#ifdef XR_USE_PLATFORM_WIN32
+// XrGraphicsBindingOpenGLWin32KHR extends XrSessionCreateInfo
+typedef struct XrGraphicsBindingOpenGLWin32KHR {
+    XrStructureType             type;
+    const void* XR_MAY_ALIAS    next;
+    HDC                         hDC;
+    HGLRC                       hGLRC;
+} XrGraphicsBindingOpenGLWin32KHR;
+#endif // XR_USE_PLATFORM_WIN32
+
+#ifdef XR_USE_PLATFORM_XLIB
+// XrGraphicsBindingOpenGLXlibKHR extends XrSessionCreateInfo
+typedef struct XrGraphicsBindingOpenGLXlibKHR {
+    XrStructureType             type;
+    const void* XR_MAY_ALIAS    next;
+    Display*                    xDisplay;
+    uint32_t                    visualid;
+    GLXFBConfig                 glxFBConfig;
+    GLXDrawable                 glxDrawable;
+    GLXContext                  glxContext;
+} XrGraphicsBindingOpenGLXlibKHR;
+#endif // XR_USE_PLATFORM_XLIB
+
+#ifdef XR_USE_PLATFORM_XCB
+// XrGraphicsBindingOpenGLXcbKHR extends XrSessionCreateInfo
+typedef struct XrGraphicsBindingOpenGLXcbKHR {
+    XrStructureType             type;
+    const void* XR_MAY_ALIAS    next;
+    xcb_connection_t*           connection;
+    uint32_t                    screenNumber;
+    xcb_glx_fbconfig_t          fbconfigid;
+    xcb_visualid_t              visualid;
+    xcb_glx_drawable_t          glxDrawable;
+    xcb_glx_context_t           glxContext;
+} XrGraphicsBindingOpenGLXcbKHR;
+#endif // XR_USE_PLATFORM_XCB
+
+#ifdef XR_USE_PLATFORM_WAYLAND
+// XrGraphicsBindingOpenGLWaylandKHR extends XrSessionCreateInfo
+typedef struct XrGraphicsBindingOpenGLWaylandKHR {
+    XrStructureType             type;
+    const void* XR_MAY_ALIAS    next;
+    struct wl_display*          display;
+} XrGraphicsBindingOpenGLWaylandKHR;
+#endif // XR_USE_PLATFORM_WAYLAND
+
+typedef struct XrSwapchainImageOpenGLKHR {
+    XrStructureType       type;
+    void* XR_MAY_ALIAS    next;
+    uint32_t              image;
+} XrSwapchainImageOpenGLKHR;
+
+typedef struct XrGraphicsRequirementsOpenGLKHR {
+    XrStructureType       type;
+    void* XR_MAY_ALIAS    next;
+    XrVersion             minApiVersionSupported;
+    XrVersion             maxApiVersionSupported;
+} XrGraphicsRequirementsOpenGLKHR;
+
+typedef XrResult (XRAPI_PTR *PFN_xrGetOpenGLGraphicsRequirementsKHR)(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsOpenGLKHR* graphicsRequirements);
+
+#ifndef XR_NO_PROTOTYPES
+#ifdef XR_EXTENSION_PROTOTYPES
+XRAPI_ATTR XrResult XRAPI_CALL xrGetOpenGLGraphicsRequirementsKHR(
+    XrInstance                                  instance,
+    XrSystemId                                  systemId,
+    XrGraphicsRequirementsOpenGLKHR*            graphicsRequirements);
+#endif /* XR_EXTENSION_PROTOTYPES */
+#endif /* !XR_NO_PROTOTYPES */
+#endif /* XR_USE_GRAPHICS_API_OPENGL */
+
+#ifdef XR_USE_GRAPHICS_API_OPENGL_ES
+
+// XR_KHR_opengl_es_enable is a preprocessor guard. Do not pass it to API calls.
+#define XR_KHR_opengl_es_enable 1
+#define XR_KHR_opengl_es_enable_SPEC_VERSION 8
+#define XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME "XR_KHR_opengl_es_enable"
+#ifdef XR_USE_PLATFORM_ANDROID
+// XrGraphicsBindingOpenGLESAndroidKHR extends XrSessionCreateInfo
+typedef struct XrGraphicsBindingOpenGLESAndroidKHR {
+    XrStructureType             type;
+    const void* XR_MAY_ALIAS    next;
+    EGLDisplay                  display;
+    EGLConfig                   config;
+    EGLContext                  context;
+} XrGraphicsBindingOpenGLESAndroidKHR;
+#endif // XR_USE_PLATFORM_ANDROID
+
+typedef struct XrSwapchainImageOpenGLESKHR {
+    XrStructureType       type;
+    void* XR_MAY_ALIAS    next;
+    uint32_t              image;
+} XrSwapchainImageOpenGLESKHR;
+
+typedef struct XrGraphicsRequirementsOpenGLESKHR {
+    XrStructureType       type;
+    void* XR_MAY_ALIAS    next;
+    XrVersion             minApiVersionSupported;
+    XrVersion             maxApiVersionSupported;
+} XrGraphicsRequirementsOpenGLESKHR;
+
+typedef XrResult (XRAPI_PTR *PFN_xrGetOpenGLESGraphicsRequirementsKHR)(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsOpenGLESKHR* graphicsRequirements);
+
+#ifndef XR_NO_PROTOTYPES
+#ifdef XR_EXTENSION_PROTOTYPES
+XRAPI_ATTR XrResult XRAPI_CALL xrGetOpenGLESGraphicsRequirementsKHR(
+    XrInstance                                  instance,
+    XrSystemId                                  systemId,
+    XrGraphicsRequirementsOpenGLESKHR*          graphicsRequirements);
+#endif /* XR_EXTENSION_PROTOTYPES */
+#endif /* !XR_NO_PROTOTYPES */
+#endif /* XR_USE_GRAPHICS_API_OPENGL_ES */
+
+#ifdef XR_USE_GRAPHICS_API_VULKAN
 
 // XR_KHR_vulkan_enable is a preprocessor guard. Do not pass it to API calls.
 #define XR_KHR_vulkan_enable 1
@@ -141,6 +277,145 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetVulkanGraphicsRequirementsKHR(
     XrGraphicsRequirementsVulkanKHR*            graphicsRequirements);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
+#endif /* XR_USE_GRAPHICS_API_VULKAN */
+
+#ifdef XR_USE_GRAPHICS_API_D3D11
+
+// XR_KHR_D3D11_enable is a preprocessor guard. Do not pass it to API calls.
+#define XR_KHR_D3D11_enable 1
+#define XR_KHR_D3D11_enable_SPEC_VERSION  9
+#define XR_KHR_D3D11_ENABLE_EXTENSION_NAME "XR_KHR_D3D11_enable"
+// XrGraphicsBindingD3D11KHR extends XrSessionCreateInfo
+typedef struct XrGraphicsBindingD3D11KHR {
+    XrStructureType             type;
+    const void* XR_MAY_ALIAS    next;
+    ID3D11Device*               device;
+} XrGraphicsBindingD3D11KHR;
+
+typedef struct XrSwapchainImageD3D11KHR {
+     XrStructureType      type;
+    void* XR_MAY_ALIAS    next;
+    ID3D11Texture2D*      texture;
+} XrSwapchainImageD3D11KHR;
+
+typedef struct XrGraphicsRequirementsD3D11KHR {
+    XrStructureType       type;
+    void* XR_MAY_ALIAS    next;
+    LUID                  adapterLuid;
+    D3D_FEATURE_LEVEL     minFeatureLevel;
+} XrGraphicsRequirementsD3D11KHR;
+
+typedef XrResult (XRAPI_PTR *PFN_xrGetD3D11GraphicsRequirementsKHR)(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsD3D11KHR* graphicsRequirements);
+
+#ifndef XR_NO_PROTOTYPES
+#ifdef XR_EXTENSION_PROTOTYPES
+XRAPI_ATTR XrResult XRAPI_CALL xrGetD3D11GraphicsRequirementsKHR(
+    XrInstance                                  instance,
+    XrSystemId                                  systemId,
+    XrGraphicsRequirementsD3D11KHR*             graphicsRequirements);
+#endif /* XR_EXTENSION_PROTOTYPES */
+#endif /* !XR_NO_PROTOTYPES */
+#endif /* XR_USE_GRAPHICS_API_D3D11 */
+
+#ifdef XR_USE_GRAPHICS_API_D3D12
+
+// XR_KHR_D3D12_enable is a preprocessor guard. Do not pass it to API calls.
+#define XR_KHR_D3D12_enable 1
+#define XR_KHR_D3D12_enable_SPEC_VERSION  9
+#define XR_KHR_D3D12_ENABLE_EXTENSION_NAME "XR_KHR_D3D12_enable"
+// XrGraphicsBindingD3D12KHR extends XrSessionCreateInfo
+typedef struct XrGraphicsBindingD3D12KHR {
+    XrStructureType             type;
+    const void* XR_MAY_ALIAS    next;
+    ID3D12Device*               device;
+    ID3D12CommandQueue*         queue;
+} XrGraphicsBindingD3D12KHR;
+
+typedef struct XrSwapchainImageD3D12KHR {
+     XrStructureType      type;
+    void* XR_MAY_ALIAS    next;
+    ID3D12Resource*       texture;
+} XrSwapchainImageD3D12KHR;
+
+typedef struct XrGraphicsRequirementsD3D12KHR {
+    XrStructureType       type;
+    void* XR_MAY_ALIAS    next;
+    LUID                  adapterLuid;
+    D3D_FEATURE_LEVEL     minFeatureLevel;
+} XrGraphicsRequirementsD3D12KHR;
+
+typedef XrResult (XRAPI_PTR *PFN_xrGetD3D12GraphicsRequirementsKHR)(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsD3D12KHR* graphicsRequirements);
+
+#ifndef XR_NO_PROTOTYPES
+#ifdef XR_EXTENSION_PROTOTYPES
+XRAPI_ATTR XrResult XRAPI_CALL xrGetD3D12GraphicsRequirementsKHR(
+    XrInstance                                  instance,
+    XrSystemId                                  systemId,
+    XrGraphicsRequirementsD3D12KHR*             graphicsRequirements);
+#endif /* XR_EXTENSION_PROTOTYPES */
+#endif /* !XR_NO_PROTOTYPES */
+#endif /* XR_USE_GRAPHICS_API_D3D12 */
+
+#ifdef XR_USE_GRAPHICS_API_METAL
+
+// XR_KHR_metal_enable is a preprocessor guard. Do not pass it to API calls.
+#define XR_KHR_metal_enable 1
+#define XR_KHR_metal_enable_SPEC_VERSION  1
+#define XR_KHR_METAL_ENABLE_EXTENSION_NAME "XR_KHR_metal_enable"
+// XrGraphicsBindingMetalKHR extends XrSessionCreateInfo
+typedef struct XrGraphicsBindingMetalKHR {
+    XrStructureType             type;
+    const void* XR_MAY_ALIAS    next;
+    void* XR_MAY_ALIAS          commandQueue;
+} XrGraphicsBindingMetalKHR;
+
+typedef struct XrSwapchainImageMetalKHR {
+    XrStructureType             type;
+    const void* XR_MAY_ALIAS    next;
+    void* XR_MAY_ALIAS          texture;
+} XrSwapchainImageMetalKHR;
+
+typedef struct XrGraphicsRequirementsMetalKHR {
+    XrStructureType       type;
+    void* XR_MAY_ALIAS    next;
+    void* XR_MAY_ALIAS    metalDevice;
+} XrGraphicsRequirementsMetalKHR;
+
+typedef XrResult (XRAPI_PTR *PFN_xrGetMetalGraphicsRequirementsKHR)(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsMetalKHR* graphicsRequirements);
+
+#ifndef XR_NO_PROTOTYPES
+#ifdef XR_EXTENSION_PROTOTYPES
+XRAPI_ATTR XrResult XRAPI_CALL xrGetMetalGraphicsRequirementsKHR(
+    XrInstance                                  instance,
+    XrSystemId                                  systemId,
+    XrGraphicsRequirementsMetalKHR*             graphicsRequirements);
+#endif /* XR_EXTENSION_PROTOTYPES */
+#endif /* !XR_NO_PROTOTYPES */
+#endif /* XR_USE_GRAPHICS_API_METAL */
+
+#ifdef XR_USE_PLATFORM_WIN32
+
+// XR_KHR_win32_convert_performance_counter_time is a preprocessor guard. Do not pass it to API calls.
+#define XR_KHR_win32_convert_performance_counter_time 1
+#define XR_KHR_win32_convert_performance_counter_time_SPEC_VERSION 1
+#define XR_KHR_WIN32_CONVERT_PERFORMANCE_COUNTER_TIME_EXTENSION_NAME "XR_KHR_win32_convert_performance_counter_time"
+typedef XrResult (XRAPI_PTR *PFN_xrConvertWin32PerformanceCounterToTimeKHR)(XrInstance instance, const LARGE_INTEGER* performanceCounter, XrTime* time);
+typedef XrResult (XRAPI_PTR *PFN_xrConvertTimeToWin32PerformanceCounterKHR)(XrInstance instance, XrTime   time, LARGE_INTEGER* performanceCounter);
+
+#ifndef XR_NO_PROTOTYPES
+#ifdef XR_EXTENSION_PROTOTYPES
+XRAPI_ATTR XrResult XRAPI_CALL xrConvertWin32PerformanceCounterToTimeKHR(
+    XrInstance                                  instance,
+    const LARGE_INTEGER*                        performanceCounter,
+    XrTime*                                     time);
+
+XRAPI_ATTR XrResult XRAPI_CALL xrConvertTimeToWin32PerformanceCounterKHR(
+    XrInstance                                  instance,
+    XrTime                                      time,
+    LARGE_INTEGER*                              performanceCounter);
+#endif /* XR_EXTENSION_PROTOTYPES */
+#endif /* !XR_NO_PROTOTYPES */
+#endif /* XR_USE_PLATFORM_WIN32 */
 
 #ifdef XR_USE_TIMESPEC
 
@@ -166,6 +441,8 @@ XRAPI_ATTR XrResult XRAPI_CALL xrConvertTimeToTimespecTimeKHR(
 #endif /* !XR_NO_PROTOTYPES */
 #endif /* XR_USE_TIMESPEC */
 
+#ifdef XR_USE_PLATFORM_ANDROID
+
 // XR_KHR_loader_init_android is a preprocessor guard. Do not pass it to API calls.
 #define XR_KHR_loader_init_android 1
 #define XR_KHR_loader_init_android_SPEC_VERSION 1
@@ -176,6 +453,10 @@ typedef struct XrLoaderInitInfoAndroidKHR {
     void* XR_MAY_ALIAS          applicationVM;
     void* XR_MAY_ALIAS          applicationContext;
 } XrLoaderInitInfoAndroidKHR;
+
+#endif /* XR_USE_PLATFORM_ANDROID */
+
+#ifdef XR_USE_GRAPHICS_API_VULKAN
 
 // XR_KHR_vulkan_enable2 is a preprocessor guard. Do not pass it to API calls.
 #define XR_KHR_vulkan_enable2 1
@@ -253,6 +534,70 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetVulkanGraphicsRequirements2KHR(
     XrGraphicsRequirementsVulkanKHR*            graphicsRequirements);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
+#endif /* XR_USE_GRAPHICS_API_VULKAN */
+
+#ifdef XR_USE_PLATFORM_EGL
+
+// XR_MNDX_egl_enable is a preprocessor guard. Do not pass it to API calls.
+#define XR_MNDX_egl_enable 1
+#define XR_MNDX_egl_enable_SPEC_VERSION   2
+#define XR_MNDX_EGL_ENABLE_EXTENSION_NAME "XR_MNDX_egl_enable"
+typedef PFN_xrVoidFunction (*PFN_xrEglGetProcAddressMNDX)(const char *name);
+// XrGraphicsBindingEGLMNDX extends XrSessionCreateInfo
+typedef struct XrGraphicsBindingEGLMNDX {
+    XrStructureType                type;
+    const void* XR_MAY_ALIAS       next;
+    PFN_xrEglGetProcAddressMNDX    getProcAddress;
+    EGLDisplay                     display;
+    EGLConfig                      config;
+    EGLContext                     context;
+} XrGraphicsBindingEGLMNDX;
+
+#endif /* XR_USE_PLATFORM_EGL */
+
+#ifdef XR_USE_PLATFORM_WIN32
+
+// XR_MSFT_perception_anchor_interop is a preprocessor guard. Do not pass it to API calls.
+#define XR_MSFT_perception_anchor_interop 1
+#define XR_MSFT_perception_anchor_interop_SPEC_VERSION 1
+#define XR_MSFT_PERCEPTION_ANCHOR_INTEROP_EXTENSION_NAME "XR_MSFT_perception_anchor_interop"
+typedef XrResult (XRAPI_PTR *PFN_xrCreateSpatialAnchorFromPerceptionAnchorMSFT)(XrSession session, IUnknown* perceptionAnchor, XrSpatialAnchorMSFT* anchor);
+typedef XrResult (XRAPI_PTR *PFN_xrTryGetPerceptionAnchorFromSpatialAnchorMSFT)(XrSession session, XrSpatialAnchorMSFT anchor, IUnknown** perceptionAnchor);
+
+#ifndef XR_NO_PROTOTYPES
+#ifdef XR_EXTENSION_PROTOTYPES
+XRAPI_ATTR XrResult XRAPI_CALL xrCreateSpatialAnchorFromPerceptionAnchorMSFT(
+    XrSession                                   session,
+    IUnknown*                                   perceptionAnchor,
+    XrSpatialAnchorMSFT*                        anchor);
+
+XRAPI_ATTR XrResult XRAPI_CALL xrTryGetPerceptionAnchorFromSpatialAnchorMSFT(
+    XrSession                                   session,
+    XrSpatialAnchorMSFT                         anchor,
+    IUnknown**                                  perceptionAnchor);
+#endif /* XR_EXTENSION_PROTOTYPES */
+#endif /* !XR_NO_PROTOTYPES */
+#endif /* XR_USE_PLATFORM_WIN32 */
+
+#ifdef XR_USE_PLATFORM_WIN32
+
+// XR_MSFT_holographic_window_attachment is a preprocessor guard. Do not pass it to API calls.
+#define XR_MSFT_holographic_window_attachment 1
+#define XR_MSFT_holographic_window_attachment_SPEC_VERSION 1
+#define XR_MSFT_HOLOGRAPHIC_WINDOW_ATTACHMENT_EXTENSION_NAME "XR_MSFT_holographic_window_attachment"
+#ifdef XR_USE_PLATFORM_WIN32
+// XrHolographicWindowAttachmentMSFT extends XrSessionCreateInfo
+typedef struct XrHolographicWindowAttachmentMSFT {
+    XrStructureType             type;
+    const void* XR_MAY_ALIAS    next;
+    IUnknown*                   holographicSpace;
+    IUnknown*                   coreWindow;
+} XrHolographicWindowAttachmentMSFT;
+#endif // XR_USE_PLATFORM_WIN32
+
+#endif /* XR_USE_PLATFORM_WIN32 */
+
+#ifdef XR_USE_PLATFORM_ANDROID
 
 // XR_FB_android_surface_swapchain_create is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_android_surface_swapchain_create 1
@@ -264,12 +609,16 @@ typedef XrFlags64 XrAndroidSurfaceSwapchainFlagsFB;
 static const XrAndroidSurfaceSwapchainFlagsFB XR_ANDROID_SURFACE_SWAPCHAIN_SYNCHRONOUS_BIT_FB = 0x00000001;
 static const XrAndroidSurfaceSwapchainFlagsFB XR_ANDROID_SURFACE_SWAPCHAIN_USE_TIMESTAMPS_BIT_FB = 0x00000002;
 
+#ifdef XR_USE_PLATFORM_ANDROID
 // XrAndroidSurfaceSwapchainCreateInfoFB extends XrSwapchainCreateInfo
 typedef struct XrAndroidSurfaceSwapchainCreateInfoFB {
     XrStructureType                     type;
     const void* XR_MAY_ALIAS            next;
     XrAndroidSurfaceSwapchainFlagsFB    createFlags;
 } XrAndroidSurfaceSwapchainCreateInfoFB;
+#endif // XR_USE_PLATFORM_ANDROID
+
+#endif /* XR_USE_PLATFORM_ANDROID */
 
 #ifdef XR_USE_PLATFORM_ML
 
@@ -296,6 +645,31 @@ XRAPI_ATTR XrResult XRAPI_CALL xrCreateSpaceFromCoordinateFrameUIDML(
 #endif /* !XR_NO_PROTOTYPES */
 #endif /* XR_USE_PLATFORM_ML */
 
+#ifdef XR_USE_PLATFORM_WIN32
+
+// XR_OCULUS_audio_device_guid is a preprocessor guard. Do not pass it to API calls.
+#define XR_OCULUS_audio_device_guid 1
+#define XR_OCULUS_audio_device_guid_SPEC_VERSION 1
+#define XR_OCULUS_AUDIO_DEVICE_GUID_EXTENSION_NAME "XR_OCULUS_audio_device_guid"
+#define XR_MAX_AUDIO_DEVICE_STR_SIZE_OCULUS 128
+typedef XrResult (XRAPI_PTR *PFN_xrGetAudioOutputDeviceGuidOculus)(XrInstance instance, wchar_t buffer[XR_MAX_AUDIO_DEVICE_STR_SIZE_OCULUS]);
+typedef XrResult (XRAPI_PTR *PFN_xrGetAudioInputDeviceGuidOculus)(XrInstance instance, wchar_t buffer[XR_MAX_AUDIO_DEVICE_STR_SIZE_OCULUS]);
+
+#ifndef XR_NO_PROTOTYPES
+#ifdef XR_EXTENSION_PROTOTYPES
+XRAPI_ATTR XrResult XRAPI_CALL xrGetAudioOutputDeviceGuidOculus(
+    XrInstance                                  instance,
+    wchar_t                                     buffer[XR_MAX_AUDIO_DEVICE_STR_SIZE_OCULUS]);
+
+XRAPI_ATTR XrResult XRAPI_CALL xrGetAudioInputDeviceGuidOculus(
+    XrInstance                                  instance,
+    wchar_t                                     buffer[XR_MAX_AUDIO_DEVICE_STR_SIZE_OCULUS]);
+#endif /* XR_EXTENSION_PROTOTYPES */
+#endif /* !XR_NO_PROTOTYPES */
+#endif /* XR_USE_PLATFORM_WIN32 */
+
+#ifdef XR_USE_GRAPHICS_API_VULKAN
+
 // XR_FB_foveation_vulkan is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_foveation_vulkan 1
 #define XR_FB_foveation_vulkan_SPEC_VERSION 1
@@ -309,23 +683,57 @@ typedef struct XrSwapchainImageFoveationVulkanFB {
     uint32_t              height;
 } XrSwapchainImageFoveationVulkanFB;
 
+#endif /* XR_USE_GRAPHICS_API_VULKAN */
+
+#ifdef XR_USE_PLATFORM_ANDROID
+
 // XR_FB_swapchain_update_state_android_surface is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_swapchain_update_state_android_surface 1
 #define XR_FB_swapchain_update_state_android_surface_SPEC_VERSION 1
 #define XR_FB_SWAPCHAIN_UPDATE_STATE_ANDROID_SURFACE_EXTENSION_NAME "XR_FB_swapchain_update_state_android_surface"
-
+#ifdef XR_USE_PLATFORM_ANDROID
 typedef struct XrSwapchainStateAndroidSurfaceDimensionsFB {
     XrStructureType       type;
     void* XR_MAY_ALIAS    next;
     uint32_t              width;
     uint32_t              height;
 } XrSwapchainStateAndroidSurfaceDimensionsFB;
+#endif // XR_USE_PLATFORM_ANDROID
+
+#endif /* XR_USE_PLATFORM_ANDROID */
+
+#ifdef XR_USE_GRAPHICS_API_OPENGL_ES
+
+// XR_FB_swapchain_update_state_opengl_es is a preprocessor guard. Do not pass it to API calls.
+#define XR_FB_swapchain_update_state_opengl_es 1
+#define XR_FB_swapchain_update_state_opengl_es_SPEC_VERSION 1
+#define XR_FB_SWAPCHAIN_UPDATE_STATE_OPENGL_ES_EXTENSION_NAME "XR_FB_swapchain_update_state_opengl_es"
+#ifdef XR_USE_GRAPHICS_API_OPENGL_ES
+typedef struct XrSwapchainStateSamplerOpenGLESFB {
+    XrStructureType       type;
+    void* XR_MAY_ALIAS    next;
+    EGLenum               minFilter;
+    EGLenum               magFilter;
+    EGLenum               wrapModeS;
+    EGLenum               wrapModeT;
+    EGLenum               swizzleRed;
+    EGLenum               swizzleGreen;
+    EGLenum               swizzleBlue;
+    EGLenum               swizzleAlpha;
+    float                 maxAnisotropy;
+    XrColor4f             borderColor;
+} XrSwapchainStateSamplerOpenGLESFB;
+#endif // XR_USE_GRAPHICS_API_OPENGL_ES
+
+#endif /* XR_USE_GRAPHICS_API_OPENGL_ES */
+
+#ifdef XR_USE_GRAPHICS_API_VULKAN
 
 // XR_FB_swapchain_update_state_vulkan is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_swapchain_update_state_vulkan 1
 #define XR_FB_swapchain_update_state_vulkan_SPEC_VERSION 1
 #define XR_FB_SWAPCHAIN_UPDATE_STATE_VULKAN_EXTENSION_NAME "XR_FB_swapchain_update_state_vulkan"
-
+#ifdef XR_USE_GRAPHICS_API_VULKAN
 typedef struct XrSwapchainStateSamplerVulkanFB {
     XrStructureType         type;
     void* XR_MAY_ALIAS      next;
@@ -341,6 +749,11 @@ typedef struct XrSwapchainStateSamplerVulkanFB {
     float                   maxAnisotropy;
     XrColor4f               borderColor;
 } XrSwapchainStateSamplerVulkanFB;
+#endif // XR_USE_GRAPHICS_API_VULKAN
+
+#endif /* XR_USE_GRAPHICS_API_VULKAN */
+
+#ifdef XR_USE_GRAPHICS_API_VULKAN
 
 // XR_META_vulkan_swapchain_create_info is a preprocessor guard. Do not pass it to API calls.
 #define XR_META_vulkan_swapchain_create_info 1
@@ -353,6 +766,8 @@ typedef struct XrVulkanSwapchainCreateInfoMETA {
     VkImageCreateFlags          additionalCreateFlags;
     VkImageUsageFlags           additionalUsageFlags;
 } XrVulkanSwapchainCreateInfoMETA;
+
+#endif /* XR_USE_GRAPHICS_API_VULKAN */
 
 #ifdef __cplusplus
 }

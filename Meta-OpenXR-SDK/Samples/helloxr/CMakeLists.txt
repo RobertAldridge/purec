@@ -25,7 +25,63 @@ project(helloxr)
     file(TO_CMAKE_PATH "$ENV{VULKAN_SDK}" VULKAN_SDK)
 
     add_library(${PROJECT_NAME} MODULE ${SRC_FILES})
-target_link_libraries(${PROJECT_NAME} PRIVATE native_activity_framework)
+
+#target_link_libraries(${PROJECT_NAME} PRIVATE native_activity_framework)
+
+find_package(OpenXR REQUIRED)
+find_package(Vulkan)
+
+target_link_libraries(
+${PROJECT_NAME}
+PRIVATE
+#PUBLIC
+#INTERFACE
+android
+#EGL
+#GLESv3
+log
+#minizip
+#stb
+#ktx
+OpenXR::openxr_loader
+${Vulkan_LIBRARY} )
+
+target_link_libraries(
+${PROJECT_NAME}
+#PRIVATE
+PUBLIC
+#INTERFACE
+android
+#EGL
+#GLESv3
+log
+#minizip
+#stb
+#ktx
+OpenXR::openxr_loader
+${Vulkan_LIBRARY} )
+
+target_link_libraries(
+${PROJECT_NAME}
+#PRIVATE
+#PUBLIC
+INTERFACE
+android
+#EGL
+#GLESv3
+log
+#minizip
+#stb
+#ktx
+OpenXR::openxr_loader
+${Vulkan_LIBRARY} )
+
+#C:\Users\RobertLocalAldridge\AppData\Local\Android\Sdk\ndk\25.1.8937393\sources\third_party\shaderc
+
+#C:\Users\RobertLocalAldridge\AppData\Local\Android\Sdk\ndk\25.1.8937393\sources\third_party\vulkan\src\include\vulkan
+
+#C:\Users\RobertLocalAldridge\AppData\Local\Android\Sdk\ndk\25.1.8937393\toolchains\llvm\prebuilt\windows-x86_64\sysroot\usr\include\vulkan
+
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-u ANativeActivity_onCreate")
 
     # Common across platforms
@@ -34,9 +90,14 @@ target_link_libraries(${PROJECT_NAME} PRIVATE native_activity_framework)
     target_compile_definitions(
         helloxr
         PUBLIC
+            __ANDROID__=1
+            ANDROID_NDK=1
+            VK_ENABLE_BETA_EXTENSIONS=1
             VK_NO_PROTOTYPES=1
-            XR_USE_PLATFORM_ANDROID=1
+            VK_USE_PLATFORM_ANDROID=1
+            VK_USE_PLATFORM_ANDROID_KHR=1
             XR_USE_GRAPHICS_API_VULKAN=1
-            ANDROID_NDK
+            XR_USE_PLATFORM_ANDROID=1
+            XR_USE_PLATFORM_ANDROID_KHR=1
             $<IF:$<CONFIG:Debug>,OVR_BUILD_DEBUG=1,>
     )
