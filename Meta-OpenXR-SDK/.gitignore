@@ -2,4 +2,4 @@ local.properties
 .cxx/
 .gradle/
 .idea/
-Samples/helloxr/Projects/Android/build/
+helloxr/Projects/Android/build/
