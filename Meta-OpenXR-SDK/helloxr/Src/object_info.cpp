@@ -1,11 +1,6 @@
 
 // object_info.cpp
 
-#include "object_info.h"
-
-#include "extra_algorithms.h"
-#include "hex_and_handles.h"
-
 class _jobject;
 typedef _jobject* jobject;
 
@@ -19,12 +14,27 @@ typedef _jobject* jobject;
 #include "openxr_reflection_structs.h"
 #include "openxr_reflection_parent_structs.h"
 
+#include <string>
+#include <stdint.h>
+
+#include "hex_and_handles.h"
+
+#include <memory>
+#include <string>
+#include <unordered_map>
+#include <vector>
+
+#include "object_info.h"
+
 #include <algorithm>
+#include <vector>
+
+#include "extra_algorithms.h"
+
 #include <iterator>
 #include <memory>
 #include <sstream>
 #include <string>
-#include <vector>
 
 #include "memory.h"
 

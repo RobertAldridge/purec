@@ -1,41 +1,29 @@
 
 // hex_and_handles.h
 
-#pragma once
+inline std::string to_hex(const uint8_t* const data, size_t bytes)
+{
+  std::string out(2 + bytes * 2, '?');
+  out[0] = '0';
+  out[1] = 'x';
 
-class _jobject;
-typedef _jobject* jobject;
+  static const char* hex = "0123456789abcdef";
 
-#include <vulkan/vulkan.h>
+  auto ch = out.end();
 
-#include "openxr_platform_defines.h"
-#include "openxr.h"
-#include "openxr_platform.h"
-#include "openxr_loader_negotiation.h"
-#include "openxr_reflection.h"
-#include "openxr_reflection_structs.h"
-#include "openxr_reflection_parent_structs.h"
+  for(size_t i = 0; i < bytes; ++i)
+  {
+    auto b = data[i];
+    *--ch = hex[(b >> 0) & 0xf];
+    *--ch = hex[(b >> 4) & 0xf];
+  }
 
-#include <string>
-#include <stdint.h>
-
-inline std::string to_hex(const uint8_t* const data, size_t bytes) {
-    std::string out(2 + bytes * 2, '?');
-    out[0] = '0';
-    out[1] = 'x';
-    static const char* hex = "0123456789abcdef";
-    auto ch = out.end();
-    for(size_t i = 0; i < bytes; ++i) {
-        auto b = data[i];
-        *--ch = hex[(b >> 0) & 0xf];
-        *--ch = hex[(b >> 4) & 0xf];
-    }
-    return out;
+  return out;
 }
 
-template <typename T>
-inline std::string to_hex(const T& data) {
-    return to_hex(reinterpret_cast<const uint8_t* const>(&data), sizeof(data) );
+template <typename T> inline std::string to_hex(const T& data)
+{
+  return to_hex(reinterpret_cast<const uint8_t* const>(&data), sizeof(data) );
 }
 
 #if XR_PTR_SIZE == 8

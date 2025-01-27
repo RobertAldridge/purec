@@ -1,8 +1,6 @@
 
 // check.h
 
-#pragma once
-
 #define CHK_STRINGIFY(x) #x
 
 #define TOSTRING(x) CHK_STRINGIFY(x)

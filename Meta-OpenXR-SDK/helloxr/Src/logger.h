@@ -1,8 +1,6 @@
 
 // logger.h
 
-#pragma once
-
 namespace Log
 {
 

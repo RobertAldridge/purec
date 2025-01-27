@@ -1,7 +1,11 @@
 
 // vulkan_wrapper.cpp
 
+#include <vulkan/vulkan.h>
+#include <vulkan/vk_sdk_platform.h>
+
 #include "vulkan_wrapper.h"
+
 #include <dlfcn.h>
 
 struct VkGeneratedDispatchTableCore tableVk;

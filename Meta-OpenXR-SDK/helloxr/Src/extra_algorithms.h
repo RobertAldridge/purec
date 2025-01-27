@@ -1,11 +1,6 @@
 
 // extra_algorithms.h
 
-#pragma once
-
-#include <algorithm>
-#include <vector>
-
 template <typename T, typename Pred> static inline void map_erase_if(T& container, Pred&& predicate)
 {
   for(auto it = container.begin(); it != container.end(); )

@@ -1,6 +1,28 @@
 
 // loader_init_data.cpp
 
+#include <android/native_window.h>
+#include <android/window.h>
+#include <android/native_window_jni.h>
+
+#include <vulkan/vulkan.h>
+
+class _jobject;
+typedef _jobject* jobject;
+
+#include <vulkan/vulkan.h>
+
+#include "openxr_platform_defines.h"
+#include "openxr.h"
+#include "openxr_platform.h"
+#include "openxr_loader_negotiation.h"
+#include "openxr_reflection.h"
+#include "openxr_reflection_structs.h"
+#include "openxr_reflection_parent_structs.h"
+
+//#include <json/value.h>
+#include <android/asset_manager_jni.h>
+
 #include "loader_init_data.h"
 
 #ifdef XR_KHR_LOADER_INIT_SUPPORT

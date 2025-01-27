@@ -1,8 +1,6 @@
 
 // exception_handling.h
 
-#pragma once
-
 #define HAVE_SECURE_GETENV 1
 #define HAVE___SECURE_GETENV 1
 
@@ -13,8 +11,6 @@
 #define XRLOADER_ABI_CATCH_FALLBACK
 
 #else // XRLOADER_DISABLE_EXCEPTION_HANDLING
-
-#include <stdexcept>
 
 #define XRLOADER_ABI_TRY try
 

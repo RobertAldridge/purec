@@ -1,28 +1,6 @@
 
 // object_info.h
 
-#pragma once
-
-#include "hex_and_handles.h"
-
-class _jobject;
-typedef _jobject* jobject;
-
-#include <vulkan/vulkan.h>
-
-#include "openxr_platform_defines.h"
-#include "openxr.h"
-#include "openxr_platform.h"
-#include "openxr_loader_negotiation.h"
-#include "openxr_reflection.h"
-#include "openxr_reflection_structs.h"
-#include "openxr_reflection_parent_structs.h"
-
-#include <memory>
-#include <string>
-#include <unordered_map>
-#include <vector>
-
 struct XrSdkGenericObject
 {
     //! Type-erased handle value

@@ -6,6 +6,34 @@
 
 #include "filesystem_utils.h"
 
+#include <android/native_window.h>
+#include <android/window.h>
+#include <android/native_window_jni.h>
+
+#include <vulkan/vulkan.h>
+
+#include <string>
+#include <stdint.h>
+#include <stdlib.h>
+
+#define OPENXR_RELATIVE_PATH "openxr/"
+#define OPENXR_IMPLICIT_API_LAYER_RELATIVE_PATH "/api_layers/implicit.d"
+#define OPENXR_EXPLICIT_API_LAYER_RELATIVE_PATH "/api_layers/explicit.d"
+
+#define OPENXR_RUNTIME_JSON_ENV_VAR "XR_RUNTIME_JSON"
+#define OPENXR_API_LAYER_PATH_ENV_VAR "XR_API_LAYER_PATH"
+
+#define HAVE_SECURE_GETENV 1
+#define HAVE___SECURE_GETENV 1
+
+#define XR_ARCH_ABI "arm64-v8a"
+
+void LogPlatformUtilsError(const std::string& message);
+
+#include <sys/stat.h>
+
+#include <sys/system_properties.h>
+
 #include "platform_utils.h"
 
 #include <cstring>

@@ -1,29 +1,33 @@
 
 // unique_asset.h
 
-#pragma once
+namespace deleters
+{
 
-#include <memory>
-#include <android/asset_manager.h>
-
-namespace deleters {
-struct AAssetDeleter {
-    void operator()(AAsset* asset) const noexcept {
-        if(asset != nullptr) {
-            AAsset_close(asset);
-        }
+struct AAssetDeleter
+{
+  void operator()(AAsset* asset) const noexcept
+  {
+    if(asset != nullptr)
+    {
+      AAsset_close(asset);
     }
+  }
 };
 
-struct AAssetDirDeleter {
-    void operator()(AAssetDir* dir) const noexcept {
-        if(dir != nullptr) {
-            AAssetDir_close(dir);
-        }
+struct AAssetDirDeleter
+{
+  void operator()(AAssetDir* dir) const noexcept
+  {
+    if(dir != nullptr)
+    {
+      AAssetDir_close(dir);
     }
+  }
 };
 
-}  // namespace deleters
+} // namespace deleters
 
 using UniqueAsset = std::unique_ptr<AAsset, deleters::AAssetDeleter>;
+
 using UniqueAssetDir = std::unique_ptr<AAssetDir, deleters::AAssetDirDeleter>;

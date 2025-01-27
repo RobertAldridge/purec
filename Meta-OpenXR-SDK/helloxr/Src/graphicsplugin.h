@@ -1,8 +1,6 @@
 
 // graphicsplugin.h
 
-#pragma once
-
 struct Cube
 {
     XrPosef Pose;

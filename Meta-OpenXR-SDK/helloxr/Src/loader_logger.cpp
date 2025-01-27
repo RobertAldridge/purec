@@ -1,11 +1,76 @@
 
 // loader_logger.cpp
 
+#include <memory>
+#include <mutex>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
+#include <set>
+#include <map>
+#include <shared_mutex>
+
+class _jobject;
+typedef _jobject* jobject;
+
+#include <vulkan/vulkan.h>
+
+#include "openxr_platform_defines.h"
+#include "openxr.h"
+#include "openxr_platform.h"
+#include "openxr_loader_negotiation.h"
+#include "openxr_reflection.h"
+#include "openxr_reflection_structs.h"
+#include "openxr_reflection_parent_structs.h"
+
+#include <string>
+#include <stdint.h>
+
+#include "hex_and_handles.h"
+
+#include <memory>
+#include <string>
+#include <unordered_map>
+#include <vector>
+
+#include "object_info.h"
+
 #include "loader_logger.h"
 
+#include <algorithm>
+#include <vector>
+
 #include "extra_algorithms.h"
-#include "hex_and_handles.h"
-//#include "loader_logger_recorders.h"
+
+#include <android/native_window.h>
+#include <android/window.h>
+#include <android/native_window_jni.h>
+
+#include <vulkan/vulkan.h>
+
+#include <string>
+#include <stdint.h>
+#include <stdlib.h>
+
+#define OPENXR_RELATIVE_PATH "openxr/"
+#define OPENXR_IMPLICIT_API_LAYER_RELATIVE_PATH "/api_layers/implicit.d"
+#define OPENXR_EXPLICIT_API_LAYER_RELATIVE_PATH "/api_layers/explicit.d"
+
+#define OPENXR_RUNTIME_JSON_ENV_VAR "XR_RUNTIME_JSON"
+#define OPENXR_API_LAYER_PATH_ENV_VAR "XR_API_LAYER_PATH"
+
+#define HAVE_SECURE_GETENV 1
+#define HAVE___SECURE_GETENV 1
+
+#define XR_ARCH_ABI "arm64-v8a"
+
+void LogPlatformUtilsError(const std::string& message);
+
+#include <sys/stat.h>
+
+#include <sys/system_properties.h>
+
 #include "platform_utils.h"
 
 class _jobject;
@@ -21,7 +86,6 @@ typedef _jobject* jobject;
 #include "openxr_reflection_structs.h"
 #include "openxr_reflection_parent_structs.h"
 
-#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <mutex>
@@ -29,9 +93,8 @@ typedef _jobject* jobject;
 #include <string>
 #include <unordered_map>
 #include <utility>
-#include <vector>
 
-// For routing platform_utils.h messages into the LoaderLogger.
+// for routing platform_utils.h messages into the LoaderLogger
 void LogPlatformUtilsError(const std::string& message) {/* LoaderLogger::LogErrorMessage("platform_utils", message);*/ }
 
 bool LoaderLogRecorder::LogDebugUtilsMessage(XrDebugUtilsMessageSeverityFlagsEXT /*message_severity*/,

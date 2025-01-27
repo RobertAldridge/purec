@@ -72,6 +72,7 @@ class _jobject;
 typedef _jobject* jobject;
 
 #include <vulkan/vulkan.h>
+#include <vulkan/vk_sdk_platform.h>
 
 #include "openxr_platform_defines.h"
 #include "openxr.h"
@@ -99,11 +100,19 @@ inline const char* to_string(XrFormFactor e);
 
 #include "options.h"
 
+#include <stdexcept>
+
+#include "vulkan_wrapper.h"
+
 #include "vulkan_debug_object_namer.h"
+
+#include <assert.h>
+#include <math.h>
+#include <stdbool.h>
+
 #include "xr_linear.h"
 
 #include "xr_generated_dispatch_table_core.h"
-#include "vulkan_wrapper.h"
 
 extern struct XrGeneratedDispatchTableCore tableXr;
 extern struct VkGeneratedDispatchTableCore tableVk;

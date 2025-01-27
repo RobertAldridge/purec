@@ -4,13 +4,6 @@
 #ifndef VULKAN_WRAPPER_H
 #define VULKAN_WRAPPER_H
 
-#include <vulkan/vulkan.h>
-
-#ifdef USE_DEBUG_EXTENTIONS
-#include <vulkan/vk_sdk_platform.h>
-// VK_EXT_debug_report
-#endif
-
 struct VkGeneratedDispatchTableCore
 {
   PFN_vkGetInstanceProcAddr GetInstanceProcAddr;

@@ -1,8 +1,6 @@
 
 // geometry.h
 
-#pragma once
-
 namespace Geometry
 {
 

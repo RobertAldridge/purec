@@ -1,8 +1,6 @@
 
 // common.h
 
-#pragma once
-
 #define ENUM_CASE_STR(name, val) case name: return #name;
 
 #define MAKE_TO_STRING_FUNC(enumType) \

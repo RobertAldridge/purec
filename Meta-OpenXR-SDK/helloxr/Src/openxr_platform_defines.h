@@ -44,8 +44,6 @@ extern "C" {
 #define XRAPI_PTR
 #endif
 
-#include <stddef.h>
-
 #if !defined(XR_NO_STDINT_H)
 #if defined(_MSC_VER) && (_MSC_VER < 1600)
 typedef signed __int8 int8_t;
@@ -56,8 +54,6 @@ typedef signed __int32 int32_t;
 typedef unsigned __int32 uint32_t;
 typedef signed __int64 int64_t;
 typedef unsigned __int64 uint64_t;
-#else
-#include <stdint.h>
 #endif
 #endif  // !defined( XR_NO_STDINT_H )
 

@@ -99,7 +99,13 @@ inline const char* to_string(XrFormFactor e);
 #include "platformplugin.h"
 #include "graphicsplugin.h"
 #include "openxr_program.h"
+
+#include <assert.h>
+#include <math.h>
+#include <stdbool.h>
+
 #include "xr_linear.h"
+
 #include <array>
 #include <cmath>
 #include <set>

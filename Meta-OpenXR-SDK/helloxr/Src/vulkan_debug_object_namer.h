@@ -1,13 +1,6 @@
 
 // vulkan_debug_object_namer.h
 
-#pragma once
-
-#include <vulkan/vulkan_core.h>
-#include <stdexcept>
-
-#include "vulkan_wrapper.h"
-
 extern struct VkGeneratedDispatchTableCore tableVk;
 
 /// Utility class for assigning debug names to Vulkan objects we create.

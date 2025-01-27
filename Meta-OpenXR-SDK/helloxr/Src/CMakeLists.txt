@@ -52,7 +52,6 @@ set(LOCAL_HEADERS
     unique_asset.h
     vulkan_debug_object_namer.h
     vulcan_wrapper.h
-    xr_dependencies.h
     xr_generated_dispatch_table_core.h
     xr_linear.h
     frag.spv

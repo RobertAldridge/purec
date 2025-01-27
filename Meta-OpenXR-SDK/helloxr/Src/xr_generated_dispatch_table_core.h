@@ -1,21 +1,6 @@
 
 // xr_generated_dispatch_table_core.h
 
-#pragma once
-
-class _jobject;
-typedef _jobject* jobject;
-
-#include <vulkan/vulkan.h>
-
-#include "openxr_platform_defines.h"
-#include "openxr.h"
-#include "openxr_platform.h"
-#include "openxr_loader_negotiation.h"
-#include "openxr_reflection.h"
-#include "openxr_reflection_structs.h"
-#include "openxr_reflection_parent_structs.h"
-
 struct XrGeneratedDispatchTableCore
 {
   // ---- Core 1.0 commands

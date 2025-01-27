@@ -4,26 +4,9 @@
 #ifndef XR_LINEAR_H_
 #define XR_LINEAR_H_
 
-class _jobject;
-typedef _jobject* jobject;
-
-#include <vulkan/vulkan.h>
-
-#include "openxr_platform_defines.h"
-#include "openxr.h"
-#include "openxr_platform.h"
-#include "openxr_loader_negotiation.h"
-#include "openxr_reflection.h"
-#include "openxr_reflection_structs.h"
-#include "openxr_reflection_parent_structs.h"
-
-#include <assert.h>
-#include <math.h>
-#include <stdbool.h>
-
 #define MATH_PI 3.14159265358979323846f
 
-#define DEFAULT_NEAR_Z 0.015625f  // exact floating point representation
+#define DEFAULT_NEAR_Z 0.015625f // exact floating point representation
 #define INFINITE_FAR_Z 0.0f
 
 static const XrColor4f XrColorRed = {1.0f, 0.0f, 0.0f, 1.0f};
@@ -38,11 +21,14 @@ static const XrColor4f XrColorDarkGrey = {0.3f, 0.3f, 0.3f, 1.0f};
 typedef enum GraphicsAPI { GRAPHICS_VULKAN } GraphicsAPI;
 
 // Column-major, pre-multiplied. This type does not exist in the OpenXR API and is provided for convenience.
-typedef struct XrMatrix4x4f {
+typedef struct XrMatrix4x4f
+{
     float m[16];
-} XrMatrix4x4f;
 
-inline static float XrRcpSqrt(const float x) {
+}XrMatrix4x4f;
+
+inline static float XrRcpSqrt(const float x)
+{
     const float SMALLEST_NON_DENORMAL = 1.1754943508222875e-038f;  // ( 1U << 23 )
     const float rcp = (x >= SMALLEST_NON_DENORMAL) ? 1.0f / sqrtf(x) : 1.0f;
     return rcp;
@@ -50,25 +36,29 @@ inline static float XrRcpSqrt(const float x) {
 
 inline static float XrVector2f_Length(const XrVector2f* v) { return sqrtf(v->x * v->x + v->y * v->y); }
 
-inline static void XrVector3f_Set(XrVector3f* v, const float value) {
+inline static void XrVector3f_Set(XrVector3f* v, const float value)
+{
     v->x = value;
     v->y = value;
     v->z = value;
 }
 
-inline static void XrVector3f_Add(XrVector3f* result, const XrVector3f* a, const XrVector3f* b) {
+inline static void XrVector3f_Add(XrVector3f* result, const XrVector3f* a, const XrVector3f* b)
+{
     result->x = a->x + b->x;
     result->y = a->y + b->y;
     result->z = a->z + b->z;
 }
 
-inline static void XrVector3f_Sub(XrVector3f* result, const XrVector3f* a, const XrVector3f* b) {
+inline static void XrVector3f_Sub(XrVector3f* result, const XrVector3f* a, const XrVector3f* b)
+{
     result->x = a->x - b->x;
     result->y = a->y - b->y;
     result->z = a->z - b->z;
 }
 
-inline static void XrVector3f_Min(XrVector3f* result, const XrVector3f* a, const XrVector3f* b) {
+inline static void XrVector3f_Min(XrVector3f* result, const XrVector3f* a, const XrVector3f* b)
+{
     result->x = (a->x < b->x) ? a->x : b->x;
     result->y = (a->y < b->y) ? a->y : b->y;
     result->z = (a->z < b->z) ? a->z : b->z;

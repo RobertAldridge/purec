@@ -52,6 +52,7 @@ class _jobject;
 typedef _jobject* jobject;
 
 #include <vulkan/vulkan.h>
+#include <vulkan/vk_sdk_platform.h>
 
 #include "openxr_platform_defines.h"
 #include "openxr.h"
@@ -72,6 +73,7 @@ class _jobject;
 typedef _jobject* jobject;
 
 #include <vulkan/vulkan.h>
+#include <vulkan/vk_sdk_platform.h>
 
 #include "openxr_platform_defines.h"
 #include "openxr.h"

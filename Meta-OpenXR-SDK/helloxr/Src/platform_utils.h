@@ -1,35 +1,6 @@
 
 // platform_utils.h
 
-#pragma once
-
-#include "xr_dependencies.h"
-#include <string>
-#include <stdint.h>
-#include <stdlib.h>
-
-// OpenXR paths and registry key locations
-#define OPENXR_RELATIVE_PATH "openxr/"
-#define OPENXR_IMPLICIT_API_LAYER_RELATIVE_PATH "/api_layers/implicit.d"
-#define OPENXR_EXPLICIT_API_LAYER_RELATIVE_PATH "/api_layers/explicit.d"
-
-// OpenXR Loader environment variables of interest
-#define OPENXR_RUNTIME_JSON_ENV_VAR "XR_RUNTIME_JSON"
-#define OPENXR_API_LAYER_PATH_ENV_VAR "XR_API_LAYER_PATH"
-
-#define HAVE_SECURE_GETENV 1
-#define HAVE___SECURE_GETENV 1
-
-#define XR_ARCH_ABI "arm64-v8a"
-
-// Consumers of this file must ensure this function is implemented. For example, the loader will implement this function so that it
-// can route messages through the loader's logging system.
-void LogPlatformUtilsError(const std::string& message);
-
-#include <sys/stat.h>
-
-#include <sys/system_properties.h>
-
 namespace detail
 {
 

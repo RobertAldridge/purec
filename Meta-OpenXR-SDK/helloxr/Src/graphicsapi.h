@@ -1,8 +1,6 @@
 
 // graphicsapi.h
 
-#pragma once
-
 struct IGraphicsAdapter
 {
     virtual ~IGraphicsAdapter() = default;
