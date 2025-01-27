@@ -93,6 +93,8 @@ ${Vulkan_LIBRARY} )
             __ANDROID__=1
             ANDROID_NDK=1
             USE_DEBUG_EXTENTIONS=1
+            USE_GLSLANGVALIDATOR=1
+            USE_ONLINE_VULKAN_SHADERC=1
             VK_ENABLE_BETA_EXTENSIONS=1
             VK_NO_PROTOTYPES=1
             VK_USE_PLATFORM_ANDROID=1

@@ -48,6 +48,11 @@ set(LOCAL_HEADERS
     platform_utils.h
     platformdata.h
     platformplugin.h
+    shaderc.h
+    shaderc_env.h
+    shaderc_hpp.h
+    shaderc_status.h
+    shaderc_visibility.h
     stdfs_conditions.h
     unique_asset.h
     vulkan_debug_object_namer.h
@@ -77,6 +82,10 @@ set(LOCAL_SOURCE
 )
 
 include_directories("C:/Users/RobertLocalAldridge/AppData/Local/Android/Sdk/ndk/25.1.8937393/sources/third_party/vulkan/src/include/vulkan")
+include_directories("C:/Users/RobertLocalAldridge/AppData/Local/Android/Sdk/ndk/25.1.8937393/sources/third_party/vulkan/src/include")
+
+#include_directories("C:/Users/RobertLocalAldridge/AppData/Local/Android/Sdk/ndk/25.1.8937393/sources/third_party/shaderc/libshaderc/include/shaderc")
+#include_directories("C:/Users/RobertLocalAldridge/AppData/Local/Android/Sdk/ndk/25.1.8937393/sources/third_party/shaderc/libshaderc/include")
 
 option(
     BUILD_FORCE_GENERATION

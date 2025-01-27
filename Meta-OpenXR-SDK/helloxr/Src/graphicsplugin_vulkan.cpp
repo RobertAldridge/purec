@@ -119,7 +119,12 @@ extern struct VkGeneratedDispatchTableCore tableVk;
 extern struct XrGeneratedDispatchTableCore tableXr;
 
 #ifdef USE_ONLINE_VULKAN_SHADERC
-#include <shaderc/shaderc.h>
+#include <stdint.h>
+#include "shaderc_env.h"
+#include "shaderc_status.h"
+#include "shaderc_visibility.h"
+#include "shaderc.h"
+#include "shaderc_hpp.h"
 #endif
 
 // glslangValidator doesn't wrap its output in brackets if you don't have it define the whole array.
