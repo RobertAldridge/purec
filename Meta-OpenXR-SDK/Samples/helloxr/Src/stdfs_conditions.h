@@ -22,7 +22,7 @@
 #endif  // !_HAS_CXX17
 
 // GCC supports the experimental filesystem items starting in GCC 6
-#elif (__GNUC__ >= 6)
+#elif(__GNUC__ >= 6)
 #define USE_EXPERIMENTAL_FS 1
 #define USE_FINAL_FS 0
 

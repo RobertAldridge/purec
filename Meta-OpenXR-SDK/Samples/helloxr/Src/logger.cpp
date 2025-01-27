@@ -11,7 +11,7 @@
 #define ALOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, "helloxr", __VA_ARGS__)
 
 namespace {
-Log::Level g_minSeverity{Log::Level::Info};
+Log::Level g_minSeverity {Log::Level::Info};
 std::mutex g_logLock;
 }  // namespace
 
@@ -19,7 +19,7 @@ namespace Log {
 void SetLevel(Level minSeverity) { g_minSeverity = minSeverity; }
 
 void Write(Level severity, const std::string& msg) {
-    if (severity < g_minSeverity) {
+    if(severity < g_minSeverity) {
         return;
     }
 
@@ -34,7 +34,7 @@ void Write(Level severity, const std::string& msg) {
     const int64_t milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(secondRemainder).count();
 
     static std::map<Level, const char*> severityName = {
-        {Level::Verbose, "Verbose"}, {Level::Info, "Info   "}, {Level::Warning, "Warning"}, {Level::Error, "Error  "}};
+        {Level::Verbose, "Verbose"}, {Level::Info, "Info   "}, {Level::Warning, "Warning"}, {Level::Error, "Error  "} };
 
     std::ostringstream out;
     out.fill('0');
@@ -43,12 +43,12 @@ void Write(Level severity, const std::string& msg) {
         << "[" << severityName[severity] << "] " << msg << std::endl;
 
     std::lock_guard<std::mutex> lock(g_logLock);  // Ensure output is serialized
-    ((severity == Level::Error) ? std::clog : std::cout) << out.str();
+    ( (severity == Level::Error) ? std::clog : std::cout) << out.str();
 
-    if (severity == Level::Error)
-        ALOGE("%s", out.str().c_str());
+    if(severity == Level::Error)
+        ALOGE("%s", out.str().c_str() );
     else
-        ALOGV("%s", out.str().c_str());
+        ALOGV("%s", out.str().c_str() );
 
 }
 }  // namespace Log

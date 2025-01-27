@@ -134,14 +134,12 @@ function(compile_glsl run_target_name)
         endif()
         list(APPEND glsl_output_files "${out_file}")
     endforeach()
-    add_custom_target(${run_target_name} ALL DEPENDS ${glsl_output_files})
-    set_target_properties(${run_target_name} PROPERTIES FOLDER ${HELPER_FOLDER})
+    add_custom_target(${run_target_name} ALL DEPENDS ${glsl_output_files} )
+    set_target_properties(${run_target_name} PROPERTIES FOLDER ${HELPER_FOLDER} )
 
 endfunction()
 
 find_library(ANDROID_LIBRARY NAMES android)
 find_library(ANDROID_LOG_LIBRARY NAMES log)
 
-add_subdirectory(3rdParty)
-add_subdirectory(SampleXrFramework)
 add_subdirectory(helloxr)

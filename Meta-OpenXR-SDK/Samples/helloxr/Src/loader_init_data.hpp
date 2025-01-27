@@ -18,14 +18,16 @@
 #ifdef XR_KHR_LOADER_INIT_SUPPORT
 
 /*!
- * Stores a copy of the data passed to the table.InitializeLoaderKHR function in a singleton.
+ * Stores a copy of the data passed to the tableXr.InitializeLoaderKHR function in a singleton.
  */
-class LoaderInitData {
+class LoaderInitData
+{
    public:
     /*!
      * Singleton accessor.
      */
-    static LoaderInitData& instance() {
+    static LoaderInitData& instance()
+    {
         static LoaderInitData obj;
         return obj;
     }
@@ -59,16 +61,19 @@ class LoaderInitData {
     bool initialized() const noexcept { return _initialized; }
 
     /*!
-     * Initialize loader data - called by InitializeLoaderInitData() and thus ultimately by the loader's table.InitializeLoaderKHR
+     * Initialize loader data - called by InitializeLoaderInitData() and thus ultimately by the loader's tableXr.InitializeLoaderKHR
      * implementation. Each platform that needs this extension will provide an implementation of this.
      */
     XrResult initialize(const XrLoaderInitInfoBaseHeaderKHR* info);
 
    private:
+
     //! Private constructor, forces use of singleton accessor.
     LoaderInitData() = default;
+
     //! Platform-specific init data
     StructType _data = {};
+
     //! Flag for indicating whether _data is valid.
     bool _initialized = false;
 };
@@ -77,7 +82,9 @@ class LoaderInitData {
 XrResult InitializeLoaderInitData(const XrLoaderInitInfoBaseHeaderKHR* loaderInitInfo);
 
 XrResult GetPlatformRuntimeVirtualManifest(Json::Value& out_manifest);
+
 std::string GetAndroidNativeLibraryDir();
+
 void* Android_Get_Asset_Manager();
 
 #endif  // XR_KHR_LOADER_INIT_SUPPORT

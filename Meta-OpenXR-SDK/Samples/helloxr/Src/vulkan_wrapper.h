@@ -16,186 +16,261 @@
 #ifndef VULKAN_WRAPPER_H
 #define VULKAN_WRAPPER_H
 
-#define VK_NO_PROTOTYPES 1
-#include <vulkan/vulkan_android.h>
 #include <vulkan/vulkan.h>
-
-/* Initialize the Vulkan function pointer variables declared in this header.
- * Returns 0 if vulkan is not available, non-zero if it is available.
- */
-int InitVulkan();
-
-// VK_core
-extern PFN_vkCreateInstance vkCreateInstance;
-extern PFN_vkDestroyInstance vkDestroyInstance;
-extern PFN_vkEnumeratePhysicalDevices vkEnumeratePhysicalDevices;
-extern PFN_vkGetPhysicalDeviceFeatures vkGetPhysicalDeviceFeatures;
-extern PFN_vkGetPhysicalDeviceFormatProperties vkGetPhysicalDeviceFormatProperties;
-extern PFN_vkGetPhysicalDeviceImageFormatProperties vkGetPhysicalDeviceImageFormatProperties;
-extern PFN_vkGetPhysicalDeviceProperties vkGetPhysicalDeviceProperties;
-extern PFN_vkGetPhysicalDeviceQueueFamilyProperties vkGetPhysicalDeviceQueueFamilyProperties;
-extern PFN_vkGetPhysicalDeviceMemoryProperties vkGetPhysicalDeviceMemoryProperties;
-extern PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr;
-extern PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr;
-extern PFN_vkCreateDevice vkCreateDevice;
-extern PFN_vkDestroyDevice vkDestroyDevice;
-extern PFN_vkEnumerateInstanceExtensionProperties vkEnumerateInstanceExtensionProperties;
-extern PFN_vkEnumerateDeviceExtensionProperties vkEnumerateDeviceExtensionProperties;
-extern PFN_vkEnumerateInstanceLayerProperties vkEnumerateInstanceLayerProperties;
-extern PFN_vkEnumerateDeviceLayerProperties vkEnumerateDeviceLayerProperties;
-extern PFN_vkGetDeviceQueue vkGetDeviceQueue;
-extern PFN_vkQueueSubmit vkQueueSubmit;
-extern PFN_vkQueueWaitIdle vkQueueWaitIdle;
-extern PFN_vkDeviceWaitIdle vkDeviceWaitIdle;
-extern PFN_vkAllocateMemory vkAllocateMemory;
-extern PFN_vkFreeMemory vkFreeMemory;
-extern PFN_vkMapMemory vkMapMemory;
-extern PFN_vkUnmapMemory vkUnmapMemory;
-extern PFN_vkFlushMappedMemoryRanges vkFlushMappedMemoryRanges;
-extern PFN_vkInvalidateMappedMemoryRanges vkInvalidateMappedMemoryRanges;
-extern PFN_vkGetDeviceMemoryCommitment vkGetDeviceMemoryCommitment;
-extern PFN_vkBindBufferMemory vkBindBufferMemory;
-extern PFN_vkBindImageMemory vkBindImageMemory;
-extern PFN_vkGetBufferMemoryRequirements vkGetBufferMemoryRequirements;
-extern PFN_vkGetImageMemoryRequirements vkGetImageMemoryRequirements;
-extern PFN_vkGetImageSparseMemoryRequirements vkGetImageSparseMemoryRequirements;
-extern PFN_vkGetPhysicalDeviceSparseImageFormatProperties vkGetPhysicalDeviceSparseImageFormatProperties;
-extern PFN_vkQueueBindSparse vkQueueBindSparse;
-extern PFN_vkCreateFence vkCreateFence;
-extern PFN_vkDestroyFence vkDestroyFence;
-extern PFN_vkResetFences vkResetFences;
-extern PFN_vkGetFenceStatus vkGetFenceStatus;
-extern PFN_vkWaitForFences vkWaitForFences;
-extern PFN_vkCreateSemaphore vkCreateSemaphore;
-extern PFN_vkDestroySemaphore vkDestroySemaphore;
-extern PFN_vkCreateEvent vkCreateEvent;
-extern PFN_vkDestroyEvent vkDestroyEvent;
-extern PFN_vkGetEventStatus vkGetEventStatus;
-extern PFN_vkSetEvent vkSetEvent;
-extern PFN_vkResetEvent vkResetEvent;
-extern PFN_vkCreateQueryPool vkCreateQueryPool;
-extern PFN_vkDestroyQueryPool vkDestroyQueryPool;
-extern PFN_vkGetQueryPoolResults vkGetQueryPoolResults;
-extern PFN_vkCreateBuffer vkCreateBuffer;
-extern PFN_vkDestroyBuffer vkDestroyBuffer;
-extern PFN_vkCreateBufferView vkCreateBufferView;
-extern PFN_vkDestroyBufferView vkDestroyBufferView;
-extern PFN_vkCreateImage vkCreateImage;
-extern PFN_vkDestroyImage vkDestroyImage;
-extern PFN_vkGetImageSubresourceLayout vkGetImageSubresourceLayout;
-extern PFN_vkCreateImageView vkCreateImageView;
-extern PFN_vkDestroyImageView vkDestroyImageView;
-extern PFN_vkCreateShaderModule vkCreateShaderModule;
-extern PFN_vkDestroyShaderModule vkDestroyShaderModule;
-extern PFN_vkCreatePipelineCache vkCreatePipelineCache;
-extern PFN_vkDestroyPipelineCache vkDestroyPipelineCache;
-extern PFN_vkGetPipelineCacheData vkGetPipelineCacheData;
-extern PFN_vkMergePipelineCaches vkMergePipelineCaches;
-extern PFN_vkCreateGraphicsPipelines vkCreateGraphicsPipelines;
-extern PFN_vkCreateComputePipelines vkCreateComputePipelines;
-extern PFN_vkDestroyPipeline vkDestroyPipeline;
-extern PFN_vkCreatePipelineLayout vkCreatePipelineLayout;
-extern PFN_vkDestroyPipelineLayout vkDestroyPipelineLayout;
-extern PFN_vkCreateSampler vkCreateSampler;
-extern PFN_vkDestroySampler vkDestroySampler;
-extern PFN_vkCreateDescriptorSetLayout vkCreateDescriptorSetLayout;
-extern PFN_vkDestroyDescriptorSetLayout vkDestroyDescriptorSetLayout;
-extern PFN_vkCreateDescriptorPool vkCreateDescriptorPool;
-extern PFN_vkDestroyDescriptorPool vkDestroyDescriptorPool;
-extern PFN_vkResetDescriptorPool vkResetDescriptorPool;
-extern PFN_vkAllocateDescriptorSets vkAllocateDescriptorSets;
-extern PFN_vkFreeDescriptorSets vkFreeDescriptorSets;
-extern PFN_vkUpdateDescriptorSets vkUpdateDescriptorSets;
-extern PFN_vkCreateFramebuffer vkCreateFramebuffer;
-extern PFN_vkDestroyFramebuffer vkDestroyFramebuffer;
-extern PFN_vkCreateRenderPass vkCreateRenderPass;
-extern PFN_vkDestroyRenderPass vkDestroyRenderPass;
-extern PFN_vkGetRenderAreaGranularity vkGetRenderAreaGranularity;
-extern PFN_vkCreateCommandPool vkCreateCommandPool;
-extern PFN_vkDestroyCommandPool vkDestroyCommandPool;
-extern PFN_vkResetCommandPool vkResetCommandPool;
-extern PFN_vkAllocateCommandBuffers vkAllocateCommandBuffers;
-extern PFN_vkFreeCommandBuffers vkFreeCommandBuffers;
-extern PFN_vkBeginCommandBuffer vkBeginCommandBuffer;
-extern PFN_vkEndCommandBuffer vkEndCommandBuffer;
-extern PFN_vkResetCommandBuffer vkResetCommandBuffer;
-extern PFN_vkCmdBindPipeline vkCmdBindPipeline;
-extern PFN_vkCmdSetViewport vkCmdSetViewport;
-extern PFN_vkCmdSetScissor vkCmdSetScissor;
-extern PFN_vkCmdSetLineWidth vkCmdSetLineWidth;
-extern PFN_vkCmdSetDepthBias vkCmdSetDepthBias;
-extern PFN_vkCmdSetBlendConstants vkCmdSetBlendConstants;
-extern PFN_vkCmdSetDepthBounds vkCmdSetDepthBounds;
-extern PFN_vkCmdSetStencilCompareMask vkCmdSetStencilCompareMask;
-extern PFN_vkCmdSetStencilWriteMask vkCmdSetStencilWriteMask;
-extern PFN_vkCmdSetStencilReference vkCmdSetStencilReference;
-extern PFN_vkCmdBindDescriptorSets vkCmdBindDescriptorSets;
-extern PFN_vkCmdBindIndexBuffer vkCmdBindIndexBuffer;
-extern PFN_vkCmdBindVertexBuffers vkCmdBindVertexBuffers;
-extern PFN_vkCmdDraw vkCmdDraw;
-extern PFN_vkCmdDrawIndexed vkCmdDrawIndexed;
-extern PFN_vkCmdDrawIndirect vkCmdDrawIndirect;
-extern PFN_vkCmdDrawIndexedIndirect vkCmdDrawIndexedIndirect;
-extern PFN_vkCmdDispatch vkCmdDispatch;
-extern PFN_vkCmdDispatchIndirect vkCmdDispatchIndirect;
-extern PFN_vkCmdCopyBuffer vkCmdCopyBuffer;
-extern PFN_vkCmdCopyImage vkCmdCopyImage;
-extern PFN_vkCmdBlitImage vkCmdBlitImage;
-extern PFN_vkCmdCopyBufferToImage vkCmdCopyBufferToImage;
-extern PFN_vkCmdCopyImageToBuffer vkCmdCopyImageToBuffer;
-extern PFN_vkCmdUpdateBuffer vkCmdUpdateBuffer;
-extern PFN_vkCmdFillBuffer vkCmdFillBuffer;
-extern PFN_vkCmdClearColorImage vkCmdClearColorImage;
-extern PFN_vkCmdClearDepthStencilImage vkCmdClearDepthStencilImage;
-extern PFN_vkCmdClearAttachments vkCmdClearAttachments;
-extern PFN_vkCmdResolveImage vkCmdResolveImage;
-extern PFN_vkCmdSetEvent vkCmdSetEvent;
-extern PFN_vkCmdResetEvent vkCmdResetEvent;
-extern PFN_vkCmdWaitEvents vkCmdWaitEvents;
-extern PFN_vkCmdPipelineBarrier vkCmdPipelineBarrier;
-extern PFN_vkCmdBeginQuery vkCmdBeginQuery;
-extern PFN_vkCmdEndQuery vkCmdEndQuery;
-extern PFN_vkCmdResetQueryPool vkCmdResetQueryPool;
-extern PFN_vkCmdWriteTimestamp vkCmdWriteTimestamp;
-extern PFN_vkCmdCopyQueryPoolResults vkCmdCopyQueryPoolResults;
-extern PFN_vkCmdPushConstants vkCmdPushConstants;
-extern PFN_vkCmdBeginRenderPass vkCmdBeginRenderPass;
-extern PFN_vkCmdNextSubpass vkCmdNextSubpass;
-extern PFN_vkCmdEndRenderPass vkCmdEndRenderPass;
-extern PFN_vkCmdExecuteCommands vkCmdExecuteCommands;
-
-// VK_KHR_surface
-extern PFN_vkDestroySurfaceKHR vkDestroySurfaceKHR;
-extern PFN_vkGetPhysicalDeviceSurfaceSupportKHR vkGetPhysicalDeviceSurfaceSupportKHR;
-extern PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR vkGetPhysicalDeviceSurfaceCapabilitiesKHR;
-extern PFN_vkGetPhysicalDeviceSurfaceFormatsKHR vkGetPhysicalDeviceSurfaceFormatsKHR;
-extern PFN_vkGetPhysicalDeviceSurfacePresentModesKHR vkGetPhysicalDeviceSurfacePresentModesKHR;
-
-// VK_KHR_swapchain
-extern PFN_vkCreateSwapchainKHR vkCreateSwapchainKHR;
-extern PFN_vkDestroySwapchainKHR vkDestroySwapchainKHR;
-extern PFN_vkGetSwapchainImagesKHR vkGetSwapchainImagesKHR;
-extern PFN_vkAcquireNextImageKHR vkAcquireNextImageKHR;
-extern PFN_vkQueuePresentKHR vkQueuePresentKHR;
-
-// VK_KHR_display
-extern PFN_vkGetPhysicalDeviceDisplayPropertiesKHR vkGetPhysicalDeviceDisplayPropertiesKHR;
-extern PFN_vkGetPhysicalDeviceDisplayPlanePropertiesKHR vkGetPhysicalDeviceDisplayPlanePropertiesKHR;
-extern PFN_vkGetDisplayPlaneSupportedDisplaysKHR vkGetDisplayPlaneSupportedDisplaysKHR;
-extern PFN_vkGetDisplayModePropertiesKHR vkGetDisplayModePropertiesKHR;
-extern PFN_vkCreateDisplayModeKHR vkCreateDisplayModeKHR;
-extern PFN_vkGetDisplayPlaneCapabilitiesKHR vkGetDisplayPlaneCapabilitiesKHR;
-extern PFN_vkCreateDisplayPlaneSurfaceKHR vkCreateDisplayPlaneSurfaceKHR;
-
-// VK_KHR_display_swapchain
-extern PFN_vkCreateSharedSwapchainsKHR vkCreateSharedSwapchainsKHR;
-
-// VK_KHR_android_surface
-extern PFN_vkCreateAndroidSurfaceKHR vkCreateAndroidSurfaceKHR;
 
 #ifdef USE_DEBUG_EXTENTIONS
 #include <vulkan/vk_sdk_platform.h>
 // VK_EXT_debug_report
 #endif
+
+struct VkGeneratedDispatchTableCore
+{
+  PFN_vkGetInstanceProcAddr GetInstanceProcAddr;
+
+  PFN_vkAllocateCommandBuffers AllocateCommandBuffers;
+  PFN_vkAllocateDescriptorSets AllocateDescriptorSets;
+  PFN_vkAllocateMemory AllocateMemory;
+  PFN_vkBeginCommandBuffer BeginCommandBuffer;
+  PFN_vkBindBufferMemory BindBufferMemory;
+  PFN_vkBindImageMemory BindImageMemory;
+  PFN_vkCmdBeginQuery CmdBeginQuery;
+  PFN_vkCmdBeginRenderPass CmdBeginRenderPass;
+  PFN_vkCmdBindDescriptorSets CmdBindDescriptorSets;
+  PFN_vkCmdBindIndexBuffer CmdBindIndexBuffer;
+  PFN_vkCmdBindPipeline CmdBindPipeline;
+  PFN_vkCmdBindVertexBuffers CmdBindVertexBuffers;
+  PFN_vkCmdBlitImage CmdBlitImage;
+  PFN_vkCmdClearAttachments CmdClearAttachments;
+  PFN_vkCmdClearColorImage CmdClearColorImage;
+  PFN_vkCmdClearDepthStencilImage CmdClearDepthStencilImage;
+  PFN_vkCmdCopyBuffer CmdCopyBuffer;
+  PFN_vkCmdCopyBufferToImage CmdCopyBufferToImage;
+  PFN_vkCmdCopyImage CmdCopyImage;
+  PFN_vkCmdCopyImageToBuffer CmdCopyImageToBuffer;
+  PFN_vkCmdCopyQueryPoolResults CmdCopyQueryPoolResults;
+  PFN_vkCmdDispatch CmdDispatch;
+  PFN_vkCmdDispatchIndirect CmdDispatchIndirect;
+  PFN_vkCmdDraw CmdDraw;
+  PFN_vkCmdDrawIndexed CmdDrawIndexed;
+  PFN_vkCmdDrawIndexedIndirect CmdDrawIndexedIndirect;
+  PFN_vkCmdDrawIndirect CmdDrawIndirect;
+  PFN_vkCmdEndQuery CmdEndQuery;
+  PFN_vkCmdEndRenderPass CmdEndRenderPass;
+  PFN_vkCmdExecuteCommands CmdExecuteCommands;
+  PFN_vkCmdFillBuffer CmdFillBuffer;
+  PFN_vkCmdNextSubpass CmdNextSubpass;
+  PFN_vkCmdPipelineBarrier CmdPipelineBarrier;
+  PFN_vkCmdPushConstants CmdPushConstants;
+  PFN_vkCmdResetEvent CmdResetEvent;
+  PFN_vkCmdResetQueryPool CmdResetQueryPool;
+  PFN_vkCmdResolveImage CmdResolveImage;
+  PFN_vkCmdSetBlendConstants CmdSetBlendConstants;
+  PFN_vkCmdSetDepthBias CmdSetDepthBias;
+  PFN_vkCmdSetDepthBounds CmdSetDepthBounds;
+  PFN_vkCmdSetEvent CmdSetEvent;
+  PFN_vkCmdSetLineWidth CmdSetLineWidth;
+  PFN_vkCmdSetScissor CmdSetScissor;
+  PFN_vkCmdSetStencilCompareMask CmdSetStencilCompareMask;
+  PFN_vkCmdSetStencilReference CmdSetStencilReference;
+  PFN_vkCmdSetStencilWriteMask CmdSetStencilWriteMask;
+  PFN_vkCmdSetViewport CmdSetViewport;
+  PFN_vkCmdUpdateBuffer CmdUpdateBuffer;
+  PFN_vkCmdWaitEvents CmdWaitEvents;
+  PFN_vkCmdWriteTimestamp CmdWriteTimestamp;
+  PFN_vkCreateBuffer CreateBuffer;
+  PFN_vkCreateBufferView CreateBufferView;
+  PFN_vkCreateCommandPool CreateCommandPool;
+  PFN_vkCreateComputePipelines CreateComputePipelines;
+  PFN_vkCreateDescriptorPool CreateDescriptorPool;
+  PFN_vkCreateDescriptorSetLayout CreateDescriptorSetLayout;
+  PFN_vkCreateDevice CreateDevice;
+  PFN_vkCreateEvent CreateEvent;
+  PFN_vkCreateFence CreateFence;
+  PFN_vkCreateFramebuffer CreateFramebuffer;
+  PFN_vkCreateGraphicsPipelines CreateGraphicsPipelines;
+  PFN_vkCreateImage CreateImage;
+  PFN_vkCreateImageView CreateImageView;
+  PFN_vkCreateInstance CreateInstance;
+  PFN_vkCreatePipelineCache CreatePipelineCache;
+  PFN_vkCreatePipelineLayout CreatePipelineLayout;
+  PFN_vkCreateQueryPool CreateQueryPool;
+  PFN_vkCreateRenderPass CreateRenderPass;
+  PFN_vkCreateSampler CreateSampler;
+  PFN_vkCreateSemaphore CreateSemaphore;
+  PFN_vkCreateShaderModule CreateShaderModule;
+  PFN_vkDestroyBuffer DestroyBuffer;
+  PFN_vkDestroyBufferView DestroyBufferView;
+  PFN_vkDestroyCommandPool DestroyCommandPool;
+  PFN_vkDestroyDescriptorPool DestroyDescriptorPool;
+  PFN_vkDestroyDescriptorSetLayout DestroyDescriptorSetLayout;
+  PFN_vkDestroyDevice DestroyDevice;
+  PFN_vkDestroyEvent DestroyEvent;
+  PFN_vkDestroyFence DestroyFence;
+  PFN_vkDestroyFramebuffer DestroyFramebuffer;
+  PFN_vkDestroyImage DestroyImage;
+  PFN_vkDestroyImageView DestroyImageView;
+  PFN_vkDestroyInstance DestroyInstance;
+  PFN_vkDestroyPipeline DestroyPipeline;
+  PFN_vkDestroyPipelineCache DestroyPipelineCache;
+  PFN_vkDestroyPipelineLayout DestroyPipelineLayout;
+  PFN_vkDestroyQueryPool DestroyQueryPool;
+  PFN_vkDestroyRenderPass DestroyRenderPass;
+  PFN_vkDestroySampler DestroySampler;
+  PFN_vkDestroySemaphore DestroySemaphore;
+  PFN_vkDestroyShaderModule DestroyShaderModule;
+  PFN_vkDeviceWaitIdle DeviceWaitIdle;
+  PFN_vkEndCommandBuffer EndCommandBuffer;
+  PFN_vkEnumerateDeviceExtensionProperties EnumerateDeviceExtensionProperties;
+  PFN_vkEnumerateDeviceLayerProperties EnumerateDeviceLayerProperties;
+  PFN_vkEnumerateInstanceExtensionProperties EnumerateInstanceExtensionProperties;
+  PFN_vkEnumerateInstanceLayerProperties EnumerateInstanceLayerProperties;
+  PFN_vkEnumeratePhysicalDevices EnumeratePhysicalDevices;
+  PFN_vkFlushMappedMemoryRanges FlushMappedMemoryRanges;
+  PFN_vkFreeCommandBuffers FreeCommandBuffers;
+  PFN_vkFreeDescriptorSets FreeDescriptorSets;
+  PFN_vkFreeMemory FreeMemory;
+  PFN_vkGetBufferMemoryRequirements GetBufferMemoryRequirements;
+  PFN_vkGetDeviceMemoryCommitment GetDeviceMemoryCommitment;
+  PFN_vkGetDeviceProcAddr GetDeviceProcAddr;
+  PFN_vkGetDeviceQueue GetDeviceQueue;
+  PFN_vkGetEventStatus GetEventStatus;
+  PFN_vkGetFenceStatus GetFenceStatus;
+  PFN_vkGetImageMemoryRequirements GetImageMemoryRequirements;
+  PFN_vkGetImageSparseMemoryRequirements GetImageSparseMemoryRequirements;
+  PFN_vkGetImageSubresourceLayout GetImageSubresourceLayout;
+
+  PFN_vkGetPhysicalDeviceFeatures GetPhysicalDeviceFeatures;
+  PFN_vkGetPhysicalDeviceFormatProperties GetPhysicalDeviceFormatProperties;
+  PFN_vkGetPhysicalDeviceImageFormatProperties GetPhysicalDeviceImageFormatProperties;
+  PFN_vkGetPhysicalDeviceMemoryProperties GetPhysicalDeviceMemoryProperties;
+  PFN_vkGetPhysicalDeviceProperties GetPhysicalDeviceProperties;
+  PFN_vkGetPhysicalDeviceQueueFamilyProperties GetPhysicalDeviceQueueFamilyProperties;
+  PFN_vkGetPhysicalDeviceSparseImageFormatProperties GetPhysicalDeviceSparseImageFormatProperties;
+  PFN_vkGetPipelineCacheData GetPipelineCacheData;
+  PFN_vkGetQueryPoolResults GetQueryPoolResults;
+  PFN_vkGetRenderAreaGranularity GetRenderAreaGranularity;
+  PFN_vkInvalidateMappedMemoryRanges InvalidateMappedMemoryRanges;
+  PFN_vkMapMemory MapMemory;
+  PFN_vkMergePipelineCaches MergePipelineCaches;
+  PFN_vkQueueBindSparse QueueBindSparse;
+  PFN_vkQueueSubmit QueueSubmit;
+  PFN_vkQueueWaitIdle QueueWaitIdle;
+  PFN_vkResetCommandBuffer ResetCommandBuffer;
+  PFN_vkResetCommandPool ResetCommandPool;
+  PFN_vkResetDescriptorPool ResetDescriptorPool;
+  PFN_vkResetEvent ResetEvent;
+  PFN_vkResetFences ResetFences;
+  PFN_vkSetEvent SetEvent;
+  PFN_vkUnmapMemory UnmapMemory;
+  PFN_vkUpdateDescriptorSets UpdateDescriptorSets;
+  PFN_vkWaitForFences WaitForFences;
+
+  // VK_KHR_surface
+  PFN_vkDestroySurfaceKHR DestroySurfaceKHR;
+  PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR GetPhysicalDeviceSurfaceCapabilitiesKHR;
+  PFN_vkGetPhysicalDeviceSurfaceFormatsKHR GetPhysicalDeviceSurfaceFormatsKHR;
+  PFN_vkGetPhysicalDeviceSurfacePresentModesKHR GetPhysicalDeviceSurfacePresentModesKHR;
+  PFN_vkGetPhysicalDeviceSurfaceSupportKHR GetPhysicalDeviceSurfaceSupportKHR;
+
+  // VK_KHR_swapchain
+  PFN_vkAcquireNextImageKHR AcquireNextImageKHR;
+  PFN_vkCreateSwapchainKHR CreateSwapchainKHR;
+  PFN_vkDestroySwapchainKHR DestroySwapchainKHR;
+  PFN_vkGetSwapchainImagesKHR GetSwapchainImagesKHR;
+  PFN_vkQueuePresentKHR QueuePresentKHR;
+
+  // VK_KHR_display
+  PFN_vkCreateDisplayModeKHR CreateDisplayModeKHR;
+  PFN_vkCreateDisplayPlaneSurfaceKHR CreateDisplayPlaneSurfaceKHR;
+  PFN_vkGetDisplayModePropertiesKHR GetDisplayModePropertiesKHR;
+  PFN_vkGetDisplayPlaneCapabilitiesKHR GetDisplayPlaneCapabilitiesKHR;
+  PFN_vkGetDisplayPlaneSupportedDisplaysKHR GetDisplayPlaneSupportedDisplaysKHR;
+  PFN_vkGetPhysicalDeviceDisplayPlanePropertiesKHR GetPhysicalDeviceDisplayPlanePropertiesKHR;
+  PFN_vkGetPhysicalDeviceDisplayPropertiesKHR GetPhysicalDeviceDisplayPropertiesKHR;
+
+  // VK_KHR_display_swapchain
+  PFN_vkCreateSharedSwapchainsKHR CreateSharedSwapchainsKHR;
+
+  // VK_KHR_android_surface
+  PFN_vkCreateAndroidSurfaceKHR CreateAndroidSurfaceKHR;
+
+  PFN_vkAcquireNextImage2KHR AcquireNextImage2KHR;
+  PFN_vkBindBufferMemory2 BindBufferMemory2;
+  PFN_vkBindImageMemory2 BindImageMemory2;
+  PFN_vkCmdBeginRenderPass2 CmdBeginRenderPass2;
+  PFN_vkCmdDispatchBase CmdDispatchBase;
+  PFN_vkCmdDrawIndexedIndirectCount CmdDrawIndexedIndirectCount;
+  PFN_vkCmdDrawIndirectCount CmdDrawIndirectCount;
+  PFN_vkCmdEndRenderPass2 CmdEndRenderPass2;
+  PFN_vkCmdNextSubpass2 CmdNextSubpass2;
+  PFN_vkCmdSetDeviceMask CmdSetDeviceMask;
+  PFN_vkCreateDescriptorUpdateTemplate CreateDescriptorUpdateTemplate;
+  PFN_vkCreateRenderPass2 CreateRenderPass2;
+  PFN_vkCreateSamplerYcbcrConversion CreateSamplerYcbcrConversion;
+  PFN_vkDestroyDescriptorUpdateTemplate DestroyDescriptorUpdateTemplate;
+  PFN_vkDestroySamplerYcbcrConversion DestroySamplerYcbcrConversion;
+  PFN_vkEnumerateInstanceVersion EnumerateInstanceVersion;
+  PFN_vkEnumeratePhysicalDeviceGroups EnumeratePhysicalDeviceGroups;
+  PFN_vkGetAndroidHardwareBufferPropertiesANDROID GetAndroidHardwareBufferPropertiesANDROID;
+  PFN_vkGetBufferDeviceAddress GetBufferDeviceAddress;
+  PFN_vkGetBufferMemoryRequirements2 GetBufferMemoryRequirements2;
+  PFN_vkGetBufferOpaqueCaptureAddress GetBufferOpaqueCaptureAddress;
+  PFN_vkGetDescriptorSetLayoutSupport GetDescriptorSetLayoutSupport;
+  PFN_vkGetDeviceGroupPeerMemoryFeatures GetDeviceGroupPeerMemoryFeatures;
+  PFN_vkGetDeviceGroupPresentCapabilitiesKHR GetDeviceGroupPresentCapabilitiesKHR;
+  PFN_vkGetDeviceGroupSurfacePresentModesKHR GetDeviceGroupSurfacePresentModesKHR;
+  PFN_vkGetDeviceMemoryOpaqueCaptureAddress GetDeviceMemoryOpaqueCaptureAddress;
+  PFN_vkGetDeviceQueue2 GetDeviceQueue2;
+  PFN_vkGetImageMemoryRequirements2 GetImageMemoryRequirements2;
+  PFN_vkGetImageSparseMemoryRequirements2 GetImageSparseMemoryRequirements2;
+  PFN_vkGetMemoryAndroidHardwareBufferANDROID GetMemoryAndroidHardwareBufferANDROID;
+  PFN_vkGetPhysicalDeviceExternalBufferProperties GetPhysicalDeviceExternalBufferProperties;
+  PFN_vkGetPhysicalDeviceExternalFenceProperties GetPhysicalDeviceExternalFenceProperties;
+  PFN_vkGetPhysicalDeviceExternalSemaphoreProperties GetPhysicalDeviceExternalSemaphoreProperties;
+  PFN_vkGetPhysicalDeviceFeatures2 GetPhysicalDeviceFeatures2;
+  PFN_vkGetPhysicalDeviceFormatProperties2 GetPhysicalDeviceFormatProperties2;
+  PFN_vkGetPhysicalDeviceImageFormatProperties2 GetPhysicalDeviceImageFormatProperties2;
+  PFN_vkGetPhysicalDeviceMemoryProperties2 GetPhysicalDeviceMemoryProperties2;
+  PFN_vkGetPhysicalDevicePresentRectanglesKHR GetPhysicalDevicePresentRectanglesKHR;
+  PFN_vkGetPhysicalDeviceProperties2 GetPhysicalDeviceProperties2;
+  PFN_vkGetPhysicalDeviceQueueFamilyProperties2 GetPhysicalDeviceQueueFamilyProperties2;
+  PFN_vkGetPhysicalDeviceSparseImageFormatProperties2 GetPhysicalDeviceSparseImageFormatProperties2;
+  PFN_vkGetSemaphoreCounterValue GetSemaphoreCounterValue;
+  PFN_vkResetQueryPool ResetQueryPool;
+  PFN_vkSignalSemaphore SignalSemaphore;
+  PFN_vkTrimCommandPool TrimCommandPool;
+  PFN_vkUpdateDescriptorSetWithTemplate UpdateDescriptorSetWithTemplate;
+  PFN_vkWaitSemaphores WaitSemaphores;
+
+  // VK_EXT_debug_marker
+  PFN_vkCmdDebugMarkerBeginEXT CmdDebugMarkerBeginEXT;
+  PFN_vkCmdDebugMarkerEndEXT CmdDebugMarkerEndEXT;
+  PFN_vkCmdDebugMarkerInsertEXT CmdDebugMarkerInsertEXT;
+  PFN_vkDebugMarkerSetObjectNameEXT DebugMarkerSetObjectNameEXT;
+  PFN_vkDebugMarkerSetObjectTagEXT DebugMarkerSetObjectTagEXT;
+
+  // VK_EXT_debug_report
+  PFN_vkCreateDebugReportCallbackEXT CreateDebugReportCallbackEXT;
+  PFN_vkDebugReportMessageEXT DebugReportMessageEXT;
+  PFN_vkDestroyDebugReportCallbackEXT DestroyDebugReportCallbackEXT;
+
+  // VK_EXT_debug_utils
+  PFN_vkCmdBeginDebugUtilsLabelEXT CmdBeginDebugUtilsLabelEXT;
+  PFN_vkCmdEndDebugUtilsLabelEXT CmdEndDebugUtilsLabelEXT;
+  PFN_vkCmdInsertDebugUtilsLabelEXT CmdInsertDebugUtilsLabelEXT;
+  PFN_vkCreateDebugUtilsMessengerEXT CreateDebugUtilsMessengerEXT;
+  PFN_vkDestroyDebugUtilsMessengerEXT DestroyDebugUtilsMessengerEXT;
+  PFN_vkQueueBeginDebugUtilsLabelEXT QueueBeginDebugUtilsLabelEXT;
+  PFN_vkQueueEndDebugUtilsLabelEXT QueueEndDebugUtilsLabelEXT;
+  PFN_vkQueueInsertDebugUtilsLabelEXT QueueInsertDebugUtilsLabelEXT;
+  PFN_vkSetDebugUtilsObjectNameEXT SetDebugUtilsObjectNameEXT;
+  PFN_vkSetDebugUtilsObjectTagEXT SetDebugUtilsObjectTagEXT;
+  PFN_vkSubmitDebugUtilsMessageEXT SubmitDebugUtilsMessageEXT;
+};
+
+/* Initialize the Vulkan function pointer variables declared in this header.
+ * Returns 0 if vulkan is not available, non-zero if it is available.
+ */
+int InitVulkan();
 
 #endif // VULKAN_WRAPPER_H

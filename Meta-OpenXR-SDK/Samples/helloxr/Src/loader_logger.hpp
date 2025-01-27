@@ -131,34 +131,34 @@ class LoaderLogger {
 
     bool LogMessage(XrLoaderLogMessageSeverityFlagBits message_severity, XrLoaderLogMessageTypeFlags message_type,
                     const std::string& message_id, const std::string& command_name, const std::string& message,
-                    const std::vector<XrSdkLogObjectInfo>& objects = {});
+                    const std::vector<XrSdkLogObjectInfo>& objects = {} );
     static bool LogErrorMessage(const std::string& command_name, const std::string& message,
-                                const std::vector<XrSdkLogObjectInfo>& objects = {}) {
+                                const std::vector<XrSdkLogObjectInfo>& objects = {} ) {
         return GetInstance().LogMessage(XR_LOADER_LOG_MESSAGE_SEVERITY_ERROR_BIT, XR_LOADER_LOG_MESSAGE_TYPE_GENERAL_BIT,
                                         "OpenXR-Loader", command_name, message, objects);
     }
     static bool LogWarningMessage(const std::string& command_name, const std::string& message,
-                                  const std::vector<XrSdkLogObjectInfo>& objects = {}) {
+                                  const std::vector<XrSdkLogObjectInfo>& objects = {} ) {
         return GetInstance().LogMessage(XR_LOADER_LOG_MESSAGE_SEVERITY_WARNING_BIT, XR_LOADER_LOG_MESSAGE_TYPE_GENERAL_BIT,
                                         "OpenXR-Loader", command_name, message, objects);
     }
     static bool LogInfoMessage(const std::string& command_name, const std::string& message,
-                               const std::vector<XrSdkLogObjectInfo>& objects = {}) {
+                               const std::vector<XrSdkLogObjectInfo>& objects = {} ) {
         return GetInstance().LogMessage(XR_LOADER_LOG_MESSAGE_SEVERITY_INFO_BIT, XR_LOADER_LOG_MESSAGE_TYPE_GENERAL_BIT,
                                         "OpenXR-Loader", command_name, message, objects);
     }
     static bool LogVerboseMessage(const std::string& command_name, const std::string& message,
-                                  const std::vector<XrSdkLogObjectInfo>& objects = {}) {
+                                  const std::vector<XrSdkLogObjectInfo>& objects = {} ) {
         return GetInstance().LogMessage(XR_LOADER_LOG_MESSAGE_SEVERITY_VERBOSE_BIT, XR_LOADER_LOG_MESSAGE_TYPE_GENERAL_BIT,
                                         "OpenXR-Loader", command_name, message, objects);
     }
     static bool LogValidationErrorMessage(const std::string& vuid, const std::string& command_name, const std::string& message,
-                                          const std::vector<XrSdkLogObjectInfo>& objects = {}) {
+                                          const std::vector<XrSdkLogObjectInfo>& objects = {} ) {
         return GetInstance().LogMessage(XR_LOADER_LOG_MESSAGE_SEVERITY_ERROR_BIT, XR_LOADER_LOG_MESSAGE_TYPE_SPECIFICATION_BIT,
                                         vuid, command_name, message, objects);
     }
     static bool LogValidationWarningMessage(const std::string& vuid, const std::string& command_name, const std::string& message,
-                                            const std::vector<XrSdkLogObjectInfo>& objects = {}) {
+                                            const std::vector<XrSdkLogObjectInfo>& objects = {} ) {
         return GetInstance().LogMessage(XR_LOADER_LOG_MESSAGE_SEVERITY_WARNING_BIT, XR_LOADER_LOG_MESSAGE_TYPE_SPECIFICATION_BIT,
                                         vuid, command_name, message, objects);
     }

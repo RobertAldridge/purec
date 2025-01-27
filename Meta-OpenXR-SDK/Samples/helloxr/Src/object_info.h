@@ -24,7 +24,8 @@
 #include <unordered_map>
 #include <vector>
 
-struct XrSdkGenericObject {
+struct XrSdkGenericObject
+{
     //! Type-erased handle value
     uint64_t handle;
 
@@ -34,25 +35,28 @@ struct XrSdkGenericObject {
     ///
     /// Note: Does not check the type before doing it!
     template <typename HandleType>
-    HandleType& GetTypedHandle() {
+    HandleType& GetTypedHandle()
+    {
         return TreatIntegerAsHandle<HandleType&>(handle);
     }
 
     //! @overload
     template <typename HandleType>
-    HandleType const& GetTypedHandle() const {
+    HandleType const& GetTypedHandle() const
+    {
         return TreatIntegerAsHandle<HandleType&>(handle);
     }
 
     //! Create from a typed handle and object type
     template <typename T>
-    XrSdkGenericObject(T h, XrObjectType t) : handle(MakeHandleGeneric(h)), type(t) {}
+    XrSdkGenericObject(T h, XrObjectType t) : handle(MakeHandleGeneric(h) ), type(t) {}
 
     //! Create from an untyped handle value (integer) and object type
     XrSdkGenericObject(uint64_t h, XrObjectType t) : handle(h), type(t) {}
 };
 
-struct XrSdkLogObjectInfo {
+struct XrSdkLogObjectInfo
+{
     //! Type-erased handle value
     uint64_t handle;
 
@@ -66,13 +70,15 @@ struct XrSdkLogObjectInfo {
     ///
     /// Note: Does not check the type before doing it!
     template <typename HandleType>
-    HandleType& GetTypedHandle() {
+    HandleType& GetTypedHandle()
+    {
         return TreatIntegerAsHandle<HandleType&>(handle);
     }
 
     //! @overload
     template <typename HandleType>
-    HandleType const& GetTypedHandle() const {
+    HandleType const& GetTypedHandle() const
+    {
         return TreatIntegerAsHandle<HandleType&>(handle);
     }
 
@@ -80,10 +86,11 @@ struct XrSdkLogObjectInfo {
 
     //! Create from a typed handle and object type
     template <typename T>
-    XrSdkLogObjectInfo(T h, XrObjectType t) : handle(MakeHandleGeneric(h)), type(t) {}
+    XrSdkLogObjectInfo(T h, XrObjectType t) : handle(MakeHandleGeneric(h) ), type(t) {}
 
     //! Create from an untyped handle value (integer) and object type
     XrSdkLogObjectInfo(uint64_t h, XrObjectType t) : handle(h), type(t) {}
+
     //! Create from an untyped handle value (integer), object type, and name
     XrSdkLogObjectInfo(uint64_t h, XrObjectType t, const char* n) : handle(h), type(t), name(n == nullptr ? "" : n) {}
 
@@ -91,21 +98,25 @@ struct XrSdkLogObjectInfo {
 };
 
 //! True if the two object infos have the same handle value and handle type
-static inline bool Equivalent(XrSdkLogObjectInfo const& a, XrSdkLogObjectInfo const& b) {
+static inline bool Equivalent(XrSdkLogObjectInfo const& a, XrSdkLogObjectInfo const& b)
+{
     return a.handle == b.handle && a.type == b.type;
 }
 
 //! @overload
-static inline bool Equivalent(XrDebugUtilsObjectNameInfoEXT const& a, XrSdkLogObjectInfo const& b) {
+static inline bool Equivalent(XrDebugUtilsObjectNameInfoEXT const& a, XrSdkLogObjectInfo const& b)
+{
     return a.objectHandle == b.handle && a.objectType == b.type;
 }
 
 //! @overload
 static inline bool Equivalent(XrSdkLogObjectInfo const& a, XrDebugUtilsObjectNameInfoEXT const& b) { return Equivalent(b, a); }
 
-/// Object info registered with calls to table.SetDebugUtilsObjectNameEXT
-class ObjectInfoCollection {
+/// Object info registered with calls to tableXr.SetDebugUtilsObjectNameEXT
+class ObjectInfoCollection
+{
    public:
+
     void AddObjectName(uint64_t object_handle, XrObjectType object_type, const std::string& object_name);
 
     void RemoveObject(uint64_t object_handle, XrObjectType object_type);
@@ -120,8 +131,9 @@ class ObjectInfoCollection {
 
     //! Find the stored object info, if any.
     //! Return nullptr if not found.
-    XrSdkLogObjectInfo const* LookUpStoredObjectInfo(uint64_t handle, XrObjectType type) const {
-        return LookUpStoredObjectInfo({handle, type});
+    XrSdkLogObjectInfo const* LookUpStoredObjectInfo(uint64_t handle, XrObjectType type) const
+    {
+        return LookUpStoredObjectInfo( {handle, type} );
     }
 
     //! Find the object name, if any, and update debug utils info accordingly.
@@ -136,6 +148,7 @@ class ObjectInfoCollection {
     bool Empty() const { return object_info_.empty(); }
 
    private:
+
     // Object names that have been set for given objects
     std::vector<XrSdkLogObjectInfo> object_info_;
 };
@@ -144,21 +157,28 @@ struct XrSdkSessionLabel;
 using XrSdkSessionLabelPtr = std::unique_ptr<XrSdkSessionLabel>;
 using XrSdkSessionLabelList = std::vector<XrSdkSessionLabelPtr>;
 
-struct XrSdkSessionLabel {
+struct XrSdkSessionLabel
+{
     static XrSdkSessionLabelPtr make(const XrDebugUtilsLabelEXT& label_info, bool individual);
 
     std::string label_name;
+
     XrDebugUtilsLabelEXT debug_utils_label;
+
     bool is_individual_label;
 
    private:
+
     XrSdkSessionLabel(const XrDebugUtilsLabelEXT& label_info, bool individual);
 };
 
 /// The metadata for a collection of objects. Must persist unmodified during the entire debug messenger call!
-struct NamesAndLabels {
+struct NamesAndLabels
+{
     NamesAndLabels() = default;
+
     NamesAndLabels(std::vector<XrSdkLogObjectInfo> obj, std::vector<XrDebugUtilsLabelEXT> lab);
+
     /// C++ structure owning the data (strings) backing the objects vector.
     std::vector<XrSdkLogObjectInfo> sdk_objects;
 
@@ -167,10 +187,12 @@ struct NamesAndLabels {
 
     /// Populate the debug utils callback data structure.
     void PopulateCallbackData(XrDebugUtilsMessengerCallbackDataEXT& data) const;
+
     // XrDebugUtilsMessengerCallbackDataEXT MakeCallbackData() const;
 };
 
-struct AugmentedCallbackData {
+struct AugmentedCallbackData
+{
     std::vector<XrDebugUtilsLabelEXT> labels;
     std::vector<XrDebugUtilsObjectNameInfoEXT> new_objects;
     XrDebugUtilsMessengerCallbackDataEXT modified_data;
@@ -178,28 +200,31 @@ struct AugmentedCallbackData {
 };
 
 /// Tracks all the data (handle names and session labels) required to fully augment XR_EXT_debug_utils-related calls.
-class DebugUtilsData {
+class DebugUtilsData
+{
    public:
+
     DebugUtilsData() = default;
 
-    DebugUtilsData(const DebugUtilsData&) = delete;
-    DebugUtilsData& operator=(const DebugUtilsData&) = delete;
+    DebugUtilsData(const DebugUtilsData& ) = delete;
+
+    DebugUtilsData& operator=(const DebugUtilsData& ) = delete;
 
     bool Empty() const { return object_info_.Empty() && session_labels_.empty(); }
 
-    //! Core of implementation for table.SetDebugUtilsObjectNameEXT
+    //! Core of implementation for tableXr.SetDebugUtilsObjectNameEXT
     void AddObjectName(uint64_t object_handle, XrObjectType object_type, const std::string& object_name);
 
-    /// Core of implementation for table.SessionBeginDebugUtilsLabelRegionEXT
+    /// Core of implementation for tableXr.SessionBeginDebugUtilsLabelRegionEXT
     void BeginLabelRegion(XrSession session, const XrDebugUtilsLabelEXT& label_info);
 
-    /// Core of implementation for table.SessionEndDebugUtilsLabelRegionEXT
+    /// Core of implementation for tableXr.SessionEndDebugUtilsLabelRegionEXT
     void EndLabelRegion(XrSession session);
 
-    /// Core of implementation for table.SessionInsertDebugUtilsLabelEXT
+    /// Core of implementation for tableXr.SessionInsertDebugUtilsLabelEXT
     void InsertLabel(XrSession session, const XrDebugUtilsLabelEXT& label_info);
 
-    /// Removes all labels associated with a session - call in table.DestroySession and table.DestroyInstance (for all child sessions)
+    /// Removes all labels associated with a session - call in tableXr.DestroySession and tableXr.DestroyInstance (for all child sessions)
     void DeleteSessionLabels(XrSession session);
 
     /// Retrieve labels for the given session, if any, and push them in reverse order on the vector.
@@ -213,10 +238,10 @@ class DebugUtilsData {
     /// Given the collection of objects, populate their names and list of labels
     NamesAndLabels PopulateNamesAndLabels(std::vector<XrSdkLogObjectInfo> objects) const;
 
-    void WrapCallbackData(AugmentedCallbackData* aug_data,
-                          const XrDebugUtilsMessengerCallbackDataEXT* provided_callback_data) const;
+    void WrapCallbackData(AugmentedCallbackData* aug_data, const XrDebugUtilsMessengerCallbackDataEXT* provided_callback_data) const;
 
    private:
+
     void RemoveIndividualLabel(XrSdkSessionLabelList& label_vec);
     XrSdkSessionLabelList* GetSessionLabelList(XrSession session);
     XrSdkSessionLabelList& GetOrCreateSessionLabelList(XrSession session);

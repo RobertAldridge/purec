@@ -39,7 +39,7 @@ extern "C" {
 
 
 #if !defined(XR_NULL_HANDLE)
-#if (XR_PTR_SIZE == 8) && XR_CPP_NULLPTR_SUPPORTED
+#if(XR_PTR_SIZE == 8) && XR_CPP_NULLPTR_SUPPORTED
     #define XR_NULL_HANDLE nullptr
 #else
     #define XR_NULL_HANDLE 0
@@ -93,7 +93,7 @@ extern "C" {
 
 
 #if !defined(XR_DEFINE_HANDLE)
-#if (XR_PTR_SIZE == 8)
+#if(XR_PTR_SIZE == 8)
     #define XR_DEFINE_HANDLE(object) typedef struct object##_T* object;
 #else
     #define XR_DEFINE_HANDLE(object) typedef uint64_t object;
@@ -102,7 +102,7 @@ extern "C" {
 
 
 #if !defined(XR_DEFINE_OPAQUE_64)
-    #if (XR_PTR_SIZE == 8)
+    #if(XR_PTR_SIZE == 8)
         #define XR_DEFINE_OPAQUE_64(object) typedef struct object##_T* object;
     #else
         #define XR_DEFINE_OPAQUE_64(object) typedef uint64_t object;

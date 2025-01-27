@@ -47,11 +47,11 @@ static inline bool ImplTryRuntimeFilename(const char* rt_dir_prefix, uint16_t ma
     auto undecorated_path = rt_dir_prefix + std::to_string(major_version) + "/active_runtime.json";
 
     struct stat buf {};
-    if (0 == stat(decorated_path.c_str(), &buf)) {
+    if(0 == stat(decorated_path.c_str(), &buf) ) {
         file_name = decorated_path;
         return true;
     }
-    if (0 == stat(undecorated_path.c_str(), &buf)) {
+    if(0 == stat(undecorated_path.c_str(), &buf) ) {
         file_name = undecorated_path;
         return true;
     }
@@ -83,9 +83,9 @@ static inline bool PlatformGetGlobalRuntimeFileName(uint16_t major_version, std:
     static const char* rt_dir_prefixes[] = {"/product", "/odm", "/oem", "/vendor", "/system"};
 
     static const std::string subdir = "/etc/openxr/";
-    for (const auto prefix : rt_dir_prefixes) {
+    for(const auto prefix : rt_dir_prefixes) {
         const std::string rt_dir_prefix = prefix + subdir;
-        if (detail::ImplTryRuntimeFilename(rt_dir_prefix.c_str(), major_version, file_name)) {
+        if(detail::ImplTryRuntimeFilename(rt_dir_prefix.c_str(), major_version, file_name) ) {
             return true;
         }
     }
@@ -98,7 +98,7 @@ static inline bool PlatformGetGlobalRuntimeFileName(uint16_t major_version, std:
 static inline std::string PlatformUtilsGetAndroidSystemProperty(const char* name) {
     std::string result;
     const prop_info* pi = __system_property_find(name);
-    if (pi == nullptr) {
+    if(pi == nullptr) {
         return {};
     }
 
@@ -110,12 +110,12 @@ static inline std::string PlatformUtilsGetAndroidSystemProperty(const char* name
             auto property_value = reinterpret_cast<std::string*>(cookie);
             *property_value = value;
         },
-        reinterpret_cast<void*>(&result));
+        reinterpret_cast<void*>(&result) );
 
     // fallback to __system_property_get if no value retrieved via callback
-    if (result.empty()) {
+    if(result.empty() ) {
         char value[PROP_VALUE_MAX] = {};
-        if (__system_property_get(name, value) != 0) {
+        if(__system_property_get(name, value) != 0) {
             result = value;
         }
     }

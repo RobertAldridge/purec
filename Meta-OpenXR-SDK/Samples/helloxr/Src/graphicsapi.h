@@ -4,7 +4,8 @@
 
 #pragma once
 
-struct IGraphicsAdapter {
+struct IGraphicsAdapter
+{
     virtual ~IGraphicsAdapter() = default;
 
     virtual std::vector<std::string> GetInstanceExtensions() const = 0;
@@ -12,7 +13,8 @@ struct IGraphicsAdapter {
     virtual const XrBaseInStructure* GetGraphicsBinding() const = 0;
 };
 
-struct IGraphicsApi {
+struct IGraphicsApi
+{
     virtual ~IGraphicsApi() = default;
 
     virtual std::shared_ptr<IGraphicsAdapter> CreateAdapter(XrInstance instance, XrSystemId systemId) = 0;
@@ -21,5 +23,4 @@ struct IGraphicsApi {
     virtual std::vector<std::string> GetInstanceExtensions() const = 0;
 };
 
-std::shared_ptr<IGraphicsApi> CreateGraphicsAPI(const std::shared_ptr<struct Options>& options,
-                                                std::shared_ptr<struct IPlatformAdapter> platformAdapter);
+std::shared_ptr<IGraphicsApi> CreateGraphicsAPI(const std::shared_ptr<struct Options>& options, std::shared_ptr<struct IPlatformAdapter> platformAdapter);

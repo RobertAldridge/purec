@@ -24,7 +24,7 @@ project(helloxr)
 
     file(TO_CMAKE_PATH "$ENV{VULKAN_SDK}" VULKAN_SDK)
 
-    add_library(${PROJECT_NAME} MODULE ${SRC_FILES})
+    add_library(${PROJECT_NAME} MODULE ${SRC_FILES} )
 
 #target_link_libraries(${PROJECT_NAME} PRIVATE native_activity_framework)
 
@@ -92,10 +92,12 @@ ${Vulkan_LIBRARY} )
         PUBLIC
             __ANDROID__=1
             ANDROID_NDK=1
+            USE_DEBUG_EXTENTIONS=1
             VK_ENABLE_BETA_EXTENSIONS=1
             VK_NO_PROTOTYPES=1
             VK_USE_PLATFORM_ANDROID=1
             VK_USE_PLATFORM_ANDROID_KHR=1
+            XR_NO_PROTOTYPES=1
             XR_USE_GRAPHICS_API_VULKAN=1
             XR_USE_PLATFORM_ANDROID=1
             XR_USE_PLATFORM_ANDROID_KHR=1

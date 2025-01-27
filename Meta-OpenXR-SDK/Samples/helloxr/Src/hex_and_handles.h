@@ -27,7 +27,7 @@ inline std::string to_hex(const uint8_t* const data, size_t bytes) {
     out[1] = 'x';
     static const char* hex = "0123456789abcdef";
     auto ch = out.end();
-    for (size_t i = 0; i < bytes; ++i) {
+    for(size_t i = 0; i < bytes; ++i) {
         auto b = data[i];
         *--ch = hex[(b >> 0) & 0xf];
         *--ch = hex[(b >> 4) & 0xf];
@@ -37,7 +37,7 @@ inline std::string to_hex(const uint8_t* const data, size_t bytes) {
 
 template <typename T>
 inline std::string to_hex(const T& data) {
-    return to_hex(reinterpret_cast<const uint8_t* const>(&data), sizeof(data));
+    return to_hex(reinterpret_cast<const uint8_t* const>(&data), sizeof(data) );
 }
 
 #if XR_PTR_SIZE == 8

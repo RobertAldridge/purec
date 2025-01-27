@@ -26,17 +26,17 @@
 #include "anag.h"
 #include <android/log.h>
 
-#define LOGI(...) ( (void)__android_log_print(ANDROID_LOG_INFO, "threaded_app", __VA_ARGS__) )
-#define LOGE(...) ( (void)__android_log_print(ANDROID_LOG_ERROR, "threaded_app", __VA_ARGS__) )
+#define LOGI(...) do{ __android_log_print(ANDROID_LOG_INFO, "threaded_app", __VA_ARGS__); } while(0)
+#define LOGE(...) do{ __android_log_print(ANDROID_LOG_ERROR, "threaded_app", __VA_ARGS__); } while(0)
 
 /* For debug builds, always enable the debug traces in this library */
 #ifndef NDEBUG
 
-#define LOGV(...) ( (void)__android_log_print(ANDROID_LOG_VERBOSE, "threaded_app", __VA_ARGS__) )
+#define LOGV(...) do{ __android_log_print(ANDROID_LOG_VERBOSE, "threaded_app", __VA_ARGS__); } while(0)
 
 #else
 
-#define LOGV(...) ( (void)0)
+#define LOGV(...) do{ 0; } while(0)
 
 #endif
 

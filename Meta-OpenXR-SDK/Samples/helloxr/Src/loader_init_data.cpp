@@ -14,27 +14,27 @@
 // Check and copy the Android-specific init data.
 XrResult LoaderInitData::initialize(const XrLoaderInitInfoBaseHeaderKHR* info) {
 
-    if (info->type != XR_TYPE_LOADER_INIT_INFO_ANDROID_KHR) {
+    if(info->type != XR_TYPE_LOADER_INIT_INFO_ANDROID_KHR) {
         return XR_ERROR_VALIDATION_FAILURE;
     }
     auto cast_info = reinterpret_cast<XrLoaderInitInfoAndroidKHR const*>(info);
 
-    if (cast_info->applicationVM == nullptr) {
+    if(cast_info->applicationVM == nullptr) {
         return XR_ERROR_VALIDATION_FAILURE;
     }
-    if (cast_info->applicationContext == nullptr) {
+    if(cast_info->applicationContext == nullptr) {
         return XR_ERROR_VALIDATION_FAILURE;
     }
 
     // Copy and store the JVM pointer and Android Context, ensuring the JVM is initialised.
     _data = *cast_info;
     _data.next = nullptr;
-    jni::init(static_cast<jni::JavaVM*>(_data.applicationVM));
-    const jni::Object context = jni::Object{static_cast<jni::jobject>(_data.applicationContext)};
+    jni::init(static_cast<jni::JavaVM*>(_data.applicationVM) );
+    const jni::Object context = jni::Object {static_cast<jni::jobject>(_data.applicationContext)};
 
     // Retrieve a reference to the Android AssetManager.
     const auto assetManager = context.call<jni::Object>("getAssets()Landroid/content/res/AssetManager;");
-    _android_asset_manager = AAssetManager_fromJava(jni::env(), assetManager.getHandle());
+    _android_asset_manager = AAssetManager_fromJava(jni::env(), assetManager.getHandle() );
 
     // Retrieve the path to the native libraries.
     const auto applicationContext = context.call<jni::Object>("getApplicationContext()Landroid/content/Context;");

@@ -41,7 +41,7 @@
 #define PATH_SEPARATOR ':'
 #define DIRECTORY_SYMBOL '/'
 
-#if (USE_FINAL_FS == 1) || (USE_EXPERIMENTAL_FS == 1)
+#if(USE_FINAL_FS == 1) || (USE_EXPERIMENTAL_FS == 1)
 // We can use one of the C++ filesystem packages
 
 bool FileSysUtilsIsRegularFile(const std::string& path) { return FS_PREFIX::is_regular_file(path); }
@@ -90,18 +90,18 @@ bool FileSysUtilsCombinePaths(const std::string& parent, const std::string& chil
 bool FileSysUtilsParsePathList(std::string& path_list, std::vector<std::string>& paths) {
     std::string::size_type start = 0;
     std::string::size_type location = path_list.find(PATH_SEPARATOR);
-    while (location != std::string::npos) {
-        paths.push_back(path_list.substr(start, location));
+    while(location != std::string::npos) {
+        paths.push_back(path_list.substr(start, location) );
         start = location + 1;
         location = path_list.find(PATH_SEPARATOR, start);
     }
-    paths.push_back(path_list.substr(start, location));
+    paths.push_back(path_list.substr(start, location) );
     return true;
 }
 
 bool FileSysUtilsFindFilesInPath(const std::string& path, std::vector<std::string>& files) {
-    for (auto& dir_iter : FS_PREFIX::directory_iterator(path)) {
-        files.push_back(dir_iter.path().filename().string());
+    for(auto& dir_iter : FS_PREFIX::directory_iterator(path) ) {
+        files.push_back(dir_iter.path().filename().string() );
     }
     return true;
 }
@@ -128,7 +128,7 @@ bool FileSysUtilsIsAbsolutePath(const std::string& path) { return (path[0] == DI
 
 bool FileSysUtilsGetCurrentPath(std::string& path) {
     char tmp_path[PATH_MAX];
-    if (nullptr != getcwd(tmp_path, PATH_MAX - 1)) {
+    if(nullptr != getcwd(tmp_path, PATH_MAX - 1) ) {
         path = tmp_path;
         return true;
     }
@@ -137,7 +137,7 @@ bool FileSysUtilsGetCurrentPath(std::string& path) {
 
 bool FileSysUtilsGetParentPath(const std::string& file_path, std::string& parent_path) {
     std::string full_path;
-    if (FileSysUtilsGetAbsolutePath(file_path, full_path)) {
+    if(FileSysUtilsGetAbsolutePath(file_path, full_path) ) {
         std::string::size_type lastSeparator = full_path.find_last_of(DIRECTORY_SYMBOL);
         parent_path = (lastSeparator == 0) ? full_path : full_path.substr(0, lastSeparator);
         return true;
@@ -152,7 +152,7 @@ bool FileSysUtilsGetAbsolutePath(const std::string& path, std::string& absolute)
 
 bool FileSysUtilsGetCanonicalPath(const std::string& path, std::string& canonical) {
     char buf[PATH_MAX];
-    if (nullptr != realpath(path.c_str(), buf)) {
+    if(nullptr != realpath(path.c_str(), buf) ) {
         canonical = buf;
         return true;
     }
@@ -161,12 +161,12 @@ bool FileSysUtilsGetCanonicalPath(const std::string& path, std::string& canonica
 
 bool FileSysUtilsCombinePaths(const std::string& parent, const std::string& child, std::string& combined) {
     std::string::size_type parent_len = parent.length();
-    if (0 == parent_len || "." == parent || "./" == parent) {
+    if(0 == parent_len || "." == parent || "./" == parent) {
         combined = child;
         return true;
     }
     char last_char = parent[parent_len - 1];
-    if (last_char == DIRECTORY_SYMBOL) {
+    if(last_char == DIRECTORY_SYMBOL) {
         parent_len--;
     }
     combined = parent.substr(0, parent_len) + DIRECTORY_SYMBOL + child;
@@ -176,22 +176,22 @@ bool FileSysUtilsCombinePaths(const std::string& parent, const std::string& chil
 bool FileSysUtilsParsePathList(std::string& path_list, std::vector<std::string>& paths) {
     std::string::size_type start = 0;
     std::string::size_type location = path_list.find(PATH_SEPARATOR);
-    while (location != std::string::npos) {
-        paths.push_back(path_list.substr(start, location));
+    while(location != std::string::npos) {
+        paths.push_back(path_list.substr(start, location) );
         start = location + 1;
         location = path_list.find(PATH_SEPARATOR, start);
     }
-    paths.push_back(path_list.substr(start, location));
+    paths.push_back(path_list.substr(start, location) );
     return true;
 }
 
 bool FileSysUtilsFindFilesInPath(const std::string& path, std::vector<std::string>& files) {
-    DIR* dir = opendir(path.c_str());
-    if (dir == nullptr) {
+    DIR* dir = opendir(path.c_str() );
+    if(dir == nullptr) {
         return false;
     }
     struct dirent* entry;
-    while ((entry = readdir(dir)) != nullptr) {
+    while( (entry = readdir(dir) ) != nullptr) {
         files.emplace_back(entry->d_name);
     }
     closedir(dir);

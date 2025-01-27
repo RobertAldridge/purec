@@ -21,7 +21,7 @@ Example of how to use expansion macros to make an enum-to-string function:
 #define XR_ENUM_CASE_STR(name, val) case name: return #name;
 #define XR_ENUM_STR(enumType)                         \
     constexpr const char* XrEnumStr(enumType e) {     \
-        switch (e) {                                  \
+        switch(e) {                                  \
             XR_LIST_ENUM_##enumType(XR_ENUM_CASE_STR) \
             default: return "Unknown";                \
         }                                             \

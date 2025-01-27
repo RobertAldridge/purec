@@ -28,26 +28,26 @@ bool UpdateOptionsFromSystemProperties(Options& options) {
     options.GraphicsPlugin = "Vulkan";
 
     char value[PROP_VALUE_MAX] = {};
-    if (__system_property_get("debug.xr.graphicsPlugin", value) != 0) {
+    if(__system_property_get("debug.xr.graphicsPlugin", value) != 0) {
         options.GraphicsPlugin = value;
     }
 
-    if (__system_property_get("debug.xr.formFactor", value) != 0) {
+    if(__system_property_get("debug.xr.formFactor", value) != 0) {
         options.FormFactor = value;
     }
 
-    if (__system_property_get("debug.xr.viewConfiguration", value) != 0) {
+    if(__system_property_get("debug.xr.viewConfiguration", value) != 0) {
         options.ViewConfiguration = value;
     }
 
-    if (__system_property_get("debug.xr.blendMode", value) != 0) {
+    if(__system_property_get("debug.xr.blendMode", value) != 0) {
         options.EnvironmentBlendMode = value;
     }
 
     try {
         options.ParseStrings();
     } catch (std::invalid_argument& ia) {
-        Log::Write(Log::Level::Error, ia.what());
+        Log::Write(Log::Level::Error, ia.what() );
         ShowHelp();
         return false;
     }
@@ -67,7 +67,7 @@ struct AndroidAppState {
 static void app_handle_cmd(struct android_app* app, int32_t cmd) {
     AndroidAppState* appState = (AndroidAppState*)app->userData;
 
-    switch (cmd) {
+    switch(cmd) {
         // There is no APP_CMD_CREATE. The ANativeActivity creates the
         // application thread from onCreate(). The application thread
         // then calls android_main().
@@ -116,7 +116,7 @@ static void app_handle_cmd(struct android_app* app, int32_t cmd) {
 
 #include "xr_generated_dispatch_table_core.h"
 
-extern struct XrGeneratedDispatchTableCore table;
+extern struct XrGeneratedDispatchTableCore tableXr;
 
 /**
  * This is the main entry point of a native application that is using
@@ -134,7 +134,7 @@ void android_main(struct android_app* app) {
         app->onAppCmd = app_handle_cmd;
 
         std::shared_ptr<Options> options = std::make_shared<Options>();
-        if (!UpdateOptionsFromSystemProperties(*options)) {
+        if(!UpdateOptionsFromSystemProperties(*options) ) {
             return;
         }
 
@@ -162,18 +162,26 @@ void android_main(struct android_app* app) {
 
         // Initialize the loader for this platform
         PFN_xrInitializeLoaderKHR initializeLoader = nullptr;
-        if (XR_SUCCEEDED(
-                table.GetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction*)(&initializeLoader)))) {
-            XrLoaderInitInfoAndroidKHR loaderInitInfoAndroid = {XR_TYPE_LOADER_INIT_INFO_ANDROID_KHR};
-            loaderInitInfoAndroid.applicationVM = app->activity->vm;
-            loaderInitInfoAndroid.applicationContext = app->activity->clazz;
-            initializeLoader((const XrLoaderInitInfoBaseHeaderKHR*)&loaderInitInfoAndroid);
+
+        XrResult result = XR_ERROR_VALIDATION_FAILURE;
+
+        if(tableXr.GetInstanceProcAddr)
+          result = tableXr.GetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction*) &initializeLoader);
+
+        if(XR_SUCCEEDED(result) && initializeLoader)
+        {
+          XrLoaderInitInfoAndroidKHR loaderInitInfoAndroid = {XR_TYPE_LOADER_INIT_INFO_ANDROID_KHR};
+
+          loaderInitInfoAndroid.applicationVM = app->activity->vm;
+          loaderInitInfoAndroid.applicationContext = app->activity->clazz;
+
+          initializeLoader( (const XrLoaderInitInfoBaseHeaderKHR*) &loaderInitInfoAndroid);
         }
 
         program->CreateInstance();
         program->InitializeSystem();
 
-        options->SetEnvironmentBlendMode(program->GetPreferredBlendMode());
+        options->SetEnvironmentBlendMode(program->GetPreferredBlendMode() );
         UpdateOptionsFromSystemProperties(*options);
         platformPlugin->UpdateOptions(options);
         graphicsPlugin->UpdateOptions(options);
@@ -182,34 +190,34 @@ void android_main(struct android_app* app) {
         program->InitializeSession();
         program->CreateSwapchains();
 
-        while (app->destroyRequested == 0) {
+        while(app->destroyRequested == 0) {
             // Read all pending events.
-            for (;;) {
+            for(;;) {
                 int events;
                 struct android_poll_source* source;
                 // If the timeout is zero, returns immediately without blocking.
                 // If the timeout is negative, waits indefinitely until an event appears.
                 const int timeoutMilliseconds =
                     (!appState.Resumed && !program->IsSessionRunning() && app->destroyRequested == 0) ? -1 : 0;
-                if (ALooper_pollAll(timeoutMilliseconds, nullptr, &events, (void**)&source) < 0) {
+                if(ALooper_pollAll(timeoutMilliseconds, nullptr, &events, (void**)&source) < 0) {
                     break;
                 }
 
                 // Process this event.
-                if (source != nullptr) {
+                if(source != nullptr) {
                     source->process(app, source);
                 }
             }
 
             program->PollEvents(&exitRenderLoop, &requestRestart);
-            if (exitRenderLoop) {
+            if(exitRenderLoop) {
                 ANativeActivity_finish(app->activity);
                 continue;
             }
 
-            if (!program->IsSessionRunning()) {
+            if(!program->IsSessionRunning() ) {
                 // Throttle loop since xrWaitFrame won't be called.
-                std::this_thread::sleep_for(std::chrono::milliseconds(250));
+                std::this_thread::sleep_for(std::chrono::milliseconds(250) );
                 continue;
             }
 
@@ -219,7 +227,7 @@ void android_main(struct android_app* app) {
 
         app->activity->vm->DetachCurrentThread();
     } catch (const std::exception& ex) {
-        Log::Write(Log::Level::Error, ex.what());
+        Log::Write(Log::Level::Error, ex.what() );
     } catch (...) {
         Log::Write(Log::Level::Error, "Unknown Error");
     }

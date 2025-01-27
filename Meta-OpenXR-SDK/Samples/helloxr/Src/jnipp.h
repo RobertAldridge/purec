@@ -101,10 +101,10 @@ namespace jni
         inline std::string valueSig(const Object* const* obj) { return valueSig(obj ? *obj : nullptr); }
 
         template <class TArg>
-        inline std::string valueSig(const Array<TArg>*) { return "[" + valueSig((TArg*) nullptr); }
+        inline std::string valueSig(const Array<TArg>*) { return "[" + valueSig( (TArg*) nullptr); }
 
         template <int n, class TArg>
-        inline std::string valueSig(const TArg(*arg)[n]) { return valueSig((const TArg* const*)arg); }
+        inline std::string valueSig(const TArg(*arg)[n] ) { return valueSig( (const TArg* const*)arg); }
 
         inline std::string sig() { return ""; }
 
@@ -164,7 +164,7 @@ namespace jni
         {
         public:
             ArgArray(const TArgs&... args) {
-                std::memset(this, 0, sizeof(ArgArray<TArgs...>));
+                std::memset(this, 0, sizeof(ArgArray<TArgs...>) );
                 internal::args(values, args...);
             }
 
@@ -181,7 +181,7 @@ namespace jni
         {
         public:
             ArgArray() {
-                std::memset(this, 0, sizeof(ArgArray<>));
+                std::memset(this, 0, sizeof(ArgArray<>) );
             }
 
             ~ArgArray() {
@@ -307,7 +307,7 @@ namespace jni
             \return The method's return value.
          */
         template <class TReturn>
-        TReturn call(method_t method) const { return callMethod(method, nullptr, internal::ReturnTypeWrapper<TReturn>{}); }
+        TReturn call(method_t method) const { return callMethod(method, nullptr, internal::ReturnTypeWrapper<TReturn> {} ); }
 
         /**
             Calls the method on this Object with the given name, and no arguments.
@@ -318,11 +318,11 @@ namespace jni
          */
         template <class TReturn>
         TReturn call(const char* name) const {
-            if (std::strstr(name, "()"))
-                return call<TReturn>(getMethod(name));
+            if(std::strstr(name, "()") )
+                return call<TReturn>(getMethod(name) );
 
             // No signature supplied. Generate our own.
-            method_t method = getMethod(name, ("()" + internal::valueSig((TReturn*) nullptr)).c_str());
+            method_t method = getMethod(name, ("()" + internal::valueSig( (TReturn*) nullptr) ).c_str() );
             return call<TReturn>(method);
         }
 
@@ -337,7 +337,7 @@ namespace jni
         template <class TReturn, class... TArgs>
         TReturn call(method_t method, const TArgs&... args) const {
             internal::ArgArray<TArgs...> transform(args...);
-            return callMethod(method, transform.values, internal::ReturnTypeWrapper<TReturn>{});
+            return callMethod(method, transform.values, internal::ReturnTypeWrapper<TReturn> {} );
         }
 
         /**
@@ -351,11 +351,11 @@ namespace jni
          */
         template <class TReturn, class... TArgs>
         TReturn call(const char* name, const TArgs&... args) const {
-            if (std::strchr(name, '('))
+            if(std::strchr(name, '(') )
                 return call<TReturn>(getMethod(name), args...);
 
-            std::string sig = "(" + internal::sig(args...) + ")" + internal::valueSig((TReturn*) nullptr);
-            method_t method = getMethod(name, sig.c_str());
+            std::string sig = "(" + internal::sig(args...) + ")" + internal::valueSig( (TReturn*) nullptr);
+            method_t method = getMethod(name, sig.c_str() );
             return call<TReturn>(method, args...);
         }
 
@@ -370,7 +370,7 @@ namespace jni
         TType get(field_t field) const {
             // If you get a compile error here, then you've asked for a type
             // we don't know how to get from JNI directly.
-            return getFieldValue(field, internal::ReturnTypeWrapper<TType>{});
+            return getFieldValue(field, internal::ReturnTypeWrapper<TType> {} );
         }
 
         /**
@@ -382,7 +382,7 @@ namespace jni
          */
         template <class TType>
         TType get(const char* name) const {
-            field_t field = getField(name, internal::valueSig((TType*) nullptr).c_str());
+            field_t field = getField(name, internal::valueSig( (TType*) nullptr).c_str() );
             return get<TType>(field);
         }
 
@@ -405,7 +405,7 @@ namespace jni
          */
         template <class TType>
         void set(const char* name, const TType& value) {
-            field_t field = getField(name, internal::valueSig((TType*) nullptr).c_str());
+            field_t field = getField(name, internal::valueSig( (TType*) nullptr).c_str() );
             set(field, value);
         }
 
@@ -537,7 +537,7 @@ namespace jni
          */
         template <class... TArgs>
         Object newInstance(const TArgs&... args) const {
-            method_t constructor = getMethod("<init>", ("(" + internal::sig(args...) + ")V").c_str());
+            method_t constructor = getMethod("<init>", ("(" + internal::sig(args...) + ")V").c_str() );
             return newInstance(constructor, args...);
         }
 
@@ -560,7 +560,7 @@ namespace jni
          */
         template<typename TType>
         field_t getField(const char* name) const {
-            return getField(name, internal::valueSig((TType*) nullptr).c_str());
+            return getField(name, internal::valueSig( (TType*) nullptr).c_str() );
         }
 
         /**
@@ -582,7 +582,7 @@ namespace jni
          */
         template<typename TType>
         field_t getStaticField(const char* name) const {
-            return getStaticField(name, internal::valueSig((TType*)nullptr).c_str());
+            return getStaticField(name, internal::valueSig( (TType*)nullptr).c_str() );
         }
 
         /**
@@ -662,7 +662,7 @@ namespace jni
          */
         template <class TReturn>
         TReturn call(const char* name) const {
-            method_t method = getStaticMethod(name, ("()" + internal::valueSig((TReturn*) nullptr)).c_str());
+            method_t method = getStaticMethod(name, ("()" + internal::valueSig( (TReturn*) nullptr) ).c_str() );
             return call<TReturn>(method);
         }
 
@@ -691,11 +691,11 @@ namespace jni
          */
         template <class TReturn, class... TArgs>
         TReturn call(const char* name, const TArgs&... args) const {
-            if (std::strchr(name, '('))
+            if(std::strchr(name, '(') )
                 return call<TReturn>(getStaticMethod(name), args...);
 
-            std::string sig = "(" + internal::sig(args...) + ")" + internal::valueSig((TReturn*) nullptr);
-            method_t method = getStaticMethod(name, sig.c_str());
+            std::string sig = "(" + internal::sig(args...) + ")" + internal::valueSig( (TReturn*) nullptr);
+            method_t method = getStaticMethod(name, sig.c_str() );
             return call<TReturn>(method, args...);
         }
 
@@ -724,7 +724,7 @@ namespace jni
          */
         template <class TReturn>
         TReturn call(const Object& obj, const char* name) const {
-            method_t method = getMethod(name, ("()" + internal::valueSig((TReturn*) nullptr)).c_str());
+            method_t method = getMethod(name, ("()" + internal::valueSig( (TReturn*) nullptr) ).c_str() );
             return call<TReturn>(obj, method);
         }
         template <class TReturn>
@@ -764,8 +764,8 @@ namespace jni
          */
         template <class TReturn, class... TArgs>
         TReturn call(const Object& obj, const char* name, const TArgs&... args) const {
-            std::string sig = "(" + internal::sig(args...) + ")" + internal::valueSig((TReturn*) nullptr);
-            method_t method = getMethod(name, sig.c_str());
+            std::string sig = "(" + internal::sig(args...) + ")" + internal::valueSig( (TReturn*) nullptr);
+            method_t method = getMethod(name, sig.c_str() );
             return call<TReturn>(obj, method, args...);
         }
         template <class TReturn, class... TArgs>
@@ -790,7 +790,7 @@ namespace jni
          */
         template <class TType>
         TType get(const char* name) const {
-            field_t field = getStaticField(name, internal::valueSig((TType*) nullptr).c_str());
+            field_t field = getStaticField(name, internal::valueSig( (TType*) nullptr).c_str() );
             return get<TType>(field);
         }
 
@@ -811,7 +811,7 @@ namespace jni
          */
         template <class TType>
         void set(const char* name, const TType& value) {
-            field_t field = getStaticField(name, internal::valueSig((TType*) nullptr).c_str());
+            field_t field = getStaticField(name, internal::valueSig( (TType*) nullptr).c_str() );
             set(field, value);
         }
 
@@ -819,7 +819,7 @@ namespace jni
             Gets the underlying JNI jclass handle.
             \return The JNI handle.
          */
-        jclass getHandle() const noexcept { return jclass(Object::getHandle()); }
+        jclass getHandle() const noexcept { return jclass(Object::getHandle() ); }
 
     private:
         // blah Functions
@@ -957,7 +957,7 @@ namespace jni
             Gets the underlying JNI jarray handle.
             \return The JNI handle.
          */
-        jarray getHandle() const noexcept { return jarray(Object::getHandle()); }
+        jarray getHandle() const noexcept { return jarray(Object::getHandle() ); }
 
     private:
         // Instance Variables
@@ -1035,7 +1035,7 @@ namespace jni
     inline jni::Array<T> Object::callMethod(method_t method, internal::value_t* args,
                                             internal::ReturnTypeWrapper<jni::Array<T>> const&) const
     {
-        jarray result = callMethod(method, args, internal::ReturnTypeWrapper<jarray>{});
+        jarray result = callMethod(method, args, internal::ReturnTypeWrapper<jarray> {} );
         return jni::Array<T>(result, DeleteLocalInput);
     }
 
@@ -1049,7 +1049,7 @@ namespace jni
     }
 
     template <class TElement>
-    Array<TElement>::Array(jarray ref, int scopeFlags) : Object((jobject) ref, scopeFlags), _length(-1)
+    Array<TElement>::Array(jarray ref, int scopeFlags) : Object( (jobject) ref, scopeFlags), _length(-1)
     {
     }
 
@@ -1059,7 +1059,7 @@ namespace jni
     }
 
     template <class TElement>
-    Array<TElement>::Array(Array<TElement>&& other) noexcept : Object((Object&&)other), _length(other._length)
+    Array<TElement>::Array(Array<TElement>&& other) noexcept : Object( (Object&&)other), _length(other._length)
     {
         other._length = 0;
     }
@@ -1067,7 +1067,7 @@ namespace jni
     template <class TElement>
     Array<TElement>& Array<TElement>::operator=(const Array<TElement>& other)
     {
-        if (&other != this)
+        if(&other != this)
         {
             Object::operator=(other);
             _length = other._length;
@@ -1079,9 +1079,9 @@ namespace jni
     template <class TElement>
     Array<TElement>& Array<TElement>::operator=(Array<TElement>&& other)
     {
-        if (&other != this)
+        if(&other != this)
         {
-            Object::operator=((Object&&) other);
+            Object::operator=( (Object&&) other);
             _length = other._length;
 
             other._length = 0;
@@ -1093,9 +1093,9 @@ namespace jni
     template <class TElement>
     long Array<TElement>::getLength() const
     {
-        if (_length < 0)
+        if(_length < 0)
         {
-            _length = internal::getArrayLength(getHandle());
+            _length = internal::getArrayLength(getHandle() );
         }
 
         return _length;

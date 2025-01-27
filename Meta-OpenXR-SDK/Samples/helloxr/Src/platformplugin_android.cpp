@@ -7,9 +7,13 @@
 #include "platformdata.h"
 #include "platformplugin.h"
 
-namespace {
-struct AndroidPlatformPlugin : public IPlatformPlugin {
-    AndroidPlatformPlugin(const std::shared_ptr<Options>& /*unused*/, const std::shared_ptr<PlatformData>& data) {
+namespace
+{
+
+struct AndroidPlatformPlugin : public IPlatformPlugin
+{
+    AndroidPlatformPlugin(const std::shared_ptr<Options>& /*unused*/, const std::shared_ptr<PlatformData>& data)
+    {
         instanceCreateInfoAndroid = {XR_TYPE_INSTANCE_CREATE_INFO_ANDROID_KHR};
         instanceCreateInfoAndroid.applicationVM = data->applicationVM;
         instanceCreateInfoAndroid.applicationActivity = data->applicationActivity;
@@ -23,9 +27,10 @@ struct AndroidPlatformPlugin : public IPlatformPlugin {
 
     XrInstanceCreateInfoAndroidKHR instanceCreateInfoAndroid;
 };
+
 }  // namespace
 
-std::shared_ptr<IPlatformPlugin> CreatePlatformPlugin_Android(const std::shared_ptr<Options>& options,
-                                                              const std::shared_ptr<PlatformData>& data) {
+std::shared_ptr<IPlatformPlugin> CreatePlatformPlugin_Android(const std::shared_ptr<Options>& options, const std::shared_ptr<PlatformData>& data)
+{
     return std::make_shared<AndroidPlatformPlugin>(options, data);
 }

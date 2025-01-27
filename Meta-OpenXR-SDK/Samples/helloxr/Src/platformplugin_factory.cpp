@@ -3,7 +3,7 @@
 #include "platformplugin.h"
 
 #define UNUSED_PARM(x) \
-  { (void)(x); }
+  do{ (void)(x); } while(0)
 
 std::shared_ptr<IPlatformPlugin> CreatePlatformPlugin_Android(const std::shared_ptr<Options>& /*unused*/, const std::shared_ptr<PlatformData>& /*unused*/);
 

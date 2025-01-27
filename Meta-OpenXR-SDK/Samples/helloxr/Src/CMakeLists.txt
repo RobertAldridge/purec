@@ -54,7 +54,6 @@ set(LOCAL_HEADERS
     filesystem_utils.hpp
     loader_init_data.hpp
     loader_logger.hpp
-    loader_platform.hpp
     platform_utils.hpp
     vulkan_debug_object_namer.hpp
     frag.spv
@@ -126,12 +125,12 @@ add_library(
 
 set_target_properties(helloxr PROPERTIES FOLDER ${SAMPLES_FOLDER} LINK_FLAGS "-u ANativeActivity_onCreate")
 
-source_group("Headers" FILES ${LOCAL_HEADERS})
-source_group("Shaders" FILES ${VULKAN_SHADERS})
+source_group("Headers" FILES ${LOCAL_HEADERS} )
+source_group("Shaders" FILES ${VULKAN_SHADERS} )
 
 #target_link_libraries(helloxr PRIVATE OpenXR::openxr_loader)
 
-compile_glsl(run_helloxr_glsl_compiles ${VULKAN_SHADERS})
+compile_glsl(run_helloxr_glsl_compiles ${VULKAN_SHADERS} )
 
 add_dependencies(helloxr run_helloxr_glsl_compiles)
 
@@ -148,13 +147,13 @@ add_dependencies(helloxr run_helloxr_glsl_compiles)
 #        "${CMAKE_CURRENT_BINARY_DIR}"
 #)
 
-set_target_properties(helloxr PROPERTIES FOLDER ${SAMPLES_FOLDER})
-source_group("Headers" FILES ${LOCAL_HEADERS})
-source_group("Shaders" FILES ${VULKAN_SHADERS})
+set_target_properties(helloxr PROPERTIES FOLDER ${SAMPLES_FOLDER} )
+source_group("Headers" FILES ${LOCAL_HEADERS} )
+source_group("Shaders" FILES ${VULKAN_SHADERS} )
 
 #target_link_libraries(helloxr PRIVATE libvulkan.so libopenxr_loader.so)
 
-compile_glsl(run_helloxr_glsl_compiles ${VULKAN_SHADERS})
+compile_glsl(run_helloxr_glsl_compiles ${VULKAN_SHADERS} )
 
 add_dependencies(helloxr run_helloxr_glsl_compiles)
 
@@ -170,8 +169,8 @@ if(GLSLANG_VALIDATOR AND NOT GLSLC_COMMAND)
     target_compile_definitions(helloxr PRIVATE USE_GLSLANGVALIDATOR)
 endif()
 
-    target_include_directories(helloxr PRIVATE ${Vulkan_INCLUDE_DIRS})
-#target_link_libraries(helloxr PRIVATE ${Vulkan_LIBRARY})
+    target_include_directories(helloxr PRIVATE ${Vulkan_INCLUDE_DIRS} )
+#target_link_libraries(helloxr PRIVATE ${Vulkan_LIBRARY} )
 
 #if(TARGET openxr-gfxwrapper)
 #    target_link_libraries(helloxr PRIVATE openxr-gfxwrapper)

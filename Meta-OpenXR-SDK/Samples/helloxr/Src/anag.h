@@ -317,7 +317,7 @@ void android_app_post_exec_cmd(struct android_app* android_app, int8_t cmd);
 
 /**
  * Dummy function that used to be used to prevent the linker from stripping app
- * blah code. No longer necessary, since __attribute__((visibility("default")))
+ * blah code. No longer necessary, since __attribute__( (visibility("default") ) )
  * does this for us.
  */
 __attribute__ ( ( deprecated("Calls to app_dummy are no longer necessary. See https://github.com/android-ndk/ndk/issues/381.") ) ) void app_dummy();
