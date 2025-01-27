@@ -31,11 +31,14 @@ project(helloxr)
 find_package(OpenXR REQUIRED)
 find_package(Vulkan)
 
+target_include_directories(
+${PROJECT_NAME}
+PRIVATE
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src )
+
 target_link_libraries(
 ${PROJECT_NAME}
 PRIVATE
-#PUBLIC
-#INTERFACE
 android
 #EGL
 #GLESv3
@@ -43,14 +46,26 @@ log
 #minizip
 #stb
 #ktx
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libglslang.a
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libOGLCompiler.a
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libOSDependent.a
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libshaderc.a
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libshaderc_util.a
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libSPIRV.a
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libHLSL.a
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libSPIRV-Tools.a
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libSPIRV-Tools-opt.a
 OpenXR::openxr_loader
 ${Vulkan_LIBRARY} )
 
-target_link_libraries(
+target_include_directories(
 ${PROJECT_NAME}
-#PRIVATE
 PUBLIC
-#INTERFACE
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src )
+
+target_link_libraries(
+${PROJECT_NAME}
+PUBLIC
 android
 #EGL
 #GLESv3
@@ -58,13 +73,25 @@ log
 #minizip
 #stb
 #ktx
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libglslang.a
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libOGLCompiler.a
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libOSDependent.a
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libshaderc.a
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libshaderc_util.a
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libSPIRV.a
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libHLSL.a
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libSPIRV-Tools.a
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libSPIRV-Tools-opt.a
 OpenXR::openxr_loader
 ${Vulkan_LIBRARY} )
 
+target_include_directories(
+${PROJECT_NAME}
+INTERFACE
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src )
+
 target_link_libraries(
 ${PROJECT_NAME}
-#PRIVATE
-#PUBLIC
 INTERFACE
 android
 #EGL
@@ -73,6 +100,15 @@ log
 #minizip
 #stb
 #ktx
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libglslang.a
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libOGLCompiler.a
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libOSDependent.a
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libshaderc.a
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libshaderc_util.a
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libSPIRV.a
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libHLSL.a
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libSPIRV-Tools.a
+C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libSPIRV-Tools-opt.a
 OpenXR::openxr_loader
 ${Vulkan_LIBRARY} )
 
@@ -92,6 +128,7 @@ ${Vulkan_LIBRARY} )
         PUBLIC
             __ANDROID__=1
             ANDROID_NDK=1
+            DEFAULT_GRAPHICS_PLUGIN_VULKAN=1
             USE_DEBUG_EXTENTIONS=1
             USE_GLSLANGVALIDATOR=1
             USE_ONLINE_VULKAN_SHADERC=1

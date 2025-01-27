@@ -1,0 +1,572 @@
+---------------------------- PROCESS STARTED (32178) for package com.oculus.sdk.helloxr.vulkan ----------------------------
+2025-01-27 12:08:20.262 32178-32178 System                  com.oculus.sdk.helloxr.vulkan        W  ClassLoader referenced unknown path:
+2025-01-27 12:08:20.262 32178-32178 linker                  com.oculus.sdk.helloxr.vulkan        W  Warning: unable to resolve "/apex/com.meta.xr/priv-app/VrDriver/VrDriver.apk": No such file or directory (ignoring)
+2025-01-27 12:08:20.267 32178-32178 GraphicsEnvironment     com.oculus.sdk.helloxr.vulkan        V  ANGLE Developer option for 'com.oculus.sdk.helloxr.vulkan' set to: 'default'
+2025-01-27 12:08:20.267 32178-32178 GraphicsEnvironment     com.oculus.sdk.helloxr.vulkan        V  ANGLE GameManagerService for com.oculus.sdk.helloxr.vulkan: false
+2025-01-27 12:08:20.267 32178-32178 GraphicsEnvironment     com.oculus.sdk.helloxr.vulkan        V  Neither updatable production driver nor prerelease driver is supported.
+2025-01-27 12:08:20.268 32178-32178 Compatibil...geReporter com.oculus.sdk.helloxr.vulkan        D  Compat change id reported: 175409949; UID 10735; state: DISABLED
+2025-01-27 12:08:20.268 32178-32178 Compatibil...geReporter com.oculus.sdk.helloxr.vulkan        D  Compat change id reported: 175409951; UID 10735; state: DISABLED
+2025-01-27 12:08:20.268 32178-32178 Compatibil...geReporter com.oculus.sdk.helloxr.vulkan        D  Compat change id reported: 175409956; UID 10735; state: DISABLED
+2025-01-27 12:08:20.269 32178-32178 Compatibil...geReporter com.oculus.sdk.helloxr.vulkan        D  Compat change id reported: 175409950; UID 10735; state: DISABLED
+2025-01-27 12:08:20.269 32178-32178 NetworkSecurityConfig   com.oculus.sdk.helloxr.vulkan        D  No Network Security Config specified, using platform default
+2025-01-27 12:08:20.270 32178-32178 Compatibil...geReporter com.oculus.sdk.helloxr.vulkan        D  Compat change id reported: 175409952; UID 10735; state: DISABLED
+2025-01-27 12:08:20.270 32178-32178 NetworkSecurityConfig   com.oculus.sdk.helloxr.vulkan        D  No Network Security Config specified, using platform default
+2025-01-27 12:08:20.312 32178-32178 threaded_app            com.oculus.sdk.helloxr.vulkan        V  Creating: 0xb40000718ea35400
+2025-01-27 12:08:20.312 32178-32216 threaded_app            com.oculus.sdk.helloxr.vulkan        V  Config: mcc=0 mnc=0 lang=en cnt=US orien=2 touch=1 dens=200 keys=1 nav=1 keysHid=3 navHid=0 sdk=32 size=4 long=2 modetype=1 modenight=2
+2025-01-27 12:08:20.313 32178-32178 threaded_app            com.oculus.sdk.helloxr.vulkan        V  Start: 0xb40000718ea35400
+2025-01-27 12:08:20.314 32178-32216 OpenXR-Loader           com.oculus.sdk.helloxr.vulkan        V  Verbose [GENERAL | xrInitializeLoaderKHR | OpenXR-Loader] : Entering loader trampoline
+2025-01-27 12:08:20.315 32178-32216 OpenXR-Loader           com.oculus.sdk.helloxr.vulkan        V  Verbose [GENERAL | xrEnumerateInstanceExtensionProperties | OpenXR-Loader] : Entering loader trampoline
+2025-01-27 12:08:20.316 32178-32216 OpenXR-Loader           com.oculus.sdk.helloxr.vulkan        I  getActiveRuntimeCursor: Querying URI: content://org.khronos.openxr.runtime_broker/openxr/1/abi/arm64-v8a/runtimes/active
+2025-01-27 12:08:20.318 32178-32216 OpenXR-Loader           com.oculus.sdk.helloxr.vulkan        W  Null cursor when querying installable content resolver.
+2025-01-27 12:08:20.319 32178-32216 OpenXR-Loader           com.oculus.sdk.helloxr.vulkan        I  getActiveRuntimeCursor: Querying URI: content://org.khronos.openxr.system_runtime_broker/openxr/1/abi/arm64-v8a/runtimes/active
+2025-01-27 12:08:20.321 32178-32216 OpenXR-Loader           com.oculus.sdk.helloxr.vulkan        W  Null cursor when querying system content resolver.
+2025-01-27 12:08:20.321 32178-32216 OpenXR-Loader           com.oculus.sdk.helloxr.vulkan        E  Could access neither the installable nor system runtime broker.
+2025-01-27 12:08:20.321 32178-32216 OpenXR-Loader           com.oculus.sdk.helloxr.vulkan        I  Info [GENERAL | xrEnumerateInstanceExtensionProperties | OpenXR-Loader] : RuntimeManifestFile::FindManifestFiles - using global runtime file /system/etc/openxr/1/active_runtime.aarch64.json
+2025-01-27 12:08:20.321 32178-32216 OpenXR-Loader           com.oculus.sdk.helloxr.vulkan        I  Info [GENERAL |  | OpenXR-Loader] : RuntimeManifestFile::CreateIfValid - attempting to load /system/etc/openxr/1/active_runtime.aarch64.json
+2025-01-27 12:08:20.323 32178-32216 OpenXR-Loader           com.oculus.sdk.helloxr.vulkan        I  Info [GENERAL | xrEnumerateInstanceExtensionProperties | OpenXR-Loader] : RuntimeInterface::LoadRuntime forwarding xrInitializeLoaderKHR call to runtime before calling xrNegotiateLoaderRuntimeInterface.
+2025-01-27 12:08:20.323 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        V  OpenXRForwardLoader::xrInitializeLoaderKHR [start]
+2025-01-27 12:08:20.326 32178-32216 ApplicationLoaders      com.oculus.sdk.helloxr.vulkan        D  Returning zygote-cached class loader: /system/framework/android.test.base.jar
+2025-01-27 12:08:20.326 32178-32216 ApplicationLoaders      com.oculus.sdk.helloxr.vulkan        D  Returning zygote-cached class loader: /system/framework/android.hidl.manager-V1.0-java.jar
+2025-01-27 12:08:20.326 32178-32216 ApplicationLoaders      com.oculus.sdk.helloxr.vulkan        D  Returning zygote-cached class loader: /system/framework/android.hidl.base-V1.0-java.jar
+2025-01-27 12:08:20.329 32178-32216 linker                  com.oculus.sdk.helloxr.vulkan        W  Warning: unable to resolve "/apex/com.meta.xr/priv-app/VrDriver/VrDriver.apk": No such file or directory (ignoring)
+2025-01-27 12:08:20.332 32178-32216 linker                  com.oculus.sdk.helloxr.vulkan        W  Warning: unable to resolve "/apex/com.meta.xr/priv-app/VrDriver/VrDriver.apk": No such file or directory (ignoring)
+2025-01-27 12:08:20.334 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  Loading 64-bit Runtime.
+2025-01-27 12:08:20.336 32178-32216 VrRuntimeClient         com.oculus.sdk.helloxr.vulkan        I  VrRuntimeClient(): 0x706d744830
+2025-01-27 12:08:20.336 32178-32216 OsSdkLoader             com.oculus.sdk.helloxr.vulkan        D  OSSDK loading module 'libossdk.oculus.so'
+2025-01-27 12:08:20.348 32178-32216 vulkan                  com.oculus.sdk.helloxr.vulkan        D  searching for layers in '/data/app/~~Ir3nLQPP0_uOe0RRDmH-ng==/com.oculus.sdk.helloxr.vulkan-ifnGB7-9nRcy70b9ggZ92Q==/lib/arm64'
+2025-01-27 12:08:20.348 32178-32216 vulkan                  com.oculus.sdk.helloxr.vulkan        D  searching for layers in '/data/app/~~Ir3nLQPP0_uOe0RRDmH-ng==/com.oculus.sdk.helloxr.vulkan-ifnGB7-9nRcy70b9ggZ92Q==/base.apk!/lib/arm64-v8a'
+2025-01-27 12:08:20.348 32178-32216 ziparchive              com.oculus.sdk.helloxr.vulkan        W  Unable to open '/apex/com.meta.xr/priv-app/VrDriver/VrDriver.apk': No such file or directory
+2025-01-27 12:08:20.348 32178-32216 vulkan                  com.oculus.sdk.helloxr.vulkan        E  failed to open apk '/apex/com.meta.xr/priv-app/VrDriver/VrDriver.apk': -11
+2025-01-27 12:08:20.348 32178-32216 vulkan                  com.oculus.sdk.helloxr.vulkan        D  searching for layers in '/system/priv-app/VrDriver/VrDriver.apk!/lib/arm64-v8a'
+2025-01-27 12:08:20.351 32178-32216 DriverLoader            com.oculus.sdk.helloxr.vulkan        I  Calling into SetLegacyVrApiEntryPointOverride
+2025-01-27 12:08:20.351 32178-32216 VrApi_DriverLoader      com.oculus.sdk.helloxr.vulkan        I  SetLegacyVrApiEntryPointOverride: calling sprintf
+2025-01-27 12:08:20.351 32178-32216 VrApi_DriverLoader      com.oculus.sdk.helloxr.vulkan        I  SetLegacyVrApiEntryPointOverride: env buffer is '0x706d6a4478'
+2025-01-27 12:08:20.351 32178-32216 VrApi_DriverLoader      com.oculus.sdk.helloxr.vulkan        I  SetLegacyVrApiEntryPointOverride: calling setenv
+2025-01-27 12:08:20.351 32178-32216 DriverLoader            com.oculus.sdk.helloxr.vulkan        I  Creating Temp JNIEnv
+2025-01-27 12:08:20.351 32178-32216 DriverLoader            com.oculus.sdk.helloxr.vulkan        I  Calling FindClass
+2025-01-27 12:08:20.351 32178-32216 DriverLoader            com.oculus.sdk.helloxr.vulkan        I  Calling RegisterNativeVrApiLoaderMethods
+2025-01-27 12:08:20.351 32178-32216 VrApi_DriverLoader      com.oculus.sdk.helloxr.vulkan        I  RegisterNativeVrApiLoaderMethods: calling RegisterNatives
+2025-01-27 12:08:20.351 32178-32216 DriverLoader            com.oculus.sdk.helloxr.vulkan        I  Calling RegisterNativeXrLoaderMethods
+2025-01-27 12:08:20.351 32178-32216 OpenXR_DriverLoader     com.oculus.sdk.helloxr.vulkan        I  RegisterNativeVrApiLoaderMethods: calling RegisterNatives
+2025-01-27 12:08:20.351 32178-32216 DriverLoader            com.oculus.sdk.helloxr.vulkan        I  Exiting JNI_OnLoad
+2025-01-27 12:08:20.351 32178-32216 OpenXR_ClientState      com.oculus.sdk.helloxr.vulkan        I  OpenXRClientState::create - from xrInitializeLoaderKHR
+2025-01-27 12:08:20.352 32178-32216 XrRuntimeS...lientState com.oculus.sdk.helloxr.vulkan        I  SharedClientState::create called from 'OpenXRClientState::init'
+2025-01-27 12:08:20.352 32178-32216 ipcLoader [RUNTIMEIPC]  com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC: Loader: IPC Service API Loader Version: 70 Nov 14 2024 11:51:34
+2025-01-27 12:08:20.352 32178-32216 ipcLoader [RUNTIMEIPC]  com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC: Using android_dlopen_ext: libripcclient.oculus.so
+2025-01-27 12:08:20.353 32178-32216 ipcLoader [RUNTIMEIPC]  com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC: android_dlopen_ext SUCCESS: libripcclient.oculus.so
+2025-01-27 12:08:20.353 32178-32216 MultiInsta...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  Multiple instances check passed. Socket name: INSTANCE_DETECTOR:32178
+2025-01-27 12:08:20.353 32178-32216 OsSdkLoader             com.oculus.sdk.helloxr.vulkan        D  OSSDK loading module 'libossdk.oculus.so'
+2025-01-27 12:08:20.354 32178-32216 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: DLObserver, currentState: STATE_STOPPED, newState: STATE_STARTING
+2025-01-27 12:08:20.354 32178-32221 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: DLObserver, currentState: STATE_STARTING, newState: STATE_RUNNING
+2025-01-27 12:08:20.354 32178-32221 DeadlockOb...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  MainLoop starting
+2025-01-27 12:08:20.354 32178-32216 DeadlockOb...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  DeadlockObserver Init SUCCESS with defaultKillThreshold: 30.000000
+2025-01-27 12:08:20.354 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        W  Init: Java VM is null
+2025-01-27 12:08:20.357 32178-32216 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: IpcDCReqHandler, currentState: STATE_STOPPED, newState: STATE_STARTING
+2025-01-27 12:08:20.357 32178-32223 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: IpcDCReqHandler, currentState: STATE_STARTING, newState: STATE_RUNNING
+2025-01-27 12:08:20.357 32178-32223 IPCDataCha...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        D  Connected: 1, broker_package:broker_process:0
+2025-01-27 12:08:20.357 32178-32216 BrokerRPC [RUNTIMEIPC]  com.oculus.sdk.helloxr.vulkan        I  InitRPCToServiceInternal: Success
+2025-01-27 12:08:20.357 32178-32216 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: RIPCSystem, currentState: STATE_STOPPED, newState: STATE_STARTING
+2025-01-27 12:08:20.357 32178-32224 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: RIPCSystem, currentState: STATE_STARTING, newState: STATE_RUNNING
+2025-01-27 12:08:20.357 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPCSystem: Init SUCCESS
+2025-01-27 12:08:20.359 32178-32216 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: JobPoolWorker, currentState: STATE_STOPPED, newState: STATE_STARTING
+2025-01-27 12:08:20.359 32178-32225 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: JobPoolWorker, currentState: STATE_STARTING, newState: STATE_RUNNING
+2025-01-27 12:08:20.359 32178-32216 ClientProc...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  GetProcessConnection: com.oculus.systemdriver:com.oculus.vrruntimeservice
+2025-01-27 12:08:20.360 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  Event buffer size (client): 8192
+2025-01-27 12:08:20.360 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  TryToGetIPCResourcesFromServer: RPC_CONNECTOR_CONNECT_TO_SERVER SUCCESS: Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.systemdriver:com.oculus.vrruntimeservice (gkcache)
+2025-01-27 12:08:20.360 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  EnsureServerConnection: SUCCESS. Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.systemdriver:com.oculus.vrruntimeservice (gkcache)
+2025-01-27 12:08:20.360 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  ConnectToServer: SUCCESS: Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.systemdriver:com.oculus.vrruntimeservice (gkcache)
+2025-01-27 12:08:20.361 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  InitServerStateBuffer: SUCCESS. 0, Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.systemdriver:com.oculus.vrruntimeservice (gkcache)
+2025-01-27 12:08:20.361 32178-32216 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: RIPCNotifThread, currentState: STATE_STOPPED, newState: STATE_STARTING
+2025-01-27 12:08:20.361 32178-32227 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: RIPCNotifThread, currentState: STATE_STARTING, newState: STATE_RUNNING
+2025-01-27 12:08:20.361 32178-32216 OpenXR_ClientState      com.oculus.sdk.helloxr.vulkan        I  Client state creation succeeded.
+2025-01-27 12:08:20.361 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        V  OpenXRForwardLoader::xrInitializeLoaderKHR [end]
+2025-01-27 12:08:20.361 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        V  OpenXRForwardLoader::xrNegotiateLoaderRuntimeInterface [start]
+2025-01-27 12:08:20.362 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        V  OpenXRForwardLoader::xrNegotiateLoaderRuntimeInterface [end]
+2025-01-27 12:08:20.362 32178-32216 OpenXR-Loader           com.oculus.sdk.helloxr.vulkan        I  Info [GENERAL | xrEnumerateInstanceExtensionProperties | OpenXR-Loader] : RuntimeInterface::LoadRuntime succeeded loading runtime defined in manifest file /system/etc/openxr/1/active_runtime.aarch64.json using interface version 1 and OpenXR API version 1.0
+2025-01-27 12:08:20.364 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  IsFirstParty 0
+2025-01-27 12:08:20.365 32178-32216 .helloxr.vulka          com.oculus.sdk.helloxr.vulkan        W  Accessing hidden method Landroid/content/pm/ApplicationInfo;->isPrivilegedApp()Z (blocked,test-api, reflection, denied)
+2025-01-27 12:08:20.365 32178-32216 .helloxr.vulka          com.oculus.sdk.helloxr.vulkan        W  If this is a platform test consider enabling VMRuntime.ALLOW_TEST_API_ACCESS change id for this package.
+2025-01-27 12:08:20.365 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  IsPrivileged 0
+2025-01-27 12:08:20.365 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  Is_X_PartnerGateKeeper
+2025-01-27 12:08:20.365 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  PGK Status: exp = 0, dc = false
+2025-01-27 12:08:20.365 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  oculus_first_access = false
+2025-01-27 12:08:20.365 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  Extension status: P
+2025-01-27 12:08:20.365 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  IsFirstParty 0
+2025-01-27 12:08:20.366 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  IsSystem 0
+2025-01-27 12:08:20.367 32178-32216 libosutils              com.oculus.sdk.helloxr.vulkan        E  Failed to get real path of file '/sys/devices/soc0/platform_subtype_id', err: Permission denied
+2025-01-27 12:08:20.367 32178-32216 libosutils              com.oculus.sdk.helloxr.vulkan        E  Failed to get real path of file '/sys/devices/soc0/platform_version', err: Permission denied
+2025-01-27 12:08:20.367 32178-32216 libdeviceid             com.oculus.sdk.helloxr.vulkan        W  DeviceId unknown with subtype FFFFFFFF and version: 0xFFFFFFFF
+2025-01-27 12:08:20.362 32178-32178 Thread-1                com.oculus.sdk.helloxr.vulkan        W  type=1400 audit(0.0:111305): avc: denied { search } for name="soc0" dev="sysfs" ino=66965 scontext=u:r:untrusted_app:s0:c223,c258,c512,c768 tcontext=u:object_r:vendor_sysfs_soc:s0 tclass=dir permissive=0 app=com.oculus.sdk.helloxr.vulkan
+2025-01-27 12:08:20.362 32178-32178 Thread-1                com.oculus.sdk.helloxr.vulkan        W  type=1400 audit(0.0:111306): avc: denied { search } for name="soc0" dev="sysfs" ino=66965 scontext=u:r:untrusted_app:s0:c223,c258,c512,c768 tcontext=u:object_r:vendor_sysfs_soc:s0 tclass=dir permissive=0 app=com.oculus.sdk.helloxr.vulkan
+2025-01-27 12:08:20.365 32178-32178 Thread-1                com.oculus.sdk.helloxr.vulkan        W  type=1400 audit(0.0:111307): avc: denied { search } for name="soc0" dev="sysfs" ino=66965 scontext=u:r:untrusted_app:s0:c223,c258,c512,c768 tcontext=u:object_r:vendor_sysfs_soc:s0 tclass=dir permissive=0 app=com.oculus.sdk.helloxr.vulkan
+2025-01-27 12:08:20.368 32178-32216 libosutils              com.oculus.sdk.helloxr.vulkan        E  Failed to get real path of file '/sys/devices/soc0/platform_subtype_id', err: Permission denied
+2025-01-27 12:08:20.365 32178-32178 Thread-1                com.oculus.sdk.helloxr.vulkan        W  type=1400 audit(0.0:111308): avc: denied { search } for name="soc0" dev="sysfs" ino=66965 scontext=u:r:untrusted_app:s0:c223,c258,c512,c768 tcontext=u:object_r:vendor_sysfs_soc:s0 tclass=dir permissive=0 app=com.oculus.sdk.helloxr.vulkan
+2025-01-27 12:08:20.368 32178-32216 libosutils              com.oculus.sdk.helloxr.vulkan        E  Failed to get real path of file '/sys/devices/soc0/platform_version', err: Permission denied
+2025-01-27 12:08:20.368 32178-32216 libdeviceid             com.oculus.sdk.helloxr.vulkan        W  DeviceId unknown with subtype FFFFFFFF and version: 0xFFFFFFFF
+2025-01-27 12:08:20.369 32178-32216 libc                    com.oculus.sdk.helloxr.vulkan        W  Access denied finding property "ro.vendor.product.model_extended"
+2025-01-27 12:08:20.369 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_META_body_tracking_full_body` due to: missing uses-feature string `com.oculus.software.body_tracking` from AndroidManifest
+2025-01-27 12:08:20.369 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_FB_body_tracking` due to: missing uses-feature string `com.oculus.software.body_tracking` from AndroidManifest
+2025-01-27 12:08:20.369 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_FB_keyboard_tracking` due to: missing uses-feature string `oculus.software.trackedkeyboard` from AndroidManifest
+2025-01-27 12:08:20.369 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_FBX1_spatial_entity` due to: Tier=40 extState=P deviceIsExpEnabled=false expManifestSet=false isFirstPartyApp=false isSystemApp=false
+2025-01-27 12:08:20.369 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_FBX2_spatial_entity` due to: Tier=40 extState=P deviceIsExpEnabled=false expManifestSet=false isFirstPartyApp=false isSystemApp=false
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_FB_spatial_entity` due to: missing uses-permission string `com.oculus.permission.USE_ANCHOR_API` from AndroidManifest in package `com.oculus.sdk.helloxr.vulkan`
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_FB_triangle_mesh` due to: missing uses-feature string `com.oculus.feature.PASSTHROUGH` from AndroidManifest
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_FB_passthrough` due to: missing uses-feature string `com.oculus.feature.PASSTHROUGH` from AndroidManifest
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_METAX1_passthrough_color_lut` due to: Tier=40 extState=P deviceIsExpEnabled=false expManifestSet=false isFirstPartyApp=false isSystemApp=false
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_META_passthrough_color_lut` due to: missing uses-feature string `com.oculus.feature.PASSTHROUGH` from AndroidManifest
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_META_passthrough_layer_resumed_event` due to: missing uses-feature string `com.oculus.feature.PASSTHROUGH` from AndroidManifest
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_FB_render_model` due to: missing uses-feature string `com.oculus.feature.RENDER_MODEL` from AndroidManifest
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_FBX1_spatial_entity_query` due to: Tier=40 extState=P deviceIsExpEnabled=false expManifestSet=false isFirstPartyApp=false isSystemApp=false
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_FBX2_spatial_entity_query` due to: Tier=40 extState=P deviceIsExpEnabled=false expManifestSet=false isFirstPartyApp=false isSystemApp=false
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_FB_spatial_entity_query` due to: missing uses-permission string `com.oculus.permission.USE_ANCHOR_API` from AndroidManifest in package `com.oculus.sdk.helloxr.vulkan`
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_META_spatial_entity_persistence` due to: missing uses-permission string `com.oculus.permission.USE_ANCHOR_API` from AndroidManifest in package `com.oculus.sdk.helloxr.vulkan`
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_META_spatial_entity_discovery` due to: missing uses-permission string `com.oculus.permission.USE_ANCHOR_API` from AndroidManifest in package `com.oculus.sdk.helloxr.vulkan`
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_FBX1_touch_controller_extras` due to: Tier=40 extState=P deviceIsExpEnabled=false expManifestSet=false isFirstPartyApp=false isSystemApp=false
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_FBX1_spatial_entity_storage` due to: Tier=40 extState=P deviceIsExpEnabled=false expManifestSet=false isFirstPartyApp=false isSystemApp=false
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_FBX2_spatial_entity_storage` due to: Tier=40 extState=P deviceIsExpEnabled=false expManifestSet=false isFirstPartyApp=false isSystemApp=false
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_FB_spatial_entity_storage` due to: missing uses-permission string `com.oculus.permission.USE_ANCHOR_API` from AndroidManifest in package `com.oculus.sdk.helloxr.vulkan`
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_FB_spatial_entity_storage_batch` due to: missing uses-permission string `com.oculus.permission.USE_ANCHOR_API` from AndroidManifest in package `com.oculus.sdk.helloxr.vulkan`
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_FB_spatial_entity_sharing` due to: missing uses-permission string `com.oculus.permission.IMPORT_EXPORT_IOT_MAP_DATA` from AndroidManifest in package `com.oculus.sdk.helloxr.vulkan`
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_META_spatial_entity_sharing` due to: missing uses-permission string `com.oculus.permission.IMPORT_EXPORT_IOT_MAP_DATA` from AndroidManifest in package `com.oculus.sdk.helloxr.vulkan`
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_META_spatial_entity_group_sharing` due to: missing uses-permission string `com.oculus.permission.IMPORT_EXPORT_IOT_MAP_DATA` from AndroidManifest in package `com.oculus.sdk.helloxr.vulkan`
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_FB_spatial_entity_container` due to: missing uses-permission string `com.oculus.permission.USE_ANCHOR_API` from AndroidManifest in package `com.oculus.sdk.helloxr.vulkan`
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_META_colocation_discovery` due to: missing uses-permission string `com.oculus.permission.USE_COLOCATION_DISCOVERY_API` from AndroidManifest in package `com.oculus.sdk.helloxr.vulkan`
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_FB_scene` due to: missing uses-permission string `com.oculus.permission.USE_ANCHOR_API` from AndroidManifest in package `com.oculus.sdk.helloxr.vulkan`
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_FB_scene_capture` due to: missing uses-permission string `com.oculus.permission.USE_ANCHOR_API` from AndroidManifest in package `com.oculus.sdk.helloxr.vulkan`
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_META_spatial_entity_mesh` due to: missing uses-permission string `com.oculus.permission.USE_SCENE` from AndroidManifest in package `com.oculus.sdk.helloxr.vulkan`
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_FB_face_tracking` due to: missing uses-feature string `oculus.software.face_tracking` from AndroidManifest
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_FB_face_tracking2` due to: missing uses-feature string `oculus.software.face_tracking` from AndroidManifest
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension 'XR_META_local_dimming' as device requirements requirements (16) are not met.
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_META_foveation_eye_tracked` due to: missing uses-feature string `oculus.software.eye_tracking` from AndroidManifest
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_FB_eye_tracking_social` due to: missing uses-feature string `oculus.software.eye_tracking` from AndroidManifest
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_FB_passthrough_keyboard_hands` due to: missing uses-feature string `com.oculus.feature.PASSTHROUGH` from AndroidManifest
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_FBX1_composition_layer_settings` due to: Tier=40 extState=P deviceIsExpEnabled=false expManifestSet=false isFirstPartyApp=false isSystemApp=false
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_FBX1_composition_layer_depth_test` due to: Tier=40 extState=P deviceIsExpEnabled=false expManifestSet=false isFirstPartyApp=false isSystemApp=false
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_EXT_eye_gaze_interaction` due to: missing uses-permission string `com.oculus.permission.EYE_TRACKING` from AndroidManifest in package `com.oculus.sdk.helloxr.vulkan`
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_META_hand_tracking_wide_motion_mode` due to: missing uses-feature string `com.oculus.software.body_tracking` from AndroidManifest
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_EXTX1_hand_tracking_data_source` due to: Tier=40 extState=P deviceIsExpEnabled=false expManifestSet=false isFirstPartyApp=false isSystemApp=false
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_METAX1_performance_metrics` due to: Tier=40 extState=P deviceIsExpEnabled=false expManifestSet=false isFirstPartyApp=false isSystemApp=false
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_METAX1_virtual_keyboard` due to: Tier=40 extState=P deviceIsExpEnabled=false expManifestSet=false isFirstPartyApp=false isSystemApp=false
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_METAX2_virtual_keyboard` due to: Tier=40 extState=P deviceIsExpEnabled=false expManifestSet=false isFirstPartyApp=false isSystemApp=false
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_EXTX1_event_channel` due to: Tier=40 extState=P deviceIsExpEnabled=false expManifestSet=false isFirstPartyApp=false isSystemApp=false
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_METAX1_environment_depth` due to: Tier=40 extState=P deviceIsExpEnabled=false expManifestSet=false isFirstPartyApp=false isSystemApp=false
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_METAX2_environment_depth` due to: Tier=40 extState=P deviceIsExpEnabled=false expManifestSet=false isFirstPartyApp=false isSystemApp=false
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_META_environment_depth` due to: missing uses-permission string `com.oculus.permission.USE_SCENE` from AndroidManifest in package `com.oculus.sdk.helloxr.vulkan`
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_EXT_palm_pose` due to: Tier=40 extState=P deviceIsExpEnabled=false expManifestSet=false isFirstPartyApp=false isSystemApp=false
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_META_body_tracking_fidelity` due to: missing uses-feature string `com.oculus.software.body_tracking` from AndroidManifest
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_META_body_tracking_calibration` due to: missing uses-feature string `com.oculus.software.body_tracking` from AndroidManifest
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_META_boundary_visibility` due to: missing uses-permission string `com.oculus.permission.BOUNDARY_VISIBILITY` from AndroidManifest in package `com.oculus.sdk.helloxr.vulkan`
+2025-01-27 12:08:20.370 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrEnumerateInstanceExtensionProperties: skipping extension=`XR_METAX1_dynamic_object_tracker` due to: Tier=40 extState=P deviceIsExpEnabled=false expManifestSet=false isFirstPartyApp=false isSystemApp=false
+2025-01-27 12:08:20.371 32178-32216 OpenXR-Loader           com.oculus.sdk.helloxr.vulkan        V  Verbose [GENERAL | xrEnumerateInstanceExtensionProperties | OpenXR-Loader] : Completed loader trampoline
+2025-01-27 12:08:20.371 32178-32216 OpenXR-Loader           com.oculus.sdk.helloxr.vulkan        V  Verbose [GENERAL | xrEnumerateInstanceExtensionProperties | OpenXR-Loader] : Entering loader trampoline
+2025-01-27 12:08:20.371 32178-32216 OpenXR-Loader           com.oculus.sdk.helloxr.vulkan        V  Verbose [GENERAL | xrEnumerateInstanceExtensionProperties | OpenXR-Loader] : Completed loader trampoline
+2025-01-27 12:08:20.371 32178-32216 OpenXR-Loader           com.oculus.sdk.helloxr.vulkan        V  Verbose [GENERAL | xrEnumerateApiLayerProperties | OpenXR-Loader] : Entering loader trampoline
+2025-01-27 12:08:20.371 32178-32216 OpenXR-Loader           com.oculus.sdk.helloxr.vulkan        V  Verbose [GENERAL | xrEnumerateApiLayerProperties | OpenXR-Loader] : Entering loader trampoline
+2025-01-27 12:08:20.372 32178-32216 helloxr                 com.oculus.sdk.helloxr.vulkan        V  [12:08:20.372][Info   ] Available Layers: (0)
+2025-01-27 12:08:20.372 32178-32216 OpenXR-Loader           com.oculus.sdk.helloxr.vulkan        V  Verbose [GENERAL | xrCreateInstance | OpenXR-Loader] : Entering loader trampoline
+2025-01-27 12:08:20.372 32178-32216 OpenXR-Loader           com.oculus.sdk.helloxr.vulkan        V  Verbose [GENERAL | xrCreateInstance | OpenXR-Loader] : Entering LoaderInstance::CreateInstance
+2025-01-27 12:08:20.372 32178-32216 OpenXR-Loader           com.oculus.sdk.helloxr.vulkan        V  Verbose [GENERAL | xrCreateInstance | OpenXR-Loader] : Entering loader terminator
+2025-01-27 12:08:20.372 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  ----------- xrCreateInstance [start] ----------
+2025-01-27 12:08:20.372 32178-32216 OpenXR_ClientState      com.oculus.sdk.helloxr.vulkan        I  OpenXRClientState::create - from xrCreateInstance
+2025-01-27 12:08:20.372 32178-32216 VersionGater            com.oculus.sdk.helloxr.vulkan        I  App OpenXR version is 1.0.43
+2025-01-27 12:08:20.372 32178-32216 VersionGater            com.oculus.sdk.helloxr.vulkan        I  Version gate state: 1111 1111 1111 111
+2025-01-27 12:08:20.372 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  [OATS] Creating OATS instance
+2025-01-27 12:08:20.373 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  [OATS] Successfully created OATS instance
+2025-01-27 12:08:20.375 32178-32216 TREX                    com.oculus.sdk.helloxr.vulkan        I  Initializing TREX for client 3397bc5f175e95d3...
+2025-01-27 12:08:20.375 32178-32216 TREX                    com.oculus.sdk.helloxr.vulkan        I  Initializing system...
+2025-01-27 12:08:20.375 32178-32216 XrRuntimeSystem_Client  com.oculus.sdk.helloxr.vulkan        I  BodyPoweredHands checkSysPropForBodyAPIOverride 0
+2025-01-27 12:08:20.375 32178-32216 TREXLoadPolicy          com.oculus.sdk.helloxr.vulkan        I  Plugin 'com.oculus.mrservice:': GK killswitch is enabled! Plugin will be skipped!
+2025-01-27 12:08:20.375 32178-32216 TREX                    com.oculus.sdk.helloxr.vulkan        I  Created plugin package context for com.oculus.systemdriver
+2025-01-27 12:08:20.377 32178-32216 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: JobPoolWorker, currentState: STATE_STOPPED, newState: STATE_STARTING
+2025-01-27 12:08:20.377 32178-32229 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: JobPoolWorker, currentState: STATE_STARTING, newState: STATE_RUNNING
+2025-01-27 12:08:20.378 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  Event buffer size (client): 8192
+2025-01-27 12:08:20.378 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  TryToGetIPCResourcesFromServer: RPC_CONNECTOR_CONNECT_TO_SERVER SUCCESS: Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.systemdriver:com.oculus.vrruntimeservice (HapticsServer)
+2025-01-27 12:08:20.378 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  EnsureServerConnection: SUCCESS. Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.systemdriver:com.oculus.vrruntimeservice (HapticsServer)
+2025-01-27 12:08:20.378 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  ConnectToServer: SUCCESS: Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.systemdriver:com.oculus.vrruntimeservice (HapticsServer)
+2025-01-27 12:08:20.378 32178-32216 TREX                    com.oculus.sdk.helloxr.vulkan        I  Loading EMGSDK Client Plugin
+2025-01-27 12:08:20.379 32178-32216 TREX                    com.oculus.sdk.helloxr.vulkan        I  Created plugin package context for com.oculus.systemdriver
+2025-01-27 12:08:20.380 32178-32216 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: JobPoolWorker, currentState: STATE_STOPPED, newState: STATE_STARTING
+2025-01-27 12:08:20.380 32178-32231 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: JobPoolWorker, currentState: STATE_STARTING, newState: STATE_RUNNING
+2025-01-27 12:08:20.380 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  Event buffer size (client): 8192
+2025-01-27 12:08:20.380 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  TryToGetIPCResourcesFromServer: RPC_CONNECTOR_CONNECT_TO_SERVER SUCCESS: Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.systemdriver:com.oculus.vrruntimeservice (HandInputDataServer)
+2025-01-27 12:08:20.380 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  EnsureServerConnection: SUCCESS. Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.systemdriver:com.oculus.vrruntimeservice (HandInputDataServer)
+2025-01-27 12:08:20.380 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  ConnectToServer: SUCCESS: Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.systemdriver:com.oculus.vrruntimeservice (HandInputDataServer)
+2025-01-27 12:08:20.381 32178-32216 TREX                    com.oculus.sdk.helloxr.vulkan        E  Loaded HandInputDataClientPlugin
+2025-01-27 12:08:20.382 32178-32216 TREX                    com.oculus.sdk.helloxr.vulkan        I  Created plugin package context for com.oculus.systemdriver
+2025-01-27 12:08:20.383 32178-32216 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: JobPoolWorker, currentState: STATE_STOPPED, newState: STATE_STARTING
+2025-01-27 12:08:20.383 32178-32233 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: JobPoolWorker, currentState: STATE_STARTING, newState: STATE_RUNNING
+2025-01-27 12:08:20.383 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  Event buffer size (client): 8192
+2025-01-27 12:08:20.383 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  TryToGetIPCResourcesFromServer: RPC_CONNECTOR_CONNECT_TO_SERVER SUCCESS: Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.systemdriver:com.oculus.vrruntimeservice (ControllerIPCServer)
+2025-01-27 12:08:20.383 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  EnsureServerConnection: SUCCESS. Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.systemdriver:com.oculus.vrruntimeservice (ControllerIPCServer)
+2025-01-27 12:08:20.383 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  ConnectToServer: SUCCESS: Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.systemdriver:com.oculus.vrruntimeservice (ControllerIPCServer)
+2025-01-27 12:08:20.384 32178-32216 TrexContro...ientPlugin com.oculus.sdk.helloxr.vulkan        I  ControllerClientBase::Initialize success
+2025-01-27 12:08:20.385 32178-32216 TREX                    com.oculus.sdk.helloxr.vulkan        I  Loading plugin com.oculus.wearableinputservice:libtrex_emgwristband_client_plugin.so
+2025-01-27 12:08:20.385 32178-32216 TREX                    com.oculus.sdk.helloxr.vulkan        I  package 'com.oculus.wearableinputservice' not found, skipping
+2025-01-27 12:08:20.386 32178-32216 TREX                    com.oculus.sdk.helloxr.vulkan        I  Plugin 'com.oculus.wearableinputservice:libtrex_emgwristband_client_plugin.so' not loaded.
+2025-01-27 12:08:20.386 32178-32216 TREX                    com.oculus.sdk.helloxr.vulkan        I  Loading plugin com.oculus.ovrmonitormetricsservice:libovrmetricstool_client_api.so
+2025-01-27 12:08:20.388 32178-32216 TREXLoadPolicy          com.oculus.sdk.helloxr.vulkan        E  Package com.oculus.ovrmonitormetricsservice has an invalid signature! (Debugging)
+2025-01-27 12:08:20.388 32178-32216 TREXLoadPolicy          com.oculus.sdk.helloxr.vulkan        E  Skipping load of package com.oculus.ovrmonitormetricsservice due to an invalid signature!
+2025-01-27 12:08:20.388 32178-32216 TREX                    com.oculus.sdk.helloxr.vulkan        E  package 'com.oculus.ovrmonitormetricsservice' not allowed by policy
+2025-01-27 12:08:20.388 32178-32216 TREX                    com.oculus.sdk.helloxr.vulkan        I  Plugin 'com.oculus.ovrmonitormetricsservice:libovrmetricstool_client_api.so' not loaded.
+2025-01-27 12:08:20.388 32178-32216 TREX                    com.oculus.sdk.helloxr.vulkan        E  Interface 'WristbandClientInterface', version 6 was not found. Check debug build for more information.
+2025-01-27 12:08:20.389 32178-32216 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: JobPoolWorker, currentState: STATE_STOPPED, newState: STATE_STARTING
+2025-01-27 12:08:20.389 32178-32235 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: JobPoolWorker, currentState: STATE_STARTING, newState: STATE_RUNNING
+2025-01-27 12:08:20.392 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  Event buffer size (client): 8192
+2025-01-27 12:08:20.392 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  TryToGetIPCResourcesFromServer: RPC_CONNECTOR_CONNECT_TO_SERVER SUCCESS: Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.systemdriver:com.oculus.vrruntimeservice (RuntimeServiceDevice)
+2025-01-27 12:08:20.392 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  EnsureServerConnection: SUCCESS. Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.systemdriver:com.oculus.vrruntimeservice (RuntimeServiceDevice)
+2025-01-27 12:08:20.392 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  ConnectToServer: SUCCESS: Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.systemdriver:com.oculus.vrruntimeservice (RuntimeServiceDevice)
+2025-01-27 12:08:20.393 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  Shutdown: 1, Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.systemdriver:com.oculus.vrruntimeservice (RuntimeServiceDevice)
+2025-01-27 12:08:20.393 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  ReleaseRef: Remaining refs: 0, Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.systemdriver:com.oculus.vrruntimeservice (RuntimeServiceDevice)
+2025-01-27 12:08:20.393 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  DisconnectFromServer: 0, Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.systemdriver:com.oculus.vrruntimeservice (RuntimeServiceDevice)
+2025-01-27 12:08:20.393 32178-32235 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: JobPoolWorker, currentState: STATE_STOPPING, newState: STATE_STOPPED
+2025-01-27 12:08:20.393 32178-32216 Distortion              com.oculus.sdk.helloxr.vulkan        I  Initializing Mesh Decenter Correction
+2025-01-27 12:08:20.393 32178-32216 libosutils              com.oculus.sdk.helloxr.vulkan        E  Failed to get real path of file '/sys/devices/soc0/platform_subtype_id', err: Permission denied
+2025-01-27 12:08:20.393 32178-32216 libosutils              com.oculus.sdk.helloxr.vulkan        E  Failed to get real path of file '/sys/devices/soc0/platform_version', err: Permission denied
+2025-01-27 12:08:20.393 32178-32216 libdeviceid             com.oculus.sdk.helloxr.vulkan        W  DeviceId unknown with subtype FFFFFFFF and version: 0xFFFFFFFF
+2025-01-27 12:08:20.393 32178-32216 Distortion              com.oculus.sdk.helloxr.vulkan        I  Decenter tester version = 200
+2025-01-27 12:08:20.394 32178-32216 Distortion              com.oculus.sdk.helloxr.vulkan        I  SetLensPositions - iad=0.0635, left offset=-0.0030803,-3.05452e-05, right offset=0.00332641,1.07915e-05
+2025-01-27 12:08:20.394 32178-32216 VrRuntimeCompatHelper   com.oculus.sdk.helloxr.vulkan        I  DevicesSupported : 1 devices, quest
+2025-01-27 12:08:20.394 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  IsSystem 0
+2025-01-27 12:08:20.394 32178-32216 Distortion              com.oculus.sdk.helloxr.vulkan        I  Initializing Mesh Decenter Correction
+2025-01-27 12:08:20.394 32178-32216 libosutils              com.oculus.sdk.helloxr.vulkan        E  Failed to get real path of file '/sys/devices/soc0/platform_subtype_id', err: Permission denied
+2025-01-27 12:08:20.394 32178-32216 libosutils              com.oculus.sdk.helloxr.vulkan        E  Failed to get real path of file '/sys/devices/soc0/platform_version', err: Permission denied
+2025-01-27 12:08:20.394 32178-32216 libdeviceid             com.oculus.sdk.helloxr.vulkan        W  DeviceId unknown with subtype FFFFFFFF and version: 0xFFFFFFFF
+2025-01-27 12:08:20.394 32178-32216 Distortion              com.oculus.sdk.helloxr.vulkan        I  Decenter tester version = 200
+2025-01-27 12:08:20.394 32178-32216 Distortion              com.oculus.sdk.helloxr.vulkan        I  SetLensPositions - iad=0.0635, left offset=-0.0030803,-3.05452e-05, right offset=0.00332641,1.07915e-05
+2025-01-27 12:08:20.394 32178-32216 GkHelper                com.oculus.sdk.helloxr.vulkan        I  Checking gk 'oculus_quest3_high_res_eye_buffer', default = false
+2025-01-27 12:08:20.394 32178-32216 GkHelper                com.oculus.sdk.helloxr.vulkan        I  Checking gk 'oculus_quest3_super_high_res_eye_buffer', default = false
+2025-01-27 12:08:20.394 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  ----------- xrCreateInstance [end] ----------
+2025-01-27 12:08:20.394 32178-32216 OpenXR-Loader           com.oculus.sdk.helloxr.vulkan        V  Verbose [GENERAL | xrCreateInstance | OpenXR-Loader] : Completed loader terminator
+2025-01-27 12:08:20.394 32178-32216 OpenXR-Loader           com.oculus.sdk.helloxr.vulkan        I  Info [GENERAL | xrCreateInstance | OpenXR-Loader] : LoaderInstance::CreateInstance succeeded with 0 layers enabled and runtime interface - created instance = 0x0100000000000002
+2025-01-27 12:08:20.394 32178-32216 OpenXR-Loader           com.oculus.sdk.helloxr.vulkan        V  Verbose [GENERAL | xrCreateInstance | OpenXR-Loader] : Completed loader trampoline
+2025-01-27 12:08:20.394 32178-32216 helloxr                 com.oculus.sdk.helloxr.vulkan        V  [12:08:20.394][Info   ] Instance RuntimeName=Oculus RuntimeVersion=71.601.0
+2025-01-27 12:08:20.395 32178-32216 helloxr                 com.oculus.sdk.helloxr.vulkan        V  [12:08:20.395][Info   ] Available View Configuration Types: (1)
+2025-01-27 12:08:20.395 32178-32216 helloxr                 com.oculus.sdk.helloxr.vulkan        V  [12:08:20.395][Info   ] Available Environment Blend Mode count : (1)
+2025-01-27 12:08:20.395 32178-32216 helloxr                 com.oculus.sdk.helloxr.vulkan        V  [12:08:20.395][Info   ] Environment Blend Mode (XR_ENVIRONMENT_BLEND_MODE_OPAQUE) : (Selected)
+2025-01-27 12:08:20.395 32178-32216 helloxr                 com.oculus.sdk.helloxr.vulkan        V  [12:08:20.395][Warning] No validation layers found in the system, skipping
+2025-01-27 12:08:20.397 32178-32216 Adreno-AppProfiles      com.oculus.sdk.helloxr.vulkan        W  Could not find QSPM HAL service. Skipping adreno profile processing.
+2025-01-27 12:08:20.398 32178-32216 AdrenoVK-0              com.oculus.sdk.helloxr.vulkan        I  ===== BEGIN DUMP OF OVERRIDDEN SETTINGS =====
+2025-01-27 12:08:20.398 32178-32216 AdrenoVK-0              com.oculus.sdk.helloxr.vulkan        I  ===== END DUMP OF OVERRIDDEN SETTINGS =====
+2025-01-27 12:08:20.400 32178-32216 AdrenoVK-0              com.oculus.sdk.helloxr.vulkan        I  QUALCOMM build          : 5c44054b8b, I064dd7d485
+                                                                                                    Build Date              : 09/12/24
+                                                                                                    Shader Compiler Version : E031.47.14.01
+                                                                                                    Local Branch            :
+                                                                                                    Remote Branch           : refs/tags/AU_LINUX_ANDROID_LA.VENDOR.12.3.11.00.00.934.442
+                                                                                                    Remote Branch           : NONE
+                                                                                                    Reconstruct Branch      : NOTHING
+2025-01-27 12:08:20.400 32178-32216 AdrenoVK-0              com.oculus.sdk.helloxr.vulkan        I  Build Config            : S P 12.1.6 AArch64
+2025-01-27 12:08:20.400 32178-32216 AdrenoVK-0              com.oculus.sdk.helloxr.vulkan        I  Driver Path             : /vendor/lib64/hw/vulkan.adreno.so
+2025-01-27 12:08:20.400 32178-32216 AdrenoVK-0              com.oculus.sdk.helloxr.vulkan        I  Driver Version          : 0797.0
+2025-01-27 12:08:20.400 32178-32216 AdrenoVK-0              com.oculus.sdk.helloxr.vulkan        I  PFP                     : 0x01511175
+2025-01-27 12:08:20.400 32178-32216 AdrenoVK-0              com.oculus.sdk.helloxr.vulkan        I  ME                      : 0x00000000
+2025-01-27 12:08:20.400 32178-32216 AdrenoVK-0              com.oculus.sdk.helloxr.vulkan        I  Application Name    : helloxr
+                                                                                                    Application Version : 0x00000001
+                                                                                                    Engine Name         : helloxr
+                                                                                                    Engine Version      : 0x00000001
+                                                                                                    Api Version         : 0x00400000
+2025-01-27 12:08:20.400 32178-32216 VulkanLoader            com.oculus.sdk.helloxr.vulkan        I  ovrVulkanLoader::Load
+2025-01-27 12:08:20.400 32178-32216 VulkanLoader            com.oculus.sdk.helloxr.vulkan        W  VulkanLoader::LoadInstanceFunctions: Failed to load vkCreateDebugReportCallbackEXT, likely vkInstance created without xrGetVulkanInstanceExtensionsKHR/vrapi_GetInstanceExtensionsVulkan
+2025-01-27 12:08:20.400 32178-32216 VulkanLoader            com.oculus.sdk.helloxr.vulkan        W  VulkanLoader::LoadInstanceFunctions: Failed to load vkDestroyDebugReportCallbackEXT, likely vkInstance created without xrGetVulkanInstanceExtensionsKHR/vrapi_GetInstanceExtensionsVulkan
+2025-01-27 12:08:20.400 32178-32216 VulkanLoader            com.oculus.sdk.helloxr.vulkan        W  ovrVulkanLoader::LoadDeviceFunctions: device invalid
+2025-01-27 12:08:20.400 32178-32216 VulkanLoader            com.oculus.sdk.helloxr.vulkan        W  ovrVulkanLoader::LoadExtensionList: physicalDevice invalid
+2025-01-27 12:08:20.400 32178-32216 Vulkan_Utils            com.oculus.sdk.helloxr.vulkan        I  --------------------------------
+2025-01-27 12:08:20.400 32178-32216 Vulkan_Utils            com.oculus.sdk.helloxr.vulkan        I  Device Name          : Adreno (TM) 740
+2025-01-27 12:08:20.400 32178-32216 Vulkan_Utils            com.oculus.sdk.helloxr.vulkan        I  Device Type          : integrated GPU
+2025-01-27 12:08:20.400 32178-32216 Vulkan_Utils            com.oculus.sdk.helloxr.vulkan        I  Vendor ID            : 0x5143
+2025-01-27 12:08:20.400 32178-32216 Vulkan_Utils            com.oculus.sdk.helloxr.vulkan        I  Device ID            : 0x43050B00
+2025-01-27 12:08:20.400 32178-32216 Vulkan_Utils            com.oculus.sdk.helloxr.vulkan        I  Driver Version       : 512.797.0
+2025-01-27 12:08:20.400 32178-32216 Vulkan_Utils            com.oculus.sdk.helloxr.vulkan        I  API Version          : 1.1.284
+2025-01-27 12:08:20.400 32178-32216 Vulkan_Utils            com.oculus.sdk.helloxr.vulkan        I  Queue Families       : 0 = graphics compute transfer (3 queues, 3 priorities)
+2025-01-27 12:08:20.400 32178-32216 Vulkan_Utils            com.oculus.sdk.helloxr.vulkan        I                         1 = (1 queues, 3 priorities)
+2025-01-27 12:08:20.400 32178-32216 Vulkan_Utils            com.oculus.sdk.helloxr.vulkan        I  Work Queue Family    : 0
+2025-01-27 12:08:20.401 32178-32216 Vulkan_Utils            com.oculus.sdk.helloxr.vulkan        I  Device Extensions    : VK_KHR_swapchain (required, enabled)
+2025-01-27 12:08:20.401 32178-32216 Vulkan_Utils            com.oculus.sdk.helloxr.vulkan        I                         VK_KHR_external_memory (required, enabled)
+2025-01-27 12:08:20.401 32178-32216 Vulkan_Utils            com.oculus.sdk.helloxr.vulkan        I                         VK_KHR_get_memory_requirements2 (required, enabled)
+2025-01-27 12:08:20.401 32178-32216 Vulkan_Utils            com.oculus.sdk.helloxr.vulkan        I  Device Extensions      VK_EXT_fragment_density_map (optional, enabled)
+2025-01-27 12:08:20.401 32178-32216 Vulkan_Utils            com.oculus.sdk.helloxr.vulkan        I                         VK_EXT_fragment_density_map2 (optional, enabled)
+2025-01-27 12:08:20.401 32178-32216 Vulkan_Utils            com.oculus.sdk.helloxr.vulkan        I                         VK_KHR_maintenance1 (optional, enabled)
+2025-01-27 12:08:20.401 32178-32216 Vulkan_Utils            com.oculus.sdk.helloxr.vulkan        I                         VK_KHR_bind_memory2 (optional, enabled)
+2025-01-27 12:08:20.401 32178-32216 Vulkan_Utils            com.oculus.sdk.helloxr.vulkan        I                         VK_KHR_sampler_ycbcr_conversion (optional, enabled)
+2025-01-27 12:08:20.401 32178-32216 Vulkan_Utils            com.oculus.sdk.helloxr.vulkan        I                         VK_EXT_queue_family_foreign (optional, enabled)
+2025-01-27 12:08:20.401 32178-32216 Vulkan_Utils            com.oculus.sdk.helloxr.vulkan        I                         VK_KHR_dedicated_allocation (optional, enabled)
+2025-01-27 12:08:20.401 32178-32216 Vulkan_Utils            com.oculus.sdk.helloxr.vulkan        I                         VK_KHR_external_memory_fd (optional, enabled)
+2025-01-27 12:08:20.401 32178-32216 Vulkan_Utils            com.oculus.sdk.helloxr.vulkan        I                         VK_ANDROID_external_memory_android_hardware_buffer (optional, enabled)
+2025-01-27 12:08:20.505 32178-32216 helloxr                 com.oculus.sdk.helloxr.vulkan        V  [12:08:20.505][Info   ] Loaded vertex shader
+2025-01-27 12:08:20.505 32178-32216 helloxr                 com.oculus.sdk.helloxr.vulkan        V  [12:08:20.505][Info   ] Loaded fragment shader
+2025-01-27 12:08:20.506 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  ------------ xrCreateSession [start] -----------
+2025-01-27 12:08:20.506 32178-32216 VrRuntimeClient         com.oculus.sdk.helloxr.vulkan        I  VrRuntimeClient(): 0xb4000070d2a1c700
+2025-01-27 12:08:20.508 32178-32216 VrRuntimeClient         com.oculus.sdk.helloxr.vulkan        I  s->gRuntimeServiceSDKClient.InitClient
+2025-01-27 12:08:20.509 32178-32216 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: JobPoolWorker, currentState: STATE_STOPPED, newState: STATE_STARTING
+2025-01-27 12:08:20.509 32178-32238 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: JobPoolWorker, currentState: STATE_STARTING, newState: STATE_RUNNING
+2025-01-27 12:08:20.510 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  Event buffer size (client): 8192
+2025-01-27 12:08:20.510 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  TryToGetIPCResourcesFromServer: RPC_CONNECTOR_CONNECT_TO_SERVER SUCCESS: Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.systemdriver:com.oculus.vrruntimeservice (RuntimeServiceServer)
+2025-01-27 12:08:20.510 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  EnsureServerConnection: SUCCESS. Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.systemdriver:com.oculus.vrruntimeservice (RuntimeServiceServer)
+2025-01-27 12:08:20.510 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  ConnectToServer: SUCCESS: Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.systemdriver:com.oculus.vrruntimeservice (RuntimeServiceServer)
+2025-01-27 12:08:20.510 32178-32238 VrRuntimeClient         com.oculus.sdk.helloxr.vulkan        I  s->gRuntimeServiceSDKClient.Connected: com.oculus.systemdriver:com.oculus.vrruntimeservice
+2025-01-27 12:08:20.510 32178-32238 VrRuntimeClient         com.oculus.sdk.helloxr.vulkan        I  RegisterClient RequestDescriptor com.oculus.sdk.helloxr.vulkan:32178 clientType 0 clientFlags 0 clientSessionPlacement 0 clientLaunchId
+2025-01-27 12:08:20.513 32178-32238 VrRuntimeClient         com.oculus.sdk.helloxr.vulkan        I  RegisterClient success
+2025-01-27 12:08:20.514 32178-32238 VrRuntimeClient         com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC: ServiceConnected: SharedMemoryDebug: publicReadOnly SharedMemorySize=192 (com.oculus.sdk.helloxr.vulkan) sizeof(s->sharedMemoryPublicReadOnly)=216
+2025-01-27 12:08:20.514 32178-32238 VrRuntimeClient         com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC: ServiceConnected: SharedMemoryDebug: privateReadWrite SharedMemorySize=115912 (com.oculus.sdk.helloxr.vulkan) sizeof(privateSharedMemorySize)=8
+2025-01-27 12:08:20.514 32178-32238 VrRuntimeClient         com.oculus.sdk.helloxr.vulkan        I  nativeRuntimeServiceConnected: SharedMemoryDebug: publicReadOnlyFd=124, privateReadWriteFd=125 (com.oculus.sdk.helloxr.vulkan)
+2025-01-27 12:08:20.517 32178-32216 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: JobPoolWorker, currentState: STATE_STOPPED, newState: STATE_STARTING
+2025-01-27 12:08:20.517 32178-32240 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: JobPoolWorker, currentState: STATE_STARTING, newState: STATE_RUNNING
+2025-01-27 12:08:20.517 32178-32216 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: RIPCNotifThread, currentState: STATE_STOPPED, newState: STATE_STARTING
+2025-01-27 12:08:20.517 32178-32241 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: RIPCNotifThread, currentState: STATE_STARTING, newState: STATE_RUNNING
+2025-01-27 12:08:20.517 32178-32216 VrRuntimeClient         com.oculus.sdk.helloxr.vulkan        I  s->gRuntimeServiceSDKClient.InitClient SUCCESS. Version: 5.0, Custom: 1.0
+2025-01-27 12:08:20.517 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  GetClientOptions
+2025-01-27 12:08:20.517 32178-32216 VrRuntimeClient         com.oculus.sdk.helloxr.vulkan        I  Connected to VrRuntimeService on attempt 0
+2025-01-27 12:08:20.517 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrCreateSession: Connected to VrRuntimeService after 0.011327s
+2025-01-27 12:08:20.518 32178-32216 AdrenoGLES-0            com.oculus.sdk.helloxr.vulkan        I  QUALCOMM build                   : 5c44054b8b, I064dd7d485
+                                                                                                    Build Date                       : 09/12/24
+                                                                                                    OpenGL ES Shader Compiler Version: E031.47.14.01
+                                                                                                    Local Branch                     :
+                                                                                                    Remote Branch                    : refs/tags/AU_LINUX_ANDROID_LA.VENDOR.12.3.11.00.00.934.442
+                                                                                                    Remote Branch                    : NONE
+                                                                                                    Reconstruct Branch               : NOTHING
+2025-01-27 12:08:20.518 32178-32216 AdrenoGLES-0            com.oculus.sdk.helloxr.vulkan        I  Build Config                     : S P 12.1.6 AArch64
+2025-01-27 12:08:20.518 32178-32216 AdrenoGLES-0            com.oculus.sdk.helloxr.vulkan        I  Driver Path                      : /vendor/lib64/egl/libGLESv2_adreno.so
+2025-01-27 12:08:20.518 32178-32216 AdrenoGLES-0            com.oculus.sdk.helloxr.vulkan        I  Driver Version                   : 0797.0
+2025-01-27 12:08:20.518 32178-32216 AdrenoGLES-0            com.oculus.sdk.helloxr.vulkan        I  Process Name                     : com.oculus.sdk.helloxr.vulkan
+2025-01-27 12:08:20.519 32178-32216 AdrenoGLES-0            com.oculus.sdk.helloxr.vulkan        I  PFP: 0x01511175, ME: 0x00000000
+2025-01-27 12:08:20.521 32178-32216 Adreno-AppProfiles      com.oculus.sdk.helloxr.vulkan        W  Could not find QSPM HAL service. Skipping adreno profile processing.
+2025-01-27 12:08:20.522 32178-32216 AdrenoUtils             com.oculus.sdk.helloxr.vulkan        I  <ReadGpuID:366>: Reading chip ID through GSL
+2025-01-27 12:08:20.526 32178-32216 VrRuntimeClient         com.oculus.sdk.helloxr.vulkan        I  SetPhaseSyncMode 1
+2025-01-27 12:08:20.526 32178-32216 VrRuntimeClient         com.oculus.sdk.helloxr.vulkan        I  SetPhaseSyncMode 1
+2025-01-27 12:08:20.526 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  PhaseSync Mode: PHASE_SYNC
+2025-01-27 12:08:20.526 32178-32216 VrRuntimeClient         com.oculus.sdk.helloxr.vulkan        I  VrRuntimeClient: Init
+2025-01-27 12:08:20.527 32178-32216 PTKService              com.oculus.sdk.helloxr.vulkan        I  PTKServiceClient Init
+2025-01-27 12:08:20.527 32178-32216 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: JobPoolWorker, currentState: STATE_STOPPED, newState: STATE_STARTING
+2025-01-27 12:08:20.528 32178-32242 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: JobPoolWorker, currentState: STATE_STARTING, newState: STATE_RUNNING
+2025-01-27 12:08:20.528 32178-32216 ClientProc...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  GetProcessConnection: com.oculus.vrshell:com.oculus.vrshell
+2025-01-27 12:08:20.529 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  Event buffer size (client): 8192
+2025-01-27 12:08:20.529 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  TryToGetIPCResourcesFromServer: RPC_CONNECTOR_CONNECT_TO_SERVER SUCCESS: Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.vrshell:com.oculus.vrshell (ptkserviceserver)
+2025-01-27 12:08:20.529 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  EnsureServerConnection: SUCCESS. Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.vrshell:com.oculus.vrshell (ptkserviceserver)
+2025-01-27 12:08:20.529 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  ConnectToServer: SUCCESS: Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.vrshell:com.oculus.vrshell (ptkserviceserver)
+2025-01-27 12:08:20.530 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  InitServerStateBuffer: SUCCESS. 0, Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.vrshell:com.oculus.vrshell (ptkserviceserver)
+2025-01-27 12:08:20.530 32178-32216 ServerStat...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        W  IPCService: GetDataBegin: entryIndex < 0 || entryIndex >= numEntries_ || entryIndex >= trustedMaxEntries: 1, 3, 0
+2025-01-27 12:08:20.530 32178-32216 ServerStat...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        W  IPCService: GetDataBegin: entryIndex < 0 || entryIndex >= numEntries_ || entryIndex >= trustedMaxEntries: 2, 3, 0
+2025-01-27 12:08:20.530 32178-32216 OVR::Capture            com.oculus.sdk.helloxr.vulkan        V  Failed to open trace_marker ATrace file!
+2025-01-27 12:08:20.530 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  InitServerStateBuffer: SUCCESS. 0, Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.systemdriver:com.oculus.vrruntimeservice (RuntimeServiceServer)
+2025-01-27 12:08:20.530 32178-32216 AudioCapture            com.oculus.sdk.helloxr.vulkan        I  AudioCapture::Init
+2025-01-27 12:08:20.531 32178-32216 AudioCapture            com.oculus.sdk.helloxr.vulkan        I  AudioCapture::Init -> Initializing audio capture using direct OS Callbacks
+2025-01-27 12:08:20.531 32178-32216 AudioCapture            com.oculus.sdk.helloxr.vulkan        I  AudioCapture::Init COMPLETE
+2025-01-27 12:08:20.531 32178-32216 Foveation               com.oculus.sdk.helloxr.vulkan        W  Forcing on dynamic foveation
+2025-01-27 12:08:20.531 32178-32216 Foveation               com.oculus.sdk.helloxr.vulkan        I  Vulkan foveation tile offset enabled: 0
+2025-01-27 12:08:20.531 32178-32216 Foveation               com.oculus.sdk.helloxr.vulkan        I  Vulkan foveation tile turn off enabled: 1
+2025-01-27 12:08:20.531 32178-32216 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: JobPoolWorker, currentState: STATE_STOPPED, newState: STATE_STARTING
+2025-01-27 12:08:20.532 32178-32245 ThreadHelp...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  RuntimeIPC::ThreadHelpers::SetState: threadName: JobPoolWorker, currentState: STATE_STARTING, newState: STATE_RUNNING
+2025-01-27 12:08:20.532 32178-32216 ClientProc...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  GetProcessConnection: com.oculus.guardian:com.oculus.vrguardianservice
+2025-01-27 12:08:20.532 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  Event buffer size (client): 8192
+2025-01-27 12:08:20.533 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  TryToGetIPCResourcesFromServer: RPC_CONNECTOR_CONNECT_TO_SERVER SUCCESS: Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.guardian:com.oculus.vrguardianservice (guardianserver)
+2025-01-27 12:08:20.533 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  EnsureServerConnection: SUCCESS. Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.guardian:com.oculus.vrguardianservice (guardianserver)
+2025-01-27 12:08:20.533 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  ConnectToServer: SUCCESS: Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.guardian:com.oculus.vrguardianservice (guardianserver)
+2025-01-27 12:08:20.536 32178-32216 VrGuardianClient        com.oculus.sdk.helloxr.vulkan        I  guardianSDKClient_ connected.
+2025-01-27 12:08:20.536 32178-32216 GkCacheQuerierClient    com.oculus.sdk.helloxr.vulkan        W  getGkValue: Query result for 'oculus_xrruntime:horizon_phasesync_disabled' not successful: 4
+2025-01-27 12:08:20.536 32178-32216 GkHelper                com.oculus.sdk.helloxr.vulkan        W  GkHelper: query failed, result code = 4
+2025-01-27 12:08:20.541 32178-32216 VrRuntimeClient         com.oculus.sdk.helloxr.vulkan        I  Is120HzSupported: 1
+2025-01-27 12:08:20.541 32178-32216 FaceEyeTra...entManager com.oculus.sdk.helloxr.vulkan        I  [FaceEyeTrackingManager] Initializing FaceEyeTrackingClientManager...
+2025-01-27 12:08:20.547 32178-32216 LogTimer                com.oculus.sdk.helloxr.vulkan        I  CPUTIME: VrRuntimeClient_Init took 20.2168 ms
+2025-01-27 12:08:20.547 32178-32216 VulkanLoader            com.oculus.sdk.helloxr.vulkan        I  ovrVulkanLoader::Load
+2025-01-27 12:08:20.547 32178-32216 VulkanLoader            com.oculus.sdk.helloxr.vulkan        W  VulkanLoader::LoadInstanceFunctions: Failed to load vkCreateDebugReportCallbackEXT, likely vkInstance created without xrGetVulkanInstanceExtensionsKHR/vrapi_GetInstanceExtensionsVulkan
+2025-01-27 12:08:20.547 32178-32216 VulkanLoader            com.oculus.sdk.helloxr.vulkan        W  VulkanLoader::LoadInstanceFunctions: Failed to load vkDestroyDebugReportCallbackEXT, likely vkInstance created without xrGetVulkanInstanceExtensionsKHR/vrapi_GetInstanceExtensionsVulkan
+2025-01-27 12:08:20.547 32178-32216 VulkanLoader            com.oculus.sdk.helloxr.vulkan        W  VulkanLoader::LoadDeviceFunctions: Failed to load vkCmdDebugMarkerInsertEXT, likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
+2025-01-27 12:08:20.547 32178-32216 VulkanLoader            com.oculus.sdk.helloxr.vulkan        W  VulkanLoader::LoadDeviceFunctions: Failed to load vkCmdSetCullModeEXT, likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
+2025-01-27 12:08:20.547 32178-32216 VulkanLoader            com.oculus.sdk.helloxr.vulkan        W  VulkanLoader::LoadDeviceFunctions: Failed to load vkCmdSetDepthCompareOpEXT, likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
+2025-01-27 12:08:20.547 32178-32216 VulkanLoader            com.oculus.sdk.helloxr.vulkan        W  VulkanLoader::LoadDeviceFunctions: Failed to load vkCmdSetDepthTestEnableEXT, likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
+2025-01-27 12:08:20.547 32178-32216 VulkanLoader            com.oculus.sdk.helloxr.vulkan        W  VulkanLoader::LoadDeviceFunctions: Failed to load vkCmdSetDepthWriteEnableEXT, likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
+2025-01-27 12:08:20.547 32178-32216 VulkanLoader            com.oculus.sdk.helloxr.vulkan        W  VulkanLoader::LoadDeviceFunctions: Failed to load vkDebugMarkerSetObjectTagEXT, likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
+2025-01-27 12:08:20.547 32178-32216 VulkanLoader            com.oculus.sdk.helloxr.vulkan        W  VulkanLoader::LoadDeviceFunctions: Failed to load vkGetMemoryFdKHR, likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
+2025-01-27 12:08:20.547 32178-32216 Foveation               com.oculus.sdk.helloxr.vulkan        I  Vulkan FFR is supported, with density map size 32x32
+2025-01-27 12:08:20.547 32178-32216 Distortion              com.oculus.sdk.helloxr.vulkan        I  Initializing Mesh Decenter Correction
+2025-01-27 12:08:20.547 32178-32216 libosutils              com.oculus.sdk.helloxr.vulkan        E  Failed to get real path of file '/sys/devices/soc0/platform_subtype_id', err: Permission denied
+2025-01-27 12:08:20.547 32178-32216 libosutils              com.oculus.sdk.helloxr.vulkan        E  Failed to get real path of file '/sys/devices/soc0/platform_version', err: Permission denied
+2025-01-27 12:08:20.547 32178-32216 libdeviceid             com.oculus.sdk.helloxr.vulkan        W  DeviceId unknown with subtype FFFFFFFF and version: 0xFFFFFFFF
+2025-01-27 12:08:20.548 32178-32216 Distortion              com.oculus.sdk.helloxr.vulkan        I  Decenter tester version = 200
+2025-01-27 12:08:20.548 32178-32216 Distortion              com.oculus.sdk.helloxr.vulkan        I  SetLensPositions - iad=0.0635, left offset=-0.0030803,-3.05452e-05, right offset=0.00332641,1.07915e-05
+2025-01-27 12:08:20.548 32178-32216 Distortion              com.oculus.sdk.helloxr.vulkan        I  Initializing Mesh Decenter Correction
+2025-01-27 12:08:20.548 32178-32216 libosutils              com.oculus.sdk.helloxr.vulkan        E  Failed to get real path of file '/sys/devices/soc0/platform_subtype_id', err: Permission denied
+2025-01-27 12:08:20.548 32178-32216 libosutils              com.oculus.sdk.helloxr.vulkan        E  Failed to get real path of file '/sys/devices/soc0/platform_version', err: Permission denied
+2025-01-27 12:08:20.548 32178-32216 libdeviceid             com.oculus.sdk.helloxr.vulkan        W  DeviceId unknown with subtype FFFFFFFF and version: 0xFFFFFFFF
+2025-01-27 12:08:20.549 32178-32216 Distortion              com.oculus.sdk.helloxr.vulkan        I  Decenter tester version = 200
+2025-01-27 12:08:20.549 32178-32216 Distortion              com.oculus.sdk.helloxr.vulkan        I  SetLensPositions - iad=0.0635, left offset=-0.0030803,-3.05452e-05, right offset=0.00332641,1.07915e-05
+2025-01-27 12:08:20.549 32178-32216 GkHelper                com.oculus.sdk.helloxr.vulkan        I  Checking gk 'oculus_quest3_high_res_eye_buffer', default = false
+2025-01-27 12:08:20.549 32178-32216 GkHelper                com.oculus.sdk.helloxr.vulkan        I  Checking gk 'oculus_quest3_super_high_res_eye_buffer', default = false
+2025-01-27 12:08:20.550 32178-32216 ClientInputSettings     com.oculus.sdk.helloxr.vulkan        I  SYSTEMBUTTONSPACE GKS freeze '1'
+2025-01-27 12:08:20.550 32178-32216 ClientInputSettings     com.oculus.sdk.helloxr.vulkan        I  SYSTEMBUTTONSPACE 'com.oculus.sdk.helloxr.vulkan' Freeze input '1' on home button down
+2025-01-27 12:08:20.550 32178-32216 ClientInputSettings     com.oculus.sdk.helloxr.vulkan        I  HANDTRACKING: Hands V2.0 enforced.
+2025-01-27 12:08:20.550 32178-32216 ClientInputSettings     com.oculus.sdk.helloxr.vulkan        I  HANDTRACKING: YES, in the GK oculus_mobile_enable_hand_tracking_frequency_inter
+2025-01-27 12:08:20.550 32178-32216 ClientInputInterface    com.oculus.sdk.helloxr.vulkan        I  HANDTRACKING sethandtrackingfrequency 1
+2025-01-27 12:08:20.550 32178-32216 ClientInputSettings     com.oculus.sdk.helloxr.vulkan        I  HANDTRACKING: YES, in the GK oculus_mobile_30hz_handtracking_downclocking
+2025-01-27 12:08:20.550 32178-32216 ClientInputInterface    com.oculus.sdk.helloxr.vulkan        I  Set30HzHandtrackingDownclockingGKFlag 1
+2025-01-27 12:08:20.550 32178-32216 ClientInputSettings     com.oculus.sdk.helloxr.vulkan        I  HANDTRACKING: NO, not in the GK oculus_mobile_enable_hand_emulation_of_controllers
+2025-01-27 12:08:20.550 32178-32216 ClientInputInterface    com.oculus.sdk.helloxr.vulkan        I  HANDTRACKING SetHandTrackingControllerEmulationGkFlag 0
+2025-01-27 12:08:20.550 32178-32216 InputHooks              com.oculus.sdk.helloxr.vulkan        I  InitializeInputHooks
+2025-01-27 12:08:20.550 32178-32216 InputHooks              com.oculus.sdk.helloxr.vulkan        I  InitializeInputHooks create
+2025-01-27 12:08:20.551 32178-32216 .helloxr.vulka          com.oculus.sdk.helloxr.vulkan        W  Accessing hidden method Landroid/app/Activity;->isResumed()Z (unsupported, reflection, allowed)
+2025-01-27 12:08:20.551 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  xrCreateSession: Activity is not yet in the ready state.
+2025-01-27 12:08:20.551 32178-32216 OpenXR_Aperture         com.oculus.sdk.helloxr.vulkan        I  ------------ ovrCreateApertureMETAX1 -----------
+2025-01-27 12:08:20.552 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  ------------ xrCreateSession [end] -----------
+2025-01-27 12:08:20.552 32178-32216 helloxr                 com.oculus.sdk.helloxr.vulkan        V  [12:08:20.552][Info   ] Available reference spaces: 3
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Actions          com.oculus.sdk.helloxr.vulkan        V  -- xrSuggestInteractionProfileBindings -
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Actions          com.oculus.sdk.helloxr.vulkan        V  -- xrSuggestInteractionProfileBindings -
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Actions          com.oculus.sdk.helloxr.vulkan        V  -- xrSuggestInteractionProfileBindings -
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Actions          com.oculus.sdk.helloxr.vulkan        V  -- xrSuggestInteractionProfileBindings -
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Actions          com.oculus.sdk.helloxr.vulkan        V  -- xrSuggestInteractionProfileBindings -
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: Spaces info
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: Local version=97
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: RawFromLocal       = (0.000, 0.919, 0.000, 0.395), (-0.15, -0.37, 0.99)
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: RawFromLocalTilted = (-0.004, 0.918, 0.036, 0.394), (-0.15, -0.37, 0.99)
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: Stage IsValid=true
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: Stage HasActiveGuardian=true
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: Stage Width=9.275005, Depth=9.817506
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: RawFromStage       = (-0.000, -0.960, -0.000, 0.281), (2.72, -1.30, -1.71)
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: Spaces info
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: Local version=97
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: RawFromLocal       = (0.000, 0.919, 0.000, 0.395), (-0.15, -0.37, 0.99)
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: RawFromLocalTilted = (-0.004, 0.918, 0.036, 0.394), (-0.15, -0.37, 0.99)
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: Stage IsValid=true
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: Stage HasActiveGuardian=true
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: Stage Width=9.275005, Depth=9.817506
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: RawFromStage       = (-0.000, -0.960, -0.000, 0.281), (2.72, -1.30, -1.71)
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: Spaces info
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: Local version=97
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: RawFromLocal       = (0.000, 0.919, 0.000, 0.395), (-0.15, -0.37, 0.99)
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: RawFromLocalTilted = (-0.004, 0.918, 0.036, 0.394), (-0.15, -0.37, 0.99)
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: Stage IsValid=true
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: Stage HasActiveGuardian=true
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: Stage Width=9.275005, Depth=9.817506
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: RawFromStage       = (-0.000, -0.960, -0.000, 0.281), (2.72, -1.30, -1.71)
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: Spaces info
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: Local version=97
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: RawFromLocal       = (0.000, 0.919, 0.000, 0.395), (-0.15, -0.37, 0.99)
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: RawFromLocalTilted = (-0.004, 0.918, 0.036, 0.394), (-0.15, -0.37, 0.99)
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: Stage IsValid=true
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: Stage HasActiveGuardian=true
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: Stage Width=9.275005, Depth=9.817506
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: RawFromStage       = (-0.000, -0.960, -0.000, 0.281), (2.72, -1.30, -1.71)
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: Spaces info
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: Local version=97
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: RawFromLocal       = (0.000, 0.919, 0.000, 0.395), (-0.15, -0.37, 0.99)
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: RawFromLocalTilted = (-0.004, 0.918, 0.036, 0.394), (-0.15, -0.37, 0.99)
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: Stage IsValid=true
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: Stage HasActiveGuardian=true
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: Stage Width=9.275005, Depth=9.817506
+2025-01-27 12:08:20.552 32178-32216 OpenXR_Space            com.oculus.sdk.helloxr.vulkan        I  xrCreateReferenceSpace: RawFromStage       = (-0.000, -0.960, -0.000, 0.281), (2.72, -1.30, -1.71)
+2025-01-27 12:08:20.552 32178-32216 helloxr                 com.oculus.sdk.helloxr.vulkan        V  [12:08:20.552][Info   ] System Properties: Name=Oculus Quest VendorId=10291
+2025-01-27 12:08:20.552 32178-32216 helloxr                 com.oculus.sdk.helloxr.vulkan        V  [12:08:20.552][Info   ] System Graphics Properties: MaxWidth=8192 MaxHeight=8192 MaxLayers=32
+2025-01-27 12:08:20.552 32178-32216 helloxr                 com.oculus.sdk.helloxr.vulkan        V  [12:08:20.552][Info   ] System Tracking Properties: OrientationTracking=True PositionTracking=True
+2025-01-27 12:08:20.552 32178-32216 helloxr                 com.oculus.sdk.helloxr.vulkan        V  [12:08:20.552][Info   ] Creating swapchain for view 0 with dimensions Width=1680 Height=1760 SampleCount=1
+2025-01-27 12:08:20.555 32178-32216 SwapChain_...ory_Export com.oculus.sdk.helloxr.vulkan        I  Imported texture has requirements 3, ends up index 0
+2025-01-27 12:08:20.555 32178-32216 SwapChain_...ory_Export com.oculus.sdk.helloxr.vulkan        I  Imported texture has requirements 3, ends up index 0
+2025-01-27 12:08:20.555 32178-32216 SwapChain_...ory_Export com.oculus.sdk.helloxr.vulkan        I  Imported texture has requirements 3, ends up index 0
+2025-01-27 12:08:20.556 32178-32216 OpenXR_GPUMemTrace      com.oculus.sdk.helloxr.vulkan        I  OpenXR GPU memory tracing is enabled on heap(oculus.OpenXR) with id(2)
+2025-01-27 12:08:20.556 32178-32216 OpenXR_GPUMemTrace      com.oculus.sdk.helloxr.vulkan        I  Swapchain creation, id=854, idx=0, MemoryAllocationSize: 11941 KB
+2025-01-27 12:08:20.556 32178-32216 OpenXR_GPUMemTrace      com.oculus.sdk.helloxr.vulkan        I  Swapchain creation, id=854, idx=1, MemoryAllocationSize: 11941 KB
+2025-01-27 12:08:20.556 32178-32216 OpenXR_GPUMemTrace      com.oculus.sdk.helloxr.vulkan        I  Swapchain creation, id=854, idx=2, MemoryAllocationSize: 11941 KB
+2025-01-27 12:08:20.569 32178-32216 helloxr                 com.oculus.sdk.helloxr.vulkan        V  [12:08:20.569][Info   ] Creating swapchain for view 1 with dimensions Width=1680 Height=1760 SampleCount=1
+2025-01-27 12:08:20.572 32178-32216 SwapChain_...ory_Export com.oculus.sdk.helloxr.vulkan        I  Imported texture has requirements 3, ends up index 0
+2025-01-27 12:08:20.572 32178-32216 SwapChain_...ory_Export com.oculus.sdk.helloxr.vulkan        I  Imported texture has requirements 3, ends up index 0
+2025-01-27 12:08:20.572 32178-32216 SwapChain_...ory_Export com.oculus.sdk.helloxr.vulkan        I  Imported texture has requirements 3, ends up index 0
+2025-01-27 12:08:20.572 32178-32216 OpenXR_GPUMemTrace      com.oculus.sdk.helloxr.vulkan        I  Swapchain creation, id=855, idx=0, MemoryAllocationSize: 11941 KB
+2025-01-27 12:08:20.572 32178-32216 OpenXR_GPUMemTrace      com.oculus.sdk.helloxr.vulkan        I  Swapchain creation, id=855, idx=1, MemoryAllocationSize: 11941 KB
+2025-01-27 12:08:20.572 32178-32216 OpenXR_GPUMemTrace      com.oculus.sdk.helloxr.vulkan        I  Swapchain creation, id=855, idx=2, MemoryAllocationSize: 11941 KB
+2025-01-27 12:08:20.579 32178-32216 threaded_app            com.oculus.sdk.helloxr.vulkan        V  activityState 10
+2025-01-27 12:08:20.579 32178-32216 helloxr                 com.oculus.sdk.helloxr.vulkan        V  [12:08:20.579][Info   ] APP_CMD_START
+2025-01-27 12:08:20.579 32178-32216 helloxr                 com.oculus.sdk.helloxr.vulkan        V  [12:08:20.579][Info   ] onStart()
+2025-01-27 12:08:20.581 32178-32178 threaded_app            com.oculus.sdk.helloxr.vulkan        V  Resume: 0xb40000718ea35400
+2025-01-27 12:08:20.581 32178-32216 threaded_app            com.oculus.sdk.helloxr.vulkan        V  activityState 11
+2025-01-27 12:08:20.581 32178-32216 helloxr                 com.oculus.sdk.helloxr.vulkan        V  [12:08:20.581][Info   ] onResume()
+2025-01-27 12:08:20.581 32178-32216 helloxr                 com.oculus.sdk.helloxr.vulkan        V  [12:08:20.581][Info   ] APP_CMD_RESUME
+2025-01-27 12:08:20.582 32178-32216 VrRuntimeClient         com.oculus.sdk.helloxr.vulkan        I  UpdateEvents: Detected LOCAL_FLOOR reference space update. Sending reference space update event
+2025-01-27 12:08:20.582 32178-32216 VrRuntimeClient         com.oculus.sdk.helloxr.vulkan        I  UpdateEvents: Detected STAGE reference space update. Sending reference space update event
+2025-01-27 12:08:20.582 32178-32216 Deque                   com.oculus.sdk.helloxr.vulkan        I  AddEventToQueue called. eventInfo.type: 40, eventInfo.next: 1
+2025-01-27 12:08:20.582 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  PostSessionStateChange:[pid: 32178] XR_SESSION_STATE_UNKNOWN -> XR_SESSION_STATE_IDLE
+2025-01-27 12:08:20.582 32178-32216 Deque                   com.oculus.sdk.helloxr.vulkan        I  AddEventToQueue called. eventInfo.type: 18, eventInfo.next: 1
+2025-01-27 12:08:20.582 32178-32216 helloxr                 com.oculus.sdk.helloxr.vulkan        V  [12:08:20.582][Info   ] XrEventDataSessionStateChanged: state XR_SESSION_STATE_UNKNOWN->XR_SESSION_STATE_IDLE session=144115188075855875 time=263011081921769
+2025-01-27 12:08:20.583 32178-32178 VrosSpatialAudio        com.oculus.sdk.helloxr.vulkan        I  init with android.view.ViewRootImpl$W@26f768c
+2025-01-27 12:08:20.583 32178-32178 Compatibil...geReporter com.oculus.sdk.helloxr.vulkan        D  Compat change id reported: 175409955; UID 10735; state: DISABLED
+2025-01-27 12:08:20.584 32178-32178 Compatibil...geReporter com.oculus.sdk.helloxr.vulkan        D  Compat change id reported: 175409954; UID 10735; state: DISABLED
+2025-01-27 12:08:20.588 32178-32178 threaded_app            com.oculus.sdk.helloxr.vulkan        V  InputQueueCreated: 0xb40000718ea35400 -- 0xb40000718ea73200
+2025-01-27 12:08:20.832 32178-32216 threaded_app            com.oculus.sdk.helloxr.vulkan        V  APP_CMD_INPUT_CHANGED
+2025-01-27 12:08:20.833 32178-32216 threaded_app            com.oculus.sdk.helloxr.vulkan        V  Attaching input queue to looper
+2025-01-27 12:08:20.835 32178-32247 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  nativeOnActivityReady: com.oculus.sdk.helloxr.vulkan/android.app.NativeActivity
+2025-01-27 12:08:20.835 32178-32247 .helloxr.vulka          com.oculus.sdk.helloxr.vulkan        W  Attempt to remove non-JNI local reference, dumping thread
+2025-01-27 12:08:20.840 32178-32178 threaded_app            com.oculus.sdk.helloxr.vulkan        V  NativeWindowCreated: 0xb40000718ea35400 -- 0xb40000707492b810
+2025-01-27 12:08:21.083 32178-32216 threaded_app            com.oculus.sdk.helloxr.vulkan        V  APP_CMD_INIT_WINDOW
+2025-01-27 12:08:21.083 32178-32216 helloxr                 com.oculus.sdk.helloxr.vulkan        V  [12:08:21.083][Info   ] surfaceCreated()
+2025-01-27 12:08:21.083 32178-32216 helloxr                 com.oculus.sdk.helloxr.vulkan        V  [12:08:21.083][Info   ] APP_CMD_INIT_WINDOW
+2025-01-27 12:08:21.083 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  PostSessionStateChange:[pid: 32178] XR_SESSION_STATE_IDLE -> XR_SESSION_STATE_READY
+2025-01-27 12:08:21.083 32178-32216 Deque                   com.oculus.sdk.helloxr.vulkan        I  AddEventToQueue called. eventInfo.type: 18, eventInfo.next: 1
+2025-01-27 12:08:21.083 32178-32216 helloxr                 com.oculus.sdk.helloxr.vulkan        V  [12:08:21.083][Info   ] XrEventDataSessionStateChanged: state XR_SESSION_STATE_IDLE->XR_SESSION_STATE_READY session=144115188075855875 time=263011582769319
+2025-01-27 12:08:21.083 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  ------------ xrBeginSession [start] -----------
+2025-01-27 12:08:21.083 32178-32216 DRR                     com.oculus.sdk.helloxr.vulkan        I  DRR is supported: 1
+2025-01-27 12:08:21.083 32178-32216 DRR                     com.oculus.sdk.helloxr.vulkan        I  DRR is enabled: 0
+2025-01-27 12:08:21.083 32178-32216 OsSdkLoader             com.oculus.sdk.helloxr.vulkan        D  OSSDK loading module 'libheadtracker.oculus.so'
+2025-01-27 12:08:21.085 32178-32216 MemoryBrokerClient      com.oculus.sdk.helloxr.vulkan        D  memorybroker::ClientConnection ctor
+2025-01-27 12:08:21.085 32178-32216 Sensor                  com.oculus.sdk.helloxr.vulkan        I  OSSDKTRACKING Initializing controller tracking
+2025-01-27 12:08:21.085 32178-32216 Sensor                  com.oculus.sdk.helloxr.vulkan        I  OSSDKTRACKING Controller tracker != nullpointer 0xb4000070d2a24bf0, 1
+2025-01-27 12:08:21.086 32178-32178 threaded_app            com.oculus.sdk.helloxr.vulkan        V  WindowFocusChanged: 0xb40000718ea35400 -- 1
+2025-01-27 12:08:21.088 32178-32216 DeviceStatus            com.oculus.sdk.helloxr.vulkan        I  nativeHeadsetEvent(0)
+2025-01-27 12:08:21.089 32178-32216 VrRuntimeClient         com.oculus.sdk.helloxr.vulkan        I  SetCompositorClientFeatureFlag ClientFeatureFlag 2
+2025-01-27 12:08:21.089 32178-32216 RuntimeIPC...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        I  InitServerStateBuffer: SUCCESS. 0, Client: com.oculus.sdk.helloxr.vulkan:com.oculus.sdk.helloxr.vulkan:32178, Server: com.oculus.guardian:com.oculus.vrguardianservice (guardianserver)
+2025-01-27 12:08:21.089 32178-32216 VrRuntimeClient         com.oculus.sdk.helloxr.vulkan        I  Mounted state at BeginSession: True
+2025-01-27 12:08:21.089 32178-32216 AppLoadTim...etryCommon com.oculus.sdk.helloxr.vulkan        I  App load time recorded [packageName=com.oculus.sdk.helloxr.vulkan, time=1.214292, method="BeginSession", launchType="Launch", launchId=""]
+2025-01-27 12:08:21.089 32178-32216 LogTimer                com.oculus.sdk.helloxr.vulkan        I  CPUTIME: VrRuntimeClient_BeginSession took 6.1368 ms
+2025-01-27 12:08:21.090 32178-32216 ClientInputSettings     com.oculus.sdk.helloxr.vulkan        I  HANDTRACKING: enabled input settings, setting hand mode control settings to ControllersOnly
+2025-01-27 12:08:21.090 32178-32216 ClientInputSettings     com.oculus.sdk.helloxr.vulkan        I  HANDTRACKING package name is com.oculus.sdk.helloxr.vulkan
+2025-01-27 12:08:21.090 32178-32216 ClientInputSettings     com.oculus.sdk.helloxr.vulkan        I  HANDTRACKING: feature flag set to 0
+2025-01-27 12:08:21.090 32178-32216 ClientInputInterface    com.oculus.sdk.helloxr.vulkan        I  HANDTRACKING sethandmanifest 0
+2025-01-27 12:08:21.091 32178-32216 InputHooks_Internal     com.oculus.sdk.helloxr.vulkan        I  Enabling Native Input Hooks
+2025-01-27 12:08:21.094 32178-32216 .helloxr.vulka          com.oculus.sdk.helloxr.vulkan        W  Accessing hidden method Landroid/content/Context;->startServiceAsUser(Landroid/content/Intent;Landroid/os/UserHandle;)Landroid/content/ComponentName; (unsupported, reflection, allowed)
+2025-01-27 12:08:21.094 32178-32216 .helloxr.vulka          com.oculus.sdk.helloxr.vulkan        W  Accessing hidden method Landroid/content/Context;->registerReceiverAsUser(Landroid/content/BroadcastReceiver;Landroid/os/UserHandle;Landroid/content/IntentFilter;Ljava/lang/String;Landroid/os/Handler;)Landroid/content/Intent; (unsupported, reflection, allowed)
+2025-01-27 12:08:21.094 32178-32216 InputDeviceManager      com.oculus.sdk.helloxr.vulkan        I  ovrInputDeviceManager::Initialize
+2025-01-27 12:08:21.094 32178-32216 [CT]                    com.oculus.sdk.helloxr.vulkan        I  HandPosePrediction: Set sampler config enum for v59 30 Hz
+2025-01-27 12:08:21.094 32178-32216 [CT]                    com.oculus.sdk.helloxr.vulkan        I  HandPosePrediction: Set sampler config enum for v59 30 Hz
+2025-01-27 12:08:21.095 32178-32216 InputDevice_Hand        com.oculus.sdk.helloxr.vulkan        I  BodyPoweredHands checkSysPropForBodyAPIOverride 0
+2025-01-27 12:08:21.095 32178-32216 InputDevice_Hand        com.oculus.sdk.helloxr.vulkan        I  BodyPoweredHands checkSysPropForBodyAPIOverride 0
+2025-01-27 12:08:21.095 32178-32216 InputDevic...ckedRemote com.oculus.sdk.helloxr.vulkan        W  Did not pass RIPC GK, fetching controller input data from shared memory
+2025-01-27 12:08:21.095 32178-32216 InputDeviceManager      com.oculus.sdk.helloxr.vulkan        I  HANDTRACKING Root pose filter profile changed for freq to 20 from 0  inf: 1
+2025-01-27 12:08:21.095 32178-32216 GkHelper                com.oculus.sdk.helloxr.vulkan        I  Checking gk 'horizon_phasesync_auto_disabled', default = false
+2025-01-27 12:08:21.095 32178-32216 GkCacheQuerierClient    com.oculus.sdk.helloxr.vulkan        W  getGkValue: Query result for 'oculus_xrruntime:horizon_phasesync_auto_disabled' not successful: 4
+2025-01-27 12:08:21.095 32178-32216 GkHelper                com.oculus.sdk.helloxr.vulkan        W  GkHelper: query failed, result code: 4
+2025-01-27 12:08:21.095 32178-32216 PhaseSync               com.oculus.sdk.helloxr.vulkan        I  PhaseSync::PhaseSync PaddingLowerLimit 0.350000 StandardDeviations 2.000000 PaddingUpperLimit 0.750000 on instance 0
+2025-01-27 12:08:21.095 32178-32216 FrameSync               com.oculus.sdk.helloxr.vulkan        I  FrameSync Initialized Instance 1
+2025-01-27 12:08:21.095 32178-32216 VrRuntimeClient         com.oculus.sdk.helloxr.vulkan        I  PhaseSync Instance created
+2025-01-27 12:08:21.099 32178-32216 Compatibil...geReporter com.oculus.sdk.helloxr.vulkan        D  Compat change id reported: 160794467; UID 10735; state: ENABLED
+2025-01-27 12:08:21.100 32178-32216 ServerStat...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        W  IPCService: GetDataBegin: entryIndex < 0 || entryIndex >= numEntries_ || entryIndex >= trustedMaxEntries: 5, 19, 0
+2025-01-27 12:08:21.100 32178-32216 VrRuntimeC...rexContext com.oculus.sdk.helloxr.vulkan        I  BeginSession
+2025-01-27 12:08:21.100 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  usesManifestForCpuBoost:0
+2025-01-27 12:08:21.100 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  ------------ xrBeginSession [end] -----------
+2025-01-27 12:08:21.104 32178-32259 JniUtils                com.oculus.sdk.helloxr.vulkan        I  ovr_GetCurrentPackageSignature
+2025-01-27 12:08:21.105 32178-32259 Metrics                 com.oculus.sdk.helloxr.vulkan        I  device model = Quest 3
+2025-01-27 12:08:21.105 32178-32259 Telemetry               com.oculus.sdk.helloxr.vulkan        I  Aligning telemetry thread time, will wait for: 895 ms...
+2025-01-27 12:08:21.108 32178-32216 ServerStat...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        W  IPCService: GetDataBegin: entryIndex < 0 || entryIndex >= numEntries_ || entryIndex >= trustedMaxEntries: 16, 19, 0
+2025-01-27 12:08:21.111 32178-32216 ServerStat...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        W  IPCService: GetDataBegin: entryIndex < 0 || entryIndex >= numEntries_ || entryIndex >= trustedMaxEntries: 14, 19, 0
+2025-01-27 12:08:21.111 32178-32216 AudioCapture            com.oculus.sdk.helloxr.vulkan        I  AudioCapture::PauseAudioCapture
+2025-01-27 12:08:21.111 32178-32263 FenceChecker            com.oculus.sdk.helloxr.vulkan        I  FenceChecker::MainLoop - started
+2025-01-27 12:08:21.113 32178-32216 VrRuntimeClient         com.oculus.sdk.helloxr.vulkan        I  SetClientAppColorspace: P3
+2025-01-27 12:08:21.114 32178-32216 ServerStat...UNTIMEIPC] com.oculus.sdk.helloxr.vulkan        W  IPCService: GetDataBegin: entryIndex < 0 || entryIndex >= numEntries_ || entryIndex >= trustedMaxEntries: 4, 19, 0
+2025-01-27 12:08:21.114 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  PostSessionStateChange:[pid: 32178] XR_SESSION_STATE_READY -> XR_SESSION_STATE_SYNCHRONIZED
+2025-01-27 12:08:21.114 32178-32216 Deque                   com.oculus.sdk.helloxr.vulkan        I  AddEventToQueue called. eventInfo.type: 18, eventInfo.next: 1
+2025-01-27 12:08:21.114 32178-32216 helloxr                 com.oculus.sdk.helloxr.vulkan        V  [12:08:21.114][Info   ] XrEventDataSessionStateChanged: state XR_SESSION_STATE_READY->XR_SESSION_STATE_SYNCHRONIZED session=144115188075855875 time=263011613529687
+2025-01-27 12:08:21.114 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  PostSessionStateChange:[pid: 32178] XR_SESSION_STATE_SYNCHRONIZED -> XR_SESSION_STATE_VISIBLE
+2025-01-27 12:08:21.115 32178-32216 Deque                   com.oculus.sdk.helloxr.vulkan        I  AddEventToQueue called. eventInfo.type: 18, eventInfo.next: 1
+2025-01-27 12:08:21.115 32178-32216 OpenXR                  com.oculus.sdk.helloxr.vulkan        I  PostSessionStateChange:[pid: 32178] XR_SESSION_STATE_VISIBLE -> XR_SESSION_STATE_FOCUSED
+2025-01-27 12:08:21.115 32178-32216 Deque                   com.oculus.sdk.helloxr.vulkan        I  AddEventToQueue called. eventInfo.type: 18, eventInfo.next: 1
+2025-01-27 12:08:21.115 32178-32216 helloxr                 com.oculus.sdk.helloxr.vulkan        V  [12:08:21.115][Info   ] XrEventDataSessionStateChanged: state XR_SESSION_STATE_SYNCHRONIZED->XR_SESSION_STATE_VISIBLE session=144115188075855875 time=263011613859739
+2025-01-27 12:08:21.115 32178-32216 helloxr                 com.oculus.sdk.helloxr.vulkan        V  [12:08:21.115][Info   ] XrEventDataSessionStateChanged: state XR_SESSION_STATE_VISIBLE->XR_SESSION_STATE_FOCUSED session=144115188075855875 time=263011614692760
+2025-01-27 12:08:21.117 32178-32216 AppLoadTim...etryCommon com.oculus.sdk.helloxr.vulkan        I  App load time recorded [packageName=com.oculus.sdk.helloxr.vulkan, time=1.241737, method="BeginFrame (1)", launchType="Launch", launchId=""]
+2025-01-27 12:08:21.248 32178-32258 InputDeviceManager      com.oculus.sdk.helloxr.vulkan        I  HANDTRACKING Root pose filter profile changed for freq to 17 from 20  inf: 1
+2025-01-27 12:08:21.866 32178-32192 System                  com.oculus.sdk.helloxr.vulkan        W  A resource failed to call close.
+2025-01-27 12:08:22.000 32178-32259 Telemetry               com.oculus.sdk.helloxr.vulkan        I  Time aligned, interrupted: 0
+2025-01-27 12:08:23.010 32178-32259 ClientShar...metryStats com.oculus.sdk.helloxr.vulkan        I  App memory usage: PSS=76 MiB, PrivateDirty=47 MiB, PrivateClean=0 MiB, GPU=24.6/24.6 MiB (100% allocated)
+2025-01-27 12:08:23.010 32178-32259 VrApi                   com.oculus.sdk.helloxr.vulkan        I  FPS=73/72,Prd=21ms,Tear=0,Early=0,Stale=0,Stale2/5/10/max=0/0/0/0,VSnc=1,Lat=-1,Fov=0D,CPU4/GPU=2/2,1382/456MHz,OC=3F,TA=0/0/0,SP=N/N/N,Mem=1555MHz,Free=4366MB,PLS=0,Temp=42.0C/0.0C,TW=0.71ms,App=0.27ms,GD=0.00ms,CPU&GPU=1.11ms,LCnt=2(DR72,LM2),GPU%=0.09,CPU%=0.05(W0.10),DSF=1.01,CFL=11.22/16.01,ICFLp95=14.80,LD=0,SF=1.00,LP=0,DVFS=0
+2025-01-27 12:08:24.000 32178-32259 VrApi                   com.oculus.sdk.helloxr.vulkan        I  FPS=72/72,Prd=20ms,Tear=0,Early=0,Stale=0,Stale2/5/10/max=0/0/0/0,VSnc=1,Lat=-1,Fov=0D,CPU4/GPU=2/2,1920/456MHz,OC=3F,TA=0/0/0,SP=N/N/N,Mem=2736MHz,Free=4366MB,PLS=0,Temp=42.0C/0.0C,TW=0.59ms,App=0.27ms,GD=0.00ms,CPU&GPU=1.09ms,LCnt=1(DR72,LM0),GPU%=0.08,CPU%=0.16(W0.29),DSF=1.01,CFL=9.90/14.85,ICFLp95=13.36,LD=0,SF=1.00,LP=0,DVFS=0
+2025-01-27 12:08:25.000 32178-32259 VrApi                   com.oculus.sdk.helloxr.vulkan        I  FPS=73/72,Prd=20ms,Tear=0,Early=0,Stale=0,Stale2/5/10/max=0/0/0/0,VSnc=1,Lat=-1,Fov=0D,CPU4/GPU=2/2,1382/456MHz,OC=3F,TA=0/0/0,SP=N/N/N,Mem=1555MHz,Free=4366MB,PLS=0,Temp=42.0C/0.0C,TW=0.67ms,App=0.28ms,GD=0.00ms,CPU&GPU=1.10ms,LCnt=1(DR73,LM0),GPU%=0.09,CPU%=0.06(W0.14),DSF=1.01,CFL=9.96/14.56,ICFLp95=13.22,LD=0,SF=1.00,LP=0,DVFS=0
+2025-01-27 12:08:26.000 32178-32259 VrApi                   com.oculus.sdk.helloxr.vulkan        I  FPS=73/72,Prd=20ms,Tear=0,Early=0,Stale=0,Stale2/5/10/max=0/0/0/0,VSnc=1,Lat=-1,Fov=0D,CPU4/GPU=2/2,1382/456MHz,OC=3F,TA=0/0/0,SP=N/N/N,Mem=547MHz,Free=4366MB,PLS=0,Temp=42.0C/0.0C,TW=0.66ms,App=0.28ms,GD=0.00ms,CPU&GPU=1.04ms,LCnt=1(DR73,LM0),GPU%=0.08,CPU%=0.03(W0.10),DSF=1.01,CFL=9.95/14.61,ICFLp95=13.29,LD=0,SF=1.00,LP=0,DVFS=0
+2025-01-27 12:08:27.000 32178-32259 VrApi                   com.oculus.sdk.helloxr.vulkan        I  FPS=73/72,Prd=20ms,Tear=0,Early=0,Stale=0,Stale2/5/10/max=0/0/0/0,VSnc=1,Lat=-1,Fov=0D,CPU4/GPU=2/2,1382/456MHz,OC=3F,TA=0/0/0,SP=N/N/N,Mem=547MHz,Free=4366MB,PLS=0,Temp=42.0C/0.0C,TW=0.65ms,App=0.26ms,GD=0.00ms,CPU&GPU=1.09ms,LCnt=1(DR73,LM0),GPU%=0.08,CPU%=0.00(W0.00),DSF=1.01,CFL=9.95/15.03,ICFLp95=13.30,LD=0,SF=1.00,LP=0,DVFS=0
+2025-01-27 12:08:28.000 32178-32259 VrApi                   com.oculus.sdk.helloxr.vulkan        I  FPS=73/72,Prd=20ms,Tear=0,Early=0,Stale=0,Stale2/5/10/max=0/0/0/0,VSnc=1,Lat=-1,Fov=0D,CPU4/GPU=2/2,1382/456MHz,OC=3F,TA=0/0/0,SP=N/N/N,Mem=547MHz,Free=4366MB,PLS=0,Temp=42.0C/0.0C,TW=0.65ms,App=0.27ms,GD=0.00ms,CPU&GPU=1.12ms,LCnt=1(DR73,LM0),GPU%=0.08,CPU%=0.11(W0.14),DSF=1.01,CFL=9.90/14.61,ICFLp95=13.23,LD=0,SF=1.00,LP=0,DVFS=0
+2025-01-27 12:08:28.047 32178-32216 AppLoadTim...etryCommon com.oculus.sdk.helloxr.vulkan        I  App load time recorded [packageName=com.oculus.sdk.helloxr.vulkan, time=8.171999, method="BeginFrame (500)", launchType="Launch", launchId=""]
+2025-01-27 12:08:29.001 32178-32259 VrApi                   com.oculus.sdk.helloxr.vulkan        I  FPS=73/72,Prd=20ms,Tear=0,Early=0,Stale=0,Stale2/5/10/max=0/0/0/0,VSnc=1,Lat=-1,Fov=0D,CPU4/GPU=2/2,1382/456MHz,OC=3F,TA=0/0/0,SP=N/N/N,Mem=547MHz,Free=4366MB,PLS=0,Temp=42.0C/0.0C,TW=0.68ms,App=0.28ms,GD=0.00ms,CPU&GPU=1.21ms,LCnt=1(DR72,LM0),GPU%=0.09,CPU%=0.06(W0.09),DSF=1.01,CFL=9.88/14.82,ICFLp95=13.26,LD=0,SF=1.00,LP=0,DVFS=0
+2025-01-27 12:08:30.001 32178-32259 VrApi                   com.oculus.sdk.helloxr.vulkan        I  FPS=73/72,Prd=20ms,Tear=0,Early=0,Stale=0,Stale2/5/10/max=0/0/0/0,VSnc=1,Lat=-1,Fov=0D,CPU4/GPU=2/2,1382/456MHz,OC=3F,TA=0/0/0,SP=N/N/N,Mem=547MHz,Free=4366MB,PLS=0,Temp=42.0C/0.0C,TW=0.65ms,App=0.27ms,GD=0.00ms,CPU&GPU=1.12ms,LCnt=1(DR73,LM0),GPU%=0.08,CPU%=0.12(W0.20),DSF=1.01,CFL=9.85/14.84,ICFLp95=13.25,LD=0,SF=1.00,LP=0,DVFS=0
+---------------------------- PROCESS ENDED (32178) for package com.oculus.sdk.helloxr.vulkan ----------------------------

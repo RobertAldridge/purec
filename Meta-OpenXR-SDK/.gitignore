@@ -1,5 +1,10 @@
-local.properties
-.cxx/
-.gradle/
-.idea/
 helloxr/Projects/Android/build/
+helloxr/Src/libglslang.a
+helloxr/Src/libOGLCompiler.a
+helloxr/Src/libOSDependent.a
+helloxr/Src/libshaderc.a
+helloxr/Src/libshaderc_util.a
+helloxr/Src/libSPIRV.a
+helloxr/Src/libHLSL.a
+helloxr/Src/libSPIRV-Tools.a
+helloxr/Src/libSPIRV-Tools-opt.a

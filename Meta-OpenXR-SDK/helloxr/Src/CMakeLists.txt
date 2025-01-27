@@ -79,6 +79,15 @@ set(LOCAL_SOURCE
     platformplugin_factory.cpp
     vulcan_wrapper.cpp
     xr_generated_dispatch_table_core.cpp
+    C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libglslang.a
+    C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libOGLCompiler.a
+    C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libOSDependent.a
+    C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libshaderc.a
+    C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libshaderc_util.a
+    C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libSPIRV.a
+    C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libHLSL.a
+    C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libSPIRV-Tools.a
+    C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libSPIRV-Tools-opt.a
 )
 
 include_directories("C:/Users/RobertLocalAldridge/AppData/Local/Android/Sdk/ndk/25.1.8937393/sources/third_party/vulkan/src/include/vulkan")
@@ -103,32 +112,6 @@ add_library(
 )
 
 #target_link_libraries(helloxr PRIVATE ${ANDROID_LIBRARY} ${ANDROID_LOG_LIBRARY} )
-
-    # Only for Android because it lacks a command line
-    set(HELLOXR_DEFAULT_GRAPHICS_PLUGIN
-        "Vulkan"
-        CACHE
-            STRING
-            "Which graphics plugin should be used by default for Hello XR artifacts?"
-    )
-
-    set_property(
-        CACHE HELLOXR_DEFAULT_GRAPHICS_PLUGIN PROPERTY STRINGS "Vulkan"
-                                                       "Vulkan"
-    )
-
-    # Now handle the value, normally provided by Gradle
-#    if(HELLOXR_DEFAULT_GRAPHICS_PLUGIN STREQUAL "OpenGLES")
-#        message(STATUS "helloxr will default to OpenGL ES graphics plugin")
-#        target_compile_definitions(
-#            helloxr PRIVATE DEFAULT_GRAPHICS_PLUGIN_OPENGLES
-#        )
-#    elseif(HELLOXR_DEFAULT_GRAPHICS_PLUGIN STREQUAL "Vulkan")
-        message(STATUS "helloxr will default to Vulkan graphics plugin")
-        target_compile_definitions(
-            helloxr PRIVATE DEFAULT_GRAPHICS_PLUGIN_VULKAN
-        )
-#    endif()
 
 set_target_properties(helloxr PROPERTIES FOLDER ${SAMPLES_FOLDER} LINK_FLAGS "-u ANativeActivity_onCreate")
 

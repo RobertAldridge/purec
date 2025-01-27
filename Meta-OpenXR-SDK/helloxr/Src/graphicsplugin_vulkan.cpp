@@ -265,8 +265,9 @@ R"_(
 
   void main()
   {
-    oColor.rgba  = Color.rgba;
-    gl_Position = ubuf.mvp * Position;
+    oColor.rgba = vec4(Color, 1.0);
+
+    gl_Position = ubuf.mvp * vec4(Position, 1.0);
   }
 
 )_";
