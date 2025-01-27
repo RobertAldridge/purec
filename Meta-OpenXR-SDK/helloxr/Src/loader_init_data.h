@@ -3,68 +3,39 @@
 
 #ifdef XR_KHR_LOADER_INIT_SUPPORT
 
-/*!
- * Stores a copy of the data passed to the tableXr.InitializeLoaderKHR function in a singleton.
- */
 class LoaderInitData
 {
-   public:
-    /*!
-     * Singleton accessor.
-     */
-    static LoaderInitData& instance()
-    {
-        static LoaderInitData obj;
-        return obj;
-    }
+public:
 
-    /*!
-     * Type alias for the platform-specific structure type.
-     */
-    using StructType = XrLoaderInitInfoAndroidKHR;
-    /*!
-     * Native library path.
-     */
-    std::string _native_library_path;
-    /*!
-     * Android asset manager.
-     */
-    AAssetManager* _android_asset_manager;
+  static LoaderInitData& instance()
+  {
+    static LoaderInitData obj;
+    return obj;
+  }
 
-    /*!
-     * Get our copy of the data, casted to pass to the runtime's matching method.
-     */
-    const XrLoaderInitInfoBaseHeaderKHR* getParam() const { return reinterpret_cast<const XrLoaderInitInfoBaseHeaderKHR*>(&_data); }
+  using StructType = XrLoaderInitInfoAndroidKHR;
 
-    /*!
-     * Get the data via its real structure type.
-     */
-    const StructType& getData() const { return _data; }
+  std::string _native_library_path;
 
-    /*!
-     * Has this been correctly initialized?
-     */
-    bool initialized() const noexcept { return _initialized; }
+  AAssetManager* _android_asset_manager;
 
-    /*!
-     * Initialize loader data - called by InitializeLoaderInitData() and thus ultimately by the loader's tableXr.InitializeLoaderKHR
-     * implementation. Each platform that needs this extension will provide an implementation of this.
-     */
-    XrResult initialize(const XrLoaderInitInfoBaseHeaderKHR* info);
+  const XrLoaderInitInfoBaseHeaderKHR* getParam() const { return reinterpret_cast<const XrLoaderInitInfoBaseHeaderKHR*>( &_data); }
 
-   private:
+  const StructType& getData() const { return _data; }
 
-    //! Private constructor, forces use of singleton accessor.
-    LoaderInitData() = default;
+  bool initialized() const noexcept { return _initialized; }
 
-    //! Platform-specific init data
-    StructType _data = {};
+  XrResult initialize(const XrLoaderInitInfoBaseHeaderKHR* info);
 
-    //! Flag for indicating whether _data is valid.
-    bool _initialized = false;
+private:
+
+  LoaderInitData() = default;
+
+  StructType _data = {};
+
+  bool _initialized = false;
 };
 
-//! Initialize loader init data, where required.
 XrResult InitializeLoaderInitData(const XrLoaderInitInfoBaseHeaderKHR* loaderInitInfo);
 
 XrResult GetPlatformRuntimeVirtualManifest(Json::Value& out_manifest);

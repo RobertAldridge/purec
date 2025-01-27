@@ -27,7 +27,7 @@
     LoaderLogger::LogErrorMessage("", "Unknown failure: " + std::string(e.what() ) ); \
     return XR_ERROR_RUNTIME_FAILURE; \
   } \
-\
+  \
   catch(...) \
   { \
     LoaderLogger::LogErrorMessage("", "Unknown failure"); \

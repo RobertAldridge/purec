@@ -25,7 +25,7 @@
   { \
     if( !(exp) ) \
       Throw("Check failed", #exp, FILE_AND_LINE); \
-\
+  \
   }while(0)
 
 #define CHECK_MSG(exp, msg) \
@@ -33,7 +33,7 @@
   { \
     if( !(exp) ) \
       Throw(msg, #exp, FILE_AND_LINE); \
-\
+  \
   }while(0)
 
 [ [noreturn] ] inline void ThrowXrResult(XrResult res, const char* originator = nullptr, const char* sourceLocation = nullptr)

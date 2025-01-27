@@ -115,6 +115,7 @@ namespace jni
     template <class... TArgs> class ArgArray
     {
 public:
+
       ArgArray(const TArgs&... args)
       {
         std::memset(this, 0, sizeof(ArgArray<TArgs...>) );
@@ -132,6 +133,7 @@ public:
     template <> class ArgArray<>
     {
 public:
+
       ArgArray()
       {
         std::memset(this, 0, sizeof(ArgArray<>) );
@@ -161,6 +163,7 @@ public:
   class Object
   {
 public:
+
     enum ScopeFlags
     {
       Temporary = 1,
@@ -240,6 +243,7 @@ public:
     jobject makeLocalReference() const;
 
 private:
+
     method_t getMethod(const char* name, const char* signature) const;
     method_t getMethod(const char* nameAndSignature) const;
     field_t getField(const char* name, const char* signature) const;
@@ -281,6 +285,7 @@ private:
   class Class : protected Object
   {
 public:
+
     Class() : Object() {}
 
     Class(const char* name);
@@ -413,6 +418,7 @@ public:
     jclass getHandle() const noexcept { return jclass(Object::getHandle() ); }
 
 private:
+
     template <class TType> TType callStaticMethod(method_t method, internal::value_t* values) const;
     template <class TType> TType callExactMethod(jobject obj, method_t method, internal::value_t* values) const;
     Object newObject(method_t constructor, internal::value_t* args) const;
@@ -421,17 +427,20 @@ private:
   class Enum : protected Class
   {
 public:
+
     Enum(const char* name);
 
     Object get(const char* name) const;
 
 private:
+
     std::string _name;
   };
 
   template <class TElement> class Array : public Object
   {
 public:
+
     Array() noexcept;
 
     Array(jarray ref, int scopeFlags = Temporary);
@@ -462,12 +471,14 @@ public:
     jarray getHandle() const noexcept { return jarray(Object::getHandle() ); }
 
 private:
+
     mutable long _length;
   };
 
   class Vm final
   {
 public:
+
     Vm(const char* path = nullptr);
 
     ~Vm();
@@ -476,18 +487,21 @@ public:
   class InvocationException : public Exception
   {
 public:
+
     InvocationException(const char* msg = "Java Exception detected") : Exception(msg) {}
   };
 
   class NameResolutionException : public Exception
   {
 public:
+
     NameResolutionException(const char* name) : Exception(name) {}
   };
 
   class InitializationException : public Exception
   {
 public:
+
     InitializationException(const char* msg) : Exception(msg) {}
   };
 

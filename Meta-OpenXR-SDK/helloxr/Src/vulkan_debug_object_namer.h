@@ -1,69 +1,56 @@
 
 // vulkan_debug_object_namer.h
 
-extern struct VkGeneratedDispatchTableCore tableVk;
-
-/// Utility class for assigning debug names to Vulkan objects we create.
 class VulkanDebugObjectNamer
 {
-   public:
+public:
 
-    /// Construct without initializing
-    VulkanDebugObjectNamer() = default;
+  VulkanDebugObjectNamer() = default;
 
-    /// Construct and initialize
-    VulkanDebugObjectNamer(VkInstance instance, VkDevice device) : m_vkDevice {device}
+  VulkanDebugObjectNamer(VkInstance instance, VkDevice device) : m_vkDevice {device}
+  {
+    if(tableVk.GetInstanceProcAddr)
+      BlahVkSetDebugUtilsObjectNameEXT = (PFN_vkSetDebugUtilsObjectNameEXT)tableVk.GetInstanceProcAddr(instance, "vkSetDebugUtilsObjectNameEXT");
+  }
+
+  VulkanDebugObjectNamer(const VulkanDebugObjectNamer&) = default;
+
+  VulkanDebugObjectNamer& operator=(const VulkanDebugObjectNamer&) = default;
+
+  ~VulkanDebugObjectNamer() { Reset(); }
+
+  void Init(VkInstance instance, VkDevice device)
+  {
+    Reset();
+
+    *this = VulkanDebugObjectNamer(instance, device);
+  }
+
+  VkResult SetName(VkObjectType objectType, uint64_t objectHandle, const char* pObjectName) const
+  {
+    if(m_vkDevice == nullptr)
+      return VK_SUCCESS;
+
+    if(BlahVkSetDebugUtilsObjectNameEXT != nullptr)
     {
-        if(tableVk.GetInstanceProcAddr)
-          BlahVkSetDebugUtilsObjectNameEXT = (PFN_vkSetDebugUtilsObjectNameEXT)tableVk.GetInstanceProcAddr(instance, "vkSetDebugUtilsObjectNameEXT");
+      VkDebugUtilsObjectNameInfoEXT nameInfo {VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT, nullptr, objectType, objectHandle, pObjectName};
+
+      return BlahVkSetDebugUtilsObjectNameEXT(m_vkDevice, &nameInfo);
     }
 
-    /// Copy constructor
-    VulkanDebugObjectNamer(const VulkanDebugObjectNamer&) = default;
+    return VK_SUCCESS;
+  }
 
-    /// Copy assignment operator
-    VulkanDebugObjectNamer& operator=(const VulkanDebugObjectNamer&) = default;
+  void Reset()
+  {
+    BlahVkSetDebugUtilsObjectNameEXT = nullptr;
 
-    /// Destructor
-    ~VulkanDebugObjectNamer() { Reset(); }
+    m_vkDevice = VK_NULL_HANDLE;
+  }
 
-    /// (Re-) Initialize the namer: takes a valid `VkInstance` and `VkDevice`
-    void Init(VkInstance instance, VkDevice device)
-    {
-        Reset();
-        *this = VulkanDebugObjectNamer(instance, device);
-    }
+private:
 
-    /// The main operation of the namer: actually set an object name.
-    ///
-    /// If the namer is not initialized, this exits silently.
-    VkResult SetName(VkObjectType objectType, uint64_t objectHandle, const char* pObjectName) const
-    {
-        if(m_vkDevice == nullptr)
-        {
-            return VK_SUCCESS;
-        }
+  VkDevice m_vkDevice {VK_NULL_HANDLE};
 
-        if(BlahVkSetDebugUtilsObjectNameEXT != nullptr)
-        {
-            VkDebugUtilsObjectNameInfoEXT nameInfo {VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT, nullptr, objectType, objectHandle, pObjectName};
-
-            return BlahVkSetDebugUtilsObjectNameEXT(m_vkDevice, &nameInfo);
-        }
-
-        return VK_SUCCESS;
-    }
-
-    /// De-initialize the namer, forgetting the device and the function pointer loaded from the instance.
-    void Reset()
-    {
-        BlahVkSetDebugUtilsObjectNameEXT = nullptr;
-
-        m_vkDevice = VK_NULL_HANDLE;
-    }
-
-   private:
-
-    VkDevice m_vkDevice {VK_NULL_HANDLE};
-    PFN_vkSetDebugUtilsObjectNameEXT BlahVkSetDebugUtilsObjectNameEXT {nullptr};
+  PFN_vkSetDebugUtilsObjectNameEXT BlahVkSetDebugUtilsObjectNameEXT {nullptr};
 };

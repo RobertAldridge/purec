@@ -112,35 +112,28 @@ using GraphicsPluginFactory = std::function<std::shared_ptr<IGraphicsPlugin>(con
 
 std::map<std::string, GraphicsPluginFactory, IgnoreCaseStringLess> graphicsPluginMap =
 {
-    {"Vulkan",
+  {"Vulkan", [](const std::shared_ptr<Options>& options, std::shared_ptr<IPlatformPlugin> platformPlugin)
+  {
+    return CreateGraphicsPlugin_VulkanLegacy(options, std::move(platformPlugin) );
+  } },
 
-     [](const std::shared_ptr<Options>& options, std::shared_ptr<IPlatformPlugin> platformPlugin)
-    {
-         return CreateGraphicsPlugin_VulkanLegacy(options, std::move(platformPlugin) );
-     } },
-
-    {"Vulkan2",
-     [](const std::shared_ptr<Options>& options, std::shared_ptr<IPlatformPlugin> platformPlugin)
-    {
-         return CreateGraphicsPlugin_Vulkan(options, std::move(platformPlugin) );
-     } }
+  {"Vulkan2", [](const std::shared_ptr<Options>& options, std::shared_ptr<IPlatformPlugin> platformPlugin)
+  {
+    return CreateGraphicsPlugin_Vulkan(options, std::move(platformPlugin) );
+  } }
 };
 
 }  // namespace
 
 std::shared_ptr<IGraphicsPlugin> CreateGraphicsPlugin(const std::shared_ptr<Options>& options, std::shared_ptr<IPlatformPlugin> platformPlugin)
 {
-    if(options->GraphicsPlugin.empty() )
-    {
-        throw std::invalid_argument("No graphics API specified");
-    }
+  if(options->GraphicsPlugin.empty() )
+    throw std::invalid_argument("No graphics API specified");
 
-    const auto apiIt = graphicsPluginMap.find(options->GraphicsPlugin);
+  const auto apiIt = graphicsPluginMap.find(options->GraphicsPlugin);
 
-    if(apiIt == graphicsPluginMap.end() )
-    {
-        throw std::invalid_argument(Fmt("Unsupported graphics API '%s'", options->GraphicsPlugin.c_str() ) );
-    }
+  if(apiIt == graphicsPluginMap.end() )
+    throw std::invalid_argument(Fmt("Unsupported graphics API '%s'", options->GraphicsPlugin.c_str() ) );
 
-    return apiIt->second(options, std::move(platformPlugin) );
+  return apiIt->second(options, std::move(platformPlugin) );
 }

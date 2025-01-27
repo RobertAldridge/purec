@@ -108,104 +108,133 @@ inline const char* to_string(XrFormFactor e);
 
 extern struct XrGeneratedDispatchTableCore tableXr;
 
-namespace {
+namespace
+{
 
-void ShowHelp() {
-    Log::Write(Log::Level::Info, "adb shell setprop debug.xr.graphicsPlugin OpenGLES|Vulkan");
-    Log::Write(Log::Level::Info, "adb shell setprop debug.xr.formFactor Hmd|Handheld");
-    Log::Write(Log::Level::Info, "adb shell setprop debug.xr.viewConfiguration Stereo|Mono");
-    Log::Write(Log::Level::Info, "adb shell setprop debug.xr.blendMode Opaque|Additive|AlphaBlend");
+void ShowHelp()
+{
+  Log::Write(Log::Level::Info, "adb shell setprop debug.xr.graphicsPlugin OpenGLES | Vulkan");
+  Log::Write(Log::Level::Info, "adb shell setprop debug.xr.formFactor Hmd | Handheld");
+  Log::Write(Log::Level::Info, "adb shell setprop debug.xr.viewConfiguration Stereo | Mono");
+  Log::Write(Log::Level::Info, "adb shell setprop debug.xr.blendMode Opaque | Additive | AlphaBlend");
 }
 
-bool UpdateOptionsFromSystemProperties(Options& options) {
+bool UpdateOptionsFromSystemProperties(Options& options)
+{
+  options.GraphicsPlugin = "Vulkan";
 
-    options.GraphicsPlugin = "Vulkan";
+  char value[PROP_VALUE_MAX] = {};
 
-    char value[PROP_VALUE_MAX] = {};
-    if(__system_property_get("debug.xr.graphicsPlugin", value) != 0) {
-        options.GraphicsPlugin = value;
-    }
+  if(__system_property_get("debug.xr.graphicsPlugin", value) != 0)
+  {
+    options.GraphicsPlugin = value;
+  }
 
-    if(__system_property_get("debug.xr.formFactor", value) != 0) {
-        options.FormFactor = value;
-    }
+  if(__system_property_get("debug.xr.formFactor", value) != 0)
+  {
+    options.FormFactor = value;
+  }
 
-    if(__system_property_get("debug.xr.viewConfiguration", value) != 0) {
-        options.ViewConfiguration = value;
-    }
+  if(__system_property_get("debug.xr.viewConfiguration", value) != 0)
+  {
+    options.ViewConfiguration = value;
+  }
 
-    if(__system_property_get("debug.xr.blendMode", value) != 0) {
-        options.EnvironmentBlendMode = value;
-    }
+  if(__system_property_get("debug.xr.blendMode", value) != 0)
+  {
+    options.EnvironmentBlendMode = value;
+  }
 
-    try {
-        options.ParseStrings();
-    } catch(std::invalid_argument& ia) {
-        Log::Write(Log::Level::Error, ia.what() );
-        ShowHelp();
-        return false;
-    }
-    return true;
+  try
+  {
+    options.ParseStrings();
+  }
+  catch(std::invalid_argument& ia)
+  {
+    Log::Write(Log::Level::Error, ia.what() );
+    ShowHelp();
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace
 
-struct AndroidAppState {
-    ANativeWindow* NativeWindow = nullptr;
-    bool Resumed = false;
+struct AndroidAppState
+{
+  ANativeWindow* NativeWindow = nullptr;
+  bool Resumed = false;
 };
 
 /**
  * Process the next main command.
  */
-static void app_handle_cmd(struct android_app* app, int32_t cmd) {
-    AndroidAppState* appState = (AndroidAppState*)app->userData;
+static void app_handle_cmd(struct android_app* app, int32_t cmd)
+{
+  AndroidAppState* appState = (AndroidAppState*)app->userData;
 
-    switch(cmd) {
-        // There is no APP_CMD_CREATE. The ANativeActivity creates the
-        // application thread from onCreate(). The application thread
-        // then calls android_main().
-        case APP_CMD_START: {
-            Log::Write(Log::Level::Info, "    APP_CMD_START");
-            Log::Write(Log::Level::Info, "onStart()");
-            break;
-        }
-        case APP_CMD_RESUME: {
-            Log::Write(Log::Level::Info, "onResume()");
-            Log::Write(Log::Level::Info, "    APP_CMD_RESUME");
-            appState->Resumed = true;
-            break;
-        }
-        case APP_CMD_PAUSE: {
-            Log::Write(Log::Level::Info, "onPause()");
-            Log::Write(Log::Level::Info, "    APP_CMD_PAUSE");
-            appState->Resumed = false;
-            break;
-        }
-        case APP_CMD_STOP: {
-            Log::Write(Log::Level::Info, "onStop()");
-            Log::Write(Log::Level::Info, "    APP_CMD_STOP");
-            break;
-        }
-        case APP_CMD_DESTROY: {
-            Log::Write(Log::Level::Info, "onDestroy()");
-            Log::Write(Log::Level::Info, "    APP_CMD_DESTROY");
-            appState->NativeWindow = NULL;
-            break;
-        }
-        case APP_CMD_INIT_WINDOW: {
-            Log::Write(Log::Level::Info, "surfaceCreated()");
-            Log::Write(Log::Level::Info, "    APP_CMD_INIT_WINDOW");
-            appState->NativeWindow = app->window;
-            break;
-        }
-        case APP_CMD_TERM_WINDOW: {
-            Log::Write(Log::Level::Info, "surfaceDestroyed()");
-            Log::Write(Log::Level::Info, "    APP_CMD_TERM_WINDOW");
-            appState->NativeWindow = NULL;
-            break;
-        }
-    }
+  switch(cmd)
+  {
+
+  // There is no APP_CMD_CREATE. The ANativeActivity creates the
+  // application thread from onCreate(). The application thread
+  // then calls android_main().
+  case APP_CMD_START:
+  {
+    Log::Write(Log::Level::Info, "APP_CMD_START");
+    Log::Write(Log::Level::Info, "onStart()");
+    break;
+  }
+
+  case APP_CMD_RESUME:
+  {
+    Log::Write(Log::Level::Info, "onResume()");
+    Log::Write(Log::Level::Info, "APP_CMD_RESUME");
+    appState->Resumed = true;
+    break;
+  }
+
+  case APP_CMD_PAUSE:
+  {
+    Log::Write(Log::Level::Info, "onPause()");
+    Log::Write(Log::Level::Info, "APP_CMD_PAUSE");
+    appState->Resumed = false;
+    break;
+  }
+
+  case APP_CMD_STOP:
+  {
+    Log::Write(Log::Level::Info, "onStop()");
+    Log::Write(Log::Level::Info, "APP_CMD_STOP");
+    break;
+  }
+
+  case APP_CMD_DESTROY:
+  {
+    Log::Write(Log::Level::Info, "onDestroy()");
+    Log::Write(Log::Level::Info, "APP_CMD_DESTROY");
+    appState->NativeWindow = NULL;
+    break;
+  }
+
+  case APP_CMD_INIT_WINDOW:
+  {
+    Log::Write(Log::Level::Info, "surfaceCreated()");
+    Log::Write(Log::Level::Info, "APP_CMD_INIT_WINDOW");
+    appState->NativeWindow = app->window;
+    break;
+  }
+
+  case APP_CMD_TERM_WINDOW:
+  {
+    Log::Write(Log::Level::Info, "surfaceDestroyed()");
+    Log::Write(Log::Level::Info, "APP_CMD_TERM_WINDOW");
+    appState->NativeWindow = NULL;
+    break;
+  }
+
+  }
 }
 
 /**
@@ -213,112 +242,122 @@ static void app_handle_cmd(struct android_app* app, int32_t cmd) {
  * anag.  It runs in its own thread, with its own
  * event loop for receiving input events and doing other things.
  */
-void android_main(struct android_app* app) {
-    try {
-        JNIEnv* Env;
-        app->activity->vm->AttachCurrentThread(&Env, nullptr);
+void android_main(struct android_app* app)
+{
+  try
+  {
+    JNIEnv* Env;
+    app->activity->vm->AttachCurrentThread(&Env, nullptr);
 
-        AndroidAppState appState = {};
+    AndroidAppState appState = {};
 
-        app->userData = &appState;
-        app->onAppCmd = app_handle_cmd;
+    app->userData = &appState;
+    app->onAppCmd = app_handle_cmd;
 
-        std::shared_ptr<Options> options = std::make_shared<Options>();
-        if(!UpdateOptionsFromSystemProperties(*options) ) {
-            return;
-        }
+    std::shared_ptr<Options> options = std::make_shared<Options>();
 
-        std::shared_ptr<PlatformData> data = std::make_shared<PlatformData>();
-        data->applicationVM = app->activity->vm;
-        data->applicationActivity = app->activity->clazz;
+    if(!UpdateOptionsFromSystemProperties(*options) )
+      return;
 
-        bool requestRestart = false;
-        bool exitRenderLoop = false;
+    std::shared_ptr<PlatformData> data = std::make_shared<PlatformData>();
+    data->applicationVM = app->activity->vm;
+    data->applicationActivity = app->activity->clazz;
 
-        if(InitOpenXr() )
-          Log::Write(Log::Level::Verbose, "xr 1");
+    bool requestRestart = false;
+    bool exitRenderLoop = false;
 
-        if(InitVulkan() )
-          Log::Write(Log::Level::Verbose, "vk 1");
+    if(InitOpenXr() )
+      Log::Write(Log::Level::Verbose, "xr 1");
 
-        // Create platform-specific implementation.
-        std::shared_ptr<IPlatformPlugin> platformPlugin = CreatePlatformPlugin(options, data);
+    if(InitVulkan() )
+      Log::Write(Log::Level::Verbose, "vk 1");
 
-        // Create graphics API implementation.
-        std::shared_ptr<IGraphicsPlugin> graphicsPlugin = CreateGraphicsPlugin(options, platformPlugin);
+    // Create platform-specific implementation.
+    std::shared_ptr<IPlatformPlugin> platformPlugin = CreatePlatformPlugin(options, data);
 
-        // Initialize the OpenXR program.
-        std::shared_ptr<IOpenXrProgram> program = CreateOpenXrProgram(options, platformPlugin, graphicsPlugin);
+    // Create graphics API implementation.
+    std::shared_ptr<IGraphicsPlugin> graphicsPlugin = CreateGraphicsPlugin(options, platformPlugin);
 
-        // Initialize the loader for this platform
-        PFN_xrInitializeLoaderKHR initializeLoader = nullptr;
+    // Initialize the OpenXR program.
+    std::shared_ptr<IOpenXrProgram> program = CreateOpenXrProgram(options, platformPlugin, graphicsPlugin);
 
-        XrResult result = XR_ERROR_VALIDATION_FAILURE;
+    // Initialize the loader for this platform
+    PFN_xrInitializeLoaderKHR initializeLoader = nullptr;
 
-        if(tableXr.GetInstanceProcAddr)
-          result = tableXr.GetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction*) &initializeLoader);
+    XrResult result = XR_ERROR_VALIDATION_FAILURE;
 
-        if(XR_SUCCEEDED(result) && initializeLoader)
-        {
-          XrLoaderInitInfoAndroidKHR loaderInitInfoAndroid = {XR_TYPE_LOADER_INIT_INFO_ANDROID_KHR};
+    if(tableXr.GetInstanceProcAddr)
+      result = tableXr.GetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction*) &initializeLoader);
 
-          loaderInitInfoAndroid.applicationVM = app->activity->vm;
-          loaderInitInfoAndroid.applicationContext = app->activity->clazz;
+    if(XR_SUCCEEDED(result) && initializeLoader)
+    {
+      XrLoaderInitInfoAndroidKHR loaderInitInfoAndroid = {XR_TYPE_LOADER_INIT_INFO_ANDROID_KHR};
 
-          initializeLoader( (const XrLoaderInitInfoBaseHeaderKHR*) &loaderInitInfoAndroid);
-        }
+      loaderInitInfoAndroid.applicationVM = app->activity->vm;
+      loaderInitInfoAndroid.applicationContext = app->activity->clazz;
 
-        program->CreateInstance();
-        program->InitializeSystem();
-
-        options->SetEnvironmentBlendMode(program->GetPreferredBlendMode() );
-        UpdateOptionsFromSystemProperties(*options);
-        platformPlugin->UpdateOptions(options);
-        graphicsPlugin->UpdateOptions(options);
-
-        program->InitializeDevice();
-        program->InitializeSession();
-        program->CreateSwapchains();
-
-        while(app->destroyRequested == 0) {
-            // Read all pending events.
-            for(;;) {
-                int events;
-                struct android_poll_source* source;
-                // If the timeout is zero, returns immediately without blocking.
-                // If the timeout is negative, waits indefinitely until an event appears.
-                const int timeoutMilliseconds =
-                    (!appState.Resumed && !program->IsSessionRunning() && app->destroyRequested == 0) ? -1 : 0;
-                if(ALooper_pollAll(timeoutMilliseconds, nullptr, &events, (void**)&source) < 0) {
-                    break;
-                }
-
-                // Process this event.
-                if(source != nullptr) {
-                    source->process(app, source);
-                }
-            }
-
-            program->PollEvents(&exitRenderLoop, &requestRestart);
-            if(exitRenderLoop) {
-                ANativeActivity_finish(app->activity);
-                continue;
-            }
-
-            if(!program->IsSessionRunning() ) {
-                // Throttle loop since xrWaitFrame won't be called.
-                std::this_thread::sleep_for(std::chrono::milliseconds(250) );
-                continue;
-            }
-
-            program->PollActions();
-            program->RenderFrame();
-        }
-
-        app->activity->vm->DetachCurrentThread();
-    } catch(const std::exception& ex) {
-        Log::Write(Log::Level::Error, ex.what() );
-    } catch(...) {
-        Log::Write(Log::Level::Error, "Unknown Error");
+      initializeLoader( (const XrLoaderInitInfoBaseHeaderKHR*) &loaderInitInfoAndroid);
     }
+
+    program->CreateInstance();
+    program->InitializeSystem();
+
+    options->SetEnvironmentBlendMode(program->GetPreferredBlendMode() );
+    UpdateOptionsFromSystemProperties(*options);
+    platformPlugin->UpdateOptions(options);
+    graphicsPlugin->UpdateOptions(options);
+
+    program->InitializeDevice();
+    program->InitializeSession();
+    program->CreateSwapchains();
+
+    while(app->destroyRequested == 0)
+    {
+      // Read all pending events.
+      for(;;)
+      {
+        int events = 0;
+        struct android_poll_source* source = 0;
+
+        // If the timeout is zero, returns immediately without blocking.
+        // If the timeout is negative, waits indefinitely until an event appears.
+        const int timeoutMilliseconds = (!appState.Resumed && !program->IsSessionRunning() && app->destroyRequested == 0) ? -1 : 0;
+
+        if(ALooper_pollAll(timeoutMilliseconds, nullptr, &events, (void**)&source) < 0)
+          break;
+
+        // Process this event.
+        if(source != nullptr)
+          source->process(app, source);
+      }
+
+      program->PollEvents(&exitRenderLoop, &requestRestart);
+
+      if(exitRenderLoop)
+      {
+        ANativeActivity_finish(app->activity);
+        continue;
+      }
+
+      if(!program->IsSessionRunning() )
+      {
+        // Throttle loop since xrWaitFrame won't be called.
+        std::this_thread::sleep_for(std::chrono::milliseconds(250) );
+        continue;
+      }
+
+      program->PollActions();
+      program->RenderFrame();
+    }
+
+    app->activity->vm->DetachCurrentThread();
+  }
+  catch(const std::exception& ex)
+  {
+    Log::Write(Log::Level::Error, ex.what() );
+  }
+  catch(...)
+  {
+    Log::Write(Log::Level::Error, "Unknown Error");
+  }
 }

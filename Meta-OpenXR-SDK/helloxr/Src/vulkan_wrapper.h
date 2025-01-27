@@ -249,9 +249,6 @@ struct VkGeneratedDispatchTableCore
   PFN_vkSubmitDebugUtilsMessageEXT SubmitDebugUtilsMessageEXT;
 };
 
-/* Initialize the Vulkan function pointer variables declared in this header.
- * Returns 0 if vulkan is not available, non-zero if it is available.
- */
 int InitVulkan();
 
 #endif // VULKAN_WRAPPER_H

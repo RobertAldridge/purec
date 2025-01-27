@@ -4,48 +4,34 @@
 #ifndef OPENXR_PLATFORM_H_
 #define OPENXR_PLATFORM_H_ 1
 
-/*
-** Copyright 2017-2024, The Khronos Group Inc.
-**
-** SPDX-License-Identifier: Apache-2.0 OR MIT
-*/
-
-/*
-** This header is generated from the Khronos OpenXR XML API Registry.
-**
-*/
-
-
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
 #ifdef XR_USE_PLATFORM_ANDROID
 
-// XR_KHR_android_thread_settings is a preprocessor guard. Do not pass it to API calls.
 #define XR_KHR_android_thread_settings 1
 #define XR_KHR_android_thread_settings_SPEC_VERSION 6
 #define XR_KHR_ANDROID_THREAD_SETTINGS_EXTENSION_NAME "XR_KHR_android_thread_settings"
 
-typedef enum XrAndroidThreadTypeKHR {
+typedef enum XrAndroidThreadTypeKHR
+{
     XR_ANDROID_THREAD_TYPE_APPLICATION_MAIN_KHR = 1,
     XR_ANDROID_THREAD_TYPE_APPLICATION_WORKER_KHR = 2,
     XR_ANDROID_THREAD_TYPE_RENDERER_MAIN_KHR = 3,
     XR_ANDROID_THREAD_TYPE_RENDERER_WORKER_KHR = 4,
     XR_ANDROID_THREAD_TYPE_MAX_ENUM_KHR = 0x7FFFFFFF
-} XrAndroidThreadTypeKHR;
+
+}XrAndroidThreadTypeKHR;
+
 typedef XrResult (XRAPI_PTR *PFN_xrSetAndroidApplicationThreadKHR)(XrSession session, XrAndroidThreadTypeKHR threadType, uint32_t threadId);
 
 #ifndef XR_NO_PROTOTYPES
 #ifdef XR_EXTENSION_PROTOTYPES
-XRAPI_ATTR XrResult XRAPI_CALL xrSetAndroidApplicationThreadKHR(
-    XrSession                                   session,
-    XrAndroidThreadTypeKHR                      threadType,
-    uint32_t                                    threadId);
+XRAPI_ATTR XrResult XRAPI_CALL xrSetAndroidApplicationThreadKHR(XrSession session, XrAndroidThreadTypeKHR threadType, uint32_t threadId);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
+
 #endif /* XR_USE_PLATFORM_ANDROID */
 
 #ifdef XR_USE_PLATFORM_ANDROID
@@ -54,17 +40,15 @@ XRAPI_ATTR XrResult XRAPI_CALL xrSetAndroidApplicationThreadKHR(
 #define XR_KHR_android_surface_swapchain 1
 #define XR_KHR_android_surface_swapchain_SPEC_VERSION 4
 #define XR_KHR_ANDROID_SURFACE_SWAPCHAIN_EXTENSION_NAME "XR_KHR_android_surface_swapchain"
+
 typedef XrResult (XRAPI_PTR *PFN_xrCreateSwapchainAndroidSurfaceKHR)(XrSession session, const XrSwapchainCreateInfo* info, XrSwapchain* swapchain, jobject* surface);
 
 #ifndef XR_NO_PROTOTYPES
 #ifdef XR_EXTENSION_PROTOTYPES
-XRAPI_ATTR XrResult XRAPI_CALL xrCreateSwapchainAndroidSurfaceKHR(
-    XrSession                                   session,
-    const XrSwapchainCreateInfo*                info,
-    XrSwapchain*                                swapchain,
-    jobject*                                    surface);
+XRAPI_ATTR XrResult XRAPI_CALL xrCreateSwapchainAndroidSurfaceKHR(XrSession session, const XrSwapchainCreateInfo* info, XrSwapchain* swapchain, jobject* surface);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
+
 #endif /* XR_USE_PLATFORM_ANDROID */
 
 #ifdef XR_USE_PLATFORM_ANDROID
@@ -73,13 +57,16 @@ XRAPI_ATTR XrResult XRAPI_CALL xrCreateSwapchainAndroidSurfaceKHR(
 #define XR_KHR_android_create_instance 1
 #define XR_KHR_android_create_instance_SPEC_VERSION 3
 #define XR_KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME "XR_KHR_android_create_instance"
+
 // XrInstanceCreateInfoAndroidKHR extends XrInstanceCreateInfo
-typedef struct XrInstanceCreateInfoAndroidKHR {
-    XrStructureType             type;
-    const void* XR_MAY_ALIAS    next;
-    void* XR_MAY_ALIAS          applicationVM;
-    void* XR_MAY_ALIAS          applicationActivity;
-} XrInstanceCreateInfoAndroidKHR;
+typedef struct XrInstanceCreateInfoAndroidKHR
+{
+  XrStructureType type;
+  const void* XR_MAY_ALIAS next;
+  void* XR_MAY_ALIAS applicationVM;
+  void* XR_MAY_ALIAS applicationActivity;
+
+}XrInstanceCreateInfoAndroidKHR;
 
 #endif /* XR_USE_PLATFORM_ANDROID */
 
@@ -89,12 +76,15 @@ typedef struct XrInstanceCreateInfoAndroidKHR {
 #define XR_KHR_vulkan_swapchain_format_list 1
 #define XR_KHR_vulkan_swapchain_format_list_SPEC_VERSION 5
 #define XR_KHR_VULKAN_SWAPCHAIN_FORMAT_LIST_EXTENSION_NAME "XR_KHR_vulkan_swapchain_format_list"
-typedef struct XrVulkanSwapchainFormatListCreateInfoKHR {
-    XrStructureType             type;
-    const void* XR_MAY_ALIAS    next;
-    uint32_t                    viewFormatCount;
-    const VkFormat*             viewFormats;
-} XrVulkanSwapchainFormatListCreateInfoKHR;
+
+typedef struct XrVulkanSwapchainFormatListCreateInfoKHR
+{
+  XrStructureType type;
+  const void* XR_MAY_ALIAS next;
+  uint32_t viewFormatCount;
+  const VkFormat* viewFormats;
+
+}XrVulkanSwapchainFormatListCreateInfoKHR;
 
 #endif /* XR_USE_GRAPHICS_API_VULKAN */
 
@@ -104,64 +94,77 @@ typedef struct XrVulkanSwapchainFormatListCreateInfoKHR {
 #define XR_KHR_opengl_enable 1
 #define XR_KHR_opengl_enable_SPEC_VERSION 10
 #define XR_KHR_OPENGL_ENABLE_EXTENSION_NAME "XR_KHR_opengl_enable"
+
 #ifdef XR_USE_PLATFORM_WIN32
 // XrGraphicsBindingOpenGLWin32KHR extends XrSessionCreateInfo
-typedef struct XrGraphicsBindingOpenGLWin32KHR {
-    XrStructureType             type;
-    const void* XR_MAY_ALIAS    next;
-    HDC                         hDC;
-    HGLRC                       hGLRC;
-} XrGraphicsBindingOpenGLWin32KHR;
+typedef struct XrGraphicsBindingOpenGLWin32KHR
+{
+    XrStructureType type;
+    const void* XR_MAY_ALIAS next;
+    HDC hDC;
+    HGLRC hGLRC;
+
+}XrGraphicsBindingOpenGLWin32KHR;
 #endif // XR_USE_PLATFORM_WIN32
 
 #ifdef XR_USE_PLATFORM_XLIB
 // XrGraphicsBindingOpenGLXlibKHR extends XrSessionCreateInfo
-typedef struct XrGraphicsBindingOpenGLXlibKHR {
-    XrStructureType             type;
-    const void* XR_MAY_ALIAS    next;
-    Display*                    xDisplay;
-    uint32_t                    visualid;
-    GLXFBConfig                 glxFBConfig;
-    GLXDrawable                 glxDrawable;
-    GLXContext                  glxContext;
-} XrGraphicsBindingOpenGLXlibKHR;
+typedef struct XrGraphicsBindingOpenGLXlibKHR
+{
+  XrStructureType type;
+  const void* XR_MAY_ALIAS next;
+  Display* xDisplay;
+  uint32_t visualid;
+  GLXFBConfig glxFBConfig;
+  GLXDrawable glxDrawable;
+  GLXContext glxContext;
+
+}XrGraphicsBindingOpenGLXlibKHR;
 #endif // XR_USE_PLATFORM_XLIB
 
 #ifdef XR_USE_PLATFORM_XCB
 // XrGraphicsBindingOpenGLXcbKHR extends XrSessionCreateInfo
-typedef struct XrGraphicsBindingOpenGLXcbKHR {
-    XrStructureType             type;
-    const void* XR_MAY_ALIAS    next;
-    xcb_connection_t*           connection;
-    uint32_t                    screenNumber;
-    xcb_glx_fbconfig_t          fbconfigid;
-    xcb_visualid_t              visualid;
-    xcb_glx_drawable_t          glxDrawable;
-    xcb_glx_context_t           glxContext;
-} XrGraphicsBindingOpenGLXcbKHR;
+typedef struct XrGraphicsBindingOpenGLXcbKHR
+{
+  XrStructureType type;
+  const void* XR_MAY_ALIAS next;
+  xcb_connection_t* connection;
+  uint32_t screenNumber;
+  xcb_glx_fbconfig_t fbconfigid;
+  xcb_visualid_t visualid;
+  xcb_glx_drawable_t glxDrawable;
+  xcb_glx_context_t glxContext;
+
+}XrGraphicsBindingOpenGLXcbKHR;
 #endif // XR_USE_PLATFORM_XCB
 
 #ifdef XR_USE_PLATFORM_WAYLAND
 // XrGraphicsBindingOpenGLWaylandKHR extends XrSessionCreateInfo
-typedef struct XrGraphicsBindingOpenGLWaylandKHR {
-    XrStructureType             type;
-    const void* XR_MAY_ALIAS    next;
-    struct wl_display*          display;
-} XrGraphicsBindingOpenGLWaylandKHR;
+typedef struct XrGraphicsBindingOpenGLWaylandKHR
+{
+  XrStructureType type;
+  const void* XR_MAY_ALIAS next;
+  struct wl_display* display;
+
+}XrGraphicsBindingOpenGLWaylandKHR;
 #endif // XR_USE_PLATFORM_WAYLAND
 
-typedef struct XrSwapchainImageOpenGLKHR {
-    XrStructureType       type;
-    void* XR_MAY_ALIAS    next;
-    uint32_t              image;
-} XrSwapchainImageOpenGLKHR;
+typedef struct XrSwapchainImageOpenGLKHR
+{
+  XrStructureType type;
+  void* XR_MAY_ALIAS next;
+  uint32_t image;
 
-typedef struct XrGraphicsRequirementsOpenGLKHR {
-    XrStructureType       type;
-    void* XR_MAY_ALIAS    next;
-    XrVersion             minApiVersionSupported;
-    XrVersion             maxApiVersionSupported;
-} XrGraphicsRequirementsOpenGLKHR;
+}XrSwapchainImageOpenGLKHR;
+
+typedef struct XrGraphicsRequirementsOpenGLKHR
+{
+  XrStructureType type;
+  void* XR_MAY_ALIAS next;
+  XrVersion minApiVersionSupported;
+  XrVersion maxApiVersionSupported;
+
+}XrGraphicsRequirementsOpenGLKHR;
 
 typedef XrResult (XRAPI_PTR *PFN_xrGetOpenGLGraphicsRequirementsKHR)(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsOpenGLKHR* graphicsRequirements);
 
