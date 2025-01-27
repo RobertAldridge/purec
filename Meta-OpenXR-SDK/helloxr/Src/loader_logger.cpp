@@ -1,20 +1,25 @@
-// Copyright (c) 2017-2024, The Khronos Group Inc.
-// Copyright (c) 2017-2019 Valve Corporation
-// Copyright (c) 2017-2019 LunarG, Inc.
-//
-// SPDX-License-Identifier: Apache-2.0 OR MIT
-//
-// Initial Author: Mark Young <marky@lunarg.com>
-//
 
-#include "loader_logger.hpp"
+// loader_logger.cpp
+
+#include "loader_logger.h"
 
 #include "extra_algorithms.h"
 #include "hex_and_handles.h"
-//#include "loader_logger_recorders.hpp"
-#include "platform_utils.hpp"
+//#include "loader_logger_recorders.h"
+#include "platform_utils.h"
 
+class _jobject;
+typedef _jobject* jobject;
+
+#include <vulkan/vulkan.h>
+
+#include "openxr_platform_defines.h"
 #include "openxr.h"
+#include "openxr_platform.h"
+#include "openxr_loader_negotiation.h"
+#include "openxr_reflection.h"
+#include "openxr_reflection_structs.h"
+#include "openxr_reflection_parent_structs.h"
 
 #include <algorithm>
 #include <iterator>
@@ -26,7 +31,7 @@
 #include <utility>
 #include <vector>
 
-// For routing platform_utils.hpp messages into the LoaderLogger.
+// For routing platform_utils.h messages into the LoaderLogger.
 void LogPlatformUtilsError(const std::string& message) {/* LoaderLogger::LogErrorMessage("platform_utils", message);*/ }
 
 bool LoaderLogRecorder::LogDebugUtilsMessage(XrDebugUtilsMessageSeverityFlagsEXT /*message_severity*/,

@@ -1,21 +1,23 @@
-// Copyright (c) 2017-2024, The Khronos Group Inc.
-// Copyright (c) 2017-2019 Valve Corporation
-// Copyright (c) 2017-2019 LunarG, Inc.
-// Copyright (c) 2019 Collabora, Ltd.
-//
-// SPDX-License-Identifier: Apache-2.0 OR MIT
-//
-// Initial Authors: Mark Young <marky@lunarg.com>
-//                  Rylie Pavlik <rylie.pavlik@collabora.com>
-//                  Dave Houlton <daveh@lunarg.com>
-//
+
+// object_info.cpp
 
 #include "object_info.h"
 
 #include "extra_algorithms.h"
 #include "hex_and_handles.h"
 
+class _jobject;
+typedef _jobject* jobject;
+
+#include <vulkan/vulkan.h>
+
+#include "openxr_platform_defines.h"
 #include "openxr.h"
+#include "openxr_platform.h"
+#include "openxr_loader_negotiation.h"
+#include "openxr_reflection.h"
+#include "openxr_reflection_structs.h"
+#include "openxr_reflection_parent_structs.h"
 
 #include <algorithm>
 #include <iterator>

@@ -23,13 +23,16 @@ set(LOCAL_HEADERS
     anag.h
     check.h
     common.h
-    common_config.h
+    exception_handling.h
     extra_algorithms.h
+    filesystem_utils.h
     geometry.h
     graphicsapi.h
     graphicsplugin.h
     hex_and_handles.h
     jnipp.h
+    loader_init_data.h
+    loader_logger.h
     logger.h
     object_info.h
     openxr.h
@@ -42,27 +45,22 @@ set(LOCAL_HEADERS
     openxr_reflection_structs.h
     options.h
     pch.h
+    platform_utils.h
     platformdata.h
     platformplugin.h
     stdfs_conditions.h
     unique_asset.h
+    vulkan_debug_object_namer.h
     vulcan_wrapper.h
     xr_dependencies.h
     xr_generated_dispatch_table_core.h
     xr_linear.h
-    exception_handling.hpp
-    filesystem_utils.hpp
-    loader_init_data.hpp
-    loader_logger.hpp
-    platform_utils.hpp
-    vulkan_debug_object_namer.hpp
     frag.spv
     vert.spv
 )
 
 set(LOCAL_SOURCE
     anag.c
-    xr_generated_dispatch_table_core.cpp
     filesystem_utils.cpp
     graphicsplugin_factory.cpp
     graphicsplugin_vulkan.cpp
@@ -76,6 +74,7 @@ set(LOCAL_SOURCE
     platformplugin_android.cpp
     platformplugin_factory.cpp
     vulcan_wrapper.cpp
+    xr_generated_dispatch_table_core.cpp
 )
 
 include_directories("C:/Users/RobertLocalAldridge/AppData/Local/Android/Sdk/ndk/25.1.8937393/sources/third_party/vulkan/src/include/vulkan")

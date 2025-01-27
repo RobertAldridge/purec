@@ -1,9 +1,5 @@
-// Copyright (c) 2018-2024, The Khronos Group Inc.
-//
-// SPDX-License-Identifier: Apache-2.0 OR MIT
-//
-// This file includes headers with types which openxr.h depends on in order
-// to compile when platforms, graphics apis, and the like are enabled.
+
+// xr_dependencies.h
 
 #pragma once
 

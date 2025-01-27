@@ -1,16 +1,12 @@
-// Copyright (c) 2017-2024, The Khronos Group Inc.
-// Copyright (c) 2017 Valve Corporation
-// Copyright (c) 2017 LunarG, Inc.
-//
-// SPDX-License-Identifier: Apache-2.0 OR MIT
-//
-// Initial Authors: Mark Young <marky@lunarg.com>
-//                  Nat Brown <natb@valvesoftware.com>
-//
 
-#include "filesystem_utils.hpp"
+// filesystem_utils.cpp
 
-#include "platform_utils.hpp"
+#include <string>
+#include <vector>
+
+#include "filesystem_utils.h"
+
+#include "platform_utils.h"
 
 #include <cstring>
 #include <string>

@@ -1,14 +1,105 @@
-// Copyright (c) 2017-2024, The Khronos Group Inc.
-//
-// SPDX-License-Identifier: Apache-2.0
 
-#include "pch.h"
+// graphicsplugin_vulkan.cpp
+
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstdarg>
+#include <cstdio>
+#include <exception>
+#include <functional>
+#include <future>
+#include <iomanip>
+#include <iostream>
+#include <iterator>
+#include <list>
+#include <locale>
+#include <map>
+#include <memory>
+#include <numeric>
+#include <set>
+#include <string>
+#include <thread>
+#include <type_traits>
+#include <vector>
+
+#include <time.h>
+#include <string.h>
+
+#include <android/log.h>
+
+#include <poll.h>
+#include <pthread.h>
+#include <sched.h>
+
+#include <android/configuration.h>
+#include <android/looper.h>
+#include <android/native_activity.h>
+
+#include "anag.h"
+
+#include <android/native_window.h>
+#include <jni.h>
+#include <sys/system_properties.h>
+
+#define XR_USE_GRAPHICS_API_VULKAN 1
+
+#define XR_USE_PLATFORM_ANDROID 1
+
+#define VK_USE_PLATFORM_ANDROID_KHR 1
+
+class _jobject;
+typedef _jobject* jobject;
+
+#include <vulkan/vulkan.h>
+
+#include "openxr_platform_defines.h"
+#include "openxr.h"
+#include "openxr_platform.h"
+#include "openxr_loader_negotiation.h"
+#include "openxr_reflection.h"
+#include "openxr_reflection_structs.h"
+#include "openxr_reflection_parent_structs.h"
+
+#include <string>
+#include <locale>
+#include <algorithm>
+#include <memory>
+#include <stdarg.h>
+#include <stddef.h>
+
+class _jobject;
+typedef _jobject* jobject;
+
+#include <vulkan/vulkan.h>
+
+#include "openxr_platform_defines.h"
+#include "openxr.h"
+#include "openxr_platform.h"
+#include "openxr_loader_negotiation.h"
+#include "openxr_reflection.h"
+#include "openxr_reflection_structs.h"
+#include "openxr_reflection_parent_structs.h"
+
+inline std::string Fmt(const char* fmt, ...);
+
+inline const char* to_string(XrReferenceSpaceType e);
+inline const char* to_string(XrViewConfigurationType e);
+inline const char* to_string(XrEnvironmentBlendMode e);
+inline const char* to_string(XrSessionState e);
+inline const char* to_string(XrResult e);
+inline const char* to_string(XrFormFactor e);
+
+#include "logger.h"
 #include "common.h"
+#include "check.h"
+
 #include "geometry.h"
 #include "graphicsplugin.h"
+
 #include "options.h"
 
-#include "vulkan_debug_object_namer.hpp"
+#include "vulkan_debug_object_namer.h"
 #include "xr_linear.h"
 
 #include "xr_generated_dispatch_table_core.h"
@@ -18,7 +109,7 @@ extern struct XrGeneratedDispatchTableCore tableXr;
 extern struct VkGeneratedDispatchTableCore tableVk;
 
 #ifdef USE_ONLINE_VULKAN_SHADERC
-#include <shaderc/shaderc.hpp>
+#include <shaderc/shaderc.h>
 #endif
 
 // glslangValidator doesn't wrap its output in brackets if you don't have it define the whole array.

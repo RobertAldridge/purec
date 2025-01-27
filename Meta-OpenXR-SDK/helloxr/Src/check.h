@@ -1,11 +1,7 @@
 
-// Copyright (c) 2017-2024, The Khronos Group Inc.
-//
-// SPDX-License-Identifier: Apache-2.0
+// check.h
 
 #pragma once
-
-#include "common.h"
 
 #define CHK_STRINGIFY(x) #x
 
@@ -16,10 +12,10 @@
 [ [noreturn] ] inline void Throw(std::string failureMessage, const char* originator = nullptr, const char* sourceLocation = nullptr)
 {
   if(originator != nullptr)
-    failureMessage += Fmt("\n    Origin: %s", originator);
+    failureMessage += Fmt("\nOrigin: %s", originator);
 
   if(sourceLocation != nullptr)
-    failureMessage += Fmt("\n    Source: %s", sourceLocation);
+    failureMessage += Fmt("\nSource: %s", sourceLocation);
 
   throw std::logic_error(failureMessage);
 }
@@ -44,7 +40,7 @@
 
 [ [noreturn] ] inline void ThrowXrResult(XrResult res, const char* originator = nullptr, const char* sourceLocation = nullptr)
 {
-    Throw(Fmt("XrResult failure [%s]", to_string(res) ), originator, sourceLocation);
+  Throw(Fmt("XrResult failure [%s]", to_string(res) ), originator, sourceLocation);
 }
 
 inline XrResult CheckXrResult(XrResult res, const char* originator = nullptr, const char* sourceLocation = nullptr)

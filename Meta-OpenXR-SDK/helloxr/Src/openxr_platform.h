@@ -1,3 +1,6 @@
+
+// openxr_platform.h
+
 #ifndef OPENXR_PLATFORM_H_
 #define OPENXR_PLATFORM_H_ 1
 
@@ -12,7 +15,7 @@
 **
 */
 
-#include "openxr.h"
+
 
 #ifdef __cplusplus
 extern "C" {

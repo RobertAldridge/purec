@@ -1,120 +1,21 @@
-// Copyright (c) 2017-2024, The Khronos Group Inc.
-// Copyright (c) 2016, Oculus VR, LLC.
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-// Author: J.M.P. van Waveren
-//
+
+// xr_linear.h
 
 #ifndef XR_LINEAR_H_
 #define XR_LINEAR_H_
 
+class _jobject;
+typedef _jobject* jobject;
+
+#include <vulkan/vulkan.h>
+
+#include "openxr_platform_defines.h"
 #include "openxr.h"
-
-/* REUSE-IgnoreStart */
-/* The following has copyright notices that duplicate the header above */
-
-/*
-================================================================================================
-
-Description  : Vector, matrix and quaternion math.
-Orig. Author : J.M.P. van Waveren
-Orig. Date   : 12/10/2016
-Language     : C99
-Copyright    : Copyright (c) 2016 Oculus VR, LLC. All Rights reserved.
-
-
-DESCRIPTION
-===========
-
-All matrices are column-major.
-
-INTERFACE
-=========
-
-XrVector2f
-XrVector3f
-XrVector4f
-XrQuaternionf
-XrPosef
-XrMatrix4x4f
-
-inline static void XrVector3f_Set(XrVector3f* v, const float value);
-inline static void XrVector3f_Add(XrVector3f* result, const XrVector3f* a, const XrVector3f* b);
-inline static void XrVector3f_Sub(XrVector3f* result, const XrVector3f* a, const XrVector3f* b);
-inline static void XrVector3f_Min(XrVector3f* result, const XrVector3f* a, const XrVector3f* b);
-inline static void XrVector3f_Max(XrVector3f* result, const XrVector3f* a, const XrVector3f* b);
-inline static void XrVector3f_Decay(XrVector3f* result, const XrVector3f* a, const float value);
-inline static void XrVector3f_Lerp(XrVector3f* result, const XrVector3f* a, const XrVector3f* b, const float fraction);
-inline static void XrVector3f_Scale(XrVector3f* result, const XrVector3f* a, const float scaleFactor);
-inline static void XrVector3f_Normalize(XrVector3f* v);
-inline static float XrVector3f_Length(const XrVector3f* v);
-
-inline static void XrQuaternionf_CreateIdentity(XrQuaternionf* q);
-inline static void XrQuaternionf_CreateFromAxisAngle(XrQuaternionf* result, const XrVector3f* axis, const float angleInRadians);
-inline static void XrQuaternionf_Lerp(XrQuaternionf* result, const XrQuaternionf* a, const XrQuaternionf* b, const float fraction);
-inline static void XrQuaternionf_Multiply(XrQuaternionf* result, const XrQuaternionf* a, const XrQuaternionf* b);
-inline static void XrQuaternionf_Invert(XrQuaternionf* result, const XrQuaternionf* q);
-inline static void XrQuaternionf_Normalize(XrQuaternionf* q);
-inline static void XrQuaternionf_RotateVector3f(XrVector3f* result, const XrQuaternionf* a, const XrVector3f* v);
-
-inline static void XrPosef_CreateIdentity(XrPosef* result);
-inline static void XrPosef_TransformVector3f(XrVector3f* result, const XrPosef* a, const XrVector3f* v);
-inline static void XrPosef_Multiply(XrPosef* result, const XrPosef* a, const XrPosef* b);
-inline static void XrPosef_Invert(XrPosef* result, const XrPosef* a);
-
-inline static void XrMatrix4x4f_CreateIdentity(XrMatrix4x4f* result);
-inline static void XrMatrix4x4f_CreateTranslation(XrMatrix4x4f* result, const float x, const float y, const float z);
-inline static void XrMatrix4x4f_CreateRotation(XrMatrix4x4f* result, const float degreesX, const float degreesY,
-                                               const float degreesZ);
-inline static void XrMatrix4x4f_CreateScale(XrMatrix4x4f* result, const float x, const float y, const float z);
-inline static void XrMatrix4x4f_CreateTranslationRotationScale(XrMatrix4x4f* result, const XrVector3f* translation,
-                                                               const XrQuaternionf* rotation, const XrVector3f* scale);
-inline static void XrMatrix4x4f_CreateFromRigidTransform(XrMatrix4x4f* result, const XrPosef* s);
-inline static void XrMatrix4x4f_CreateProjection(XrMatrix4x4f* result, GraphicsAPI graphicsApi, const float tanAngleLeft,
-                                                 const float tanAngleRight, const float tanAngleUp, float const tanAngleDown,
-                                                 const float nearZ, const float farZ);
-inline static void XrMatrix4x4f_CreateProjectionFov(XrMatrix4x4f* result, GraphicsAPI graphicsApi, const XrFovf fov,
-                                                    const float nearZ, const float farZ);
-inline static void XrMatrix4x4f_CreateFromQuaternion(XrMatrix4x4f* result, const XrQuaternionf* quat);
-inline static void XrMatrix4x4f_CreateOffsetScaleForBounds(XrMatrix4x4f* result, const XrMatrix4x4f* matrix, const XrVector3f* mins,
-                                                           const XrVector3f* maxs);
-
-inline static bool XrMatrix4x4f_IsAffine(const XrMatrix4x4f* matrix, const float epsilon);
-inline static bool XrMatrix4x4f_IsOrthogonal(const XrMatrix4x4f* matrix, const float epsilon);
-inline static bool XrMatrix4x4f_IsOrthonormal(const XrMatrix4x4f* matrix, const float epsilon);
-inline static bool XrMatrix4x4f_IsRigidBody(const XrMatrix4x4f* matrix, const float epsilon);
-
-inline static void XrMatrix4x4f_GetTranslation(XrVector3f* result, const XrMatrix4x4f* src);
-inline static void XrMatrix4x4f_GetRotation(XrQuaternionf* result, const XrMatrix4x4f* src);
-inline static void XrMatrix4x4f_GetScale(XrVector3f* result, const XrMatrix4x4f* src);
-
-inline static void XrMatrix4x4f_Multiply(XrMatrix4x4f* result, const XrMatrix4x4f* a, const XrMatrix4x4f* b);
-inline static void XrMatrix4x4f_Transpose(XrMatrix4x4f* result, const XrMatrix4x4f* src);
-inline static void XrMatrix4x4f_Invert(XrMatrix4x4f* result, const XrMatrix4x4f* src);
-inline static void XrMatrix4x4f_InvertRigidBody(XrMatrix4x4f* result, const XrMatrix4x4f* src);
-
-inline static void XrMatrix4x4f_TransformVector3f(XrVector3f* result, const XrMatrix4x4f* m, const XrVector3f* v);
-inline static void XrMatrix4x4f_TransformVector4f(XrVector4f* result, const XrMatrix4x4f* m, const XrVector4f* v);
-
-inline static void XrMatrix4x4f_TransformBounds(XrVector3f* resultMins, XrVector3f* resultMaxs, const XrMatrix4x4f* matrix,
-                                                const XrVector3f* mins, const XrVector3f* maxs);
-inline static bool XrMatrix4x4f_CullBounds(const XrMatrix4x4f* mvp, const XrVector3f* mins, const XrVector3f* maxs);
-
-================================================================================================
-*/
+#include "openxr_platform.h"
+#include "openxr_loader_negotiation.h"
+#include "openxr_reflection.h"
+#include "openxr_reflection_structs.h"
+#include "openxr_reflection_parent_structs.h"
 
 #include <assert.h>
 #include <math.h>

@@ -1,6 +1,6 @@
-// Copyright (c) 2017-2024, The Khronos Group Inc.
-//
-// SPDX-License-Identifier: Apache-2.0 OR MIT
+
+// unique_asset.h
+
 #pragma once
 
 #include <memory>

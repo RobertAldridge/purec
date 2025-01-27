@@ -1,16 +1,5 @@
-// Copyright (c) 2017-2024, The Khronos Group Inc.
-// Copyright (c) 2017 Valve Corporation
-// Copyright (c) 2017 LunarG, Inc.
-//
-// SPDX-License-Identifier: Apache-2.0 OR MIT
-//
-// Initial Author: Mark Young <marky@lunarg.com>
-//
 
-#pragma once
-
-#include <string>
-#include <vector>
+// filesystem_utils.h
 
 // Determine if the path indicates a regular file (not a directory or symbolic link)
 bool FileSysUtilsIsRegularFile(const std::string& path);

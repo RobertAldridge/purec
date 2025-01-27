@@ -1,13 +1,7 @@
-// Copyright (c) 2017-2024, The Khronos Group Inc.
-// Copyright (c) 2017-2019 Valve Corporation
-// Copyright (c) 2017-2019 LunarG, Inc.
-//
-// SPDX-License-Identifier: Apache-2.0 OR MIT
-//
-// Initial Author: Mark Young <marky@lunarg.com>
-//
 
-#include "loader_init_data.hpp"
+// loader_init_data.cpp
+
+#include "loader_init_data.h"
 
 #ifdef XR_KHR_LOADER_INIT_SUPPORT
 

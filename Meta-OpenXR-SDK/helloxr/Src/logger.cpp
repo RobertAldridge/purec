@@ -1,8 +1,66 @@
-// Copyright (c) 2017-2024, The Khronos Group Inc.
-//
-// SPDX-License-Identifier: Apache-2.0
 
-#include "pch.h"
+// logger.cpp
+
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstdarg>
+#include <cstdio>
+#include <exception>
+#include <functional>
+#include <future>
+#include <iomanip>
+#include <iostream>
+#include <iterator>
+#include <list>
+#include <locale>
+#include <map>
+#include <memory>
+#include <numeric>
+#include <set>
+#include <string>
+#include <thread>
+#include <type_traits>
+#include <vector>
+
+#include <time.h>
+#include <string.h>
+
+#include <android/log.h>
+
+#include <poll.h>
+#include <pthread.h>
+#include <sched.h>
+
+#include <android/configuration.h>
+#include <android/looper.h>
+#include <android/native_activity.h>
+
+#include "anag.h"
+
+#include <android/native_window.h>
+#include <jni.h>
+#include <sys/system_properties.h>
+
+#define XR_USE_GRAPHICS_API_VULKAN 1
+
+#define XR_USE_PLATFORM_ANDROID 1
+
+#define VK_USE_PLATFORM_ANDROID_KHR 1
+
+class _jobject;
+typedef _jobject* jobject;
+
+#include <vulkan/vulkan.h>
+
+#include "openxr_platform_defines.h"
+#include "openxr.h"
+#include "openxr_platform.h"
+#include "openxr_loader_negotiation.h"
+#include "openxr_reflection.h"
+#include "openxr_reflection_structs.h"
+#include "openxr_reflection_parent_structs.h"
+
 #include "logger.h"
 
 #include <sstream>

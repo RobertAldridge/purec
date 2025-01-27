@@ -1,22 +1,20 @@
-// Copyright (c) 2017-2024, The Khronos Group Inc.
-// Copyright (c) 2017-2019 Valve Corporation
-// Copyright (c) 2017-2019 LunarG, Inc.
-// Copyright (c) 2019 Collabora, Ltd.
-//
-// SPDX-License-Identifier: Apache-2.0 OR MIT
-//
-// Initial Author: Rylie Pavlik <rylie.pavlik@collabora.com>
-//
 
-/*!
- * @file
- *
- * Some utilities, primarily for working with OpenXR handles in a generic way.
- */
+// hex_and_handles.h
 
 #pragma once
 
+class _jobject;
+typedef _jobject* jobject;
+
+#include <vulkan/vulkan.h>
+
+#include "openxr_platform_defines.h"
 #include "openxr.h"
+#include "openxr_platform.h"
+#include "openxr_loader_negotiation.h"
+#include "openxr_reflection.h"
+#include "openxr_reflection_structs.h"
+#include "openxr_reflection_parent_structs.h"
 
 #include <string>
 #include <stdint.h>

@@ -1,8 +1,5 @@
-/*
-** Copyright (c) 2017-2024, The Khronos Group Inc.
-**
-** SPDX-License-Identifier: Apache-2.0 OR MIT
-*/
+
+// openxr_platform_defines.h
 
 #ifndef OPENXR_PLATFORM_DEFINES_H_
 #define OPENXR_PLATFORM_DEFINES_H_ 1

@@ -1,3 +1,6 @@
+
+// jnipp.h
+
 #ifndef _JNIPP_H_
 #define _JNIPP_H_ 1
 
@@ -21,7 +24,7 @@ namespace jni
 {
     // JNI Base Types
 
-    typedef _JNIEnv     JNIEnv;
+    typedef _JNIEnv JNIEnv;
     typedef _JavaVM JavaVM;
 
     typedef _jobject* jobject;

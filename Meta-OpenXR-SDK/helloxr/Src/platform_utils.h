@@ -1,11 +1,5 @@
-// Copyright (c) 2017-2024, The Khronos Group Inc.
-// Copyright (c) 2017-2019 Valve Corporation
-// Copyright (c) 2017-2019 LunarG, Inc.
-//
-// SPDX-License-Identifier: Apache-2.0 OR MIT
-//
-// Initial Authors: Mark Young <marky@lunarg.com>, Dave Houlton <daveh@lunarg.com>
-//
+
+// platform_utils.h
 
 #pragma once
 
@@ -23,14 +17,8 @@
 #define OPENXR_RUNTIME_JSON_ENV_VAR "XR_RUNTIME_JSON"
 #define OPENXR_API_LAYER_PATH_ENV_VAR "XR_API_LAYER_PATH"
 
-// This is a CMake generated file with #defines for any functions/includes
-// that it found present and build-time configuration.
-// If you don't have this file, on non-Windows you'll need to define
-// one of HAVE_SECURE_GETENV or HAVE___SECURE_GETENV depending on which
-// of secure_getenv or __secure_getenv are present
-#ifdef OPENXR_HAVE_COMMON_CONFIG
-#include "common_config.h"
-#endif  // OPENXR_HAVE_COMMON_CONFIG
+#define HAVE_SECURE_GETENV 1
+#define HAVE___SECURE_GETENV 1
 
 #define XR_ARCH_ABI "arm64-v8a"
 
@@ -40,27 +28,34 @@ void LogPlatformUtilsError(const std::string& message);
 
 #include <sys/stat.h>
 
-namespace detail {
+#include <sys/system_properties.h>
 
-static inline bool ImplTryRuntimeFilename(const char* rt_dir_prefix, uint16_t major_version, std::string& file_name) {
+namespace detail
+{
+
+static inline bool ImplTryRuntimeFilename(const char* rt_dir_prefix, uint16_t major_version, std::string& file_name)
+{
     auto decorated_path = rt_dir_prefix + std::to_string(major_version) + "/active_runtime." XR_ARCH_ABI ".json";
     auto undecorated_path = rt_dir_prefix + std::to_string(major_version) + "/active_runtime.json";
 
     struct stat buf {};
-    if(0 == stat(decorated_path.c_str(), &buf) ) {
+
+    if(0 == stat(decorated_path.c_str(), &buf) )
+    {
         file_name = decorated_path;
         return true;
     }
-    if(0 == stat(undecorated_path.c_str(), &buf) ) {
+
+    if(0 == stat(undecorated_path.c_str(), &buf) )
+    {
         file_name = undecorated_path;
         return true;
     }
+
     return false;
 }
 
-}  // namespace detail
-
-#include <sys/system_properties.h>
+} // namespace detail
 
 static inline bool PlatformUtilsGetEnvSet(const char* /* name */) {
     // Stub func

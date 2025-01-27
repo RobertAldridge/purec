@@ -1,8 +1,5 @@
-// Copyright (c) 2017-2024, The Khronos Group Inc.
-// Copyright (c) 2017 Valve Corporation
-// Copyright (c) 2017 LunarG, Inc.
-//
-// SPDX-License-Identifier: Apache-2.0 OR MIT
+
+// stdfs_conditions.h
 
 #ifndef _STDFS_CONDITIONS_H
 #define _STDFS_CONDITIONS_H
