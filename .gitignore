@@ -1,0 +1,5 @@
+local.properties
+.cxx/
+.gradle/
+.idea/
+__pycache__
