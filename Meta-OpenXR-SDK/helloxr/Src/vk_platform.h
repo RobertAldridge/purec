@@ -1,12 +1,5 @@
-//
-// File: vk_platform.h
-//
-/*
-** Copyright 2014-2024 The Khronos Group Inc.
-**
-** SPDX-License-Identifier: Apache-2.0
-*/
 
+// vk_platform.h
 
 #ifndef VK_PLATFORM_H_
 #define VK_PLATFORM_H_

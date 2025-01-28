@@ -1,23 +1,12 @@
+
+// vulkan_core.h
+
 #ifndef VULKAN_CORE_H_
 #define VULKAN_CORE_H_ 1
-
-/*
-** Copyright 2015-2024 The Khronos Group Inc.
-**
-** SPDX-License-Identifier: Apache-2.0
-*/
-
-/*
-** This header is generated from the Khronos Vulkan XML API Registry.
-**
-*/
-
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-
 
 // VK_VERSION_1_0 is a preprocessor guard. Do not pass it to API calls.
 #define VK_VERSION_1_0 1
