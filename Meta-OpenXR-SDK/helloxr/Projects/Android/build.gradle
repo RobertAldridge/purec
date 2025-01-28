@@ -36,17 +36,17 @@ repositories {
 apply plugin: 'com.android.application'
 
 android {
-  compileSdk 32
+  compileSdk 31
 
-  ndkVersion '25.1.8937393'
+  ndkVersion '27.2.12479018'
 
   namespace 'org.khronos.openxr.helloxr'
 
   defaultConfig {
     applicationId 'com.oculus.sdk.helloxr'
 
-    minSdk 26
-    targetSdk 32
+    minSdk 31
+    targetSdk 31
 
     versionCode 1
     versionName '1.0'

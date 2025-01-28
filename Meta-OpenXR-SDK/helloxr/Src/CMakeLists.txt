@@ -90,12 +90,6 @@ set(LOCAL_SOURCE
     C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libSPIRV-Tools-opt.a
 )
 
-include_directories("C:/Users/RobertLocalAldridge/AppData/Local/Android/Sdk/ndk/25.1.8937393/sources/third_party/vulkan/src/include/vulkan")
-include_directories("C:/Users/RobertLocalAldridge/AppData/Local/Android/Sdk/ndk/25.1.8937393/sources/third_party/vulkan/src/include")
-
-#include_directories("C:/Users/RobertLocalAldridge/AppData/Local/Android/Sdk/ndk/25.1.8937393/sources/third_party/shaderc/libshaderc/include/shaderc")
-#include_directories("C:/Users/RobertLocalAldridge/AppData/Local/Android/Sdk/ndk/25.1.8937393/sources/third_party/shaderc/libshaderc/include")
-
 option(
     BUILD_FORCE_GENERATION
     "Force re-generation of files even in the presence of pre-generated copies, replacing those copies."

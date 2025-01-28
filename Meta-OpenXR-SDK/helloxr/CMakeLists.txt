@@ -131,12 +131,6 @@ target_link_libraries(
   #C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libopenxr_loader.so
   C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libvulkan.so )
 
-#C:\Users\RobertLocalAldridge\AppData\Local\Android\Sdk\ndk\25.1.8937393\sources\third_party\shaderc
-
-#C:\Users\RobertLocalAldridge\AppData\Local\Android\Sdk\ndk\25.1.8937393\sources\third_party\vulkan\src\include\vulkan
-
-#C:\Users\RobertLocalAldridge\AppData\Local\Android\Sdk\ndk\25.1.8937393\toolchains\llvm\prebuilt\windows-x86_64\sysroot\usr\include\vulkan
-
 set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-u ANativeActivity_onCreate")
 
 # Common across platforms

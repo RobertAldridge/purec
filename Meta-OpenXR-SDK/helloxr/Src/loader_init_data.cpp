@@ -5,12 +5,12 @@
 #include <android/window.h>
 #include <android/native_window_jni.h>
 
-#include <vulkan/vulkan.h>
+#include "vulkan.h"
 
 class _jobject;
 typedef _jobject* jobject;
 
-#include <vulkan/vulkan.h>
+#include "vulkan.h"
 
 #include "openxr_platform_defines.h"
 #include "openxr.h"

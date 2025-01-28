@@ -51,8 +51,8 @@
 class _jobject;
 typedef _jobject* jobject;
 
-#include <vulkan/vulkan.h>
-#include <vulkan/vk_sdk_platform.h>
+#include "vulkan.h"
+#include "vk_sdk_platform.h"
 
 #include "openxr_platform_defines.h"
 #include "openxr.h"
@@ -72,8 +72,8 @@ typedef _jobject* jobject;
 class _jobject;
 typedef _jobject* jobject;
 
-#include <vulkan/vulkan.h>
-#include <vulkan/vk_sdk_platform.h>
+#include "vulkan.h"
+#include "vk_sdk_platform.h"
 
 #include "openxr_platform_defines.h"
 #include "openxr.h"
@@ -323,7 +323,10 @@ void android_main(struct android_app* app)
         // If the timeout is negative, waits indefinitely until an event appears.
         const int timeoutMilliseconds = (!appState.Resumed && !program->IsSessionRunning() && app->destroyRequested == 0) ? -1 : 0;
 
-        if(ALooper_pollAll(timeoutMilliseconds, nullptr, &events, (void**)&source) < 0)
+        //if(ALooper_pollAll(timeoutMilliseconds, nullptr, &events, (void**)&source) < 0)
+        //  break;
+
+        if(ALooper_pollOnce(timeoutMilliseconds, nullptr, &events, (void**)&source) < 0)
           break;
 
         // Process this event.

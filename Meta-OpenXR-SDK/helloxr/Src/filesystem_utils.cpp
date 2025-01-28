@@ -10,7 +10,7 @@
 #include <android/window.h>
 #include <android/native_window_jni.h>
 
-#include <vulkan/vulkan.h>
+#include "vulkan.h"
 
 #include <string>
 #include <stdint.h>
