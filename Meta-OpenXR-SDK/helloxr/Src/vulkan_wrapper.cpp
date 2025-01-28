@@ -1,7 +1,13 @@
 
 // vulkan_wrapper.cpp
 
-#include "vulkan.h"
+#include "header.h"
+
+#include "vk_platform.h"
+#include "vulkan_core.h"
+#include "vulkan_android.h"
+#include "vulkan_beta.h"
+
 #include "vk_sdk_platform.h"
 
 #include "vulkan_wrapper.h"

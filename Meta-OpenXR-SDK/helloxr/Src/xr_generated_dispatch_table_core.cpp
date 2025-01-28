@@ -4,7 +4,10 @@
 class _jobject;
 typedef _jobject* jobject;
 
-#include "vulkan.h"
+#include "vk_platform.h"
+#include "vulkan_core.h"
+#include "vulkan_android.h"
+#include "vulkan_beta.h"
 
 #include "openxr_platform_defines.h"
 #include "openxr.h"

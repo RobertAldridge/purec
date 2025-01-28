@@ -29,6 +29,7 @@ set(LOCAL_HEADERS
     geometry.h
     graphicsapi.h
     graphicsplugin.h
+    header.h
     hex_and_handles.h
     jnipp.h
     loader_init_data.h
@@ -49,13 +50,22 @@ set(LOCAL_HEADERS
     platformdata.h
     platformplugin.h
     shaderc.h
+    shaderc_build_info.h
     shaderc_env.h
     shaderc_hpp.h
     shaderc_status.h
     shaderc_visibility.h
     stdfs_conditions.h
     unique_asset.h
+    vk_icd.h
+    vk_layer.h
+    vk_platform.h
+    vk_sdk_platform.h
+    vulkan_android.h
+    vulkan_beta.h
+    vulcan_core.h
     vulkan_debug_object_namer.h
+    vulcan_hpp.h
     vulcan_wrapper.h
     xr_generated_dispatch_table_core.h
     xr_linear.h

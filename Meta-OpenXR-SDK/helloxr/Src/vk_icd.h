@@ -3,7 +3,10 @@
 
 #pragma once
 
-#include "vulkan.h"
+#include "vk_platform.h"
+#include "vulkan_core.h"
+#include "vulkan_android.h"
+#include "vulkan_beta.h"
 
 // Loader-ICD version negotiation API.  Versions add the following features:
 //   Version 0 - Initial.  Doesn't support vk_icdGetInstanceProcAddr

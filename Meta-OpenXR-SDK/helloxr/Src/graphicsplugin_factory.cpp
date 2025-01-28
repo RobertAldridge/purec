@@ -53,7 +53,10 @@
 class _jobject;
 typedef _jobject* jobject;
 
-#include "vulkan.h"
+#include "vk_platform.h"
+#include "vulkan_core.h"
+#include "vulkan_android.h"
+#include "vulkan_beta.h"
 
 #include "openxr_platform_defines.h"
 #include "openxr.h"
@@ -69,19 +72,6 @@ typedef _jobject* jobject;
 #include <memory>
 #include <stdarg.h>
 #include <stddef.h>
-
-class _jobject;
-typedef _jobject* jobject;
-
-#include "vulkan.h"
-
-#include "openxr_platform_defines.h"
-#include "openxr.h"
-#include "openxr_platform.h"
-#include "openxr_loader_negotiation.h"
-#include "openxr_reflection.h"
-#include "openxr_reflection_structs.h"
-#include "openxr_reflection_parent_structs.h"
 
 inline std::string Fmt(const char* fmt, ...);
 

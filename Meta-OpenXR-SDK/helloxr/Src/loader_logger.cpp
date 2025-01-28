@@ -14,7 +14,10 @@
 class _jobject;
 typedef _jobject* jobject;
 
-#include "vulkan.h"
+#include "vk_platform.h"
+#include "vulkan_core.h"
+#include "vulkan_android.h"
+#include "vulkan_beta.h"
 
 #include "openxr_platform_defines.h"
 #include "openxr.h"
@@ -47,8 +50,6 @@ typedef _jobject* jobject;
 #include <android/window.h>
 #include <android/native_window_jni.h>
 
-#include "vulkan.h"
-
 #include <string>
 #include <stdint.h>
 #include <stdlib.h>
@@ -72,19 +73,6 @@ void LogPlatformUtilsError(const std::string& message);
 #include <sys/system_properties.h>
 
 #include "platform_utils.h"
-
-class _jobject;
-typedef _jobject* jobject;
-
-#include "vulkan.h"
-
-#include "openxr_platform_defines.h"
-#include "openxr.h"
-#include "openxr_platform.h"
-#include "openxr_loader_negotiation.h"
-#include "openxr_reflection.h"
-#include "openxr_reflection_structs.h"
-#include "openxr_reflection_parent_structs.h"
 
 #include <iterator>
 #include <memory>

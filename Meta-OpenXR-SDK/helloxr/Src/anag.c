@@ -57,7 +57,7 @@ int8_t android_app_read_cmd(struct android_app* app)
   if(read(app->msgread, &cmd, sizeof(cmd) ) != sizeof(cmd) )
   {
     LOGE("No data on command pipe!");
-	return -1;
+  return -1;
   }
 
   if(cmd == APP_CMD_SAVE_STATE)
@@ -78,23 +78,23 @@ static void print_cur_config(struct android_app* app)
   AConfiguration_getCountry(app->config, country);
 
   LOGV("Config: mcc=%d mnc=%d lang=%c%c cnt=%c%c orien=%d touch=%d dens=%d "
-	  "keys=%d nav=%d keysHid=%d navHid=%d sdk=%d size=%d long=%d "
-	  "modetype=%d modenight=%d",
-	  AConfiguration_getMcc(app->config),
-	  AConfiguration_getMnc(app->config),
-	  lang[0], lang[1], country[0], country[1],
-	  AConfiguration_getOrientation(app->config),
-	  AConfiguration_getTouchscreen(app->config),
-	  AConfiguration_getDensity(app->config),
-	  AConfiguration_getKeyboard(app->config),
-	  AConfiguration_getNavigation(app->config),
-	  AConfiguration_getKeysHidden(app->config),
-	  AConfiguration_getNavHidden(app->config),
-	  AConfiguration_getSdkVersion(app->config),
-	  AConfiguration_getScreenSize(app->config),
-	  AConfiguration_getScreenLong(app->config),
-	  AConfiguration_getUiModeType(app->config),
-	  AConfiguration_getUiModeNight(app->config) );
+    "keys=%d nav=%d keysHid=%d navHid=%d sdk=%d size=%d long=%d "
+    "modetype=%d modenight=%d",
+    AConfiguration_getMcc(app->config),
+    AConfiguration_getMnc(app->config),
+    lang[0], lang[1], country[0], country[1],
+    AConfiguration_getOrientation(app->config),
+    AConfiguration_getTouchscreen(app->config),
+    AConfiguration_getDensity(app->config),
+    AConfiguration_getKeyboard(app->config),
+    AConfiguration_getNavigation(app->config),
+    AConfiguration_getKeysHidden(app->config),
+    AConfiguration_getNavHidden(app->config),
+    AConfiguration_getSdkVersion(app->config),
+    AConfiguration_getScreenSize(app->config),
+    AConfiguration_getScreenLong(app->config),
+    AConfiguration_getUiModeType(app->config),
+    AConfiguration_getUiModeNight(app->config) );
 }
 
 void android_app_pre_exec_cmd(struct android_app* app, int8_t cmd)
@@ -365,6 +365,11 @@ static struct android_app* android_app_create(ANativeActivity* activity, void* s
   if(savedState)
   {
     app->savedState = malloc(savedStateSize);
+    if( !app->savedState)
+    {
+      free(app);
+      return 0;
+    }
 
     app->savedStateSize = savedStateSize;
 
@@ -375,6 +380,8 @@ static struct android_app* android_app_create(ANativeActivity* activity, void* s
   if(pipe(msgpipe) )
   {
     LOGE("could not create pipe: %s", strerror(errno) );
+    free(app->savedState);
+    free(app);
     return 0;
   }
 
@@ -543,7 +550,7 @@ static void* onSaveInstanceState(ANativeActivity* activity, size_t* outLen)
   app = ToApp(activity);
 
   if( !app)
-    return;
+    return 0;
 
   pthread_mutex_lock( &app->mutex);
   app->stateSaved = 0;
@@ -690,7 +697,7 @@ static void onNativeWindowDestroyed(ANativeActivity* activity, ANativeWindow* wi
 static void onNativeWindowRedrawNeeded(ANativeActivity* activity, ANativeWindow* window)
 {
   struct android_app* app = 0;
-	
+  
   LOGV("NativeWindowRedrawNeeded: %p -- %p", activity, window);
 
   app = ToApp(activity);
@@ -711,7 +718,7 @@ static void onNativeWindowResized(ANativeActivity* activity, ANativeWindow* wind
   
   if( !app)
     return;
-	
+  
   android_app_write_cmd(app, APP_CMD_WINDOW_RESIZED);
 }
 

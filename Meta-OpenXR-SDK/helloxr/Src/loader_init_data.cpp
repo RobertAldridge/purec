@@ -5,12 +5,13 @@
 #include <android/window.h>
 #include <android/native_window_jni.h>
 
-#include "vulkan.h"
+#include "vk_platform.h"
+#include "vulkan_core.h"
+#include "vulkan_android.h"
+#include "vulkan_beta.h"
 
 class _jobject;
 typedef _jobject* jobject;
-
-#include "vulkan.h"
 
 #include "openxr_platform_defines.h"
 #include "openxr.h"
