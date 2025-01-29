@@ -1,0 +1,21 @@
+# (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+
+load("@fbsource//tools/build_defs/android:fb_android_library.bzl", "fb_android_library")
+
+oncall("mr_platform_services")
+
+fb_android_library(
+    name = "app",
+    pure_kotlin = False,
+    visibility = [
+        "//arvr/projects/platform-sdk/1stParty/LibOVRPlatform/samples/AndroidSample/...",
+    ],
+    deps = [
+        "//arvr/projects/platform-sdk/1stParty/LibOVRPlatform:psdk_java",
+        "//arvr/projects/platform-sdk/1stParty/LibOVRPlatform:psdk_jni",
+    ],
+    # FIXME: Can't just depend on the AAR for some reason?
+    # exported_deps = [
+    #     "//arvr/projects/platform-sdk/1stParty/LibOVRPlatform:aar_PlatformSDK",
+    # ]
+)

@@ -302,10 +302,6 @@ inline const char* to_string(XrFormFactor e);
 #include "shaderc.h"
 #include "shaderc_hpp.h"
 
-//#include <json/value.h>
-
-#include "loader_init_data.h"
-
 #include "hex_and_handles.h"
 
 #include "object_info.h"

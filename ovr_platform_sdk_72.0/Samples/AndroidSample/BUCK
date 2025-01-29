@@ -1,0 +1,39 @@
+# (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+
+load("@fbsource//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+load("@fbsource//tools/build_defs/android:android_binary_for_automation.bzl", "android_binary_for_automation")
+load("//tools/build_defs:glob_defs.bzl", "subdir_glob")
+
+oncall("mr_platform_services")
+
+android_binary_for_automation(
+    name = "helloworld",
+    compatible_with = ["ovr_config//os:android"],
+    custom_apk_name_white_list = [
+        "helloworld_arm64_debug",
+        "helloworld_arm64_release",
+    ],
+    di_modules = True,
+    enable_native_multi_dex = True,
+    manifest_skeleton = "AndroidManifest.xml",
+    use_split_dex = True,
+    deps = [
+        ":res",
+        "//arvr/projects/platform-sdk/1stParty/LibOVRPlatform/samples/AndroidSample/java/com/meta/horizon/platform/ovr/sample/helloworld:app",
+    ],
+)
+
+fb_native.android_resource(
+    name = "res",
+    package = "com.meta.horizon.platform.ovr.sample.helloworld",
+    project_res = "res",
+    res = subdir_glob([
+        ("res", "**"),
+    ]),
+    visibility = [
+        "//arvr/projects/platform-sdk/1stParty/LibOVRPlatform/samples/AndroidSample/...",
+    ],
+    deps = [
+        "//arvr/libraries/ocui:res",
+    ],
+)

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name" description="Display name of the app">HelloWorldDemo</string>
+    <string name="hello_world" description="Display text on main activity">Hello world!</string>
+    <string name="menu_settings" description="Display name of the settings menu">Settings</string>
+
+</resources>

@@ -108,6 +108,7 @@ struct Options
     static const std::array<float, 4> TransparentBlack {0.0f, 0.0f, 0.0f, 0.0f};
     static const std::array<float, 4> Black {0.0f, 0.0f, 0.0f, 1.0f};
 
+#if 0
     switch(Parsed.EnvironmentBlendMode)
     {
 
@@ -124,6 +125,9 @@ struct Options
         return SlateGrey;
 
     }
+#else
+    return TransparentBlack;
+#endif
   }
 
   void SetEnvironmentBlendMode(XrEnvironmentBlendMode environmentBlendMode)

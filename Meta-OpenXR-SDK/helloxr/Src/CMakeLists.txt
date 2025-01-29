@@ -14,8 +14,6 @@ set(
   graphicsplugin.h
   header.h
   hex_and_handles.h
-  jnipp.h
-  loader_init_data.h
   loader_logger.h
   logger.h
   object_info.h
@@ -68,7 +66,6 @@ set(
   filesystem_utils.cpp
   graphicsplugin_factory.cpp
   graphicsplugin_vulkan.cpp
-  loader_init_data.cpp
   loader_logger.cpp
   logger.cpp
   main.cpp

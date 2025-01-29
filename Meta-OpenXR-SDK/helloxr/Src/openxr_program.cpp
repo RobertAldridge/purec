@@ -108,6 +108,10 @@ inline XrReferenceSpaceCreateInfo GetXrReferenceSpaceCreateInfo(const std::strin
   return referenceSpaceCreateInfo;
 }
 
+static XrPassthroughFB gPassthroughFeature = XR_NULL_HANDLE;
+
+static XrPassthroughLayerFB gPassthroughLayer = XR_NULL_HANDLE;
+
 struct OpenXrProgram : IOpenXrProgram
 {
   OpenXrProgram(const std::shared_ptr<Options>& options, const std::shared_ptr<IPlatformPlugin>& platformPlugin, const std::shared_ptr<IGraphicsPlugin>& graphicsPlugin)
@@ -232,6 +236,9 @@ struct OpenXrProgram : IOpenXrProgram
     XrInstanceCreateInfo createInfo {XR_TYPE_INSTANCE_CREATE_INFO};
     createInfo.next = m_platformPlugin->GetInstanceCreateExtension();
 
+    extensions.push_back(XR_FB_PASSTHROUGH_EXTENSION_NAME);
+    extensions.push_back(XR_FB_TRIANGLE_MESH_EXTENSION_NAME);
+
     createInfo.enabledExtensionCount = (uint32_t)extensions.size();
     createInfo.enabledExtensionNames = extensions.data();
 
@@ -239,6 +246,15 @@ struct OpenXrProgram : IOpenXrProgram
 
     // Current version is 1.1.x, but helloxr only requires 1.0.x
     createInfo.applicationInfo.apiVersion = XR_API_VERSION_1_0;
+
+    for(int index = 0; index < extensions.size(); index++)
+      Log::Write(Log::Level::Info, Fmt("blah %i %s", index, extensions[index] ) );
+
+    // available Layers: (0)
+    // blah 0 XR_KHR_android_create_instance
+    // blah 1 XR_KHR_vulkan_enable
+    // blah 2 XR_FB_passthrough
+    // blah 3 XR_FB_triangle_mesh
 
     if(tableXr.CreateInstance)
       CHECK_XRCMD(tableXr.CreateInstance(&createInfo, &m_instance) );
@@ -1112,6 +1128,12 @@ struct OpenXrProgram : IOpenXrProgram
       CHECK_XRCMD(tableXr.RequestExitSession(m_session) );
   }
 
+  // Unreal UOculusXRFunctionLibrary::SetSuggestedCpuAndGpuPerformanceLevels (exposed in Blueprint)
+  //
+  // Unity OVRPlugin::suggestedCpuPerfLevel, OVRPlugin::suggestedGpuPerfLevel
+  //
+  // Native ovrp_SetSuggestedCpuPerformanceLevel, ovrp_GetSuggestedGpuPerformanceLevel
+
   void RenderFrame() override
   {
     CHECK(m_session != XR_NULL_HANDLE);
@@ -1127,24 +1149,97 @@ struct OpenXrProgram : IOpenXrProgram
     if(tableXr.BeginFrame)
       CHECK_XRCMD(tableXr.BeginFrame(m_session, &frameBeginInfo) );
 
-    std::vector<XrCompositionLayerBaseHeader*> layers;
-    XrCompositionLayerProjection layer {XR_TYPE_COMPOSITION_LAYER_PROJECTION};
-    std::vector<XrCompositionLayerProjectionView> projectionLayerViews;
-
-    if(frameState.shouldRender == XR_TRUE)
+    if(gPassthroughFeature == XR_NULL_HANDLE)
     {
-      if(RenderLayer(frameState.predictedDisplayTime, projectionLayerViews, layer) )
-        layers.push_back(reinterpret_cast<XrCompositionLayerBaseHeader*>(&layer) );
+      std::vector<XrCompositionLayerBaseHeader*> layers;
+      XrCompositionLayerProjection layer {XR_TYPE_COMPOSITION_LAYER_PROJECTION};
+      std::vector<XrCompositionLayerProjectionView> projectionLayerViews;
+
+      if(frameState.shouldRender == XR_TRUE)
+      {
+        if(RenderLayer(frameState.predictedDisplayTime, projectionLayerViews, layer) )
+          layers.push_back(reinterpret_cast<XrCompositionLayerBaseHeader*>(&layer) );
+      }
+
+      XrFrameEndInfo frameEndInfo {XR_TYPE_FRAME_END_INFO};
+      frameEndInfo.displayTime = frameState.predictedDisplayTime;
+      frameEndInfo.environmentBlendMode = m_options->Parsed.EnvironmentBlendMode;
+      frameEndInfo.layerCount = (uint32_t)layers.size();
+      frameEndInfo.layers = layers.data();
+
+      if(tableXr.EndFrame)
+        CHECK_XRCMD(tableXr.EndFrame(m_session, &frameEndInfo) );
+    }
+    else
+    {
+      XrCompositionLayerProjection layer {XR_TYPE_COMPOSITION_LAYER_PROJECTION};
+      std::vector<XrCompositionLayerProjectionView> projectionLayerViews;
+
+      if(frameState.shouldRender == XR_TRUE)
+        RenderLayer(frameState.predictedDisplayTime, projectionLayerViews, layer);
+
+      XrCompositionLayerPassthroughFB passthroughCompLayer = {XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_FB};
+      passthroughCompLayer.layerHandle = gPassthroughLayer;
+      passthroughCompLayer.flags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
+      passthroughCompLayer.space = XR_NULL_HANDLE;
+
+      layer.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
+
+      const int kLayerCount = 2;
+      const XrCompositionLayerBaseHeader* layers[kLayerCount] = {
+        (const XrCompositionLayerBaseHeader*)&passthroughCompLayer,
+        (const XrCompositionLayerBaseHeader*)&layer/*applicationCompLayer*/
+      };
+
+      XrFrameEndInfo frameEndInfo = {XR_TYPE_FRAME_END_INFO};
+      frameEndInfo.displayTime = frameState.predictedDisplayTime;
+      frameEndInfo.environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
+      frameEndInfo.layerCount = kLayerCount;
+      frameEndInfo.layers = layers;
+
+      if(tableXr.EndFrame)
+        CHECK_XRCMD(tableXr.EndFrame(m_session, &frameEndInfo) );
     }
 
-    XrFrameEndInfo frameEndInfo {XR_TYPE_FRAME_END_INFO};
-    frameEndInfo.displayTime = frameState.predictedDisplayTime;
-    frameEndInfo.environmentBlendMode = m_options->Parsed.EnvironmentBlendMode;
-    frameEndInfo.layerCount = (uint32_t)layers.size();
-    frameEndInfo.layers = layers.data();
+    //XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT
 
-    if(tableXr.EndFrame)
-      CHECK_XRCMD(tableXr.EndFrame(m_session, &frameEndInfo) );
+    if(gPassthroughFeature == XR_NULL_HANDLE)
+    {
+      PFN_xrCreatePassthroughFB pfnXrCreatePassthroughFBX = nullptr;
+      XrResult result = tableXr.GetInstanceProcAddr(m_instance, "xrCreatePassthroughFB", (PFN_xrVoidFunction*)&pfnXrCreatePassthroughFBX);
+
+      if(XR_FAILED(result) )
+        Log::Write(Log::Level::Info, Fmt("failed to obtain the function pointer for xrCreatePassthroughFB") );
+      else
+        Log::Write(Log::Level::Info, Fmt("obtained the function pointer for xrCreatePassthroughFB") );
+
+      XrPassthroughCreateInfoFB passthroughCreateInfo = {XR_TYPE_PASSTHROUGH_CREATE_INFO_FB};
+      passthroughCreateInfo.flags = XR_PASSTHROUGH_IS_RUNNING_AT_CREATION_BIT_FB;
+
+      result = pfnXrCreatePassthroughFBX(m_session, &passthroughCreateInfo, &gPassthroughFeature);
+      if(XR_FAILED(result) )
+        Log::Write(Log::Level::Info, Fmt("failed to create the passthrough feature") );
+      else
+        Log::Write(Log::Level::Info, Fmt("created the passthrough feature") );
+
+      // Create and run passthrough layer
+
+      PFN_xrCreatePassthroughLayerFB pfnXrCreatePassthroughLayerFB = nullptr;
+      result = tableXr.GetInstanceProcAddr(m_instance, "xrCreatePassthroughLayerFB", (PFN_xrVoidFunction*)&pfnXrCreatePassthroughLayerFB);
+
+      XrPassthroughLayerCreateInfoFB layerCreateInfo = {XR_TYPE_PASSTHROUGH_LAYER_CREATE_INFO_FB};
+      layerCreateInfo.passthrough = gPassthroughFeature;
+      layerCreateInfo.purpose = XR_PASSTHROUGH_LAYER_PURPOSE_RECONSTRUCTION_FB;
+      layerCreateInfo.flags = XR_PASSTHROUGH_IS_RUNNING_AT_CREATION_BIT_FB;
+
+      result = pfnXrCreatePassthroughLayerFB(m_session, &layerCreateInfo, &gPassthroughLayer);
+      if(XR_FAILED(result) )
+        Log::Write(Log::Level::Info, Fmt("failed to create and start a passthrough layer") );
+      else
+        Log::Write(Log::Level::Info, Fmt("created and started a passthrough layer") );
+    }
+
+    //Log::Write(Log::Level::Info, Fmt("number of render layers %i", layers.size() ) );
   }
 
   bool RenderLayer(XrTime predictedDisplayTime, std::vector<XrCompositionLayerProjectionView>& projectionLayerViews, XrCompositionLayerProjection& layer)
