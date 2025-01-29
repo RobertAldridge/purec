@@ -1,22 +1,5 @@
-/*
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- * All rights reserved.
- *
- * Licensed under the Oculus SDK License Agreement (the "License");
- * you may not use the Oculus SDK except in compliance with the License,
- * which is provided at the time of installation or download, or which
- * otherwise accompanies this software in either electronic or hard copy form.
- *
- * You may obtain a copy of the License at
- * https://developer.oculus.com/licenses/oculussdk/
- *
- * Unless required by applicable law or agreed to in writing, the Oculus SDK
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+// build.gradle
 
 buildscript {
     repositories {
@@ -51,7 +34,6 @@ android {
     versionCode 1
     versionName '1.0'
 
-    // override app plugin abiFilters for 64-bit support
     externalNativeBuild {
       ndk {
         abiFilters 'arm64-v8a'
@@ -61,7 +43,6 @@ android {
       }
       cmake {
          targets 'helloxr'
-         //version '3.22.1'
          version '3.10.2'
       }
     }
@@ -71,9 +52,6 @@ android {
     main {
       manifest.srcFile 'AndroidManifest.xml'
       res.srcDir '../../android_resources'
-      //java.srcDirs = ['../../java']
-      //assets.srcDirs = ['../../assets']
-      //res.srcDirs = ['../../android_resources']
     }
     Vulkan {
             res.srcDir '../../android_resources/vulkan'
@@ -107,21 +85,13 @@ android {
         }
     }
 
-  // Enable prefab support for the OpenXR AAR
   buildFeatures {
-    //prefab true
   }
 }
 
 dependencies {
-  // Package/application AndroidManifest.xml properties, plus headers and libraries
-  // exposed to CMake
-
-  //implementation 'org.khronos.openxr:openxr_loader_for_android:1.1.43'
 }
 
-// For signing of release binaries - env var must contain an absolute path
-// CI always does this.
 def keystorePropertiesFilename = System.getenv("KEYSTORE_PROPERTIES")
 if (keystorePropertiesFilename) {
     def keystorePropertiesFile = file("${keystorePropertiesFilename}")

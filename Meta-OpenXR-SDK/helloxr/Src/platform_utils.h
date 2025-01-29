@@ -1,6 +1,8 @@
 
 // platform_utils.h
 
+#ifdef __cplusplus
+
 namespace detail
 {
 
@@ -95,3 +97,5 @@ static inline std::string PlatformUtilsGetAndroidSystemProperty(const char* name
 
   return result;
 }
+
+#endif

@@ -1,6 +1,8 @@
 
 // platformplugin.h
 
+#ifdef __cplusplus
+
 struct IPlatformPlugin
 {
   virtual ~IPlatformPlugin() = default;
@@ -13,3 +15,5 @@ struct IPlatformPlugin
 };
 
 std::shared_ptr<IPlatformPlugin> CreatePlatformPlugin(const std::shared_ptr<struct Options>& options, const std::shared_ptr<struct PlatformData>& data);
+
+#endif

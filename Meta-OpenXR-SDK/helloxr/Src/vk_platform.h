@@ -51,10 +51,6 @@ extern "C"
     #define VKAPI_PTR
 #endif
 
-#if !defined(VK_NO_STDDEF_H)
-    #include <stddef.h>
-#endif // !defined(VK_NO_STDDEF_H)
-
 #if !defined(VK_NO_STDINT_H)
     #if defined(_MSC_VER) && (_MSC_VER < 1600)
         typedef signed   __int8  int8_t;
@@ -65,8 +61,6 @@ extern "C"
         typedef unsigned __int32 uint32_t;
         typedef signed   __int64 int64_t;
         typedef unsigned __int64 uint64_t;
-    #else
-        #include <stdint.h>
     #endif
 #endif // !defined(VK_NO_STDINT_H)
 

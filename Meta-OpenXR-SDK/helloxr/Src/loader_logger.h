@@ -1,6 +1,8 @@
 
 // loader_logger.h
 
+#ifdef __cplusplus
+
 #define XR_LOADER_LOG_MESSAGE_SEVERITY_VERBOSE_BIT 0x00000001
 #define XR_LOADER_LOG_MESSAGE_SEVERITY_INFO_BIT 0x00000010
 #define XR_LOADER_LOG_MESSAGE_SEVERITY_WARNING_BIT 0x00000100
@@ -169,3 +171,5 @@ XrDebugUtilsMessageSeverityFlagsEXT LoaderLogMessageSeveritiesToDebugUtilsMessag
 XrLoaderLogMessageTypeFlagBits DebugUtilsMessageTypesToLoaderLogMessageTypes(XrDebugUtilsMessageTypeFlagsEXT utils_types);
 
 XrDebugUtilsMessageTypeFlagsEXT LoaderLogMessageTypesToDebugUtilsMessageTypes(XrLoaderLogMessageTypeFlagBits log_types);
+
+#endif

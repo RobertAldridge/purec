@@ -1,6 +1,8 @@
 
 // loader_init_data.h
 
+#ifdef __cplusplus
+
 #ifdef XR_KHR_LOADER_INIT_SUPPORT
 
 class LoaderInitData
@@ -45,3 +47,5 @@ std::string GetAndroidNativeLibraryDir();
 void* Android_Get_Asset_Manager();
 
 #endif  // XR_KHR_LOADER_INIT_SUPPORT
+
+#endif

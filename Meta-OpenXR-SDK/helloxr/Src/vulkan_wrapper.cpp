@@ -3,18 +3,15 @@
 
 #include "header.h"
 
-#include "vk_platform.h"
-#include "vulkan_core.h"
-#include "vulkan_android.h"
-#include "vulkan_beta.h"
-
-#include "vk_sdk_platform.h"
-
-#include "vulkan_wrapper.h"
-
-#include <dlfcn.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 struct VkGeneratedDispatchTableCore tableVk;
+
+#ifdef __cplusplus
+}
+#endif
 
 int InitVulkan()
 {

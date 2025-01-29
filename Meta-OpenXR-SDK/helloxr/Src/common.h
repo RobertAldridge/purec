@@ -1,10 +1,12 @@
 
 // common.h
 
+#ifdef __cplusplus
+
 #define ENUM_CASE_STR(name, val) case name: return #name;
 
 #define MAKE_TO_STRING_FUNC(enumType) \
-  const char* to_string(enumType e) \
+  inline const char* to_string(enumType e) \
   { \
     switch(e) \
     { \
@@ -63,7 +65,7 @@ template <typename T> ScopeGuard<T> MakeScopeGuard(T&& guard)
   return ScopeGuard<T>(std::forward<T>(guard) );
 }
 
-std::string Fmt(const char* fmt, ...)
+inline std::string Fmt(const char* fmt, ...)
 {
   int size = 0;
 
@@ -96,3 +98,5 @@ template <typename T, size_t Size> constexpr size_t ArraySize(const T (&unused)[
 
   return Size;
 }
+
+#endif

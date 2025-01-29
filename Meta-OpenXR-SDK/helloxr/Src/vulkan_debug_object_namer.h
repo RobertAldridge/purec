@@ -1,6 +1,8 @@
 
 // vulkan_debug_object_namer.h
 
+#ifdef __cplusplus
+
 class VulkanDebugObjectNamer
 {
 public:
@@ -54,3 +56,5 @@ private:
 
   PFN_vkSetDebugUtilsObjectNameEXT BlahVkSetDebugUtilsObjectNameEXT {nullptr};
 };
+
+#endif

@@ -1,23 +1,7 @@
 
 // filesystem_utils.cpp
 
-#include <string>
-#include <vector>
-
-#include "filesystem_utils.h"
-
-#include <android/native_window.h>
-#include <android/window.h>
-#include <android/native_window_jni.h>
-
-#include "vk_platform.h"
-#include "vulkan_core.h"
-#include "vulkan_android.h"
-#include "vulkan_beta.h"
-
-#include <string>
-#include <stdint.h>
-#include <stdlib.h>
+#include "header.h"
 
 #define OPENXR_RELATIVE_PATH "openxr/"
 #define OPENXR_IMPLICIT_API_LAYER_RELATIVE_PATH "/api_layers/implicit.d"
@@ -29,41 +13,9 @@
 #define HAVE_SECURE_GETENV 1
 #define HAVE___SECURE_GETENV 1
 
-#define XR_ARCH_ABI "arm64-v8a"
-
 void LogPlatformUtilsError(const std::string& message);
 
-#include <sys/stat.h>
-
-#include <sys/system_properties.h>
-
-#include "platform_utils.h"
-
-#include <cstring>
-#include <string>
-
-#if defined DISABLE_STD_FILESYSTEM
-#define USE_EXPERIMENTAL_FS 0
-#define USE_FINAL_FS 0
-
-#else
-#include "stdfs_conditions.h"
-#endif
-
-#if USE_FINAL_FS == 1
-#include <filesystem>
 #define FS_PREFIX std::filesystem
-#elif USE_EXPERIMENTAL_FS == 1
-#include <experimental/filesystem>
-#define FS_PREFIX std::experimental::filesystem
-#else
-// Linux/Apple fallback includes
-#include <sys/stat.h>
-#include <unistd.h>
-#include <limits.h>
-#include <stdlib.h>
-#include <dirent.h>
-#endif
 
 #define PATH_SEPARATOR ':'
 #define DIRECTORY_SYMBOL '/'

@@ -1,6 +1,8 @@
 
 // object_info.h
 
+#ifdef __cplusplus
+
 struct XrSdkGenericObject
 {
   uint64_t handle;
@@ -174,3 +176,5 @@ private:
 
   ObjectInfoCollection object_info_;
 };
+
+#endif

@@ -1,6 +1,8 @@
 
 // geometry.h
 
+#ifdef __cplusplus
+
 namespace Geometry
 {
 
@@ -51,3 +53,5 @@ constexpr unsigned short c_cubeIndices[] =
 };
 
 } // namespace Geometry
+
+#endif

@@ -1,10 +1,6 @@
 
 // vk_layer.h
 
-#pragma once
-
-#include "vulkan_core.h"
-
 #define MAX_NUM_UNKNOWN_EXTS 250
 
  // Loader-Layer version negotiation API.  Versions add the following features:

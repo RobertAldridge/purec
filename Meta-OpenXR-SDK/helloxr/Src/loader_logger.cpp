@@ -1,58 +1,7 @@
 
 // loader_logger.cpp
 
-#include <memory>
-#include <mutex>
-#include <string>
-#include <unordered_map>
-#include <unordered_set>
-#include <vector>
-#include <set>
-#include <map>
-#include <shared_mutex>
-
-class _jobject;
-typedef _jobject* jobject;
-
-#include "vk_platform.h"
-#include "vulkan_core.h"
-#include "vulkan_android.h"
-#include "vulkan_beta.h"
-
-#include "openxr_platform_defines.h"
-#include "openxr.h"
-#include "openxr_platform.h"
-#include "openxr_loader_negotiation.h"
-#include "openxr_reflection.h"
-#include "openxr_reflection_structs.h"
-#include "openxr_reflection_parent_structs.h"
-
-#include <string>
-#include <stdint.h>
-
-#include "hex_and_handles.h"
-
-#include <memory>
-#include <string>
-#include <unordered_map>
-#include <vector>
-
-#include "object_info.h"
-
-#include "loader_logger.h"
-
-#include <algorithm>
-#include <vector>
-
-#include "extra_algorithms.h"
-
-#include <android/native_window.h>
-#include <android/window.h>
-#include <android/native_window_jni.h>
-
-#include <string>
-#include <stdint.h>
-#include <stdlib.h>
+#include "header.h"
 
 #define OPENXR_RELATIVE_PATH "openxr/"
 #define OPENXR_IMPLICIT_API_LAYER_RELATIVE_PATH "/api_layers/implicit.d"
@@ -67,20 +16,6 @@ typedef _jobject* jobject;
 #define XR_ARCH_ABI "arm64-v8a"
 
 void LogPlatformUtilsError(const std::string& message);
-
-#include <sys/stat.h>
-
-#include <sys/system_properties.h>
-
-#include "platform_utils.h"
-
-#include <iterator>
-#include <memory>
-#include <mutex>
-#include <sstream>
-#include <string>
-#include <unordered_map>
-#include <utility>
 
 // for routing platform_utils.h messages into the LoaderLogger
 void LogPlatformUtilsError(const std::string& message) {/* LoaderLogger::LogErrorMessage("platform_utils", message);*/ }

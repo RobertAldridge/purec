@@ -294,7 +294,7 @@ SHADERC_EXPORT void shaderc_compile_options_set_optimization_level(
 SHADERC_EXPORT void shaderc_compile_options_set_forced_version_profile(
     shaderc_compile_options_t options, int version, shaderc_profile profile);
 
-// Source text inclusion via #include is supported with a pair of callbacks
+// Source text inclusion via include is supported with a pair of callbacks
 // to an "includer" on the client side.  The first callback processes an
 // inclusion request, and returns an include result.  The includer owns
 // the contents of the result, and those contents must remain valid until the
@@ -322,16 +322,16 @@ typedef struct shaderc_include_result {
 
 // The kinds of include requests.
 enum shaderc_include_type {
-  shaderc_include_type_relative,  // E.g. #include "source"
-  shaderc_include_type_standard   // E.g. #include <source>
+  shaderc_include_type_relative,  // E.g. include "source"
+  shaderc_include_type_standard   // E.g. include <source>
 };
 
-// An includer callback type for mapping an #include request to an include
+// An includer callback type for mapping an include request to an include
 // result.  The user_data parameter specifies the client context.  The
 // requested_source parameter specifies the name of the source being requested.
 // The type parameter specifies the kind of inclusion request being made.
 // The requesting_source parameter specifies the name of the source containing
-// the #include request.  The includer owns the result object and its contents,
+// the include request.  The includer owns the result object and its contents,
 // and both must remain valid until the release callback is called on the result
 // object.
 typedef shaderc_include_result* (*shaderc_include_resolve_fn)(

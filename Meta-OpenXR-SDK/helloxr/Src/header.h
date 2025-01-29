@@ -1,7 +1,10 @@
 
 // header.h
 
+#ifdef __cplusplus
+
 #include <cassert>
+//#include <ccomplex>
 #include <cctype>
 #include <cerrno>
 #include <cfenv>
@@ -12,19 +15,24 @@
 #include <cmath>
 #include <csetjmp>
 #include <csignal>
+//#include <cstdalign>
 #include <cstdarg>
+//#include <cstdatomic>
+//#include <cstdbit>
+//#include <cstdbool>
+//#include <cstdckdint>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+//#include <cstdnoreturn>
 #include <cstring>
+//#include <ctgmath>
+//#include <cthreads>
 #include <ctime>
 #include <cuchar>
 #include <cwchar>
 #include <cwctype>
-
-//#include <stdnoreturn.h>
-//#include <threads.h>
 
 #include <algorithm>
 #include <any>
@@ -112,3 +120,207 @@
 #include <variant>
 #include <vector>
 #include <version>
+
+#else
+
+#include <assert.h>
+#include <complex.h>
+#include <ctype.h>
+#include <errno.h>
+#include <fenv.h>
+#include <float.h>
+#include <inttypes.h>
+#include <limits.h>
+#include <locale.h>
+#include <math.h>
+#include <setjmp.h>
+#include <signal.h>
+#include <stdalign.h>
+#include <stdarg.h>
+#include <stdatomic.h>
+//#include <stdbit.h>
+#include <stdbool.h>
+#include <stdckdint.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdnoreturn.h>
+#include <string.h>
+#include <tgmath.h>
+#include <threads.h>
+#include <time.h>
+#include <uchar.h>
+#include <wchar.h>
+#include <wctype.h>
+
+#endif
+
+#define USE_FINAL_FS 1
+
+#include "filesystem_utils.h"
+
+#include <android/native_window.h>
+#include <android/window.h>
+#include <android/native_window_jni.h>
+
+#include <android/asset_manager_jni.h>
+
+#include <android/configuration.h>
+#include <android/looper.h>
+#include <android/native_activity.h>
+
+#include <android/log.h>
+
+#include <unistd.h>
+#include <sys/resource.h>
+
+#include <poll.h>
+#include <pthread.h>
+#include <sched.h>
+
+#include "anag.h"
+
+#include <jni.h>
+
+#include <sys/stat.h>
+
+#include <sys/system_properties.h>
+
+#define XR_ARCH_ABI "arm64-v8a"
+
+#include "platform_utils.h"
+
+#include "stdfs_conditions.h"
+
+#include <dlfcn.h>
+
+#define VK_USE_PLATFORM_ANDROID_KHR 1
+
+#include "vk_platform.h"
+
+#include "vulkan_core1.h"
+
+#define VK_KHR_video_decode_h264 1
+#define VK_KHR_video_encode_h264 1
+
+#define VK_KHR_video_decode_h265 1
+#define VK_KHR_video_encode_h265 1
+
+#define vulkan_video_codec_h264std 1
+#define vulkan_video_codec_h265std 1
+#include "vulkan_video_codecs_common.h"
+
+#define vulkan_video_codec_h265std_decode 1
+#define vulkan_video_codec_h265std_encode 1
+#include "vulkan_video_codec_h265std.h"
+
+#include "vulkan_video_codec_h265std_decode.h"
+#include "vulkan_video_codec_h265std_encode.h"
+
+#define vulkan_video_codec_h264std_decode 1
+#define vulkan_video_codec_h264std_encode 1
+#include "vulkan_video_codec_h264std.h"
+
+#include "vulkan_video_codec_h264std_decode.h"
+#include "vulkan_video_codec_h264std_encode.h"
+
+#include "vulkan_core2.h"
+
+#include "vulkan_android.h"
+#include "vulkan_beta.h"
+
+#include "vulkan_wrapper.h"
+
+#include "vk_sdk_platform.h"
+
+#include "vk_layer.h"
+
+#include "vk_icd.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern struct VkGeneratedDispatchTableCore tableVk;
+
+#ifdef __cplusplus
+}
+#endif
+
+#include "vulkan_debug_object_namer.h"
+
+#define XR_USE_GRAPHICS_API_VULKAN 1
+
+#define XR_USE_PLATFORM_ANDROID 1
+
+#include "openxr_platform_defines.h"
+
+#include "openxr.h"
+#include "openxr_platform.h"
+#include "openxr_loader_negotiation.h"
+#include "openxr_reflection.h"
+#include "openxr_reflection_structs.h"
+#include "openxr_reflection_parent_structs.h"
+
+#include "platformplugin.h"
+#include "graphicsplugin.h"
+
+#include "logger.h"
+#include "common.h"
+#include "options.h"
+#include "openxr_program.h"
+
+#include "xr_generated_dispatch_table_core.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern struct XrGeneratedDispatchTableCore tableXr;
+
+#ifdef __cplusplus
+}
+#endif
+
+#ifdef __cplusplus
+inline std::string Fmt(const char* fmt, ...);
+
+inline const char* to_string(XrReferenceSpaceType e);
+inline const char* to_string(XrViewConfigurationType e);
+inline const char* to_string(XrEnvironmentBlendMode e);
+inline const char* to_string(XrSessionState e);
+inline const char* to_string(XrResult e);
+inline const char* to_string(XrFormFactor e);
+#endif
+
+#include "check.h"
+
+#include "geometry.h"
+
+#include "platformdata.h"
+
+#include "xr_linear.h"
+
+#ifdef USE_ONLINE_VULKAN_SHADERC
+#include "shaderc_env.h"
+#include "shaderc_status.h"
+#include "shaderc_visibility.h"
+#include "shaderc.h"
+#include "shaderc_hpp.h"
+#endif
+
+//#include <json/value.h>
+
+#include "loader_init_data.h"
+
+#include "hex_and_handles.h"
+
+#include "object_info.h"
+
+#include "loader_logger.h"
+
+#include "extra_algorithms.h"
+
+// todo
+#include "memory.h"

@@ -1,6 +1,8 @@
 
 // logger.h
 
+#ifdef __cplusplus
+
 namespace Log
 {
 
@@ -17,3 +19,5 @@ void SetLevel(Level minSeverity);
 void Write(Level severity, const std::string& msg);
 
 } // namespace Log
+
+#endif

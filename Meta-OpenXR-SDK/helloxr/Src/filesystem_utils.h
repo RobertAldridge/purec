@@ -1,6 +1,8 @@
 
 // filesystem_utils.h
 
+#ifdef __cplusplus
+
 bool FileSysUtilsIsRegularFile(const std::string& path);
 
 bool FileSysUtilsIsDirectory(const std::string& path);
@@ -22,3 +24,5 @@ bool FileSysUtilsCombinePaths(const std::string& parent, const std::string& chil
 bool FileSysUtilsParsePathList(std::string& path_list, std::vector<std::string>& paths);
 
 bool FileSysUtilsFindFilesInPath(const std::string& path, std::vector<std::string>& files);
+
+#endif

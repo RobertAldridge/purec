@@ -1,6 +1,8 @@
 
 // options.h
 
+#ifdef __cplusplus
+
 inline XrFormFactor GetXrFormFactor(const std::string& formFactorStr)
 {
   if(EqualsIgnoreCase(formFactorStr, "Hmd") )
@@ -130,3 +132,5 @@ struct Options
     Parsed.EnvironmentBlendMode = environmentBlendMode;
   }
 };
+
+#endif

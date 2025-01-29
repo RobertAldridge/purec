@@ -1,7 +1,7 @@
 
 // openxr_program.h
 
-#pragma once
+#ifdef __cplusplus
 
 struct IOpenXrProgram
 {
@@ -38,3 +38,5 @@ struct Swapchain
 };
 
 std::shared_ptr<IOpenXrProgram> CreateOpenXrProgram(const std::shared_ptr<Options>& options, const std::shared_ptr<IPlatformPlugin>& platformPlugin, const std::shared_ptr<IGraphicsPlugin>& graphicsPlugin);
+
+#endif

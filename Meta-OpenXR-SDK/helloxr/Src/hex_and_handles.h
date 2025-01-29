@@ -1,6 +1,8 @@
 
 // hex_and_handles.h
 
+#ifdef __cplusplus
+
 inline std::string to_hex(const uint8_t* const data, size_t bytes)
 {
   std::string out(2 + bytes * 2, '?');
@@ -78,3 +80,5 @@ template <typename T> inline std::string PointerToHexString(T const* ptr)
 {
   return to_hex(ptr);
 }
+
+#endif

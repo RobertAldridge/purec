@@ -7,6 +7,8 @@ struct Cube
   XrVector3f Scale;
 };
 
+#ifdef __cplusplus
+
 struct IGraphicsPlugin
 {
   virtual ~IGraphicsPlugin() = default;
@@ -32,3 +34,5 @@ struct IGraphicsPlugin
 };
 
 std::shared_ptr<IGraphicsPlugin> CreateGraphicsPlugin(const std::shared_ptr<struct Options>& options, std::shared_ptr<struct IPlatformPlugin> platformPlugin);
+
+#endif

@@ -1,45 +1,7 @@
 
 // object_info.cpp
 
-class _jobject;
-typedef _jobject* jobject;
-
-#include "vk_platform.h"
-#include "vulkan_core.h"
-#include "vulkan_android.h"
-#include "vulkan_beta.h"
-
-#include "openxr_platform_defines.h"
-#include "openxr.h"
-#include "openxr_platform.h"
-#include "openxr_loader_negotiation.h"
-#include "openxr_reflection.h"
-#include "openxr_reflection_structs.h"
-#include "openxr_reflection_parent_structs.h"
-
-#include <string>
-#include <stdint.h>
-
-#include "hex_and_handles.h"
-
-#include <memory>
-#include <string>
-#include <unordered_map>
-#include <vector>
-
-#include "object_info.h"
-
-#include <algorithm>
-#include <vector>
-
-#include "extra_algorithms.h"
-
-#include <iterator>
-#include <memory>
-#include <sstream>
-#include <string>
-
-#include "memory.h"
+#include "header.h"
 
 std::string XrSdkLogObjectInfo::ToString() const
 {

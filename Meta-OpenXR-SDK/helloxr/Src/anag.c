@@ -1,25 +1,7 @@
 
 // anag.c
 
-#include <jni.h>
-
-#include <errno.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/resource.h>
-
-#include <poll.h>
-#include <pthread.h>
-#include <sched.h>
-
-#include <android/configuration.h>
-#include <android/looper.h>
-#include <android/native_activity.h>
-
-#include "anag.h"
-
-#include <android/log.h>
+#include "header.h"
 
 #define LOGI(...) do{ __android_log_print(ANDROID_LOG_INFO, "threaded_app", __VA_ARGS__); } while(0)
 #define LOGE(...) do{ __android_log_print(ANDROID_LOG_ERROR, "threaded_app", __VA_ARGS__); } while(0)
@@ -489,7 +471,7 @@ static void android_app_free(struct android_app* app)
 static struct android_app* ToApp(ANativeActivity* activity)
 {
   struct android_app* app = 0;
-  
+
   if( !activity)
     return 0;
 
@@ -503,9 +485,9 @@ static void onDestroy(ANativeActivity* activity)
   struct android_app* app = 0;
 
   LOGV("Destroy: %p", activity);
-  
+
   app = ToApp(activity);
-  
+
   if( !app)
     return;
 
@@ -519,7 +501,7 @@ static void onStart(ANativeActivity* activity)
   LOGV("Start: %p", activity);
 
   app = ToApp(activity);
-  
+
   if( !app)
     return;
 
@@ -589,7 +571,7 @@ static void onPause(ANativeActivity* activity)
 static void onStop(ANativeActivity* activity)
 {
   struct android_app* app = 0;
-  
+
   LOGV("Stop: %p", activity);
 
   app = ToApp(activity);
@@ -655,7 +637,7 @@ static void onLowMemory(ANativeActivity* activity)
 static void onWindowFocusChanged(ANativeActivity* activity, int focused)
 {
   struct android_app* app = 0;
-  
+
   LOGV("WindowFocusChanged: %p -- %d", activity, focused);
 
   app = ToApp(activity);
@@ -669,7 +651,7 @@ static void onWindowFocusChanged(ANativeActivity* activity, int focused)
 static void onNativeWindowCreated(ANativeActivity* activity, ANativeWindow* window)
 {
   struct android_app* app = 0;
-  
+
   LOGV("NativeWindowCreated: %p -- %p", activity, window);
 
   app = ToApp(activity);
@@ -683,7 +665,7 @@ static void onNativeWindowCreated(ANativeActivity* activity, ANativeWindow* wind
 static void onNativeWindowDestroyed(ANativeActivity* activity, ANativeWindow* window)
 {
   struct android_app* app = 0;
-  
+
   LOGV("NativeWindowDestroyed: %p -- %p", activity, window);
 
   app = ToApp(activity);
@@ -697,11 +679,11 @@ static void onNativeWindowDestroyed(ANativeActivity* activity, ANativeWindow* wi
 static void onNativeWindowRedrawNeeded(ANativeActivity* activity, ANativeWindow* window)
 {
   struct android_app* app = 0;
-  
+
   LOGV("NativeWindowRedrawNeeded: %p -- %p", activity, window);
 
   app = ToApp(activity);
-  
+
   if( !app)
     return;
 
@@ -715,17 +697,17 @@ static void onNativeWindowResized(ANativeActivity* activity, ANativeWindow* wind
   LOGV("NativeWindowResized: %p -- %p", activity, window);
 
   app = ToApp(activity);
-  
+
   if( !app)
     return;
-  
+
   android_app_write_cmd(app, APP_CMD_WINDOW_RESIZED);
 }
 
 static void onInputQueueCreated(ANativeActivity* activity, AInputQueue* queue)
 {
   struct android_app* app = 0;
-  
+
   LOGV("InputQueueCreated: %p -- %p", activity, queue);
 
   app = ToApp(activity);
@@ -739,7 +721,7 @@ static void onInputQueueCreated(ANativeActivity* activity, AInputQueue* queue)
 static void onInputQueueDestroyed(ANativeActivity* activity, AInputQueue* queue)
 {
   struct android_app* app = 0;
-  
+
   LOGV("InputQueueDestroyed: %p -- %p", activity, queue);
 
   app = ToApp(activity);
