@@ -1,9 +1,6 @@
 
 // openxr.h
 
-#ifndef OPENXR_H_
-#define OPENXR_H_ 1
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -8420,9 +8417,6 @@ typedef struct XrSpaceGroupUuidFilterInfoMETA {
  XrUuid groupUuid;
 } XrSpaceGroupUuidFilterInfoMETA;
 
-
 #ifdef __cplusplus
 }
-#endif
-
 #endif

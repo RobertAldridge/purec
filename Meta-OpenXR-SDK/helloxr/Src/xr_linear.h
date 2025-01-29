@@ -1,9 +1,6 @@
 
 // xr_linear.h
 
-#ifndef XR_LINEAR_H_
-#define XR_LINEAR_H_
-
 #define MATH_PI 3.14159265358979323846f
 
 #define DEFAULT_NEAR_Z 0.015625f // exact floating point representation
@@ -859,5 +856,3 @@ inline static bool XrMatrix4x4f_CullBounds(const XrMatrix4x4f* mvp, const XrVect
 
   return i == 8;
 }
-
-#endif // XR_LINEAR_H_

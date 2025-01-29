@@ -195,8 +195,6 @@
 
 #include <dlfcn.h>
 
-#define VK_USE_PLATFORM_ANDROID_KHR 1
-
 #include "vk_platform.h"
 
 #include "vulkan_core1.h"
@@ -250,10 +248,6 @@ extern struct VkGeneratedDispatchTableCore tableVk;
 
 #include "vulkan_debug_object_namer.h"
 
-#define XR_USE_GRAPHICS_API_VULKAN 1
-
-#define XR_USE_PLATFORM_ANDROID 1
-
 #include "openxr_platform_defines.h"
 
 #include "openxr.h"
@@ -302,13 +296,11 @@ inline const char* to_string(XrFormFactor e);
 
 #include "xr_linear.h"
 
-#ifdef USE_ONLINE_VULKAN_SHADERC
 #include "shaderc_env.h"
 #include "shaderc_status.h"
 #include "shaderc_visibility.h"
 #include "shaderc.h"
 #include "shaderc_hpp.h"
-#endif
 
 //#include <json/value.h>
 

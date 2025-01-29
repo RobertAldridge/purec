@@ -1,9 +1,6 @@
 
 // vulkan_beta.h
 
-#ifndef VULKAN_BETA_H_
-#define VULKAN_BETA_H_ 1
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -200,6 +197,4 @@ typedef struct VkAccelerationStructureTrianglesDisplacementMicromapNV {
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

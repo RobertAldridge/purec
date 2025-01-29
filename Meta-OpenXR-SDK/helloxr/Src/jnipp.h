@@ -1,9 +1,6 @@
 
 // jnipp.h
 
-#ifndef _JNIPP_H_
-#define _JNIPP_H_ 1
-
 struct JNIEnv_;
 struct _JNIEnv;
 struct JavaVM_;
@@ -563,5 +560,3 @@ public:
     return _length;
   }
 }
-
-#endif // _JNIPP_H_

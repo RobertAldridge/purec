@@ -1,9 +1,6 @@
 
 // vulkan_wrapper.h
 
-#ifndef VULKAN_WRAPPER_H
-#define VULKAN_WRAPPER_H
-
 struct VkGeneratedDispatchTableCore
 {
   PFN_vkGetInstanceProcAddr GetInstanceProcAddr;
@@ -250,5 +247,3 @@ struct VkGeneratedDispatchTableCore
 };
 
 int InitVulkan();
-
-#endif // VULKAN_WRAPPER_H

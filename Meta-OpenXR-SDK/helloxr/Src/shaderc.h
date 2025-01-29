@@ -1,9 +1,6 @@
 
 // shaderc.h
 
-#ifndef SHADERC_SHADERC_H_
-#define SHADERC_SHADERC_H_
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -566,5 +563,3 @@ SHADERC_EXPORT bool shaderc_parse_version_profile(const char* str, int* version,
 #ifdef __cplusplus
 }
 #endif  // __cplusplus
-
-#endif  // SHADERC_SHADERC_H_

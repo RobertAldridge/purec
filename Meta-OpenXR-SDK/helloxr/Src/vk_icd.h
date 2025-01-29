@@ -43,26 +43,21 @@ typedef PFN_vkVoidFunction(VKAPI_PTR *PFN_GetPhysicalDeviceProcAddr)(VkInstance 
 typedef VkResult (VKAPI_PTR *PFN_vk_icdNegotiateLoaderICDInterfaceVersion)(uint32_t* pVersion);
 typedef PFN_vkVoidFunction (VKAPI_PTR *PFN_vk_icdGetInstanceProcAddr)(VkInstance instance, const char* pName);
 typedef PFN_vkVoidFunction (VKAPI_PTR *PFN_vk_icdGetPhysicalDeviceProcAddr)(VkInstance instance, const char* pName);
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
-typedef VkResult (VKAPI_PTR *PFN_vk_icdEnumerateAdapterPhysicalDevices)(VkInstance instance, LUID adapterLUID,
-    uint32_t* pPhysicalDeviceCount, VkPhysicalDevice* pPhysicalDevices);
-#endif
 
 // Prototypes for loader/ICD interface
 #if !defined(VK_NO_PROTOTYPES)
+
 #ifdef __cplusplus
 extern "C" {
 #endif
     VKAPI_ATTR VkResult VKAPI_CALL vk_icdNegotiateLoaderICDInterfaceVersion(uint32_t* pVersion);
     VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL vk_icdGetInstanceProcAddr(VkInstance instance, const char* pName);
     VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL vk_icdGetPhysicalDeviceProcAddr(VkInstance instance, const char* pName);
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
-    VKAPI_ATTR VkResult VKAPI_CALL vk_icdEnumerateAdapterPhysicalDevices(VkInstance instance, LUID adapterLUID,
-        uint32_t* pPhysicalDeviceCount, VkPhysicalDevice* pPhysicalDevices);
-#endif
+
 #ifdef __cplusplus
 }
 #endif
+
 #endif
 
 /*
@@ -115,81 +110,10 @@ typedef struct {
     VkIcdWsiPlatform platform;
 } VkIcdSurfaceBase;
 
-#ifdef VK_USE_PLATFORM_MIR_KHR
-typedef struct {
-    VkIcdSurfaceBase base;
-    MirConnection *connection;
-    MirSurface *mirSurface;
-} VkIcdSurfaceMir;
-#endif  // VK_USE_PLATFORM_MIR_KHR
-
-#ifdef VK_USE_PLATFORM_WAYLAND_KHR
-typedef struct {
-    VkIcdSurfaceBase base;
-    struct wl_display *display;
-    struct wl_surface *surface;
-} VkIcdSurfaceWayland;
-#endif  // VK_USE_PLATFORM_WAYLAND_KHR
-
-#ifdef VK_USE_PLATFORM_WIN32_KHR
-typedef struct {
-    VkIcdSurfaceBase base;
-    HINSTANCE hinstance;
-    HWND hwnd;
-} VkIcdSurfaceWin32;
-#endif  // VK_USE_PLATFORM_WIN32_KHR
-
-#ifdef VK_USE_PLATFORM_XCB_KHR
-typedef struct {
-    VkIcdSurfaceBase base;
-    xcb_connection_t *connection;
-    xcb_window_t window;
-} VkIcdSurfaceXcb;
-#endif  // VK_USE_PLATFORM_XCB_KHR
-
-#ifdef VK_USE_PLATFORM_XLIB_KHR
-typedef struct {
-    VkIcdSurfaceBase base;
-    Display *dpy;
-    Window window;
-} VkIcdSurfaceXlib;
-#endif  // VK_USE_PLATFORM_XLIB_KHR
-
-#ifdef VK_USE_PLATFORM_DIRECTFB_EXT
-typedef struct {
-    VkIcdSurfaceBase base;
-    IDirectFB *dfb;
-    IDirectFBSurface *surface;
-} VkIcdSurfaceDirectFB;
-#endif  // VK_USE_PLATFORM_DIRECTFB_EXT
-
-#ifdef VK_USE_PLATFORM_ANDROID_KHR
 typedef struct {
     VkIcdSurfaceBase base;
     struct ANativeWindow *window;
 } VkIcdSurfaceAndroid;
-#endif  // VK_USE_PLATFORM_ANDROID_KHR
-
-#ifdef VK_USE_PLATFORM_MACOS_MVK
-typedef struct {
-    VkIcdSurfaceBase base;
-    const void *pView;
-} VkIcdSurfaceMacOS;
-#endif  // VK_USE_PLATFORM_MACOS_MVK
-
-#ifdef VK_USE_PLATFORM_IOS_MVK
-typedef struct {
-    VkIcdSurfaceBase base;
-    const void *pView;
-} VkIcdSurfaceIOS;
-#endif  // VK_USE_PLATFORM_IOS_MVK
-
-#ifdef VK_USE_PLATFORM_GGP
-typedef struct {
-    VkIcdSurfaceBase base;
-    GgpStreamDescriptor streamDescriptor;
-} VkIcdSurfaceGgp;
-#endif  // VK_USE_PLATFORM_GGP
 
 typedef struct {
     VkIcdSurfaceBase base;
@@ -205,31 +129,3 @@ typedef struct {
 typedef struct {
     VkIcdSurfaceBase base;
 } VkIcdSurfaceHeadless;
-
-#ifdef VK_USE_PLATFORM_METAL_EXT
-typedef struct {
-    VkIcdSurfaceBase base;
-    const CAMetalLayer *pLayer;
-} VkIcdSurfaceMetal;
-#endif // VK_USE_PLATFORM_METAL_EXT
-
-#ifdef VK_USE_PLATFORM_VI_NN
-typedef struct {
-    VkIcdSurfaceBase base;
-    void *window;
-} VkIcdSurfaceVi;
-#endif // VK_USE_PLATFORM_VI_NN
-
-#ifdef VK_USE_PLATFORM_SCREEN_QNX
-typedef struct {
-    VkIcdSurfaceBase base;
-    struct _screen_context *context;
-    struct _screen_window *window;
-} VkIcdSurfaceScreen;
-#endif  // VK_USE_PLATFORM_SCREEN_QNX
-
-#ifdef VK_USE_PLATFORM_FUCHSIA
-typedef struct {
-  VkIcdSurfaceBase base;
-} VkIcdSurfaceImagePipe;
-#endif // VK_USE_PLATFORM_FUCHSIA

@@ -3,7 +3,8 @@
 
 #ifdef __cplusplus
 
-namespace shaderc {
+namespace shaderc
+{
 // A CompilationResult contains the compiler output, compilation status,
 // and messages.
 //
@@ -584,6 +585,7 @@ class Compiler {
 
   shaderc_compiler_t compiler_;
 };
+
 }  // namespace shaderc
 
 #endif

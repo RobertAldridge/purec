@@ -1,9 +1,6 @@
 
 // openxr_reflection.h
 
-#ifndef OPENXR_REFLECTION_H_
-#define OPENXR_REFLECTION_H_ 1
-
 #define XR_LIST_ENUM_XrResult(_) \
   _(XR_SUCCESS, 0) \
   _(XR_TIMEOUT_EXPIRED, 1) \
@@ -5779,121 +5776,30 @@
   _(XrSystemColocationDiscoveryPropertiesMETA, XR_TYPE_SYSTEM_COLOCATION_DISCOVERY_PROPERTIES_META) \
   _(XrSystemSpatialEntityGroupSharingPropertiesMETA, XR_TYPE_SYSTEM_SPATIAL_ENTITY_GROUP_SHARING_PROPERTIES_META) \
   _(XrShareSpacesRecipientGroupsMETA, XR_TYPE_SHARE_SPACES_RECIPIENT_GROUPS_META) \
-  _(XrSpaceGroupUuidFilterInfoMETA, XR_TYPE_SPACE_GROUP_UUID_FILTER_INFO_META) \
+  _(XrSpaceGroupUuidFilterInfoMETA, XR_TYPE_SPACE_GROUP_UUID_FILTER_INFO_META)
 
-
-#if defined(XR_USE_GRAPHICS_API_D3D11)
-/// Implementation detail of XR_LIST_STRUCTURE_TYPES()
-/// Structure types available only when XR_USE_GRAPHICS_API_D3D11 is defined
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_D3D11(_) \
-  _(XrGraphicsBindingD3D11KHR, XR_TYPE_GRAPHICS_BINDING_D3D11_KHR) \
-  _(XrSwapchainImageD3D11KHR, XR_TYPE_SWAPCHAIN_IMAGE_D3D11_KHR) \
-  _(XrGraphicsRequirementsD3D11KHR, XR_TYPE_GRAPHICS_REQUIREMENTS_D3D11_KHR) \
-
-#else
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_D3D11(_)
-#endif
 
-#if defined(XR_USE_GRAPHICS_API_D3D12)
-/// Implementation detail of XR_LIST_STRUCTURE_TYPES()
-/// Structure types available only when XR_USE_GRAPHICS_API_D3D12 is defined
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_D3D12(_) \
-  _(XrGraphicsBindingD3D12KHR, XR_TYPE_GRAPHICS_BINDING_D3D12_KHR) \
-  _(XrSwapchainImageD3D12KHR, XR_TYPE_SWAPCHAIN_IMAGE_D3D12_KHR) \
-  _(XrGraphicsRequirementsD3D12KHR, XR_TYPE_GRAPHICS_REQUIREMENTS_D3D12_KHR) \
-
-#else
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_D3D12(_)
-#endif
 
-#if defined(XR_USE_GRAPHICS_API_METAL)
-/// Implementation detail of XR_LIST_STRUCTURE_TYPES()
-/// Structure types available only when XR_USE_GRAPHICS_API_METAL is defined
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_METAL(_) \
-  _(XrGraphicsBindingMetalKHR, XR_TYPE_GRAPHICS_BINDING_METAL_KHR) \
-  _(XrSwapchainImageMetalKHR, XR_TYPE_SWAPCHAIN_IMAGE_METAL_KHR) \
-  _(XrGraphicsRequirementsMetalKHR, XR_TYPE_GRAPHICS_REQUIREMENTS_METAL_KHR) \
-
-#else
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_METAL(_)
-#endif
 
-#if defined(XR_USE_GRAPHICS_API_OPENGL)
-/// Implementation detail of XR_LIST_STRUCTURE_TYPES()
-/// Structure types available only when XR_USE_GRAPHICS_API_OPENGL is defined
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL(_) \
-  _(XrSwapchainImageOpenGLKHR, XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR) \
-  _(XrGraphicsRequirementsOpenGLKHR, XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_KHR) \
-
-#else
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL(_)
-#endif
 
-#if defined(XR_USE_GRAPHICS_API_OPENGL) && defined(XR_USE_PLATFORM_WAYLAND)
-/// Implementation detail of XR_LIST_STRUCTURE_TYPES()
-/// Structure types available only when XR_USE_GRAPHICS_API_OPENGL and XR_USE_PLATFORM_WAYLAND are defined
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_WAYLAND(_) \
-  _(XrGraphicsBindingOpenGLWaylandKHR, XR_TYPE_GRAPHICS_BINDING_OPENGL_WAYLAND_KHR) \
-
-#else
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_WAYLAND(_)
-#endif
 
-#if defined(XR_USE_GRAPHICS_API_OPENGL) && defined(XR_USE_PLATFORM_WIN32)
-/// Implementation detail of XR_LIST_STRUCTURE_TYPES()
-/// Structure types available only when XR_USE_GRAPHICS_API_OPENGL and XR_USE_PLATFORM_WIN32 are defined
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_WIN32(_) \
-  _(XrGraphicsBindingOpenGLWin32KHR, XR_TYPE_GRAPHICS_BINDING_OPENGL_WIN32_KHR) \
-
-#else
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_WIN32(_)
-#endif
 
-#if defined(XR_USE_GRAPHICS_API_OPENGL) && defined(XR_USE_PLATFORM_XCB)
-/// Implementation detail of XR_LIST_STRUCTURE_TYPES()
-/// Structure types available only when XR_USE_GRAPHICS_API_OPENGL and XR_USE_PLATFORM_XCB are defined
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_XCB(_) \
-  _(XrGraphicsBindingOpenGLXcbKHR, XR_TYPE_GRAPHICS_BINDING_OPENGL_XCB_KHR) \
-
-#else
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_XCB(_)
-#endif
 
-#if defined(XR_USE_GRAPHICS_API_OPENGL) && defined(XR_USE_PLATFORM_XLIB)
-/// Implementation detail of XR_LIST_STRUCTURE_TYPES()
-/// Structure types available only when XR_USE_GRAPHICS_API_OPENGL and XR_USE_PLATFORM_XLIB are defined
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_XLIB(_) \
-  _(XrGraphicsBindingOpenGLXlibKHR, XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR) \
-
-#else
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_XLIB(_)
-#endif
 
-#if defined(XR_USE_GRAPHICS_API_OPENGL_ES)
-/// Implementation detail of XR_LIST_STRUCTURE_TYPES()
-/// Structure types available only when XR_USE_GRAPHICS_API_OPENGL_ES is defined
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_ES(_) \
-  _(XrSwapchainImageOpenGLESKHR, XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_ES_KHR) \
-  _(XrGraphicsRequirementsOpenGLESKHR, XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_ES_KHR) \
-  _(XrSwapchainStateSamplerOpenGLESFB, XR_TYPE_SWAPCHAIN_STATE_SAMPLER_OPENGL_ES_FB) \
-
-#else
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_ES(_)
-#endif
 
-#if defined(XR_USE_GRAPHICS_API_OPENGL_ES) && defined(XR_USE_PLATFORM_ANDROID)
-/// Implementation detail of XR_LIST_STRUCTURE_TYPES()
-/// Structure types available only when XR_USE_GRAPHICS_API_OPENGL_ES and XR_USE_PLATFORM_ANDROID are defined
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_ES_XR_USE_PLATFORM_ANDROID(_) \
-  _(XrGraphicsBindingOpenGLESAndroidKHR, XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR) \
-
-#else
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_ES_XR_USE_PLATFORM_ANDROID(_)
-#endif
 
-#if defined(XR_USE_GRAPHICS_API_VULKAN)
 /// Implementation detail of XR_LIST_STRUCTURE_TYPES()
-/// Structure types available only when XR_USE_GRAPHICS_API_VULKAN is defined
+/// Structure types only available when Vulkan is defined
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_VULKAN(_) \
   _(XrVulkanSwapchainFormatListCreateInfoKHR, XR_TYPE_VULKAN_SWAPCHAIN_FORMAT_LIST_CREATE_INFO_KHR) \
   _(XrGraphicsBindingVulkanKHR, XR_TYPE_GRAPHICS_BINDING_VULKAN_KHR) \
@@ -5904,56 +5810,21 @@
   _(XrVulkanGraphicsDeviceGetInfoKHR, XR_TYPE_VULKAN_GRAPHICS_DEVICE_GET_INFO_KHR) \
   _(XrSwapchainImageFoveationVulkanFB, XR_TYPE_SWAPCHAIN_IMAGE_FOVEATION_VULKAN_FB) \
   _(XrSwapchainStateSamplerVulkanFB, XR_TYPE_SWAPCHAIN_STATE_SAMPLER_VULKAN_FB) \
-  _(XrVulkanSwapchainCreateInfoMETA, XR_TYPE_VULKAN_SWAPCHAIN_CREATE_INFO_META) \
+  _(XrVulkanSwapchainCreateInfoMETA, XR_TYPE_VULKAN_SWAPCHAIN_CREATE_INFO_META)
 
-#else
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_VULKAN(_)
-#endif
-
-#if defined(XR_USE_PLATFORM_ANDROID)
 /// Implementation detail of XR_LIST_STRUCTURE_TYPES()
-/// Structure types available only when XR_USE_PLATFORM_ANDROID is defined
+/// Structure types only available on the Android platform
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_ANDROID(_) \
   _(XrInstanceCreateInfoAndroidKHR, XR_TYPE_INSTANCE_CREATE_INFO_ANDROID_KHR) \
   _(XrLoaderInitInfoAndroidKHR, XR_TYPE_LOADER_INIT_INFO_ANDROID_KHR) \
   _(XrAndroidSurfaceSwapchainCreateInfoFB, XR_TYPE_ANDROID_SURFACE_SWAPCHAIN_CREATE_INFO_FB) \
-  _(XrSwapchainStateAndroidSurfaceDimensionsFB, XR_TYPE_SWAPCHAIN_STATE_ANDROID_SURFACE_DIMENSIONS_FB) \
+  _(XrSwapchainStateAndroidSurfaceDimensionsFB, XR_TYPE_SWAPCHAIN_STATE_ANDROID_SURFACE_DIMENSIONS_FB)
 
-#else
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_ANDROID(_)
-#endif
-
-#if defined(XR_USE_PLATFORM_EGL)
-/// Implementation detail of XR_LIST_STRUCTURE_TYPES()
-/// Structure types available only when XR_USE_PLATFORM_EGL is defined
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_EGL(_) \
-  _(XrGraphicsBindingEGLMNDX, XR_TYPE_GRAPHICS_BINDING_EGL_MNDX) \
-
-#else
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_EGL(_)
-#endif
 
-#if defined(XR_USE_PLATFORM_ML)
-/// Implementation detail of XR_LIST_STRUCTURE_TYPES()
-/// Structure types available only when XR_USE_PLATFORM_ML is defined
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_ML(_) \
-  _(XrCoordinateSpaceCreateInfoML, XR_TYPE_COORDINATE_SPACE_CREATE_INFO_ML) \
-
-#else
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_ML(_)
-#endif
 
-#if defined(XR_USE_PLATFORM_WIN32)
-/// Implementation detail of XR_LIST_STRUCTURE_TYPES()
-/// Structure types available only when XR_USE_PLATFORM_WIN32 is defined
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_WIN32(_) \
-  _(XrHolographicWindowAttachmentMSFT, XR_TYPE_HOLOGRAPHIC_WINDOW_ATTACHMENT_MSFT) \
-
-#else
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_WIN32(_)
-#endif
-
-
 
 /// Calls your macro with the name and extension number of all known
 /// extensions in this version of the spec.
@@ -6742,5 +6613,3 @@
   _(StopColocationDiscoveryMETA, META_colocation_discovery) \
   _(StartColocationAdvertisementMETA, META_colocation_discovery) \
   _(StopColocationAdvertisementMETA, META_colocation_discovery)
-
-#endif

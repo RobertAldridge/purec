@@ -1,9 +1,6 @@
 
 // shaderc_status.h
 
-#ifndef SHADERC_STATUS_H_
-#define SHADERC_STATUS_H_
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -24,5 +21,3 @@ typedef enum {
 #ifdef __cplusplus
 }
 #endif  // __cplusplus
-
-#endif  // SHADERC_STATUS_H_

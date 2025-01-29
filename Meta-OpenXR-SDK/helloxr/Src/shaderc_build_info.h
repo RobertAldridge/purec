@@ -1,9 +1,6 @@
 
 // shaderc_build_info.h
 
-#ifndef GLSLANG_BUILD_INFO
-#define GLSLANG_BUILD_INFO
-
 #define GLSLANG_VERSION_MAJOR 11
 #define GLSLANG_VERSION_MINOR 11
 #define GLSLANG_VERSION_PATCH 0
@@ -28,5 +25,3 @@
     ((GLSLANG_VERSION_MAJOR) < (major) || ((major) == GLSLANG_VERSION_MAJOR && \
     ((GLSLANG_VERSION_MINOR) < (minor) || ((minor) == GLSLANG_VERSION_MINOR && \
      (GLSLANG_VERSION_PATCH <= (patch))))))
-
-#endif // GLSLANG_BUILD_INFO

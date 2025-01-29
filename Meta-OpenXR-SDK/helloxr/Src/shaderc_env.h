@@ -1,9 +1,6 @@
 
 // shaderc_env.h
 
-#ifndef SHADERC_ENV_H_
-#define SHADERC_ENV_H_
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -55,5 +52,3 @@ typedef enum {
 #ifdef __cplusplus
 }
 #endif  // __cplusplus
-
-#endif  // SHADERC_ENV_H_

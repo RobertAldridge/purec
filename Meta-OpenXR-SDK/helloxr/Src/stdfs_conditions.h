@@ -1,9 +1,6 @@
 
 // stdfs_conditions.h
 
-#ifndef _STDFS_CONDITIONS_H
-#define _STDFS_CONDITIONS_H
-
 // If the C++ macro is set to the version containing C++17, it must support
 // the final C++17 package
 #if __cplusplus >= 201703L
@@ -43,5 +40,3 @@
 #define USE_FINAL_FS 0
 
 #endif
-
-#endif  // !_STDFS_CONDITIONS_H

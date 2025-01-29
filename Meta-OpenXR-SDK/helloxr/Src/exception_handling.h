@@ -1,9 +1,6 @@
 
 // exception_handling.h
 
-#define HAVE_SECURE_GETENV 1
-#define HAVE___SECURE_GETENV 1
-
 #ifdef XRLOADER_DISABLE_EXCEPTION_HANDLING
 
 #define XRLOADER_ABI_TRY
@@ -33,5 +30,3 @@
     LoaderLogger::LogErrorMessage("", "Unknown failure"); \
     return XR_ERROR_RUNTIME_FAILURE; \
   }
-
-#endif // XRLOADER_DISABLE_EXCEPTION_HANDLING

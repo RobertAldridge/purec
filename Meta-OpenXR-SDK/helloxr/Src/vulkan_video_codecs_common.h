@@ -1,9 +1,6 @@
 
 // vulkan_video_codecs_common.h
 
-#ifndef VULKAN_VIDEO_CODECS_COMMON_H_
-#define VULKAN_VIDEO_CODECS_COMMON_H_ 1
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -16,6 +13,4 @@ extern "C" {
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

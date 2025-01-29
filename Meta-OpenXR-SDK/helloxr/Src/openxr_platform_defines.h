@@ -1,49 +1,13 @@
 
 // openxr_platform_defines.h
 
-#ifndef OPENXR_PLATFORM_DEFINES_H_
-#define OPENXR_PLATFORM_DEFINES_H_ 1
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#if defined(_WIN32)
-
-#define XRAPI_ATTR
-#define XRAPI_CALL __stdcall
-#define XRAPI_PTR XRAPI_CALL
-
-#elif defined(__ANDROID__) && defined(__ARM_ARCH) && __ARM_ARCH < 7
-
-#error "API not supported for the 'armeabi' NDK ABI"
-
-#elif defined(__ANDROID__) && defined(__ARM_ARCH) && __ARM_ARCH >= 7 && defined(__ARM_32BIT_STATE)
-
-#define XRAPI_ATTR __attribute__( (pcs("aapcs-vfp") ) )
-#define XRAPI_CALL
-#define XRAPI_PTR XRAPI_ATTR
-
-#else
-
 #define XRAPI_ATTR
 #define XRAPI_CALL
 #define XRAPI_PTR
-
-#endif
-
-#if !defined(XR_NO_STDINT_H)
-#if defined(_MSC_VER) && (_MSC_VER < 1600)
-typedef signed __int8 int8_t;
-typedef unsigned __int8 uint8_t;
-typedef signed __int16 int16_t;
-typedef unsigned __int16 uint16_t;
-typedef signed __int32 int32_t;
-typedef unsigned __int32 uint32_t;
-typedef signed __int64 int64_t;
-typedef unsigned __int64 uint64_t;
-#endif
-#endif // !defined(XR_NO_STDINT_H)
 
 #if(defined(__LP64__) || defined(_WIN64) || (defined(__x86_64__) && !defined(__ILP32__) ) || defined(_M_X64) || defined(__ia64) || defined(_M_IA64) || defined(__aarch64__) || defined(__powerpc64__) )
 #define XR_PTR_SIZE 8
@@ -91,6 +55,4 @@ typedef unsigned __int64 uint64_t;
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

@@ -3,15 +3,6 @@
 
 #include "header.h"
 
-// glslangValidator doesn't wrap its output in brackets if you don't have it define the whole array.
-#if defined(USE_GLSLANGVALIDATOR)
-#define SPV_PREFIX {
-#define SPV_SUFFIX }
-#else
-#define SPV_PREFIX
-#define SPV_SUFFIX
-#endif
-
 namespace {
 
 static std::string BlahVkResultString(VkResult res)
@@ -117,7 +108,6 @@ inline VkResult CheckVkResult(VkResult res, const char* originator = nullptr, co
 
 #define CHECK_VKRESULT(res, cmdStr) CheckVkResult(res, cmdStr, FILE_AND_LINE)
 
-#ifdef USE_ONLINE_VULKAN_SHADERC
 constexpr char VertexShaderGlsl[] =
 R"_(
 
@@ -165,7 +155,6 @@ R"_(
   }
 
 )_";
-#endif // USE_ONLINE_VULKAN_SHADERC
 
 struct MemoryAllocator
 {
@@ -1786,7 +1775,6 @@ struct VulkanGraphicsPlugin : public IGraphicsPlugin
     m_graphicsBinding.queueIndex = 0;
   }
 
-#ifdef USE_ONLINE_VULKAN_SHADERC
   // Compile a shader to a SPIR-V binary.
   std::vector<uint32_t> CompileGlslShader(const std::string& name, shaderc_shader_kind kind, const std::string& source)
   {
@@ -1806,25 +1794,11 @@ struct VulkanGraphicsPlugin : public IGraphicsPlugin
 
     return {module.cbegin(), module.cend() };
   }
-#endif
 
   void InitializeResources()
   {
-#ifdef USE_ONLINE_VULKAN_SHADERC
-
     auto vertexSPIRV = CompileGlslShader("vertex", shaderc_glsl_default_vertex_shader, VertexShaderGlsl);
     auto fragmentSPIRV = CompileGlslShader("fragment", shaderc_glsl_default_fragment_shader, FragmentShaderGlsl);
-
-#else
-
-    std::vector<uint32_t> vertexSPIRV = SPV_PREFIX
-#include "vert.spv"
-    SPV_SUFFIX;
-    std::vector<uint32_t> fragmentSPIRV = SPV_PREFIX
-#include "frag.spv"
-    SPV_SUFFIX;
-
-#endif
 
     if(vertexSPIRV.empty() ) THROW("Failed to compile vertex shader");
 

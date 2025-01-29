@@ -1,9 +1,6 @@
 
 // openxr_loader_negotiation.h
 
-#ifndef OPENXR_LOADER_NEGOTIATION_H_
-#define OPENXR_LOADER_NEGOTIATION_H_ 1
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -122,6 +119,4 @@ XRAPI_ATTR XrResult XRAPI_CALL xrNegotiateLoaderApiLayerInterface(const XrNegoti
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif
