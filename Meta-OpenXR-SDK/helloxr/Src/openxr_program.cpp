@@ -109,8 +109,23 @@ inline XrReferenceSpaceCreateInfo GetXrReferenceSpaceCreateInfo(const std::strin
 }
 
 static XrPassthroughFB gPassthroughFeature = XR_NULL_HANDLE;
-
 static XrPassthroughLayerFB gPassthroughLayer = XR_NULL_HANDLE;
+
+static PFN_xrCreatePassthroughFB gCreatePassthroughFB = nullptr;
+static PFN_xrCreatePassthroughLayerFB gCreatePassthroughLayerFB = nullptr;
+
+static PFN_xrCreateEnvironmentDepthProviderMETA gCreateEnvironmentDepthProviderMETA = nullptr;
+static PFN_xrDestroyEnvironmentDepthProviderMETA gDestroyEnvironmentDepthProviderMETA = nullptr;
+static PFN_xrStartEnvironmentDepthProviderMETA gStartEnvironmentDepthProviderMETA = nullptr;
+static PFN_xrStopEnvironmentDepthProviderMETA gStopEnvironmentDepthProviderMETA = nullptr;
+static PFN_xrCreateEnvironmentDepthSwapchainMETA gCreateEnvironmentDepthSwapchainMETA = nullptr;
+static PFN_xrDestroyEnvironmentDepthSwapchainMETA gDestroyEnvironmentDepthSwapchainMETA = nullptr;
+static PFN_xrEnumerateEnvironmentDepthSwapchainImagesMETA gEnumerateEnvironmentDepthSwapchainImagesMETA = nullptr;
+static PFN_xrGetEnvironmentDepthSwapchainStateMETA gGetEnvironmentDepthSwapchainStateMETA = nullptr;
+static PFN_xrAcquireEnvironmentDepthImageMETA gAcquireEnvironmentDepthImageMETA = nullptr;
+static PFN_xrSetEnvironmentDepthHandRemovalMETA gSetEnvironmentDepthHandRemovalMETA = nullptr;
+
+static XrEnvironmentDepthProviderMETA gEnvironmentDepthProviderMETA = XR_NULL_HANDLE;
 
 struct OpenXrProgram : IOpenXrProgram
 {
@@ -236,8 +251,12 @@ struct OpenXrProgram : IOpenXrProgram
     XrInstanceCreateInfo createInfo {XR_TYPE_INSTANCE_CREATE_INFO};
     createInfo.next = m_platformPlugin->GetInstanceCreateExtension();
 
+    // passthrough
     extensions.push_back(XR_FB_PASSTHROUGH_EXTENSION_NAME);
     extensions.push_back(XR_FB_TRIANGLE_MESH_EXTENSION_NAME);
+
+    // depth
+    extensions.push_back(XR_META_ENVIRONMENT_DEPTH_EXTENSION_NAME);
 
     createInfo.enabledExtensionCount = (uint32_t)extensions.size();
     createInfo.enabledExtensionNames = extensions.data();
@@ -255,6 +274,7 @@ struct OpenXrProgram : IOpenXrProgram
     // blah 1 XR_KHR_vulkan_enable
     // blah 2 XR_FB_passthrough
     // blah 3 XR_FB_triangle_mesh
+    // blah 4 XR_META_environment_depth
 
     if(tableXr.CreateInstance)
       CHECK_XRCMD(tableXr.CreateInstance(&createInfo, &m_instance) );
@@ -1203,10 +1223,9 @@ struct OpenXrProgram : IOpenXrProgram
 
     //XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT
 
-    if(gPassthroughFeature == XR_NULL_HANDLE)
+    if( !gCreatePassthroughFB)
     {
-      PFN_xrCreatePassthroughFB pfnXrCreatePassthroughFBX = nullptr;
-      XrResult result = tableXr.GetInstanceProcAddr(m_instance, "xrCreatePassthroughFB", (PFN_xrVoidFunction*)&pfnXrCreatePassthroughFBX);
+      XrResult result = tableXr.GetInstanceProcAddr(m_instance, "xrCreatePassthroughFB", (PFN_xrVoidFunction*) &gCreatePassthroughFB);
 
       if(XR_FAILED(result) )
         Log::Write(Log::Level::Info, Fmt("failed to obtain the function pointer for xrCreatePassthroughFB") );
@@ -1216,7 +1235,7 @@ struct OpenXrProgram : IOpenXrProgram
       XrPassthroughCreateInfoFB passthroughCreateInfo = {XR_TYPE_PASSTHROUGH_CREATE_INFO_FB};
       passthroughCreateInfo.flags = XR_PASSTHROUGH_IS_RUNNING_AT_CREATION_BIT_FB;
 
-      result = pfnXrCreatePassthroughFBX(m_session, &passthroughCreateInfo, &gPassthroughFeature);
+      result = gCreatePassthroughFB(m_session, &passthroughCreateInfo, &gPassthroughFeature);
       if(XR_FAILED(result) )
         Log::Write(Log::Level::Info, Fmt("failed to create the passthrough feature") );
       else
@@ -1224,19 +1243,313 @@ struct OpenXrProgram : IOpenXrProgram
 
       // Create and run passthrough layer
 
-      PFN_xrCreatePassthroughLayerFB pfnXrCreatePassthroughLayerFB = nullptr;
-      result = tableXr.GetInstanceProcAddr(m_instance, "xrCreatePassthroughLayerFB", (PFN_xrVoidFunction*)&pfnXrCreatePassthroughLayerFB);
+      result = tableXr.GetInstanceProcAddr(m_instance, "xrCreatePassthroughLayerFB", (PFN_xrVoidFunction*) &gCreatePassthroughLayerFB);
 
       XrPassthroughLayerCreateInfoFB layerCreateInfo = {XR_TYPE_PASSTHROUGH_LAYER_CREATE_INFO_FB};
       layerCreateInfo.passthrough = gPassthroughFeature;
       layerCreateInfo.purpose = XR_PASSTHROUGH_LAYER_PURPOSE_RECONSTRUCTION_FB;
       layerCreateInfo.flags = XR_PASSTHROUGH_IS_RUNNING_AT_CREATION_BIT_FB;
 
-      result = pfnXrCreatePassthroughLayerFB(m_session, &layerCreateInfo, &gPassthroughLayer);
+      result = gCreatePassthroughLayerFB(m_session, &layerCreateInfo, &gPassthroughLayer);
       if(XR_FAILED(result) )
         Log::Write(Log::Level::Info, Fmt("failed to create and start a passthrough layer") );
       else
         Log::Write(Log::Level::Info, Fmt("created and started a passthrough layer") );
+    }
+
+    if( !gCreateEnvironmentDepthProviderMETA)
+    {
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // OpenXR Depth API Overview
+
+      // Health and Safety Recommendation: While building mixed reality experiences, we highly recommend that you
+      // evaluate your content to offer your users a comfortable and safe experience. Please refer to the Health and
+      // Safety and Design guidelines before designing and developing your app using Depth.
+
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // Overview
+
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // What is Depth API?
+
+      // The Depth API provides real-time depth maps that apps can use to sense the environment. Primarily, it enhances
+      // mixed reality (MR) by allowing virtual objects to be occluded by real-world objects and surfaces, which makes
+      // them appear integrated into the actual environment. Occlusion is crucial because it prevents virtual content
+      // from appearing as a layer over the real world, which can disrupt immersion.
+
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // Why use Depth API?
+
+      // The Scene Model enables the creation of room-scale, mixed reality experiences featuring realistic occlusion.
+      // However, it cannot handle occlusion for objects that are dynamically moving within the user’s view, such as
+      // hands, limbs, other people, and pets. To achieve realistic occlusion with these dynamic elements, you must also
+      // use the Depth API.
+
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // Requesting user permission
+
+      // An app that wants to use Depth API needs to request and be granted spatial data permission
+      // (com.oculus.permission.USE_SCENE) before accessing any of the functions in the XR_META_environment_depth
+      // extension. See the Spatial Data Permission guide for how to set up the app and how to request this permission.
+
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // Enabling the extension
+
+      // The Depth API is defined in the XR_META_environment_depth OpenXR extension. All extensions should be explicitly
+      // listed when creating an XrInstance. Include XR_META_ENVIRONMENT_DEPTH_EXTENSION_NAME in this list to enable the
+      // Depth API extension:
+
+      // std::vector<const char*> extensions = {XR_META_ENVIRONMENT_DEPTH_EXTENSION_NAME};
+      //
+      // XrInstanceCreateInfo instanceCreateInfo = {XR_TYPE_INSTANCE_CREATE_INFO};
+      // instanceCreateInfo.enabledExtensionCount = extensions.size();
+      // instanceCreateInfo.enabledExtensionNames = extensions.data();
+      //
+      // XrInstance instance = XR_NULL_HANDLE;
+      // xrCreateInstance(&instanceCreateInfo, &instance);
+
+      // For more details, see SampleXrFramework/Src/XrApp.cpp.
+
+      // Note that this feature is not supported by all runtimes and devices so the app must first call
+      // xrGetSystemProperties to query for a XrSystemEnvironmentDepthPropertiesMETA struct and check that
+      // supportsEnvironmentDepth is true.
+
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // Getting the extension function pointers
+
+      // You must retrieve pointers to all the functions in the extension before calling them. For more details, see
+      // xrGetInstanceProcAddr in the OpenXR spec.
+
+      // The following snippet initializes all the available functions:
+
+      tableXr.GetInstanceProcAddr(m_instance, "xrCreateEnvironmentDepthProviderMETA", (PFN_xrVoidFunction*) &gCreateEnvironmentDepthProviderMETA);
+      tableXr.GetInstanceProcAddr(m_instance, "xrDestroyEnvironmentDepthProviderMETA", (PFN_xrVoidFunction*) &gDestroyEnvironmentDepthProviderMETA);
+      tableXr.GetInstanceProcAddr(m_instance, "xrStartEnvironmentDepthProviderMETA", (PFN_xrVoidFunction*) &gStartEnvironmentDepthProviderMETA);
+      tableXr.GetInstanceProcAddr(m_instance, "xrStopEnvironmentDepthProviderMETA", (PFN_xrVoidFunction*) &gStopEnvironmentDepthProviderMETA);
+      tableXr.GetInstanceProcAddr(m_instance, "xrCreateEnvironmentDepthSwapchainMETA", (PFN_xrVoidFunction*) &gCreateEnvironmentDepthSwapchainMETA);
+      tableXr.GetInstanceProcAddr(m_instance, "xrDestroyEnvironmentDepthSwapchainMETA", (PFN_xrVoidFunction*) &gDestroyEnvironmentDepthSwapchainMETA);
+      tableXr.GetInstanceProcAddr(m_instance, "xrEnumerateEnvironmentDepthSwapchainImagesMETA", (PFN_xrVoidFunction*) &gEnumerateEnvironmentDepthSwapchainImagesMETA);
+      tableXr.GetInstanceProcAddr(m_instance, "xrGetEnvironmentDepthSwapchainStateMETA", (PFN_xrVoidFunction*) &gGetEnvironmentDepthSwapchainStateMETA);
+      tableXr.GetInstanceProcAddr(m_instance, "xrAcquireEnvironmentDepthImageMETA", (PFN_xrVoidFunction*) &gAcquireEnvironmentDepthImageMETA);
+      tableXr.GetInstanceProcAddr(m_instance, "xrSetEnvironmentDepthHandRemovalMETA", (PFN_xrVoidFunction*) &gSetEnvironmentDepthHandRemovalMETA);
+
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // Creating a depth provider
+
+      // You can create a depth provider by using the xrCreateEnvironmentDepthProviderMETA function.
+      // This function creates and returns a XrEnvironmentDepthProvider handle to a depth provider instance.
+      // Maximum one depth provider is allowed to exist per app at any given time.
+      // The handle is unique per process and cannot be shared across processes.
+
+      // XrResult xrCreateEnvironmentDepthProviderMETA(
+      //   XrSession session,
+      //   const XrEnvironmentDepthProviderCreateInfoMETA* createInfo,
+      //   XrEnvironmentDepthProviderMETA* environmentDepthProvider
+      // );
+
+      // To call this function, you must pass a XrEnvironmentDepthProviderCreateInfoMETA struct containing creation
+      // flags. Currently createFlags must be zero, but it might be extended in the future.
+
+      // struct XrEnvironmentDepthProviderCreateInfoMETA
+      // {
+      //   XrStructureType type;
+      //   const void* XR_MAY_ALIAS next;
+      //   XrEnvironmentDepthProviderCreateFlagsMETA createFlags;
+      // };
+
+      XrEnvironmentDepthProviderCreateInfoMETA environmentDepthProviderCreateInfoMETA {XR_TYPE_ENVIRONMENT_DEPTH_PROVIDER_CREATE_INFO_META};
+      environmentDepthProviderCreateInfoMETA.next = nullptr;
+      environmentDepthProviderCreateInfoMETA.createFlags = 0;
+
+      XrResult result = gCreateEnvironmentDepthProviderMETA(m_session, &environmentDepthProviderCreateInfoMETA, &gEnvironmentDepthProviderMETA);
+      if(XR_FAILED(result) )
+        Log::Write(Log::Level::Info, Fmt("failed CreateEnvironmentDepthProviderMETA") );
+      else
+        Log::Write(Log::Level::Info, Fmt("succeeded CreateEnvironmentDepthProviderMETA") );
+
+      // To free up all the resources used by the depth provider, you can destroy it by calling
+      // xrDestroyEnvironmentDepthProviderMETA
+
+      // XrResult xrDestroyEnvironmentDepthProviderMETA(XrEnvironmentDepthProviderMETA environmentDepthProvider);
+
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // Toggling hand removal
+
+      // The Depth API supports removing hands from depth maps and replacing them with estimated background depth.
+      // Removing hands can be useful for example if the app prefers to use Tracked Hands for hand occlusions instead of
+      // the depth maps.
+
+      // Note that this feature is not supported by all runtimes and devices so the app must first call
+      // xrGetSystemProperties to query for a XrSystemEnvironmentDepthPropertiesMETA struct and check that
+      // supportsHandRemoval is true.
+
+      // Hand removal can be enabled or disabled at any time by calling the xrSetEnvironmentDepthHandRemovalMETA
+      // function:
+
+      // XrResult xrSetEnvironmentDepthHandRemovalMETA(
+      //   XrEnvironmentDepthProviderMETA environmentDepthProvider,
+      //   const XrEnvironmentDepthHandRemovalSetInfoMETA* setInfo
+      // );
+
+      // The function takes a XrEnvironmentDepthHandRemovalSetInfoMETA argument which is defined as:
+
+      // struct XrEnvironmentDepthHandRemovalSetInfoMETA
+      // {
+      //   XrStructureType type;
+      //   const void* XR_MAY_ALIAS next;
+      //   XrBool32 enabled;
+      // };
+
+      XrEnvironmentDepthHandRemovalSetInfoMETA environmentDepthHandRemovalSetInfoMETA {XR_TYPE_ENVIRONMENT_DEPTH_HAND_REMOVAL_SET_INFO_META};
+      environmentDepthHandRemovalSetInfoMETA.next = nullptr;
+      environmentDepthHandRemovalSetInfoMETA.enabled = true;
+
+      result = gSetEnvironmentDepthHandRemovalMETA(gEnvironmentDepthProviderMETA, &environmentDepthHandRemovalSetInfoMETA);
+
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // Creating and enumerating a depth swapchain
+
+      // Depth maps are provided to the app through a special “readable swapchain” type XrEnvironmentDepthSwapchainMETA.
+      // This type is similar to XrSwapchain but supports a different set of operations and is intended to be read
+      // instead of written to by the app.
+
+      // Create the swapchain by calling xrCreateEnvironmentDepthSwapchainMETA:
+
+      // XrResult xrCreateEnvironmentDepthSwapchainMETA(
+      //   XrEnvironmentDepthProviderMETA environmentDepthProvider,
+      //   const XrEnvironmentDepthSwapchainCreateInfoMETA* createInfo,
+      //   XrEnvironmentDepthSwapchainMETA* swapchain
+      // );
+
+      // This function takes a XrEnvironmentDepthSwapchainCreateInfoMETA struct specifying options for creating the
+      // swapchain:
+
+      // struct XrEnvironmentDepthSwapchainCreateInfoMETA
+      // {
+      //   XrStructureType type;
+      //   const void* XR_MAY_ALIAS next;
+      //   XrEnvironmentDepthSwapchainCreateFlagsMETA createFlags;
+      // };
+
+      // Currently createFlags must be zero, but it might be extended in the future.
+
+      // Once the swapchain is created the resolution can be queried by calling xrGetEnvironmentDepthSwapchainStateMETA:
+
+      // XrResult xrGetEnvironmentDepthSwapchainStateMETA(
+      //   XrEnvironmentDepthSwapchainMETA swapchain,
+      //   XrEnvironmentDepthSwapchainStateMETA* state
+      // );
+
+      // The returned XrEnvironmentDepthSwapchainStateMETA is defined as:
+
+      // struct XrEnvironmentDepthSwapchainStateMETA
+      // {
+      //   XrStructureType type;
+      //   void* XR_MAY_ALIAS next;
+      //   uint32_t width;
+      //   uint32_t height;
+      // };
+
+      // In the same way as for a regular XrSwapchain, the XrEnvironmentDepthSwapchainMETA needs to be “enumerated” into
+      // a graphics API specific array of texture handles. This is done by calling
+      // xrEnumerateEnvironmentDepthSwapchainImagesMETA that has the same semantics as xrEnumerateSwapchainImages:
+
+      // XrResult xrEnumerateEnvironmentDepthSwapchainImagesMETA(
+      //   XrEnvironmentDepthSwapchainMETA swapchain,
+      //   uint32_t imageCapacityInput,
+      //   uint32_t* imageCountOutput,
+      //   XrSwapchainImageBaseHeader* images
+      // );
+
+      // To free up all the resources used by the swapchain, you can destroy it by calling
+      // xrDestroyEnvironmentDepthSwapchainMETA:
+
+      // XrResult xrDestroyEnvironmentDepthSwapchainMETA(XrEnvironmentDepthSwapchainMETA swapchain);
+
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // Starting and stopping the depth provider
+
+      // The depth provider is created in a stopped state by default.
+      // To start the asynchronous generation of depth maps, you need to call xrStartEnvironmentDepthProviderMETA:
+
+      // XrResult xrStartEnvironmentDepthProviderMETA(XrEnvironmentDepthProviderMETA environmentDepthProvider);
+
+      // To stop the asynchronous generation of depth maps, call xrStopEnvironmentDepthProviderMETA:
+
+      // XrResult xrStopEnvironmentDepthProviderMETA(XrEnvironmentDepthProviderMETA environmentDepthProvider);
+
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // Acquiring depth maps
+
+      // Depth maps should only be accessed between the xrBeginFrame and xrEndFrame calls.  To acquire a lock on the
+      // latest available depth map in the swapchain, as well as retrieve metadata needed to parse the depth, apps need
+      // to call xrAcquireEnvironmentDepthImageMETA. Once a depth swapchain has been acquired it is locked for the
+      // entire duration of the frame. You shouldn’t call xrAcquireEnvironmentDepthImageMETA more than once per frame.
+
+      // XrResult xrAcquireEnvironmentDepthImageMETA(
+      //   XrEnvironmentDepthProviderMETA environmentDepthProvider,
+      //   const XrEnvironmentDepthImageAcquireInfoMETA* acquireInfo,
+      //   XrEnvironmentDepthImageMETA* environmentDepthImage
+      // );
+
+      // This function takes an XrEnvironmentDepthImageAcquireInfoMETA struct that needs to be populated with some
+      // required parameters:
+
+      // struct XrEnvironmentDepthImageAcquireInfoMETA
+      // {
+      //   XrStructureType type;
+      //   const void* XR_MAY_ALIAS next;
+      //   XrSpace space;
+      //   XrTime displayTime;
+      // };
+
+      // The space field should be set to the XrSpace you want the space to be of the returned pose which the depth map
+      // was rendered from. The displayTime field should be set to the displayTime of the current rendered frame as it’s
+      // used to compute the pose in case it is time dependent.
+
+      // The information about the now locked swapchain image is returned the XrEnvironmentDepthImageMETA struct defined
+      // as:
+
+      // struct XrEnvironmentDepthImageMETA
+      // {
+      //   XrStructureType type;
+      //   const void* XR_MAY_ALIAS next;
+      //   uint32_t swapchainIndex;
+      //   float nearZ;
+      //   float farZ;
+      //   XrEnvironmentDepthImageViewMETA views[2];
+      // };
+
+      // struct XrEnvironmentDepthImageViewMETA
+      // {
+      //   XrStructureType type;
+      //   const void* XR_MAY_ALIAS next;
+      //   XrFovf fov;
+      //   XrPosef pose;
+      // };
+
+      // The nearZ and farZ are the near and far planes defined in an OpenGL projection matrix, and are needed to
+      // convert the depth map’s pixel values into metric distances. The format and convention is the same as for
+      // regular OpenGL depth textures.
+
+      // There is a special case you should be aware of: when farZ = inf, you can use an infinite projection matrix as
+      // described in Tightening the Precision of Perspective Rendering (see section 3.2: Infinite projection).
+
+      // When farZ == inf, the bottom-right 2x2 quadrant of the 4x4 projection matrix is defined as:
+
+      // [ -1   -2 * nearZ ]
+      // [ -1    0         ]
+
+      // zNear zFar infinity
+
+      // Building a projection matrix using common OpenGL helpers and ignoring this special case will introduce NaN
+      // values on its coefficients.
+
+      // Note that the display time and pose of the acquired depth map is likely not the same as the estimated display
+      // time and pose for the your app’s frame. To compute the depth of your rendered fragments, you must therefore
+      // project the fragments 3D coordinates into the depth map using the provided pose and field-of-view (fov). For an
+      // example, see the XrSamples / XrPassthroughOcclusion sample where this method is used to render a scene with
+      // Depth API based occlusions.
     }
 
     //Log::Write(Log::Level::Info, Fmt("number of render layers %i", layers.size() ) );

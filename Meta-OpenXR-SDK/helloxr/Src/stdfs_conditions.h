@@ -1,4 +1,6 @@
 
+#if 0
+
 // stdfs_conditions.h
 
 // If the C++ macro is set to the version containing C++17, it must support
@@ -38,5 +40,7 @@
 
 #define USE_EXPERIMENTAL_FS 0
 #define USE_FINAL_FS 0
+
+#endif
 
 #endif
