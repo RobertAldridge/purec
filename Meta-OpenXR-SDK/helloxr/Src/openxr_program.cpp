@@ -237,7 +237,7 @@ void OpenXrProgram::CreateInstanceInternal()
   const std::vector<std::string> platformExtensions = m_platformPlugin->GetInstanceExtensions();
   std::transform(platformExtensions.begin(), platformExtensions.end(), std::back_inserter(extensions), [] (const std::string& ext) { return ext.c_str(); } );
 
-  const std::vector<std::string> graphicsExtensions = m_graphicsPlugin->GetInstanceExtensions();
+  const std::vector<std::string> graphicsExtensions = m_graphicsPlugin->VulkanGraphicsPluginGetInstanceExtensions();
   std::transform(graphicsExtensions.begin(), graphicsExtensions.end(), std::back_inserter(extensions), [] (const std::string& ext) { return ext.c_str(); } );
 
   XrInstanceCreateInfo createInfo {XR_TYPE_INSTANCE_CREATE_INFO};
@@ -417,7 +417,7 @@ void OpenXrProgram::InitializeDevice()
 {
   LogViewConfigurations();
 
-  m_graphicsPlugin->InitializeDevice(m_instance, m_systemId);
+  m_graphicsPlugin->VulkanGraphicsPluginInitializeDevice(m_instance, m_systemId);
 }
 
 void OpenXrProgram::LogReferenceSpaces()
@@ -725,7 +725,7 @@ void OpenXrProgram::InitializeSession()
 
     XrSessionCreateInfo createInfo {XR_TYPE_SESSION_CREATE_INFO};
 
-    createInfo.next = m_graphicsPlugin->GetGraphicsBinding();
+    createInfo.next = m_graphicsPlugin->VulkanGraphicsPluginGetGraphicsBinding();
     createInfo.systemId = m_systemId;
 
     if(tableXr.CreateSession)
@@ -797,7 +797,7 @@ void OpenXrProgram::CreateSwapchains()
       CHECK_XRCMD(tableXr.EnumerateSwapchainFormats(m_session, (uint32_t)swapchainFormats.size(), &swapchainFormatCount, swapchainFormats.data() ) );
 
     CHECK(swapchainFormatCount == swapchainFormats.size() );
-    m_colorSwapchainFormat = m_graphicsPlugin->SelectColorSwapchainFormat(swapchainFormats);
+    m_colorSwapchainFormat = m_graphicsPlugin->VulkanGraphicsPluginSelectColorSwapchainFormat(swapchainFormats);
 
     // Print swapchain formats and the selected one
     {
@@ -836,7 +836,7 @@ void OpenXrProgram::CreateSwapchains()
       swapchainCreateInfo.height = vp.recommendedImageRectHeight;
       swapchainCreateInfo.mipCount = 1;
       swapchainCreateInfo.faceCount = 1;
-      swapchainCreateInfo.sampleCount = m_graphicsPlugin->GetSupportedSwapchainSampleCount(vp);
+      swapchainCreateInfo.sampleCount = m_graphicsPlugin->VulkanGraphicsPluginGetSupportedSwapchainSampleCount(vp);
       swapchainCreateInfo.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
       Swapchain swapchain;
       swapchain.width = swapchainCreateInfo.width;
@@ -853,7 +853,7 @@ void OpenXrProgram::CreateSwapchains()
         CHECK_XRCMD(tableXr.EnumerateSwapchainImages(swapchain.handle, 0, &imageCount, nullptr) );
 
       // XXX This should really just return XrSwapchainImageBaseHeader*
-      std::vector<XrSwapchainImageBaseHeader*> swapchainImages = m_graphicsPlugin->AllocateSwapchainImageStructs(imageCount, swapchainCreateInfo);
+      std::vector<XrSwapchainImageBaseHeader*> swapchainImages = m_graphicsPlugin->VulkanGraphicsPluginAllocateSwapchainImageStructs(imageCount, swapchainCreateInfo);
 
       if(tableXr.EnumerateSwapchainImages)
         CHECK_XRCMD(tableXr.EnumerateSwapchainImages(swapchain.handle, imageCount, &imageCount, swapchainImages[0] ) );
@@ -1650,7 +1650,7 @@ bool OpenXrProgram::RenderLayer(XrTime predictedDisplayTime, std::vector<XrCompo
     projectionLayerViews[i].subImage.imageRect.extent = {viewSwapchain.width, viewSwapchain.height};
 
     const XrSwapchainImageBaseHeader* const swapchainImage = m_swapchainImages[viewSwapchain.handle][swapchainImageIndex];
-    m_graphicsPlugin->RenderView(projectionLayerViews[i], swapchainImage, m_colorSwapchainFormat, cubes);
+    m_graphicsPlugin->VulkanGraphicsPluginRenderView(projectionLayerViews[i], swapchainImage, m_colorSwapchainFormat, cubes);
 
     XrSwapchainImageReleaseInfo releaseInfo {XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
 

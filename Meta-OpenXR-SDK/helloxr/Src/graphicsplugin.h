@@ -341,89 +341,89 @@ struct VulkanGraphicsPlugin
 {
   VulkanGraphicsPlugin(const std::shared_ptr<Options>& options, std::shared_ptr<AndroidPlatformPlugin> /*unused*/);
 
-  std::vector<std::string> GetInstanceExtensions() const;
+  std::vector<std::string> VulkanGraphicsPluginGetInstanceExtensions() const;
 
   // note: The output must not outlive the input - this modifies the input and returns a collection of views into that modified input!
-  std::vector<const char*> ParseExtensionString(char* names);
+  std::vector<const char*> VulkanGraphicsPluginParseExtensionString(char* names);
 
-  const char* GetValidationLayerName();
+  const char* VulkanGraphicsPluginGetValidationLayerName();
 
-  void InitializeDevice(XrInstance instance, XrSystemId systemId);
+  void VulkanGraphicsPluginInitializeDevice(XrInstance instance, XrSystemId systemId);
 
   // Compile a shader to a SPIR-V binary.
-  std::vector<uint32_t> CompileGlslShader(const std::string& name, shaderc_shader_kind kind, const std::string& source);
+  std::vector<uint32_t> VulkanGraphicsPluginCompileGlslShader(const std::string& name, shaderc_shader_kind kind, const std::string& source);
 
-  void InitializeResources();
+  void VulkanGraphicsPluginInitializeResources();
 
-  int64_t SelectColorSwapchainFormat(const std::vector<int64_t>& runtimeFormats) const;
+  int64_t VulkanGraphicsPluginSelectColorSwapchainFormat(const std::vector<int64_t>& runtimeFormats) const;
 
-  const XrBaseInStructure* GetGraphicsBinding() const;
+  const XrBaseInStructure* VulkanGraphicsPluginGetGraphicsBinding() const;
 
-  std::vector<XrSwapchainImageBaseHeader*> AllocateSwapchainImageStructs(uint32_t capacity, const XrSwapchainCreateInfo& swapchainCreateInfo);
+  std::vector<XrSwapchainImageBaseHeader*> VulkanGraphicsPluginAllocateSwapchainImageStructs(uint32_t capacity, const XrSwapchainCreateInfo& swapchainCreateInfo);
 
-  void RenderView(const XrCompositionLayerProjectionView& layerView, const XrSwapchainImageBaseHeader* swapchainImage, int64_t /*swapchainFormat*/, const std::vector<Cube>& cubes);
+  void VulkanGraphicsPluginRenderView(const XrCompositionLayerProjectionView& layerView, const XrSwapchainImageBaseHeader* swapchainImage, int64_t /*swapchainFormat*/, const std::vector<Cube>& cubes);
 
-  uint32_t GetSupportedSwapchainSampleCount(const XrViewConfigurationView& );
+  uint32_t VulkanGraphicsPluginGetSupportedSwapchainSampleCount(const XrViewConfigurationView& );
 
-  void UpdateOptions(const std::shared_ptr<Options>& options);
+  void VulkanGraphicsPluginUpdateOptions(const std::shared_ptr<Options>& options);
 
 protected:
 
-  XrGraphicsBindingVulkan2KHR m_graphicsBinding {XR_TYPE_GRAPHICS_BINDING_VULKAN2_KHR};
+  XrGraphicsBindingVulkan2KHR m_vulkanGraphicsPluginXrGraphicsBindingVulkan2KHR {XR_TYPE_GRAPHICS_BINDING_VULKAN2_KHR};
 
-  std::list<SwapchainImageContext> m_swapchainImageContexts;
+  std::list<SwapchainImageContext> m_vulkanGraphicsPluginStdList_SwapchainImageContext;
 
-  std::map<const XrSwapchainImageBaseHeader*, SwapchainImageContext*> m_swapchainImageContextMap;
+  std::map<const XrSwapchainImageBaseHeader*, SwapchainImageContext*> m_vulkanGraphicsPluginStdMap_XrSwapchainImageBaseHeader_SwapchainImageContext;
 
-  VkInstance m_vkInstance {VK_NULL_HANDLE};
+  VkInstance m_vulkanGraphicsPluginVkInstance {VK_NULL_HANDLE};
 
-  VkPhysicalDevice m_vkPhysicalDevice {VK_NULL_HANDLE};
+  VkPhysicalDevice m_vulkanGraphicsPluginVkPhysicalDevice {VK_NULL_HANDLE};
 
-  VkDevice m_vkDevice {VK_NULL_HANDLE};
+  VkDevice m_vulkanGraphicsPluginVkDevice {VK_NULL_HANDLE};
 
-  VulkanDebugObjectNamer m_namer {};
+  VulkanDebugObjectNamer m_vulkanGraphicsPluginVulkanDebugObjectNamer {};
 
-  uint32_t m_queueFamilyIndex = 0;
+  uint32_t m_vulkanGraphicsPluginQueueFamilyIndex = 0;
 
-  VkQueue m_vkQueue {VK_NULL_HANDLE};
+  VkQueue m_vulkanGraphicsPluginVkQueue {VK_NULL_HANDLE};
 
-  VkSemaphore m_vkDrawDone {VK_NULL_HANDLE};
+  VkSemaphore m_vulkanGraphicsPluginVkSemaphoreDrawDone {VK_NULL_HANDLE};
 
-  MemoryAllocator m_memAllocator {};
+  MemoryAllocator m_vulkanGraphicsPluginMemoryAllocator {};
 
-  ShaderProgram m_shaderProgram {};
+  ShaderProgram m_vulkanGraphicsPluginShaderProgram {};
 
-  CmdBuffer m_cmdBuffer {};
+  CmdBuffer m_vulkanGraphicsPluginCmdBuffer {};
 
-  PipelineLayout m_pipelineLayout {};
+  PipelineLayout m_vulkanGraphicsPluginPipelineLayout {};
 
-  VertexBuffer<Geometry::Vertex> m_drawBuffer {};
+  VertexBuffer<Geometry::Vertex> m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer {};
 
-  std::array<float, 4> m_clearColor;
+  std::array<float, 4> m_vulkanGraphicsPluginStdArray_float_4_clearColor;
 
-  PFN_vkCreateDebugUtilsMessengerEXT BlahVkCreateDebugUtilsMessengerEXT {nullptr};
+  PFN_vkCreateDebugUtilsMessengerEXT m_vulkanGraphicsPluginVkCreateDebugUtilsMessengerEXT {nullptr};
 
-  VkDebugUtilsMessengerEXT m_vkDebugUtilsMessenger {VK_NULL_HANDLE};
+  VkDebugUtilsMessengerEXT m_vulkanGraphicsPluginVkDebugUtilsMessenger {VK_NULL_HANDLE};
+
+  VkBool32 VulkanGraphicsPluginDebugMessage(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData);
+
+  XrStructureType VulkanGraphicsPluginGetGraphicsBindingType() const;
+
+  XrStructureType VulkanGraphicsPluginGetSwapchainImageType() const;
+
+  XrResult VulkanGraphicsPluginCreateVulkanInstanceKHR(XrInstance instance, const XrVulkanInstanceCreateInfoKHR* createInfo, VkInstance* vulkanInstance, VkResult* vulkanResult);
+
+  XrResult VulkanGraphicsPluginCreateVulkanDeviceKHR(XrInstance instance, const XrVulkanDeviceCreateInfoKHR* createInfo, VkDevice* vulkanDevice, VkResult* vulkanResult);
+
+  XrResult VulkanGraphicsPluginGetVulkanGraphicsDevice2KHR(XrInstance instance, const XrVulkanGraphicsDeviceGetInfoKHR* getInfo, VkPhysicalDevice* vulkanPhysicalDevice);
+
+  XrResult VulkanGraphicsPluginGetVulkanGraphicsRequirements2KHR(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsVulkan2KHR* graphicsRequirements);
 
   friend std::string VulkanGraphicsPlugin_BlahVkObjectTypeToString(VkObjectType objectType);
 
-  VkBool32 debugMessage(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData);
-
   friend VKAPI_ATTR VkBool32 VKAPI_CALL VulkanGraphicsPlugin_debugMessageThunk(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData);
-
-  XrStructureType GetGraphicsBindingType() const;
-
-  XrStructureType GetSwapchainImageType() const;
-
-  XrResult CreateVulkanInstanceKHR(XrInstance instance, const XrVulkanInstanceCreateInfoKHR* createInfo, VkInstance* vulkanInstance, VkResult* vulkanResult);
-
-  XrResult CreateVulkanDeviceKHR(XrInstance instance, const XrVulkanDeviceCreateInfoKHR* createInfo, VkDevice* vulkanDevice, VkResult* vulkanResult);
-
-  XrResult GetVulkanGraphicsDevice2KHR(XrInstance instance, const XrVulkanGraphicsDeviceGetInfoKHR* getInfo, VkPhysicalDevice* vulkanPhysicalDevice);
-
-  XrResult GetVulkanGraphicsRequirements2KHR(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsVulkan2KHR* graphicsRequirements);
 };
 
-std::shared_ptr<VulkanGraphicsPlugin> CreateGraphicsPlugin_Vulkan(const std::shared_ptr<Options>& options, std::shared_ptr<AndroidPlatformPlugin> platformPlugin);
+std::shared_ptr<VulkanGraphicsPlugin> VulkanGraphicsPlugin_CreateGraphicsPlugin_Vulkan(const std::shared_ptr<Options>& options, std::shared_ptr<AndroidPlatformPlugin> platformPlugin);
 
 #endif

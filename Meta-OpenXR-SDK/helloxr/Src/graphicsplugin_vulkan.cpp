@@ -3103,21 +3103,25 @@ _(DEBUG_UTILS_MESSENGER_EXT)
 
 VKAPI_ATTR VkBool32 VKAPI_CALL VulkanGraphicsPlugin_debugMessageThunk(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
 {
-  return static_cast<VulkanGraphicsPlugin*>(pUserData)->debugMessage(messageSeverity, messageTypes, pCallbackData);
+  return static_cast<VulkanGraphicsPlugin*>(pUserData)->VulkanGraphicsPluginDebugMessage(messageSeverity, messageTypes, pCallbackData);
 }
 
-VulkanGraphicsPlugin::VulkanGraphicsPlugin(const std::shared_ptr<Options>& options, std::shared_ptr<AndroidPlatformPlugin> /*unused*/) : m_clearColor(options->GetBackgroundClearColor() )
+VulkanGraphicsPlugin::VulkanGraphicsPlugin(
+  const std::shared_ptr<Options>& options,
+  std::shared_ptr<AndroidPlatformPlugin> /*unused*/
+) :
+m_vulkanGraphicsPluginStdArray_float_4_clearColor(options->GetBackgroundClearColor() )
 {
-  m_graphicsBinding.type = GetGraphicsBindingType();
+  m_vulkanGraphicsPluginXrGraphicsBindingVulkan2KHR.type = VulkanGraphicsPluginGetGraphicsBindingType();
 }
 
-std::vector<std::string> VulkanGraphicsPlugin::GetInstanceExtensions() const
+std::vector<std::string> VulkanGraphicsPlugin::VulkanGraphicsPluginGetInstanceExtensions() const
 {
   return {XR_KHR_VULKAN_ENABLE2_EXTENSION_NAME};
 }
 
 // note: The output must not outlive the input - this modifies the input and returns a collection of views into that modified input!
-std::vector<const char*> VulkanGraphicsPlugin::ParseExtensionString(char* names)
+std::vector<const char*> VulkanGraphicsPlugin::VulkanGraphicsPluginParseExtensionString(char* names)
 {
   std::vector<const char*> list;
 
@@ -3138,7 +3142,7 @@ std::vector<const char*> VulkanGraphicsPlugin::ParseExtensionString(char* names)
   return list;
 }
 
-const char* VulkanGraphicsPlugin::GetValidationLayerName()
+const char* VulkanGraphicsPlugin::VulkanGraphicsPluginGetValidationLayerName()
 {
   uint32_t layerCount;
 
@@ -3167,20 +3171,20 @@ const char* VulkanGraphicsPlugin::GetValidationLayerName()
   return nullptr;
 }
 
-void VulkanGraphicsPlugin::InitializeDevice(XrInstance instance, XrSystemId systemId)
+void VulkanGraphicsPlugin::VulkanGraphicsPluginInitializeDevice(XrInstance instance, XrSystemId systemId)
 {
   // Create the Vulkan device for the adapter associated with the system.
   // Extension function must be loaded by name
   XrGraphicsRequirementsVulkan2KHR graphicsRequirements {XR_TYPE_GRAPHICS_REQUIREMENTS_VULKAN2_KHR};
 
-  CHECK_XRCMD(GetVulkanGraphicsRequirements2KHR(instance, systemId, &graphicsRequirements) );
+  CHECK_XRCMD(VulkanGraphicsPluginGetVulkanGraphicsRequirements2KHR(instance, systemId, &graphicsRequirements) );
 
   VkResult err = VK_ERROR_OUT_OF_HOST_MEMORY;
 
   std::vector<const char*> layers;
 
 #if !defined(NDEBUG)
-  const char* const validationLayerName = GetValidationLayerName();
+  const char* const validationLayerName = VulkanGraphicsPluginGetValidationLayerName();
 
   if(validationLayerName)
     layers.push_back(validationLayerName);
@@ -3259,21 +3263,21 @@ void VulkanGraphicsPlugin::InitializeDevice(XrInstance instance, XrSystemId syst
   createInfo.vulkanCreateInfo = &instInfo;
   createInfo.vulkanAllocator = nullptr;
 
-  CHECK_XRCMD(CreateVulkanInstanceKHR(instance, &createInfo, &m_vkInstance, &err) );
+  CHECK_XRCMD(VulkanGraphicsPluginCreateVulkanInstanceKHR(instance, &createInfo, &m_vulkanGraphicsPluginVkInstance, &err) );
   CHECK_VKCMD(err);
 
   if(tableVk.GetInstanceProcAddr)
-    BlahVkCreateDebugUtilsMessengerEXT = (PFN_vkCreateDebugUtilsMessengerEXT)tableVk.GetInstanceProcAddr(m_vkInstance, "vkCreateDebugUtilsMessengerEXT");
+    m_vulkanGraphicsPluginVkCreateDebugUtilsMessengerEXT = (PFN_vkCreateDebugUtilsMessengerEXT)tableVk.GetInstanceProcAddr(m_vulkanGraphicsPluginVkInstance, "vkCreateDebugUtilsMessengerEXT");
 
-  if(BlahVkCreateDebugUtilsMessengerEXT != nullptr && tableVk.CreateDebugUtilsMessengerEXT)
-    CHECK_VKCMD(tableVk.CreateDebugUtilsMessengerEXT(m_vkInstance, &debugInfo, nullptr, &m_vkDebugUtilsMessenger) );
+  if(m_vulkanGraphicsPluginVkCreateDebugUtilsMessengerEXT != nullptr && tableVk.CreateDebugUtilsMessengerEXT)
+    CHECK_VKCMD(tableVk.CreateDebugUtilsMessengerEXT(m_vulkanGraphicsPluginVkInstance, &debugInfo, nullptr, &m_vulkanGraphicsPluginVkDebugUtilsMessenger) );
 
   XrVulkanGraphicsDeviceGetInfoKHR deviceGetInfo {XR_TYPE_VULKAN_GRAPHICS_DEVICE_GET_INFO_KHR};
 
   deviceGetInfo.systemId = systemId;
-  deviceGetInfo.vulkanInstance = m_vkInstance;
+  deviceGetInfo.vulkanInstance = m_vulkanGraphicsPluginVkInstance;
 
-  CHECK_XRCMD(GetVulkanGraphicsDevice2KHR(instance, &deviceGetInfo, &m_vkPhysicalDevice) );
+  CHECK_XRCMD(VulkanGraphicsPluginGetVulkanGraphicsDevice2KHR(instance, &deviceGetInfo, &m_vulkanGraphicsPluginVkPhysicalDevice) );
 
   VkDeviceQueueCreateInfo queueInfo {VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO};
 
@@ -3284,19 +3288,19 @@ void VulkanGraphicsPlugin::InitializeDevice(XrInstance instance, XrSystemId syst
   uint32_t queueFamilyCount = 0;
 
   if(tableVk.GetPhysicalDeviceQueueFamilyProperties)
-    tableVk.GetPhysicalDeviceQueueFamilyProperties(m_vkPhysicalDevice, &queueFamilyCount, nullptr);
+    tableVk.GetPhysicalDeviceQueueFamilyProperties(m_vulkanGraphicsPluginVkPhysicalDevice, &queueFamilyCount, nullptr);
 
   std::vector<VkQueueFamilyProperties> queueFamilyProps(queueFamilyCount);
 
   if(tableVk.GetPhysicalDeviceQueueFamilyProperties)
-    tableVk.GetPhysicalDeviceQueueFamilyProperties(m_vkPhysicalDevice, &queueFamilyCount, &queueFamilyProps[0] );
+    tableVk.GetPhysicalDeviceQueueFamilyProperties(m_vulkanGraphicsPluginVkPhysicalDevice, &queueFamilyCount, &queueFamilyProps[0] );
 
   for(uint32_t i = 0; i < queueFamilyCount; ++i)
   {
     // Only need graphics (not presentation) for draw queue
     if(queueFamilyProps[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
     {
-      m_queueFamilyIndex = queueInfo.queueFamilyIndex = i;
+      m_vulkanGraphicsPluginQueueFamilyIndex = queueInfo.queueFamilyIndex = i;
       break;
     }
   }
@@ -3322,30 +3326,30 @@ void VulkanGraphicsPlugin::InitializeDevice(XrInstance instance, XrSystemId syst
   deviceCreateInfo.pfnGetInstanceProcAddr = tableVk.GetInstanceProcAddr;
 
   deviceCreateInfo.vulkanCreateInfo = &deviceInfo;
-  deviceCreateInfo.vulkanPhysicalDevice = m_vkPhysicalDevice;
+  deviceCreateInfo.vulkanPhysicalDevice = m_vulkanGraphicsPluginVkPhysicalDevice;
   deviceCreateInfo.vulkanAllocator = nullptr;
 
-  CHECK_XRCMD(CreateVulkanDeviceKHR(instance, &deviceCreateInfo, &m_vkDevice, &err) );
+  CHECK_XRCMD(VulkanGraphicsPluginCreateVulkanDeviceKHR(instance, &deviceCreateInfo, &m_vulkanGraphicsPluginVkDevice, &err) );
   CHECK_VKCMD(err);
 
-  m_namer.Init(m_vkInstance, m_vkDevice);
+  m_vulkanGraphicsPluginVulkanDebugObjectNamer.Init(m_vulkanGraphicsPluginVkInstance, m_vulkanGraphicsPluginVkDevice);
 
   if(tableVk.GetDeviceQueue)
-    tableVk.GetDeviceQueue(m_vkDevice, queueInfo.queueFamilyIndex, 0, &m_vkQueue);
+    tableVk.GetDeviceQueue(m_vulkanGraphicsPluginVkDevice, queueInfo.queueFamilyIndex, 0, &m_vulkanGraphicsPluginVkQueue);
 
-  m_memAllocator.MemoryAllocatorInit(m_vkPhysicalDevice, m_vkDevice);
+  m_vulkanGraphicsPluginMemoryAllocator.MemoryAllocatorInit(m_vulkanGraphicsPluginVkPhysicalDevice, m_vulkanGraphicsPluginVkDevice);
 
-  InitializeResources();
+  VulkanGraphicsPluginInitializeResources();
 
-  m_graphicsBinding.instance = m_vkInstance;
-  m_graphicsBinding.physicalDevice = m_vkPhysicalDevice;
-  m_graphicsBinding.device = m_vkDevice;
-  m_graphicsBinding.queueFamilyIndex = queueInfo.queueFamilyIndex;
-  m_graphicsBinding.queueIndex = 0;
+  m_vulkanGraphicsPluginXrGraphicsBindingVulkan2KHR.instance = m_vulkanGraphicsPluginVkInstance;
+  m_vulkanGraphicsPluginXrGraphicsBindingVulkan2KHR.physicalDevice = m_vulkanGraphicsPluginVkPhysicalDevice;
+  m_vulkanGraphicsPluginXrGraphicsBindingVulkan2KHR.device = m_vulkanGraphicsPluginVkDevice;
+  m_vulkanGraphicsPluginXrGraphicsBindingVulkan2KHR.queueFamilyIndex = queueInfo.queueFamilyIndex;
+  m_vulkanGraphicsPluginXrGraphicsBindingVulkan2KHR.queueIndex = 0;
 }
 
 // Compile a shader to a SPIR-V binary.
-std::vector<uint32_t> VulkanGraphicsPlugin::CompileGlslShader(const std::string& name, shaderc_shader_kind kind, const std::string& source)
+std::vector<uint32_t> VulkanGraphicsPlugin::VulkanGraphicsPluginCompileGlslShader(const std::string& name, shaderc_shader_kind kind, const std::string& source)
 {
   shaderc::Compiler compiler;
   shaderc::CompileOptions options;
@@ -3364,44 +3368,44 @@ std::vector<uint32_t> VulkanGraphicsPlugin::CompileGlslShader(const std::string&
   return {module.cbegin(), module.cend() };
 }
 
-void VulkanGraphicsPlugin::InitializeResources()
+void VulkanGraphicsPlugin::VulkanGraphicsPluginInitializeResources()
 {
-  auto vertexSPIRV = CompileGlslShader("vertex", shaderc_glsl_default_vertex_shader, VertexShaderGlsl);
-  auto fragmentSPIRV = CompileGlslShader("fragment", shaderc_glsl_default_fragment_shader, FragmentShaderGlsl);
+  auto vertexSPIRV = VulkanGraphicsPluginCompileGlslShader("vertex", shaderc_glsl_default_vertex_shader, VertexShaderGlsl);
+  auto fragmentSPIRV = VulkanGraphicsPluginCompileGlslShader("fragment", shaderc_glsl_default_fragment_shader, FragmentShaderGlsl);
 
   if(vertexSPIRV.empty() ) THROW("Failed to compile vertex shader");
 
   if(fragmentSPIRV.empty() ) THROW("Failed to compile fragment shader");
 
-  m_shaderProgram.ShaderProgramInit(m_vkDevice);
-  m_shaderProgram.ShaderProgramLoadVertexShader(vertexSPIRV);
-  m_shaderProgram.ShaderProgramLoadFragmentShader(fragmentSPIRV);
+  m_vulkanGraphicsPluginShaderProgram.ShaderProgramInit(m_vulkanGraphicsPluginVkDevice);
+  m_vulkanGraphicsPluginShaderProgram.ShaderProgramLoadVertexShader(vertexSPIRV);
+  m_vulkanGraphicsPluginShaderProgram.ShaderProgramLoadFragmentShader(fragmentSPIRV);
 
   // Semaphore to block on draw complete
   VkSemaphoreCreateInfo semInfo {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
 
   if(tableVk.CreateSemaphore)
-    CHECK_VKCMD(tableVk.CreateSemaphore(m_vkDevice, &semInfo, nullptr, &m_vkDrawDone) );
+    CHECK_VKCMD(tableVk.CreateSemaphore(m_vulkanGraphicsPluginVkDevice, &semInfo, nullptr, &m_vulkanGraphicsPluginVkSemaphoreDrawDone) );
 
-  CHECK_VKCMD(m_namer.SetName(VK_OBJECT_TYPE_SEMAPHORE, (uint64_t)m_vkDrawDone, "helloxr draw done semaphore") );
+  CHECK_VKCMD(m_vulkanGraphicsPluginVulkanDebugObjectNamer.SetName(VK_OBJECT_TYPE_SEMAPHORE, (uint64_t)m_vulkanGraphicsPluginVkSemaphoreDrawDone, "helloxr draw done semaphore") );
 
-  if(!m_cmdBuffer.CmdBufferInit(m_namer, m_vkDevice, m_queueFamilyIndex) ) THROW("Failed to create command buffer");
+  if(!m_vulkanGraphicsPluginCmdBuffer.CmdBufferInit(m_vulkanGraphicsPluginVulkanDebugObjectNamer, m_vulkanGraphicsPluginVkDevice, m_vulkanGraphicsPluginQueueFamilyIndex) ) THROW("Failed to create command buffer");
 
-  m_pipelineLayout.PipelineLayoutCreate(m_vkDevice);
+  m_vulkanGraphicsPluginPipelineLayout.PipelineLayoutCreate(m_vulkanGraphicsPluginVkDevice);
 
   static_assert(sizeof(Geometry::Vertex) == 24, "Unexpected Vertex size");
 
-  m_drawBuffer.VertexBufferBaseInit(m_vkDevice, &m_memAllocator, { {0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Position) }, {1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Color) } } );
+  m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer.VertexBufferBaseInit(m_vulkanGraphicsPluginVkDevice, &m_vulkanGraphicsPluginMemoryAllocator, { {0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Position) }, {1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Color) } } );
 
   uint32_t numCubeIdicies = sizeof(Geometry::c_cubeIndices) / sizeof(Geometry::c_cubeIndices[0] );
   uint32_t numCubeVerticies = sizeof(Geometry::c_cubeVertices) / sizeof(Geometry::c_cubeVertices[0] );
 
-  m_drawBuffer.VertexBufferCreate(numCubeIdicies, numCubeVerticies);
-  m_drawBuffer.VertexBufferUpdateIndices(Geometry::c_cubeIndices, numCubeIdicies, 0);
-  m_drawBuffer.VertexBufferUpdateVertices(Geometry::c_cubeVertices, numCubeVerticies, 0);
+  m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer.VertexBufferCreate(numCubeIdicies, numCubeVerticies);
+  m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer.VertexBufferUpdateIndices(Geometry::c_cubeIndices, numCubeIdicies, 0);
+  m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer.VertexBufferUpdateVertices(Geometry::c_cubeVertices, numCubeVerticies, 0);
 }
 
-int64_t VulkanGraphicsPlugin::SelectColorSwapchainFormat(const std::vector<int64_t>& runtimeFormats) const
+int64_t VulkanGraphicsPlugin::VulkanGraphicsPluginSelectColorSwapchainFormat(const std::vector<int64_t>& runtimeFormats) const
 {
   // List of supported color swapchain formats.
   constexpr int64_t SupportedColorSwapchainFormats[] = {VK_FORMAT_B8G8R8A8_SRGB, VK_FORMAT_R8G8B8A8_SRGB, VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_R8G8B8A8_UNORM};
@@ -3414,50 +3418,50 @@ int64_t VulkanGraphicsPlugin::SelectColorSwapchainFormat(const std::vector<int64
   return *swapchainFormatIt;
 }
 
-const XrBaseInStructure* VulkanGraphicsPlugin::GetGraphicsBinding() const
+const XrBaseInStructure* VulkanGraphicsPlugin::VulkanGraphicsPluginGetGraphicsBinding() const
 {
-  return reinterpret_cast<const XrBaseInStructure*>(&m_graphicsBinding);
+  return reinterpret_cast<const XrBaseInStructure*>(&m_vulkanGraphicsPluginXrGraphicsBindingVulkan2KHR);
 }
 
-std::vector<XrSwapchainImageBaseHeader*> VulkanGraphicsPlugin::AllocateSwapchainImageStructs(uint32_t capacity, const XrSwapchainCreateInfo& swapchainCreateInfo)
+std::vector<XrSwapchainImageBaseHeader*> VulkanGraphicsPlugin::VulkanGraphicsPluginAllocateSwapchainImageStructs(uint32_t capacity, const XrSwapchainCreateInfo& swapchainCreateInfo)
 {
   // Allocate and initialize the buffer of image structs (must be sequential in memory for xrEnumerateSwapchainImages).
   // Return back an array of pointers to each swapchain image struct so the consumer doesn't need to know the type/size.
   // Keep the buffer alive by adding it into the list of buffers.
-  m_swapchainImageContexts.emplace_back(GetSwapchainImageType() );
-  SwapchainImageContext& swapchainImageContext = m_swapchainImageContexts.back();
+  m_vulkanGraphicsPluginStdList_SwapchainImageContext.emplace_back(VulkanGraphicsPluginGetSwapchainImageType() );
+  SwapchainImageContext& swapchainImageContext = m_vulkanGraphicsPluginStdList_SwapchainImageContext.back();
 
-  std::vector<XrSwapchainImageBaseHeader*> bases = swapchainImageContext.SwapchainImageContextCreate(m_namer, m_vkDevice, &m_memAllocator, capacity, swapchainCreateInfo, m_pipelineLayout, m_shaderProgram, m_drawBuffer);
+  std::vector<XrSwapchainImageBaseHeader*> bases = swapchainImageContext.SwapchainImageContextCreate(m_vulkanGraphicsPluginVulkanDebugObjectNamer, m_vulkanGraphicsPluginVkDevice, &m_vulkanGraphicsPluginMemoryAllocator, capacity, swapchainCreateInfo, m_vulkanGraphicsPluginPipelineLayout, m_vulkanGraphicsPluginShaderProgram, m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer);
 
   // Map every swapchainImage base pointer to this context
   for(auto& base : bases)
-    m_swapchainImageContextMap[base] = &swapchainImageContext;
+    m_vulkanGraphicsPluginStdMap_XrSwapchainImageBaseHeader_SwapchainImageContext[base] = &swapchainImageContext;
 
   return bases;
 }
 
-void VulkanGraphicsPlugin::RenderView(const XrCompositionLayerProjectionView& layerView, const XrSwapchainImageBaseHeader* swapchainImage, int64_t /*swapchainFormat*/, const std::vector<Cube>& cubes)
+void VulkanGraphicsPlugin::VulkanGraphicsPluginRenderView(const XrCompositionLayerProjectionView& layerView, const XrSwapchainImageBaseHeader* swapchainImage, int64_t /*swapchainFormat*/, const std::vector<Cube>& cubes)
 {
   CHECK(layerView.subImage.imageArrayIndex == 0);  // Texture arrays not supported.
 
-  auto swapchainContext = m_swapchainImageContextMap[swapchainImage];
+  auto swapchainContext = m_vulkanGraphicsPluginStdMap_XrSwapchainImageBaseHeader_SwapchainImageContext[swapchainImage];
   uint32_t imageIndex = swapchainContext->SwapchainImageContextImageIndex(swapchainImage);
 
   // XXX Should double-buffer the command buffers, for now just flush
-  m_cmdBuffer.CmdBufferWait();
-  m_cmdBuffer.CmdBufferReset();
-  m_cmdBuffer.CmdBufferBegin();
+  m_vulkanGraphicsPluginCmdBuffer.CmdBufferWait();
+  m_vulkanGraphicsPluginCmdBuffer.CmdBufferReset();
+  m_vulkanGraphicsPluginCmdBuffer.CmdBufferBegin();
 
   // Ensure depth is in the right layout
-  swapchainContext->m_swapchainImageContextDepthBuffer.DepthBufferTransitionImageLayout(&m_cmdBuffer, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+  swapchainContext->m_swapchainImageContextDepthBuffer.DepthBufferTransitionImageLayout(&m_vulkanGraphicsPluginCmdBuffer, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 
   // Bind and clear eye render target
   static std::array<VkClearValue, 2> clearValues;
 
-  clearValues[0].color.float32[0] = m_clearColor[0];
-  clearValues[0].color.float32[1] = m_clearColor[1];
-  clearValues[0].color.float32[2] = m_clearColor[2];
-  clearValues[0].color.float32[3] = m_clearColor[3];
+  clearValues[0].color.float32[0] = m_vulkanGraphicsPluginStdArray_float_4_clearColor[0];
+  clearValues[0].color.float32[1] = m_vulkanGraphicsPluginStdArray_float_4_clearColor[1];
+  clearValues[0].color.float32[2] = m_vulkanGraphicsPluginStdArray_float_4_clearColor[2];
+  clearValues[0].color.float32[3] = m_vulkanGraphicsPluginStdArray_float_4_clearColor[3];
   clearValues[1].depthStencil.depth = 1.0f;
   clearValues[1].depthStencil.stencil = 0;
 
@@ -3469,19 +3473,19 @@ void VulkanGraphicsPlugin::RenderView(const XrCompositionLayerProjectionView& la
   swapchainContext->SwapchainImageContextBindRenderTarget(imageIndex, &renderPassBeginInfo);
 
   if(tableVk.CmdBeginRenderPass)
-    tableVk.CmdBeginRenderPass(m_cmdBuffer.m_cmdBufferBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+    tableVk.CmdBeginRenderPass(m_vulkanGraphicsPluginCmdBuffer.m_cmdBufferBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
   if(tableVk.CmdBindPipeline)
-    tableVk.CmdBindPipeline(m_cmdBuffer.m_cmdBufferBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, swapchainContext->m_swapchainImageContextPipe.m_pipelinePipe);
+    tableVk.CmdBindPipeline(m_vulkanGraphicsPluginCmdBuffer.m_cmdBufferBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, swapchainContext->m_swapchainImageContextPipe.m_pipelinePipe);
 
   // Bind index and vertex buffers
   if(tableVk.CmdBindIndexBuffer)
-    tableVk.CmdBindIndexBuffer(m_cmdBuffer.m_cmdBufferBuffer, m_drawBuffer.m_vertexBufferBaseIdxBuf, 0, VK_INDEX_TYPE_UINT16);
+    tableVk.CmdBindIndexBuffer(m_vulkanGraphicsPluginCmdBuffer.m_cmdBufferBuffer, m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer.m_vertexBufferBaseIdxBuf, 0, VK_INDEX_TYPE_UINT16);
 
   VkDeviceSize offset = 0;
 
   if(tableVk.CmdBindVertexBuffers)
-    tableVk.CmdBindVertexBuffers(m_cmdBuffer.m_cmdBufferBuffer, 0, 1, &m_drawBuffer.m_vertexBufferBaseVtxBuf, &offset);
+    tableVk.CmdBindVertexBuffers(m_vulkanGraphicsPluginCmdBuffer.m_cmdBufferBuffer, 0, 1, &m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer.m_vertexBufferBaseVtxBuf, &offset);
 
   // Compute the view-projection transform.
   // Note all matrixes (including OpenXR's) are column-major, right-handed.
@@ -3510,67 +3514,67 @@ void VulkanGraphicsPlugin::RenderView(const XrCompositionLayerProjectionView& la
     XrMatrix4x4f_Multiply(&mvp, &vp, &model);
 
     if(tableVk.CmdPushConstants)
-      tableVk.CmdPushConstants(m_cmdBuffer.m_cmdBufferBuffer, m_pipelineLayout.m_pipelineLayoutLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(mvp.m), &mvp.m[0] );
+      tableVk.CmdPushConstants(m_vulkanGraphicsPluginCmdBuffer.m_cmdBufferBuffer, m_vulkanGraphicsPluginPipelineLayout.m_pipelineLayoutLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(mvp.m), &mvp.m[0] );
 
     // draw the cube
     if(tableVk.CmdDrawIndexed)
-      tableVk.CmdDrawIndexed(m_cmdBuffer.m_cmdBufferBuffer, m_drawBuffer.m_vertexBufferBaseCount.idx, 1, 0, 0, 0);
+      tableVk.CmdDrawIndexed(m_vulkanGraphicsPluginCmdBuffer.m_cmdBufferBuffer, m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer.m_vertexBufferBaseCount.idx, 1, 0, 0, 0);
   }
 
   if(tableVk.CmdEndRenderPass)
-    tableVk.CmdEndRenderPass(m_cmdBuffer.m_cmdBufferBuffer);
+    tableVk.CmdEndRenderPass(m_vulkanGraphicsPluginCmdBuffer.m_cmdBufferBuffer);
 
-  m_cmdBuffer.CmdBufferEnd();
-  m_cmdBuffer.CmdBufferExec(m_vkQueue);
+  m_vulkanGraphicsPluginCmdBuffer.CmdBufferEnd();
+  m_vulkanGraphicsPluginCmdBuffer.CmdBufferExec(m_vulkanGraphicsPluginVkQueue);
 }
 
-uint32_t VulkanGraphicsPlugin::GetSupportedSwapchainSampleCount(const XrViewConfigurationView&)
+uint32_t VulkanGraphicsPlugin::VulkanGraphicsPluginGetSupportedSwapchainSampleCount(const XrViewConfigurationView&)
 {
   return VK_SAMPLE_COUNT_1_BIT;
 }
 
-void VulkanGraphicsPlugin::UpdateOptions(const std::shared_ptr<Options>& options)
+void VulkanGraphicsPlugin::VulkanGraphicsPluginUpdateOptions(const std::shared_ptr<Options>& options)
 {
-  m_clearColor = options->GetBackgroundClearColor();
+  m_vulkanGraphicsPluginStdArray_float_4_clearColor = options->GetBackgroundClearColor();
 }
 
-//XrGraphicsBindingVulkan2KHR VulkanGraphicsPlugin::m_graphicsBinding {XR_TYPE_GRAPHICS_BINDING_VULKAN2_KHR};
+//XrGraphicsBindingVulkan2KHR VulkanGraphicsPlugin::m_vulkanGraphicsPluginXrGraphicsBindingVulkan2KHR {XR_TYPE_GRAPHICS_BINDING_VULKAN2_KHR};
 
-//std::list<SwapchainImageContext> VulkanGraphicsPlugin::m_swapchainImageContexts;
+//std::list<SwapchainImageContext> VulkanGraphicsPlugin::m_vulkanGraphicsPluginStdList_SwapchainImageContext;
 
-//std::map<const XrSwapchainImageBaseHeader*, SwapchainImageContext*> VulkanGraphicsPlugin::m_swapchainImageContextMap;
+//std::map<const XrSwapchainImageBaseHeader*, SwapchainImageContext*> VulkanGraphicsPlugin::m_vulkanGraphicsPluginStdMap_XrSwapchainImageBaseHeader_SwapchainImageContext;
 
-//VkInstance VulkanGraphicsPlugin::m_vkInstance {VK_NULL_HANDLE};
+//VkInstance VulkanGraphicsPlugin::m_vulkanGraphicsPluginVkInstance {VK_NULL_HANDLE};
 
-//VkPhysicalDevice VulkanGraphicsPlugin::m_vkPhysicalDevice {VK_NULL_HANDLE};
+//VkPhysicalDevice VulkanGraphicsPlugin::m_vulkanGraphicsPluginVkPhysicalDevice {VK_NULL_HANDLE};
 
-//VkDevice VulkanGraphicsPlugin::m_vkDevice {VK_NULL_HANDLE};
+//VkDevice VulkanGraphicsPlugin::m_vulkanGraphicsPluginVkDevice {VK_NULL_HANDLE};
 
-//VulkanDebugObjectNamer VulkanGraphicsPlugin::m_namer {};
+//VulkanDebugObjectNamer VulkanGraphicsPlugin::m_vulkanGraphicsPluginVulkanDebugObjectNamer {};
 
-//uint32_t VulkanGraphicsPlugin::m_queueFamilyIndex = 0;
+//uint32_t VulkanGraphicsPlugin::m_vulkanGraphicsPluginQueueFamilyIndex = 0;
 
-//VkQueue VulkanGraphicsPlugin::m_vkQueue {VK_NULL_HANDLE};
+//VkQueue VulkanGraphicsPlugin::m_vulkanGraphicsPluginVkQueue {VK_NULL_HANDLE};
 
-//VkSemaphore VulkanGraphicsPlugin::m_vkDrawDone {VK_NULL_HANDLE};
+//VkSemaphore VulkanGraphicsPlugin::m_vulkanGraphicsPluginVkSemaphoreDrawDone {VK_NULL_HANDLE};
 
-//MemoryAllocator VulkanGraphicsPlugin::m_memAllocator {};
+//MemoryAllocator VulkanGraphicsPlugin::m_vulkanGraphicsPluginMemoryAllocator {};
 
-//ShaderProgram VulkanGraphicsPlugin::m_shaderProgram {};
+//ShaderProgram VulkanGraphicsPlugin::m_vulkanGraphicsPluginShaderProgram {};
 
-//CmdBuffer VulkanGraphicsPlugin::m_cmdBuffer {};
+//CmdBuffer VulkanGraphicsPlugin::m_vulkanGraphicsPluginCmdBuffer {};
 
-//PipelineLayout VulkanGraphicsPlugin::m_pipelineLayout {};
+//PipelineLayout VulkanGraphicsPlugin::m_vulkanGraphicsPluginPipelineLayout {};
 
-//VertexBuffer<Geometry::Vertex> VulkanGraphicsPlugin::m_drawBuffer {};
+//VertexBuffer<Geometry::Vertex> VulkanGraphicsPlugin::m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer {};
 
-//std::array<float, 4> VulkanGraphicsPlugin::m_clearColor;
+//std::array<float, 4> VulkanGraphicsPlugin::m_vulkanGraphicsPluginStdArray_float_4_clearColor;
 
-//PFN_vkCreateDebugUtilsMessengerEXT VulkanGraphicsPlugin::BlahVkCreateDebugUtilsMessengerEXT {nullptr};
+//PFN_vkCreateDebugUtilsMessengerEXT VulkanGraphicsPlugin::m_vulkanGraphicsPluginVkCreateDebugUtilsMessengerEXT {nullptr};
 
-//VkDebugUtilsMessengerEXT VulkanGraphicsPlugin::m_vkDebugUtilsMessenger {VK_NULL_HANDLE};
+//VkDebugUtilsMessengerEXT VulkanGraphicsPlugin::m_vulkanGraphicsPluginVkDebugUtilsMessenger {VK_NULL_HANDLE};
 
-VkBool32 VulkanGraphicsPlugin::debugMessage(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData)
+VkBool32 VulkanGraphicsPlugin::VulkanGraphicsPluginDebugMessage(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData)
 {
   std::string flagNames;
   std::string objName;
@@ -3628,17 +3632,17 @@ VkBool32 VulkanGraphicsPlugin::debugMessage(VkDebugUtilsMessageSeverityFlagBitsE
   return VK_FALSE;
 }
 
-XrStructureType VulkanGraphicsPlugin::GetGraphicsBindingType() const
+XrStructureType VulkanGraphicsPlugin::VulkanGraphicsPluginGetGraphicsBindingType() const
 {
   return XR_TYPE_GRAPHICS_BINDING_VULKAN2_KHR;
 }
 
-XrStructureType VulkanGraphicsPlugin::GetSwapchainImageType() const
+XrStructureType VulkanGraphicsPlugin::VulkanGraphicsPluginGetSwapchainImageType() const
 {
   return XR_TYPE_SWAPCHAIN_IMAGE_VULKAN2_KHR;
 }
 
-XrResult VulkanGraphicsPlugin::CreateVulkanInstanceKHR(XrInstance instance, const XrVulkanInstanceCreateInfoKHR* createInfo, VkInstance* vulkanInstance, VkResult* vulkanResult)
+XrResult VulkanGraphicsPlugin::VulkanGraphicsPluginCreateVulkanInstanceKHR(XrInstance instance, const XrVulkanInstanceCreateInfoKHR* createInfo, VkInstance* vulkanInstance, VkResult* vulkanResult)
 {
   PFN_xrCreateVulkanInstanceKHR pfnCreateVulkanInstanceKHR = nullptr;
   XrResult result = XR_ERROR_VALIDATION_FAILURE;
@@ -3657,7 +3661,7 @@ XrResult VulkanGraphicsPlugin::CreateVulkanInstanceKHR(XrInstance instance, cons
   return result;
 }
 
-XrResult VulkanGraphicsPlugin::CreateVulkanDeviceKHR(XrInstance instance, const XrVulkanDeviceCreateInfoKHR* createInfo, VkDevice* vulkanDevice, VkResult* vulkanResult)
+XrResult VulkanGraphicsPlugin::VulkanGraphicsPluginCreateVulkanDeviceKHR(XrInstance instance, const XrVulkanDeviceCreateInfoKHR* createInfo, VkDevice* vulkanDevice, VkResult* vulkanResult)
 {
   PFN_xrCreateVulkanDeviceKHR pfnCreateVulkanDeviceKHR = nullptr;
   XrResult result = XR_ERROR_VALIDATION_FAILURE;
@@ -3676,7 +3680,7 @@ XrResult VulkanGraphicsPlugin::CreateVulkanDeviceKHR(XrInstance instance, const 
   return result;
 }
 
-XrResult VulkanGraphicsPlugin::GetVulkanGraphicsDevice2KHR(XrInstance instance, const XrVulkanGraphicsDeviceGetInfoKHR* getInfo, VkPhysicalDevice* vulkanPhysicalDevice)
+XrResult VulkanGraphicsPlugin::VulkanGraphicsPluginGetVulkanGraphicsDevice2KHR(XrInstance instance, const XrVulkanGraphicsDeviceGetInfoKHR* getInfo, VkPhysicalDevice* vulkanPhysicalDevice)
 {
   PFN_xrGetVulkanGraphicsDevice2KHR pfnGetVulkanGraphicsDevice2KHR = nullptr;
   XrResult result = XR_ERROR_VALIDATION_FAILURE;
@@ -3695,7 +3699,7 @@ XrResult VulkanGraphicsPlugin::GetVulkanGraphicsDevice2KHR(XrInstance instance, 
   return result;
 }
 
-XrResult VulkanGraphicsPlugin::GetVulkanGraphicsRequirements2KHR(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsVulkan2KHR* graphicsRequirements)
+XrResult VulkanGraphicsPlugin::VulkanGraphicsPluginGetVulkanGraphicsRequirements2KHR(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsVulkan2KHR* graphicsRequirements)
 {
   PFN_xrGetVulkanGraphicsRequirements2KHR pfnGetVulkanGraphicsRequirements2KHR = nullptr;
   XrResult result = XR_ERROR_VALIDATION_FAILURE;
@@ -3714,7 +3718,7 @@ XrResult VulkanGraphicsPlugin::GetVulkanGraphicsRequirements2KHR(XrInstance inst
   return result;
 }
 
-std::shared_ptr<VulkanGraphicsPlugin> CreateGraphicsPlugin_Vulkan(const std::shared_ptr<Options>& options, std::shared_ptr<AndroidPlatformPlugin> platformPlugin)
+std::shared_ptr<VulkanGraphicsPlugin> VulkanGraphicsPlugin_CreateGraphicsPlugin_Vulkan(const std::shared_ptr<Options>& options, std::shared_ptr<AndroidPlatformPlugin> platformPlugin)
 {
   return std::make_shared<VulkanGraphicsPlugin>(options, std::move(platformPlugin) );
 }
