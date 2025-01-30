@@ -33,7 +33,7 @@ inline bool EqualsIgnoreCase(const std::string& s1, const std::string& s2, const
 
 struct IgnoreCaseStringLess
 {
-  bool operator()(const std::string& a, const std::string& b, const std::locale& loc = std::locale() ) const noexcept
+  bool operator()(const std::string& a, const std::string& b, const std::locale& loc = std::locale() ) const
   {
     const std::ctype<char>& ctype = std::use_facet<std::ctype<char>>(loc);
 
@@ -45,10 +45,10 @@ struct IgnoreCaseStringLess
 
 template <typename T> struct ScopeGuard
 {
-  ScopeGuard(T&& guard) noexcept : m_guard(std::move(guard) ) {}
+  ScopeGuard(T&& guard) : m_guard(std::move(guard) ) {}
 
-  ScopeGuard(ScopeGuard&& ) noexcept = default;
-  ScopeGuard& operator=(ScopeGuard&& ) noexcept = default;
+  ScopeGuard(ScopeGuard&& ) = default;
+  ScopeGuard& operator=(ScopeGuard&& ) = default;
 
   ScopeGuard(ScopeGuard& ) = delete;
   ScopeGuard& operator=(ScopeGuard& ) = delete;
@@ -92,7 +92,7 @@ inline std::string Fmt(const char* fmt, ...)
   throw std::runtime_error("Unexpected vsnprintf failure");
 }
 
-template <typename T, size_t Size> constexpr size_t ArraySize(const T (&unused)[Size] ) noexcept
+template <typename T, size_t Size> constexpr size_t ArraySize(const T (&unused)[Size] )
 {
   (void)unused;
 

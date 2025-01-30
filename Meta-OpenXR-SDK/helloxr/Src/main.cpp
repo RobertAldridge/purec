@@ -168,13 +168,13 @@ void android_main(struct android_app* app)
       Log::Write(Log::Level::Verbose, "vk 1");
 
     // Create platform-specific implementation.
-    std::shared_ptr<IPlatformPlugin> platformPlugin = CreatePlatformPlugin(options, data);
+    std::shared_ptr<AndroidPlatformPlugin> platformPlugin = CreatePlatformPlugin_Android(options, data);
 
     // Create graphics API implementation.
-    std::shared_ptr<IGraphicsPlugin> graphicsPlugin = CreateGraphicsPlugin(options, platformPlugin);
+    std::shared_ptr<VulkanGraphicsPlugin> graphicsPlugin = CreateGraphicsPlugin_Vulkan(options, platformPlugin);
 
     // Initialize the OpenXR program.
-    std::shared_ptr<IOpenXrProgram> program = CreateOpenXrProgram(options, platformPlugin, graphicsPlugin);
+    std::shared_ptr<OpenXrProgram> program = CreateOpenXrProgram(options, platformPlugin, graphicsPlugin);
 
     // Initialize the loader for this platform
     PFN_xrInitializeLoaderKHR initializeLoader = nullptr;

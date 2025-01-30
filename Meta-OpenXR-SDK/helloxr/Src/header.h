@@ -192,8 +192,6 @@
 
 #include "platform_utils.h"
 
-#include "stdfs_conditions.h"
-
 #include <dlfcn.h>
 
 #include "vk_platform.h"
@@ -231,8 +229,6 @@
 
 #include "vulkan_wrapper.h"
 
-#include "vk_sdk_platform.h"
-
 #include "vk_layer.h"
 
 #include "vk_icd.h"
@@ -258,12 +254,21 @@ extern struct VkGeneratedDispatchTableCore tableVk;
 #include "openxr_reflection_structs.h"
 #include "openxr_reflection_parent_structs.h"
 
-#include "platformplugin.h"
-#include "graphicsplugin.h"
-
 #include "logger.h"
 #include "common.h"
 #include "options.h"
+
+#include "geometry.h"
+
+#include "shaderc_env.h"
+#include "shaderc_status.h"
+#include "shaderc_visibility.h"
+#include "shaderc.h"
+#include "shaderc_hpp.h"
+
+#include "platformplugin.h"
+#include "graphicsplugin.h"
+
 #include "openxr_program.h"
 
 #include "xr_generated_dispatch_table_core.h"
@@ -291,23 +296,11 @@ inline const char* to_string(XrFormFactor e);
 
 #include "check.h"
 
-#include "geometry.h"
-
-#include "platformdata.h"
-
 #include "xr_linear.h"
-
-#include "shaderc_env.h"
-#include "shaderc_status.h"
-#include "shaderc_visibility.h"
-#include "shaderc.h"
-#include "shaderc_hpp.h"
 
 #include "hex_and_handles.h"
 
 #include "object_info.h"
-
-#include "loader_logger.h"
 
 #include "extra_algorithms.h"
 

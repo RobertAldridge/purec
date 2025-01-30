@@ -16,8 +16,8 @@ inline std::string to_hex(const uint8_t* const data, size_t bytes)
   for(size_t i = 0; i < bytes; ++i)
   {
     auto b = data[i];
-    *--ch = hex[(b >> 0) & 0xf];
-    *--ch = hex[(b >> 4) & 0xf];
+    *--ch = hex[ (b >> 0) & 0xf];
+    *--ch = hex[ (b >> 4) & 0xf];
   }
 
   return out;

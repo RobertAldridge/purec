@@ -10,11 +10,9 @@ set(
   extra_algorithms.h
   filesystem_utils.h
   geometry.h
-  graphicsapi.h
   graphicsplugin.h
   header.h
   hex_and_handles.h
-  loader_logger.h
   logger.h
   object_info.h
   openxr.h
@@ -28,7 +26,6 @@ set(
   options.h
   pch.h
   platform_utils.h
-  platformdata.h
   platformplugin.h
   shaderc.h
   shaderc_build_info.h
@@ -36,12 +33,10 @@ set(
   shaderc_hpp.h
   shaderc_status.h
   shaderc_visibility.h
-  stdfs_conditions.h
   unique_asset.h
   vk_icd.h
   vk_layer.h
   vk_platform.h
-  vk_sdk_platform.h
   vulkan_android.h
   vulkan_beta.h
   vulcan_core1.h
@@ -64,16 +59,13 @@ set(
   LOCAL_SOURCE
   anag.c
   filesystem_utils.cpp
-  graphicsplugin_factory.cpp
   graphicsplugin_vulkan.cpp
-  loader_logger.cpp
   logger.cpp
   main.cpp
   object_info.cpp
   openxr_program.cpp
   pch.cpp
   platformplugin_android.cpp
-  platformplugin_factory.cpp
   vulcan_wrapper.cpp
   xr_generated_dispatch_table_core.cpp
   C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libHLSL.a

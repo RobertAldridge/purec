@@ -3,30 +3,30 @@
 
 #include "header.h"
 
-namespace
+AndroidPlatformPlugin::AndroidPlatformPlugin(const std::shared_ptr<Options>& /*unused*/, const std::shared_ptr<PlatformData>& data)
 {
+  instanceCreateInfoAndroid = {XR_TYPE_INSTANCE_CREATE_INFO_ANDROID_KHR};
+  instanceCreateInfoAndroid.applicationVM = data->applicationVM;
+  instanceCreateInfoAndroid.applicationActivity = data->applicationActivity;
+}
 
-struct AndroidPlatformPlugin : public IPlatformPlugin
+std::vector<std::string> AndroidPlatformPlugin::GetInstanceExtensions() const
 {
-  AndroidPlatformPlugin(const std::shared_ptr<Options>& /*unused*/, const std::shared_ptr<PlatformData>& data)
-  {
-    instanceCreateInfoAndroid = {XR_TYPE_INSTANCE_CREATE_INFO_ANDROID_KHR};
-    instanceCreateInfoAndroid.applicationVM = data->applicationVM;
-    instanceCreateInfoAndroid.applicationActivity = data->applicationActivity;
-  }
+  return {XR_KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME};
+}
 
-  std::vector<std::string> GetInstanceExtensions() const override { return {XR_KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME}; }
+XrBaseInStructure* AndroidPlatformPlugin::GetInstanceCreateExtension() const
+{
+  return (XrBaseInStructure*) &instanceCreateInfoAndroid;
+}
 
-  XrBaseInStructure* GetInstanceCreateExtension() const override { return (XrBaseInStructure*)&instanceCreateInfoAndroid; }
+void AndroidPlatformPlugin::UpdateOptions(const std::shared_ptr<struct Options>& /*unused*/)
+{
+}
 
-  void UpdateOptions(const std::shared_ptr<struct Options>& /*unused*/) override {}
+//XrInstanceCreateInfoAndroidKHR AndroidPlatformPlugin::instanceCreateInfoAndroid;
 
-  XrInstanceCreateInfoAndroidKHR instanceCreateInfoAndroid;
-};
-
-}  // namespace
-
-std::shared_ptr<IPlatformPlugin> CreatePlatformPlugin_Android(const std::shared_ptr<Options>& options, const std::shared_ptr<PlatformData>& data)
+std::shared_ptr<AndroidPlatformPlugin> CreatePlatformPlugin_Android(const std::shared_ptr<Options>& options, const std::shared_ptr<PlatformData>& data)
 {
   return std::make_shared<AndroidPlatformPlugin>(options, data);
 }

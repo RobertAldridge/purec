@@ -6,7 +6,7 @@ namespace deleters
 
 struct AAssetDeleter
 {
-  void operator()(AAsset* asset) const noexcept
+  void operator()(AAsset* asset) const
   {
     if(asset != nullptr)
     {
@@ -17,7 +17,7 @@ struct AAssetDeleter
 
 struct AAssetDirDeleter
 {
-  void operator()(AAssetDir* dir) const noexcept
+  void operator()(AAssetDir* dir) const
   {
     if(dir != nullptr)
     {
