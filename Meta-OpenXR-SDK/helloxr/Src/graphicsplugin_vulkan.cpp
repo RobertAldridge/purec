@@ -1979,21 +1979,23 @@ R"_(
 
 } // namespace
 
-void MemoryAllocator::MemoryAllocatorInit(VkPhysicalDevice physicalDevice, VkDevice device)
+VkPhysicalDeviceMemoryProperties gMemoryAllocatorMemoryProperties {};
+
+void MemoryAllocator_MemoryAllocatorInit(VkPhysicalDevice physicalDevice)
 {
   if(tableVk.GetPhysicalDeviceMemoryProperties)
-    tableVk.GetPhysicalDeviceMemoryProperties(physicalDevice, &m_memoryAllocatorMemoryProperties);
+    tableVk.GetPhysicalDeviceMemoryProperties(physicalDevice, &gMemoryAllocatorMemoryProperties);
 }
 
-void MemoryAllocator::MemoryAllocatorAllocate(VkMemoryRequirements const& memReqs, VkDeviceMemory* mem, VkFlags flags, const void* pNext) const
+void MemoryAllocator_MemoryAllocatorAllocate(VkMemoryRequirements const& memReqs, VkDeviceMemory* mem, VkFlags flags = MemoryAllocator_m_memoryAllocatorDefaultFlags, void* pNext = nullptr)
 {
   // Search memtypes to find first offset with those properties
-  for(uint32_t offset = 0; offset < m_memoryAllocatorMemoryProperties.memoryTypeCount; offset++)
+  for(uint32_t offset = 0; offset < gMemoryAllocatorMemoryProperties.memoryTypeCount; offset++)
   {
     if(memReqs.memoryTypeBits & (1 << offset) )
     {
       // Type is available, does it match user properties?
-      if( (m_memoryAllocatorMemoryProperties.memoryTypes[offset].propertyFlags & flags) == flags)
+      if( (gMemoryAllocatorMemoryProperties.memoryTypes[offset].propertyFlags & flags) == flags)
       {
         VkMemoryAllocateInfo memAlloc {VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, pNext};
 
@@ -2011,28 +2013,52 @@ void MemoryAllocator::MemoryAllocatorAllocate(VkMemoryRequirements const& memReq
   THROW("Memory format not supported");
 }
 
-CmdBuffer::~CmdBuffer()
+enum class CmdBufferStateEnum
 {
-  CmdBufferSetState(CmdBufferStateEnum::Undefined);
+  Undefined,
+  Initialized,
+  Recording,
+  Executable,
+  Executing
+};
+
+CmdBufferStateEnum gCmdBufferState {CmdBufferStateEnum::Undefined};
+
+VkCommandPool gCmdBufferPool {VK_NULL_HANDLE};
+
+VkCommandBuffer gCmdBufferBuffer {VK_NULL_HANDLE};
+
+VkFence gCmdBufferExecFence {VK_NULL_HANDLE};
+
+void CmdBuffer_CmdBufferSetState(CmdBufferStateEnum newState)
+{
+  gCmdBufferState = newState;
+}
+
+#if 0
+void CmdBuffer_CmdBuffer_Destructor()
+{
+  CmdBuffer_CmdBufferSetState(CmdBufferStateEnum::Undefined);
 
   if(gVkDevice)
   {
-    if(m_cmdBufferBuffer != VK_NULL_HANDLE && tableVk.FreeCommandBuffers)
-      tableVk.FreeCommandBuffers(gVkDevice, m_cmdBufferPool, 1, &m_cmdBufferBuffer);
+    if(gCmdBufferBuffer != VK_NULL_HANDLE && tableVk.FreeCommandBuffers)
+      tableVk.FreeCommandBuffers(gVkDevice, gCmdBufferPool, 1, &gCmdBufferBuffer);
 
-    if(m_cmdBufferPool != VK_NULL_HANDLE && tableVk.DestroyCommandPool)
-      tableVk.DestroyCommandPool(gVkDevice, m_cmdBufferPool, nullptr);
+    if(gCmdBufferPool != VK_NULL_HANDLE && tableVk.DestroyCommandPool)
+      tableVk.DestroyCommandPool(gVkDevice, gCmdBufferPool, nullptr);
 
-    if(m_cmdBufferExecFence != VK_NULL_HANDLE && tableVk.DestroyFence)
-      tableVk.DestroyFence(gVkDevice, m_cmdBufferExecFence, nullptr);
+    if(gCmdBufferExecFence != VK_NULL_HANDLE && tableVk.DestroyFence)
+      tableVk.DestroyFence(gVkDevice, gCmdBufferExecFence, nullptr);
   }
 
-  m_cmdBufferBuffer = VK_NULL_HANDLE;
-  m_cmdBufferPool = VK_NULL_HANDLE;
-  m_cmdBufferExecFence = VK_NULL_HANDLE;
+  gCmdBufferBuffer = VK_NULL_HANDLE;
+  gCmdBufferPool = VK_NULL_HANDLE;
+  gCmdBufferExecFence = VK_NULL_HANDLE;
 }
+#endif
 
-std::string CmdBuffer::CmdBufferStateString(CmdBufferStateEnum s)
+std::string CmdBuffer_CmdBufferStateString(CmdBufferStateEnum s)
 {
   switch(s)
   {
@@ -2070,15 +2096,15 @@ std::string CmdBuffer::CmdBufferStateString(CmdBufferStateEnum s)
 #define CHECK_CBSTATE(s) \
 do \
 { \
-    if(m_cmdBufferState != (s) ) \
+    if(gCmdBufferState != (s) ) \
     { \
-        Log::Write(Log::Level::Error, std::string("Expecting state " #s " from ") + __FUNCTION__ + ", in " + CmdBufferStateString(m_cmdBufferState) ); \
+        Log::Write(Log::Level::Error, std::string("Expecting state " #s " from ") + __FUNCTION__ + ", in " + CmdBuffer_CmdBufferStateString(gCmdBufferState) ); \
         return false; \
     } \
 \
 }while(0)
 
-bool CmdBuffer::CmdBufferInit(const VulkanDebugObjectNamer& namer, VkDevice device, uint32_t queueFamilyIndex)
+bool CmdBuffer_CmdBufferInit(const VulkanDebugObjectNamer& namer, VkDevice device, uint32_t queueFamilyIndex)
 {
   CHECK_CBSTATE(CmdBufferStateEnum::Undefined);
 
@@ -2088,80 +2114,80 @@ bool CmdBuffer::CmdBufferInit(const VulkanDebugObjectNamer& namer, VkDevice devi
   cmdPoolInfo.queueFamilyIndex = queueFamilyIndex;
 
   if(tableVk.CreateCommandPool)
-    CHECK_VKCMD(tableVk.CreateCommandPool(gVkDevice, &cmdPoolInfo, nullptr, &m_cmdBufferPool) );
+    CHECK_VKCMD(tableVk.CreateCommandPool(gVkDevice, &cmdPoolInfo, nullptr, &gCmdBufferPool) );
 
-  CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_COMMAND_POOL, (uint64_t)m_cmdBufferPool, "helloxr command pool") );
+  CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_COMMAND_POOL, (uint64_t)gCmdBufferPool, "helloxr command pool") );
 
   // Create the command buffer from the command pool
   VkCommandBufferAllocateInfo cmd {VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO};
-  cmd.commandPool = m_cmdBufferPool;
+  cmd.commandPool = gCmdBufferPool;
   cmd.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
   cmd.commandBufferCount = 1;
 
   if(tableVk.AllocateCommandBuffers)
-    CHECK_VKCMD(tableVk.AllocateCommandBuffers(gVkDevice, &cmd, &m_cmdBufferBuffer) );
+    CHECK_VKCMD(tableVk.AllocateCommandBuffers(gVkDevice, &cmd, &gCmdBufferBuffer) );
 
-  CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_COMMAND_BUFFER, (uint64_t)m_cmdBufferBuffer, "helloxr command buffer") );
+  CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_COMMAND_BUFFER, (uint64_t)gCmdBufferBuffer, "helloxr command buffer") );
 
   VkFenceCreateInfo fenceInfo {VK_STRUCTURE_TYPE_FENCE_CREATE_INFO};
 
   if(tableVk.CreateFence)
-    CHECK_VKCMD(tableVk.CreateFence(gVkDevice, &fenceInfo, nullptr, &m_cmdBufferExecFence) );
+    CHECK_VKCMD(tableVk.CreateFence(gVkDevice, &fenceInfo, nullptr, &gCmdBufferExecFence) );
 
-  CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_FENCE, (uint64_t)m_cmdBufferExecFence, "helloxr fence") );
+  CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_FENCE, (uint64_t)gCmdBufferExecFence, "helloxr fence") );
 
-  CmdBufferSetState(CmdBufferStateEnum::Initialized);
+  CmdBuffer_CmdBufferSetState(CmdBufferStateEnum::Initialized);
 
   return true;
 }
 
-bool CmdBuffer::CmdBufferBegin()
+bool CmdBuffer_CmdBufferBegin()
 {
   CHECK_CBSTATE(CmdBufferStateEnum::Initialized);
 
   VkCommandBufferBeginInfo cmdBeginInfo {VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
 
   if(tableVk.BeginCommandBuffer)
-    CHECK_VKCMD(tableVk.BeginCommandBuffer(m_cmdBufferBuffer, &cmdBeginInfo) );
+    CHECK_VKCMD(tableVk.BeginCommandBuffer(gCmdBufferBuffer, &cmdBeginInfo) );
 
-  CmdBufferSetState(CmdBufferStateEnum::Recording);
+  CmdBuffer_CmdBufferSetState(CmdBufferStateEnum::Recording);
 
   return true;
 }
 
-bool CmdBuffer::CmdBufferEnd()
+bool CmdBuffer_CmdBufferEnd()
 {
   CHECK_CBSTATE(CmdBufferStateEnum::Recording);
 
   if(tableVk.EndCommandBuffer)
-    CHECK_VKCMD(tableVk.EndCommandBuffer(m_cmdBufferBuffer) );
+    CHECK_VKCMD(tableVk.EndCommandBuffer(gCmdBufferBuffer) );
 
-  CmdBufferSetState(CmdBufferStateEnum::Executable);
+  CmdBuffer_CmdBufferSetState(CmdBufferStateEnum::Executable);
 
   return true;
 }
 
-bool CmdBuffer::CmdBufferExec(VkQueue queue)
+bool CmdBuffer_CmdBufferExec(VkQueue queue)
 {
   CHECK_CBSTATE(CmdBufferStateEnum::Executable);
 
   VkSubmitInfo submitInfo {VK_STRUCTURE_TYPE_SUBMIT_INFO};
 
   submitInfo.commandBufferCount = 1;
-  submitInfo.pCommandBuffers = &m_cmdBufferBuffer;
+  submitInfo.pCommandBuffers = &gCmdBufferBuffer;
 
   if(tableVk.QueueSubmit)
-    CHECK_VKCMD(tableVk.QueueSubmit(queue, 1, &submitInfo, m_cmdBufferExecFence) );
+    CHECK_VKCMD(tableVk.QueueSubmit(queue, 1, &submitInfo, gCmdBufferExecFence) );
 
-  CmdBufferSetState(CmdBufferStateEnum::Executing);
+  CmdBuffer_CmdBufferSetState(CmdBufferStateEnum::Executing);
 
   return true;
 }
 
-bool CmdBuffer::CmdBufferWait()
+bool CmdBuffer_CmdBufferWait()
 {
   // Waiting on a not-in-flight command buffer is a no-op
-  if(m_cmdBufferState == CmdBufferStateEnum::Initialized)
+  if(gCmdBufferState == CmdBufferStateEnum::Initialized)
     return true;
 
   CHECK_CBSTATE(CmdBufferStateEnum::Executing);
@@ -2173,12 +2199,12 @@ bool CmdBuffer::CmdBufferWait()
     VkResult res = VK_ERROR_OUT_OF_HOST_MEMORY;
 
     if(tableVk.WaitForFences)
-      res = tableVk.WaitForFences(gVkDevice, 1, &m_cmdBufferExecFence, VK_TRUE, timeoutNs);
+      res = tableVk.WaitForFences(gVkDevice, 1, &gCmdBufferExecFence, VK_TRUE, timeoutNs);
 
     if(res == VK_SUCCESS)
     {
       // Buffer can be executed multiple times...
-      CmdBufferSetState(CmdBufferStateEnum::Executable);
+      CmdBuffer_CmdBufferSetState(CmdBufferStateEnum::Executable);
       return true;
     }
 
@@ -2188,30 +2214,151 @@ bool CmdBuffer::CmdBufferWait()
   return false;
 }
 
-bool CmdBuffer::CmdBufferReset()
+bool CmdBuffer_CmdBufferReset()
 {
-  if(m_cmdBufferState != CmdBufferStateEnum::Initialized)
+  if(gCmdBufferState != CmdBufferStateEnum::Initialized)
   {
     CHECK_CBSTATE(CmdBufferStateEnum::Executable);
 
     if(tableVk.ResetFences)
-      CHECK_VKCMD(tableVk.ResetFences(gVkDevice, 1, &m_cmdBufferExecFence) );
+      CHECK_VKCMD(tableVk.ResetFences(gVkDevice, 1, &gCmdBufferExecFence) );
 
     if(tableVk.ResetCommandBuffer)
-      CHECK_VKCMD(tableVk.ResetCommandBuffer(m_cmdBufferBuffer, 0) );
+      CHECK_VKCMD(tableVk.ResetCommandBuffer(gCmdBufferBuffer, 0) );
 
-    CmdBufferSetState(CmdBufferStateEnum::Initialized);
+    CmdBuffer_CmdBufferSetState(CmdBufferStateEnum::Initialized);
   }
 
   return true;
 }
 
-void CmdBuffer::CmdBufferSetState(CmdBufferStateEnum newState)
+#undef CHECK_CBSTATE
+
+VkBuffer gVertexBufferBaseIdxBuf {VK_NULL_HANDLE};
+
+VkDeviceMemory gVertexBufferBaseIdxMem {VK_NULL_HANDLE};
+
+VkBuffer gVertexBufferBaseVtxBuf {VK_NULL_HANDLE};
+
+VkDeviceMemory gVertexBufferBaseVtxMem {VK_NULL_HANDLE};
+
+VkVertexInputBindingDescription gVertexBufferBaseBindDesc {};
+
+std::vector<VkVertexInputAttributeDescription> gVertexBufferBaseAttrDesc {};
+
+struct
 {
-  m_cmdBufferState = newState;
+  uint32_t idx;
+  uint32_t vtx;
+
+}gVertexBufferBaseCount = {0, 0};
+
+#if 0
+void VertexBufferBase_VertexBufferBase_Destructor()
+{
+  if(gVkDevice)
+  {
+    if(gVertexBufferBaseIdxBuf != VK_NULL_HANDLE && tableVk.DestroyBuffer)
+      tableVk.DestroyBuffer(gVkDevice, gVertexBufferBaseIdxBuf, nullptr);
+
+    if(gVertexBufferBaseIdxMem != VK_NULL_HANDLE && tableVk.FreeMemory)
+      tableVk.FreeMemory(gVkDevice, gVertexBufferBaseIdxMem, nullptr);
+
+    if(gVertexBufferBaseVtxBuf != VK_NULL_HANDLE && tableVk.DestroyBuffer)
+      tableVk.DestroyBuffer(gVkDevice, gVertexBufferBaseVtxBuf, nullptr);
+
+    if(gVertexBufferBaseVtxMem != VK_NULL_HANDLE && tableVk.FreeMemory)
+      tableVk.FreeMemory(gVkDevice, gVertexBufferBaseVtxMem, nullptr);
+  }
+
+  gVertexBufferBaseIdxBuf = VK_NULL_HANDLE;
+  gVertexBufferBaseIdxMem = VK_NULL_HANDLE;
+  gVertexBufferBaseVtxBuf = VK_NULL_HANDLE;
+  gVertexBufferBaseVtxMem = VK_NULL_HANDLE;
+
+  gVertexBufferBaseBindDesc = {};
+  gVertexBufferBaseAttrDesc.clear();
+  gVertexBufferBaseCount = {0, 0};
+}
+#endif
+
+void VertexBufferBase_VertexBufferBaseInit(const std::vector<VkVertexInputAttributeDescription>& attr)
+{
+  gVertexBufferBaseAttrDesc = attr;
 }
 
-#undef CHECK_CBSTATE
+void VertexBufferBase_VertexBufferBaseAllocateBufferMemory(VkBuffer buf, VkDeviceMemory* mem)
+{
+  VkMemoryRequirements memReq = {};
+
+  if(tableVk.GetBufferMemoryRequirements)
+    tableVk.GetBufferMemoryRequirements(gVkDevice, buf, &memReq);
+
+  MemoryAllocator_MemoryAllocatorAllocate(memReq, mem);
+}
+
+bool VertexBuffer_VertexBufferCreate(uint32_t idxCount, uint32_t vtxCount)
+{
+  VkBufferCreateInfo bufInfo {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
+
+  bufInfo.usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+  bufInfo.size = sizeof(uint16_t) * idxCount;
+
+  if(tableVk.CreateBuffer)
+    CHECK_VKCMD(tableVk.CreateBuffer(gVkDevice, &bufInfo, nullptr, &gVertexBufferBaseIdxBuf) );
+
+  VertexBufferBase_VertexBufferBaseAllocateBufferMemory(gVertexBufferBaseIdxBuf, &gVertexBufferBaseIdxMem);
+
+  if(tableVk.BindBufferMemory)
+    CHECK_VKCMD(tableVk.BindBufferMemory(gVkDevice, gVertexBufferBaseIdxBuf, gVertexBufferBaseIdxMem, 0) );
+
+  bufInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+  bufInfo.size = sizeof(Geometry::Vertex) * vtxCount;
+
+  if(tableVk.CreateBuffer)
+    CHECK_VKCMD(tableVk.CreateBuffer(gVkDevice, &bufInfo, nullptr, &gVertexBufferBaseVtxBuf) );
+
+  VertexBufferBase_VertexBufferBaseAllocateBufferMemory(gVertexBufferBaseVtxBuf, &gVertexBufferBaseVtxMem);
+
+  if(tableVk.BindBufferMemory)
+    CHECK_VKCMD(tableVk.BindBufferMemory(gVkDevice, gVertexBufferBaseVtxBuf, gVertexBufferBaseVtxMem, 0) );
+
+  gVertexBufferBaseBindDesc.binding = 0;
+  gVertexBufferBaseBindDesc.stride = sizeof(Geometry::Vertex);
+  gVertexBufferBaseBindDesc.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+  gVertexBufferBaseCount = {idxCount, vtxCount};
+
+  return true;
+}
+
+void VertexBuffer_VertexBufferUpdateIndices(const uint16_t* data, uint32_t elements, uint32_t offset)
+{
+  uint16_t* map = nullptr;
+
+  if(tableVk.MapMemory)
+    CHECK_VKCMD(tableVk.MapMemory(gVkDevice, gVertexBufferBaseIdxMem, sizeof(map[0] ) * offset, sizeof(map[0] ) * elements, 0, (void**)&map) );
+
+  for(size_t i = 0; i < elements; ++i)
+    map[i] = data[i];
+
+  if(tableVk.UnmapMemory)
+    tableVk.UnmapMemory(gVkDevice, gVertexBufferBaseIdxMem);
+}
+
+void VertexBuffer_VertexBufferUpdateVertices(const Geometry::Vertex* data, uint32_t elements, uint32_t offset)
+{
+  Geometry::Vertex* map = nullptr;
+
+  if(tableVk.MapMemory)
+    CHECK_VKCMD(tableVk.MapMemory(gVkDevice, gVertexBufferBaseVtxMem, sizeof(map[0] ) * offset, sizeof(map[0] ) * elements, 0, (void**) &map) );
+
+  for(size_t i = 0; i < elements; ++i)
+    map[i] = data[i];
+
+  if(tableVk.UnmapMemory)
+    tableVk.UnmapMemory(gVkDevice, gVertexBufferBaseVtxMem);
+}
 
 ShaderProgram::~ShaderProgram()
 {
@@ -2277,112 +2424,6 @@ void ShaderProgram::ShaderProgramLoad(uint32_t whichShaderInfo, const std::vecto
     CHECK_VKCMD(tableVk.CreateShaderModule(gVkDevice, &modInfo, nullptr, &si.module) );
 
   Log::Write(Log::Level::Info, Fmt("Loaded %s shader", name.c_str() ) );
-}
-
-VertexBufferBase::~VertexBufferBase()
-{
-  if(gVkDevice)
-  {
-    if(m_vertexBufferBaseIdxBuf != VK_NULL_HANDLE && tableVk.DestroyBuffer)
-      tableVk.DestroyBuffer(gVkDevice, m_vertexBufferBaseIdxBuf, nullptr);
-
-    if(m_vertexBufferBaseIdxMem != VK_NULL_HANDLE && tableVk.FreeMemory)
-      tableVk.FreeMemory(gVkDevice, m_vertexBufferBaseIdxMem, nullptr);
-
-    if(m_vertexBufferBaseVtxBuf != VK_NULL_HANDLE && tableVk.DestroyBuffer)
-      tableVk.DestroyBuffer(gVkDevice, m_vertexBufferBaseVtxBuf, nullptr);
-
-    if(m_vertexBufferBaseVtxMem != VK_NULL_HANDLE && tableVk.FreeMemory)
-      tableVk.FreeMemory(gVkDevice, m_vertexBufferBaseVtxMem, nullptr);
-  }
-
-  m_vertexBufferBaseIdxBuf = VK_NULL_HANDLE;
-  m_vertexBufferBaseIdxMem = VK_NULL_HANDLE;
-  m_vertexBufferBaseVtxBuf = VK_NULL_HANDLE;
-  m_vertexBufferBaseVtxMem = VK_NULL_HANDLE;
-
-  m_vertexBufferBaseBindDesc = {};
-  m_vertexBufferBaseAttrDesc.clear();
-  m_vertexBufferBaseCount = {0, 0};
-}
-
-void VertexBufferBase::VertexBufferBaseInit(VkDevice device, const MemoryAllocator* memAllocator, const std::vector<VkVertexInputAttributeDescription>& attr)
-{
-  m_vertexBufferBaseMemoryAllocator = memAllocator;
-  m_vertexBufferBaseAttrDesc = attr;
-}
-
-void VertexBufferBase::VertexBufferBaseAllocateBufferMemory(VkBuffer buf, VkDeviceMemory* mem) const
-{
-  VkMemoryRequirements memReq = {};
-
-  if(tableVk.GetBufferMemoryRequirements)
-    tableVk.GetBufferMemoryRequirements(gVkDevice, buf, &memReq);
-
-  m_vertexBufferBaseMemoryAllocator->MemoryAllocatorAllocate(memReq, mem);
-}
-
-template <typename T> bool VertexBuffer<T>::VertexBufferCreate(uint32_t idxCount, uint32_t vtxCount)
-{
-  VkBufferCreateInfo bufInfo {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
-
-  bufInfo.usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
-  bufInfo.size = sizeof(uint16_t) * idxCount;
-
-  if(tableVk.CreateBuffer)
-    CHECK_VKCMD(tableVk.CreateBuffer(gVkDevice, &bufInfo, nullptr, &m_vertexBufferBaseIdxBuf) );
-
-  VertexBufferBaseAllocateBufferMemory(m_vertexBufferBaseIdxBuf, &m_vertexBufferBaseIdxMem);
-
-  if(tableVk.BindBufferMemory)
-    CHECK_VKCMD(tableVk.BindBufferMemory(gVkDevice, m_vertexBufferBaseIdxBuf, m_vertexBufferBaseIdxMem, 0) );
-
-  bufInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-  bufInfo.size = sizeof(T) * vtxCount;
-
-  if(tableVk.CreateBuffer)
-    CHECK_VKCMD(tableVk.CreateBuffer(gVkDevice, &bufInfo, nullptr, &m_vertexBufferBaseVtxBuf) );
-
-  VertexBufferBaseAllocateBufferMemory(m_vertexBufferBaseVtxBuf, &m_vertexBufferBaseVtxMem);
-
-  if(tableVk.BindBufferMemory)
-    CHECK_VKCMD(tableVk.BindBufferMemory(gVkDevice, m_vertexBufferBaseVtxBuf, m_vertexBufferBaseVtxMem, 0) );
-
-  m_vertexBufferBaseBindDesc.binding = 0;
-  m_vertexBufferBaseBindDesc.stride = sizeof(T);
-  m_vertexBufferBaseBindDesc.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-  m_vertexBufferBaseCount = {idxCount, vtxCount};
-
-  return true;
-}
-
-template <typename T> void VertexBuffer<T>::VertexBufferUpdateIndices(const uint16_t* data, uint32_t elements, uint32_t offset)
-{
-  uint16_t* map = nullptr;
-
-  if(tableVk.MapMemory)
-    CHECK_VKCMD(tableVk.MapMemory(gVkDevice, m_vertexBufferBaseIdxMem, sizeof(map[0] ) * offset, sizeof(map[0] ) * elements, 0, (void**)&map) );
-
-  for(size_t i = 0; i < elements; ++i)
-    map[i] = data[i];
-
-  if(tableVk.UnmapMemory)
-    tableVk.UnmapMemory(gVkDevice, m_vertexBufferBaseIdxMem);
-}
-
-template <typename T> void VertexBuffer<T>::VertexBufferUpdateVertices(const T* data, uint32_t elements, uint32_t offset)
-{
-  T* map = nullptr;
-
-  if(tableVk.MapMemory)
-    CHECK_VKCMD(tableVk.MapMemory(gVkDevice, m_vertexBufferBaseVtxMem, sizeof(map[0] ) * offset, sizeof(map[0] ) * elements, 0, (void**)&map) );
-
-  for(size_t i = 0; i < elements; ++i)
-    map[i] = data[i];
-
-  if(tableVk.UnmapMemory)
-    tableVk.UnmapMemory(gVkDevice, m_vertexBufferBaseVtxMem);
 }
 
 std::vector<std::vector<XrSwapchainImageVulkan2KHR> > m_swapchainImageContextSwapchainImages;
@@ -2581,7 +2622,7 @@ void SwapchainImageContext_SwapchainImageContext_RenderTargetCreate(int index, i
   CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_FRAMEBUFFER, (uint64_t)m_swapchainImageContextStdVector_renderTargetFrameBuffer[index][renderTarget], "helloxr framebuffer") );
 }
 
-void SwapchainImageContext_SwapchainImageContext_DepthBufferCreate(int index, const VulkanDebugObjectNamer& namer, VkDevice device, MemoryAllocator* memAllocator, VkFormat depthFormat, const XrSwapchainCreateInfo& swapchainCreateInfo)
+void SwapchainImageContext_SwapchainImageContext_DepthBufferCreate(int index, const VulkanDebugObjectNamer& namer, VkDevice device, VkFormat depthFormat, const XrSwapchainCreateInfo& swapchainCreateInfo)
 {
   VkExtent2D size = {swapchainCreateInfo.width, swapchainCreateInfo.height};
 
@@ -2610,14 +2651,14 @@ void SwapchainImageContext_SwapchainImageContext_DepthBufferCreate(int index, co
   if(tableVk.GetImageMemoryRequirements)
     tableVk.GetImageMemoryRequirements(gVkDevice, m_swapchainImageContext_depthBufferDepthImage[index], &memRequirements);
 
-  memAllocator->MemoryAllocatorAllocate(memRequirements, &m_swapchainImageContext_depthBufferDepthMemory[index], VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+  MemoryAllocator_MemoryAllocatorAllocate(memRequirements, &m_swapchainImageContext_depthBufferDepthMemory[index], VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
   CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_DEVICE_MEMORY, (uint64_t)m_swapchainImageContext_depthBufferDepthMemory[index], "helloxr fallback depth image memory") );
 
   if(tableVk.BindImageMemory)
     CHECK_VKCMD(tableVk.BindImageMemory(gVkDevice, m_swapchainImageContext_depthBufferDepthImage[index], m_swapchainImageContext_depthBufferDepthMemory[index], 0) );
 }
 
-void SwapchainImageContext_SwapchainImageContext_DepthBufferTransitionImageLayout(int index, CmdBuffer* cmdBuffer, VkImageLayout newLayout)
+void SwapchainImageContext_SwapchainImageContext_DepthBufferTransitionImageLayout(int index, VkImageLayout newLayout)
 {
   if(newLayout == m_swapchainImageContext_depthBufferVkImageLayout[index] )
     return;
@@ -2632,7 +2673,7 @@ void SwapchainImageContext_SwapchainImageContext_DepthBufferTransitionImageLayou
   depthBarrier.subresourceRange = {VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1};
 
   if(tableVk.CmdPipelineBarrier)
-    tableVk.CmdPipelineBarrier(cmdBuffer->m_cmdBufferBuffer, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, 0, 0, nullptr, 0, nullptr, 1, &depthBarrier);
+    tableVk.CmdPipelineBarrier(gCmdBufferBuffer, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, 0, 0, nullptr, 0, nullptr, 1, &depthBarrier);
 
   m_swapchainImageContext_depthBufferVkImageLayout[index] = newLayout;
 }
@@ -2703,7 +2744,7 @@ void SwapchainImageContext_SwapchainImageContext_PipelineDynamic(int index, VkDy
   m_swapchainImageContextPipe_pipelineDynamicStateEnables[index].push_back(state);
 }
 
-void SwapchainImageContext_SwapchainImageContext_PipelineCreate(int index, VkDevice device, VkExtent2D size, const ShaderProgram& sp, const VertexBufferBase& vb)
+void SwapchainImageContext_SwapchainImageContext_PipelineCreate(int index, VkDevice device, VkExtent2D size, const ShaderProgram& sp)
 {
   VkPipelineDynamicStateCreateInfo dynamicState {VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO};
   dynamicState.dynamicStateCount = (uint32_t)m_swapchainImageContextPipe_pipelineDynamicStateEnables[index].size();
@@ -2711,9 +2752,9 @@ void SwapchainImageContext_SwapchainImageContext_PipelineCreate(int index, VkDev
 
   VkPipelineVertexInputStateCreateInfo vi {VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO};
   vi.vertexBindingDescriptionCount = 1;
-  vi.pVertexBindingDescriptions = &vb.m_vertexBufferBaseBindDesc;
-  vi.vertexAttributeDescriptionCount = (uint32_t)vb.m_vertexBufferBaseAttrDesc.size();
-  vi.pVertexAttributeDescriptions = vb.m_vertexBufferBaseAttrDesc.data();
+  vi.pVertexBindingDescriptions = &gVertexBufferBaseBindDesc;
+  vi.vertexAttributeDescriptionCount = (uint32_t)gVertexBufferBaseAttrDesc.size();
+  vi.pVertexAttributeDescriptions = gVertexBufferBaseAttrDesc.data();
 
   VkPipelineInputAssemblyStateCreateInfo ia {VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO};
   ia.primitiveRestartEnable = VK_FALSE;
@@ -2818,7 +2859,7 @@ void SwapchainImageContext_SwapchainImageContext_PipelineRelease(int index)
   m_swapchainImageContextPipe_pipelinePipe[index] = VK_NULL_HANDLE;
 }
 
-std::vector<XrSwapchainImageBaseHeader*> SwapchainImageContext_SwapchainImageContextCreate(int index, const VulkanDebugObjectNamer& namer, VkDevice device, MemoryAllocator* memAllocator, uint32_t capacity, const XrSwapchainCreateInfo& swapchainCreateInfo, const ShaderProgram& sp, const VertexBuffer<Geometry::Vertex>& vb)
+std::vector<XrSwapchainImageBaseHeader*> SwapchainImageContext_SwapchainImageContextCreate(int index, const VulkanDebugObjectNamer& namer, VkDevice device, uint32_t capacity, const XrSwapchainCreateInfo& swapchainCreateInfo, const ShaderProgram& sp)
 {
   m_swapchainImageContextNamer[index] = namer;
 
@@ -2826,10 +2867,10 @@ std::vector<XrSwapchainImageBaseHeader*> SwapchainImageContext_SwapchainImageCon
   VkFormat colorFormat = (VkFormat)swapchainCreateInfo.format;
   VkFormat depthFormat = VK_FORMAT_D32_SFLOAT;
 
-  SwapchainImageContext_SwapchainImageContext_DepthBufferCreate(index, m_swapchainImageContextNamer[index], gVkDevice, memAllocator, depthFormat, swapchainCreateInfo);
+  SwapchainImageContext_SwapchainImageContext_DepthBufferCreate(index, m_swapchainImageContextNamer[index], gVkDevice, depthFormat, swapchainCreateInfo);
   SwapchainImageContext_SwapchainImageContext_RenderPassCreate(index, m_swapchainImageContextNamer[index], gVkDevice, colorFormat, depthFormat);
 
-  SwapchainImageContext_SwapchainImageContext_PipelineCreate(index, gVkDevice, m_swapchainImageContextSize[index], sp, vb);
+  SwapchainImageContext_SwapchainImageContext_PipelineCreate(index, gVkDevice, m_swapchainImageContextSize[index], sp);
 
   m_swapchainImageContextSwapchainImages[index].resize(capacity);
 
@@ -3170,7 +3211,7 @@ void VulkanGraphicsPlugin::VulkanGraphicsPluginInitializeDevice(XrInstance insta
   if(tableVk.GetDeviceQueue)
     tableVk.GetDeviceQueue(gVkDevice, queueInfo.queueFamilyIndex, 0, &m_vulkanGraphicsPluginVkQueue);
 
-  m_vulkanGraphicsPluginMemoryAllocator.MemoryAllocatorInit(gVkPhysicalDevice, gVkDevice);
+  MemoryAllocator_MemoryAllocatorInit(gVkPhysicalDevice);
 
   VulkanGraphicsPluginInitializeResources();
 
@@ -3222,21 +3263,21 @@ void VulkanGraphicsPlugin::VulkanGraphicsPluginInitializeResources()
 
   CHECK_VKCMD(m_vulkanGraphicsPluginVulkanDebugObjectNamer.SetName(VK_OBJECT_TYPE_SEMAPHORE, (uint64_t)m_vulkanGraphicsPluginVkSemaphoreDrawDone, "helloxr draw done semaphore") );
 
-  if(!m_vulkanGraphicsPluginCmdBuffer.CmdBufferInit(m_vulkanGraphicsPluginVulkanDebugObjectNamer, gVkDevice, m_vulkanGraphicsPluginQueueFamilyIndex) ) THROW("Failed to create command buffer");
+  if(!CmdBuffer_CmdBufferInit(m_vulkanGraphicsPluginVulkanDebugObjectNamer, gVkDevice, m_vulkanGraphicsPluginQueueFamilyIndex) ) THROW("Failed to create command buffer");
 
   //gVkPipelineLayout.PipelineLayoutCreate(gVkDevice);
   PipelineLayout_PipelineLayoutCreate(gVkDevice);
 
   static_assert(sizeof(Geometry::Vertex) == 24, "Unexpected Vertex size");
 
-  m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer.VertexBufferBaseInit(gVkDevice, &m_vulkanGraphicsPluginMemoryAllocator, { {0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Position) }, {1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Color) } } );
+  VertexBufferBase_VertexBufferBaseInit( { {0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Position) }, {1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Color) } } );
 
   uint32_t numCubeIdicies = sizeof(Geometry::c_cubeIndices) / sizeof(Geometry::c_cubeIndices[0] );
   uint32_t numCubeVerticies = sizeof(Geometry::c_cubeVertices) / sizeof(Geometry::c_cubeVertices[0] );
 
-  m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer.VertexBufferCreate(numCubeIdicies, numCubeVerticies);
-  m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer.VertexBufferUpdateIndices(Geometry::c_cubeIndices, numCubeIdicies, 0);
-  m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer.VertexBufferUpdateVertices(Geometry::c_cubeVertices, numCubeVerticies, 0);
+  VertexBuffer_VertexBufferCreate(numCubeIdicies, numCubeVerticies);
+  VertexBuffer_VertexBufferUpdateIndices(Geometry::c_cubeIndices, numCubeIdicies, 0);
+  VertexBuffer_VertexBufferUpdateVertices(Geometry::c_cubeVertices, numCubeVerticies, 0);
 }
 
 int64_t VulkanGraphicsPlugin::VulkanGraphicsPluginSelectColorSwapchainFormat(const std::vector<int64_t>& runtimeFormats) const
@@ -3272,9 +3313,9 @@ std::vector<XrSwapchainImageBaseHeader*> VulkanGraphicsPlugin::VulkanGraphicsPlu
 
   //SwapchainImageContext* swapchainImageContext = m_vulkanGraphicsPluginStdList_SwapchainImageContext[indice];
 
-  //std::vector<XrSwapchainImageBaseHeader*> bases = swapchainImageContext->SwapchainImageContextCreate(m_vulkanGraphicsPluginVulkanDebugObjectNamer, gVkDevice, &m_vulkanGraphicsPluginMemoryAllocator, capacity, swapchainCreateInfo, m_vulkanGraphicsPluginShaderProgram, m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer);
+  //std::vector<XrSwapchainImageBaseHeader*> bases = swapchainImageContext->SwapchainImageContextCreate(m_vulkanGraphicsPluginVulkanDebugObjectNamer, gVkDevice, capacity, swapchainCreateInfo, m_vulkanGraphicsPluginShaderProgram, m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer);
 
-  std::vector<XrSwapchainImageBaseHeader*> bases = SwapchainImageContext_SwapchainImageContextCreate(indice, m_vulkanGraphicsPluginVulkanDebugObjectNamer, gVkDevice, &m_vulkanGraphicsPluginMemoryAllocator, capacity, swapchainCreateInfo, m_vulkanGraphicsPluginShaderProgram, m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer);
+  std::vector<XrSwapchainImageBaseHeader*> bases = SwapchainImageContext_SwapchainImageContextCreate(indice, m_vulkanGraphicsPluginVulkanDebugObjectNamer, gVkDevice, capacity, swapchainCreateInfo, m_vulkanGraphicsPluginShaderProgram);
 
   // Map every swapchainImage base pointer to this context
   for(auto& base : bases)
@@ -3291,12 +3332,12 @@ void VulkanGraphicsPlugin::VulkanGraphicsPluginRenderView(const XrCompositionLay
   uint32_t renderTarget = SwapchainImageContext_SwapchainImageContextImageIndex(swapchainContextIndex, swapchainImage);
 
   // XXX Should double-buffer the command buffers, for now just flush
-  m_vulkanGraphicsPluginCmdBuffer.CmdBufferWait();
-  m_vulkanGraphicsPluginCmdBuffer.CmdBufferReset();
-  m_vulkanGraphicsPluginCmdBuffer.CmdBufferBegin();
+  CmdBuffer_CmdBufferWait();
+  CmdBuffer_CmdBufferReset();
+  CmdBuffer_CmdBufferBegin();
 
   // Ensure depth is in the right layout
-  SwapchainImageContext_SwapchainImageContext_DepthBufferTransitionImageLayout(swapchainContextIndex, &m_vulkanGraphicsPluginCmdBuffer, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+  SwapchainImageContext_SwapchainImageContext_DepthBufferTransitionImageLayout(swapchainContextIndex, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 
   // Bind and clear eye render target
   static std::array<VkClearValue, 2> clearValues;
@@ -3316,19 +3357,19 @@ void VulkanGraphicsPlugin::VulkanGraphicsPluginRenderView(const XrCompositionLay
   SwapchainImageContext_SwapchainImageContextBindRenderTarget(swapchainContextIndex, renderTarget, &renderPassBeginInfo);
 
   if(tableVk.CmdBeginRenderPass)
-    tableVk.CmdBeginRenderPass(m_vulkanGraphicsPluginCmdBuffer.m_cmdBufferBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+    tableVk.CmdBeginRenderPass(gCmdBufferBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
   if(tableVk.CmdBindPipeline)
-    tableVk.CmdBindPipeline(m_vulkanGraphicsPluginCmdBuffer.m_cmdBufferBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_swapchainImageContextPipe_pipelinePipe[swapchainContextIndex] );
+    tableVk.CmdBindPipeline(gCmdBufferBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_swapchainImageContextPipe_pipelinePipe[swapchainContextIndex] );
 
   // Bind indice and vertex buffers
   if(tableVk.CmdBindIndexBuffer)
-    tableVk.CmdBindIndexBuffer(m_vulkanGraphicsPluginCmdBuffer.m_cmdBufferBuffer, m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer.m_vertexBufferBaseIdxBuf, 0, VK_INDEX_TYPE_UINT16);
+    tableVk.CmdBindIndexBuffer(gCmdBufferBuffer, gVertexBufferBaseIdxBuf, 0, VK_INDEX_TYPE_UINT16);
 
   VkDeviceSize offset = 0;
 
   if(tableVk.CmdBindVertexBuffers)
-    tableVk.CmdBindVertexBuffers(m_vulkanGraphicsPluginCmdBuffer.m_cmdBufferBuffer, 0, 1, &m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer.m_vertexBufferBaseVtxBuf, &offset);
+    tableVk.CmdBindVertexBuffers(gCmdBufferBuffer, 0, 1, &gVertexBufferBaseVtxBuf, &offset);
 
   // Compute the view-projection transform.
   // Note all matrixes (including OpenXR's) are column-major, right-handed.
@@ -3357,18 +3398,18 @@ void VulkanGraphicsPlugin::VulkanGraphicsPluginRenderView(const XrCompositionLay
     XrMatrix4x4f_Multiply(&mvp, &vp, &model);
 
     if(tableVk.CmdPushConstants)
-      tableVk.CmdPushConstants(m_vulkanGraphicsPluginCmdBuffer.m_cmdBufferBuffer, gVkPipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(mvp.m), &mvp.m[0] );
+      tableVk.CmdPushConstants(gCmdBufferBuffer, gVkPipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(mvp.m), &mvp.m[0] );
 
     // draw the cube
     if(tableVk.CmdDrawIndexed)
-      tableVk.CmdDrawIndexed(m_vulkanGraphicsPluginCmdBuffer.m_cmdBufferBuffer, m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer.m_vertexBufferBaseCount.idx, 1, 0, 0, 0);
+      tableVk.CmdDrawIndexed(gCmdBufferBuffer, gVertexBufferBaseCount.idx, 1, 0, 0, 0);
   }
 
   if(tableVk.CmdEndRenderPass)
-    tableVk.CmdEndRenderPass(m_vulkanGraphicsPluginCmdBuffer.m_cmdBufferBuffer);
+    tableVk.CmdEndRenderPass(gCmdBufferBuffer);
 
-  m_vulkanGraphicsPluginCmdBuffer.CmdBufferEnd();
-  m_vulkanGraphicsPluginCmdBuffer.CmdBufferExec(m_vulkanGraphicsPluginVkQueue);
+  CmdBuffer_CmdBufferEnd();
+  CmdBuffer_CmdBufferExec(m_vulkanGraphicsPluginVkQueue);
 }
 
 uint32_t VulkanGraphicsPlugin::VulkanGraphicsPluginGetSupportedSwapchainSampleCount(const XrViewConfigurationView&)
