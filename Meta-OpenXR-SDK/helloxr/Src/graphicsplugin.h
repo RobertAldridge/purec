@@ -156,58 +156,6 @@ template <typename T> struct VertexBuffer : public VertexBufferBase
   void VertexBufferUpdateVertices(const T* data, uint32_t elements, uint32_t offset = 0);
 };
 
-// RenderPass wrapper
-struct RenderPass
-{
-  VkFormat m_renderPassColorFmt {};
-
-  VkFormat m_renderPassDepthFmt {};
-
-  VkRenderPass m_renderPassPass {VK_NULL_HANDLE};
-
-  RenderPass() = default;
-
-  bool RenderPassCreate(const VulkanDebugObjectNamer& namer, VkDevice device, VkFormat aColorFmt, VkFormat aDepthFmt);
-
-  ~RenderPass();
-
-  RenderPass(const RenderPass&) = delete;
-
-  RenderPass& operator=(const RenderPass&) = delete;
-
-  RenderPass(RenderPass&&) = delete;
-
-  RenderPass& operator=(RenderPass&&) = delete;
-};
-
-// VkImage + framebuffer wrapper
-struct RenderTarget
-{
-  VkImage m_renderTargetColorImage {VK_NULL_HANDLE};
-
-  VkImage m_renderTargetDepthImage {VK_NULL_HANDLE};
-
-  VkImageView m_renderTargetColorView {VK_NULL_HANDLE};
-
-  VkImageView m_renderTargetDepthView {VK_NULL_HANDLE};
-
-  VkFramebuffer m_renderTargetFrameBuffer {VK_NULL_HANDLE};
-
-  RenderTarget() = default;
-
-  ~RenderTarget();
-
-  RenderTarget(RenderTarget&& other);
-
-  RenderTarget& operator=(RenderTarget&& other);
-
-  void RenderTargetCreate(const VulkanDebugObjectNamer& namer, VkDevice device, VkImage aColorImage, VkImage aDepthImage, VkExtent2D size, RenderPass& renderPass);
-
-  RenderTarget(const RenderTarget&) = delete;
-
-  RenderTarget& operator=(const RenderTarget&) = delete;
-};
-
 struct SwapchainImageContext
 {
   SwapchainImageContext(XrStructureType _swapchainImageType);
@@ -215,7 +163,12 @@ struct SwapchainImageContext
   // A packed array of XrSwapchainImageVulkan2KHR's for tableXr.EnumerateSwapchainImages
   std::vector<XrSwapchainImageVulkan2KHR> m_swapchainImageContextSwapchainImages;
 
-  std::vector<RenderTarget> m_swapchainImageContextRenderTarget;
+  //std::vector<RenderTarget> m_swapchainImageContextRenderTarget;
+  std::vector<VkImage> m_swapchainImageContextStdVector_renderTargetColorImage;
+  std::vector<VkImage> m_swapchainImageContextStdVector_renderTargetDepthImage;
+  std::vector<VkImageView> m_swapchainImageContextStdVector_renderTargetColorView;
+  std::vector<VkImageView> m_swapchainImageContextStdVector_renderTargetDepthView;
+  std::vector<VkFramebuffer> m_swapchainImageContextStdVector_renderTargetFrameBuffer;
 
   VkExtent2D m_swapchainImageContextSize {};
 
@@ -223,7 +176,9 @@ struct SwapchainImageContext
   VkImage m_swapchainImageContext_depthBufferDepthImage {VK_NULL_HANDLE};
   VkImageLayout m_swapchainImageContext_depthBufferVkImageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
-  RenderPass m_swapchainImageContextRenderPass {};
+  VkFormat m_swapchainImageContext_renderPassColorFmt {};
+  VkFormat m_swapchainImageContext_renderPassDepthFmt {};
+  VkRenderPass m_swapchainImageContext_renderPassPass {VK_NULL_HANDLE};
 
   VkPipeline m_swapchainImageContextPipe_pipelinePipe {VK_NULL_HANDLE};
   VkPrimitiveTopology m_swapchainImageContextPipe_pipelineTopology {VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST};
@@ -239,11 +194,15 @@ struct SwapchainImageContext
 
   ~SwapchainImageContext();
 
+  void SwapchainImageContext_RenderTargetCreate(int index, const VulkanDebugObjectNamer& namer, VkDevice device, VkImage aColorImage, VkImage aDepthImage, VkExtent2D size, VkFormat& m_swapchainImageContext_renderPassColorFmt, VkFormat& m_swapchainImageContext_renderPassDepthFmt, VkRenderPass& m_swapchainImageContext_renderPassPass);
+
   void SwapchainImageContext_DepthBufferCreate(const VulkanDebugObjectNamer& namer, VkDevice device, MemoryAllocator* memAllocator, VkFormat depthFormat, const XrSwapchainCreateInfo& swapchainCreateInfo);
   void SwapchainImageContext_DepthBufferTransitionImageLayout(CmdBuffer* cmdBuffer, VkImageLayout newLayout);
 
+  bool SwapchainImageContext_RenderPassCreate(const VulkanDebugObjectNamer& namer, VkDevice device, VkFormat aColorFmt, VkFormat aDepthFmt);
+
   void SwapchainImageContext_PipelineDynamic(VkDynamicState state);
-  void SwapchainImageContext_PipelineCreate(VkDevice device, VkExtent2D size, const RenderPass& rp, const ShaderProgram& sp, const VertexBufferBase& vb);
+  void SwapchainImageContext_PipelineCreate(VkDevice device, VkExtent2D size, VkRenderPass& m_swapchainImageContext_renderPassPass, const ShaderProgram& sp, const VertexBufferBase& vb);
   void SwapchainImageContext_PipelineRelease();
 
   std::vector<XrSwapchainImageBaseHeader*> SwapchainImageContextCreate(const VulkanDebugObjectNamer& namer, VkDevice device, MemoryAllocator* memAllocator, uint32_t capacity, const XrSwapchainCreateInfo& swapchainCreateInfo, const ShaderProgram& sp, const VertexBuffer<Geometry::Vertex>& vb);
@@ -297,9 +256,9 @@ protected:
 
   XrGraphicsBindingVulkan2KHR m_vulkanGraphicsPluginXrGraphicsBindingVulkan2KHR {XR_TYPE_GRAPHICS_BINDING_VULKAN2_KHR};
 
-  std::list<SwapchainImageContext> m_vulkanGraphicsPluginStdList_SwapchainImageContext;
+  std::vector<SwapchainImageContext*> m_vulkanGraphicsPluginStdList_SwapchainImageContext;
 
-  std::map<const XrSwapchainImageBaseHeader*, SwapchainImageContext*> m_vulkanGraphicsPluginStdMap_XrSwapchainImageBaseHeader_SwapchainImageContext;
+  std::map<const XrSwapchainImageBaseHeader*, int> m_vulkanGraphicsPluginStdMap_XrSwapchainImageBaseHeader_SwapchainImageContext;
 
   VulkanDebugObjectNamer m_vulkanGraphicsPluginVulkanDebugObjectNamer {};
 

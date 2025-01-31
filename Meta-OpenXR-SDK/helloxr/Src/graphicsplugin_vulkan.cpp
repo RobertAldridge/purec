@@ -2456,242 +2456,6 @@ template <typename T> void VertexBuffer<T>::VertexBufferUpdateVertices(const T* 
     tableVk.UnmapMemory(gVkDevice, m_vertexBufferBaseVtxMem);
 }
 
-// RenderPass wrapper
-
-//VkFormat RenderPass::m_renderPassColorFmt {};
-
-//VkFormat RenderPass::m_renderPassDepthFmt {};
-
-//VkRenderPass RenderPass::m_renderPassPass {VK_NULL_HANDLE};
-
-//RenderPass::RenderPass() = default;
-
-bool RenderPass::RenderPassCreate(const VulkanDebugObjectNamer& namer, VkDevice device, VkFormat aColorFmt, VkFormat aDepthFmt)
-{
-  m_renderPassColorFmt = aColorFmt;
-  m_renderPassDepthFmt = aDepthFmt;
-
-  VkSubpassDescription subpass = {};
-  subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-
-  VkAttachmentReference colorRef = {0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL};
-  VkAttachmentReference depthRef = {1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL};
-
-  std::array<VkAttachmentDescription, 2> at = {};
-
-  VkRenderPassCreateInfo rpInfo {VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO};
-  rpInfo.attachmentCount = 0;
-  rpInfo.pAttachments = at.data();
-  rpInfo.subpassCount = 1;
-  rpInfo.pSubpasses = &subpass;
-
-  if(m_renderPassColorFmt != VK_FORMAT_UNDEFINED)
-  {
-    colorRef.attachment = rpInfo.attachmentCount++;
-
-    at[colorRef.attachment].format = m_renderPassColorFmt;
-    at[colorRef.attachment].samples = VK_SAMPLE_COUNT_1_BIT;
-    at[colorRef.attachment].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-    at[colorRef.attachment].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-    at[colorRef.attachment].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    at[colorRef.attachment].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    at[colorRef.attachment].initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-    at[colorRef.attachment].finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-    subpass.colorAttachmentCount = 1;
-    subpass.pColorAttachments = &colorRef;
-  }
-
-  if(m_renderPassDepthFmt != VK_FORMAT_UNDEFINED)
-  {
-    depthRef.attachment = rpInfo.attachmentCount++;
-
-    at[depthRef.attachment].format = m_renderPassDepthFmt;
-    at[depthRef.attachment].samples = VK_SAMPLE_COUNT_1_BIT;
-    at[depthRef.attachment].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-    at[depthRef.attachment].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-    at[depthRef.attachment].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    at[depthRef.attachment].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    at[depthRef.attachment].initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-    at[depthRef.attachment].finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-    subpass.pDepthStencilAttachment = &depthRef;
-  }
-
-  if(tableVk.CreateRenderPass)
-    CHECK_VKCMD(tableVk.CreateRenderPass(gVkDevice, &rpInfo, nullptr, &m_renderPassPass) );
-
-  CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_RENDER_PASS, (uint64_t)m_renderPassPass, "helloxr render pass") );
-
-  return true;
-}
-
-RenderPass::~RenderPass()
-{
-  if(gVkDevice)
-  {
-    if(m_renderPassPass != VK_NULL_HANDLE && tableVk.DestroyRenderPass)
-      tableVk.DestroyRenderPass(gVkDevice, m_renderPassPass, nullptr);
-  }
-
-  m_renderPassPass = VK_NULL_HANDLE;
-}
-
-//RenderPass::RenderPass(const RenderPass&) = delete;
-
-//RenderPass& RenderPass::operator=(const RenderPass&) = delete;
-
-//RenderPass::RenderPass(RenderPass&&) = delete;
-
-//RenderPass& RenderPass::operator=(RenderPass&&) = delete;
-
-// VkImage + framebuffer wrapper
-
-//VkImage RenderTarget::m_renderTargetColorImage {VK_NULL_HANDLE};
-
-//VkImage RenderTarget::m_renderTargetDepthImage {VK_NULL_HANDLE};
-
-//VkImageView RenderTarget::m_renderTargetColorView {VK_NULL_HANDLE};
-
-//VkImageView RenderTarget::m_renderTargetDepthView {VK_NULL_HANDLE};
-
-//VkFramebuffer RenderTarget::m_renderTargetFrameBuffer {VK_NULL_HANDLE};
-
-//RenderTarget::RenderTarget() = default;
-
-RenderTarget::~RenderTarget()
-{
-  if(gVkDevice)
-  {
-    if(m_renderTargetFrameBuffer != VK_NULL_HANDLE && tableVk.DestroyFramebuffer)
-      tableVk.DestroyFramebuffer(gVkDevice, m_renderTargetFrameBuffer, nullptr);
-
-    if(m_renderTargetColorView != VK_NULL_HANDLE && tableVk.DestroyImageView)
-      tableVk.DestroyImageView(gVkDevice, m_renderTargetColorView, nullptr);
-
-    if(m_renderTargetDepthView != VK_NULL_HANDLE && tableVk.DestroyImageView)
-      tableVk.DestroyImageView(gVkDevice, m_renderTargetDepthView, nullptr);
-  }
-
-  // Note we don't own color, it will get destroyed when xrDestroySwapchain is called
-  m_renderTargetColorImage = VK_NULL_HANDLE;
-
-  // Note we don't own depthImage, it will get destroyed when xrDestroySwapchain is called
-  m_renderTargetDepthImage = VK_NULL_HANDLE;
-  m_renderTargetColorView = VK_NULL_HANDLE;
-  m_renderTargetDepthView = VK_NULL_HANDLE;
-  m_renderTargetFrameBuffer = VK_NULL_HANDLE;
-}
-
-RenderTarget::RenderTarget(RenderTarget&& other) : RenderTarget()
-{
-  using std::swap;
-
-  swap(m_renderTargetColorImage, other.m_renderTargetColorImage);
-  swap(m_renderTargetDepthImage, other.m_renderTargetDepthImage);
-  swap(m_renderTargetColorView, other.m_renderTargetColorView);
-  swap(m_renderTargetDepthView, other.m_renderTargetDepthView);
-  swap(m_renderTargetFrameBuffer, other.m_renderTargetFrameBuffer);
-}
-
-RenderTarget& RenderTarget::operator=(RenderTarget&& other)
-{
-  if( &other == this)
-    return *this;
-
-  // Clean up ourselves.
-  this->~RenderTarget();
-
-  using std::swap;
-
-  swap(m_renderTargetColorImage, other.m_renderTargetColorImage);
-  swap(m_renderTargetDepthImage, other.m_renderTargetDepthImage);
-  swap(m_renderTargetColorView, other.m_renderTargetColorView);
-  swap(m_renderTargetDepthView, other.m_renderTargetDepthView);
-  swap(m_renderTargetFrameBuffer, other.m_renderTargetFrameBuffer);
-
-  return *this;
-}
-
-void RenderTarget::RenderTargetCreate(const VulkanDebugObjectNamer& namer, VkDevice device, VkImage aColorImage, VkImage aDepthImage, VkExtent2D size, RenderPass& renderPass)
-{
-  m_renderTargetColorImage = aColorImage;
-  m_renderTargetDepthImage = aDepthImage;
-
-  std::array<VkImageView, 2> attachments {};
-
-  uint32_t attachmentCount = 0;
-
-  // Create color image view
-  if(m_renderTargetColorImage != VK_NULL_HANDLE)
-  {
-    VkImageViewCreateInfo colorViewInfo {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
-
-    colorViewInfo.image = m_renderTargetColorImage;
-    colorViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-    colorViewInfo.format = renderPass.m_renderPassColorFmt;
-    colorViewInfo.components.r = VK_COMPONENT_SWIZZLE_R;
-    colorViewInfo.components.g = VK_COMPONENT_SWIZZLE_G;
-    colorViewInfo.components.b = VK_COMPONENT_SWIZZLE_B;
-    colorViewInfo.components.a = VK_COMPONENT_SWIZZLE_A;
-    colorViewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-    colorViewInfo.subresourceRange.baseMipLevel = 0;
-    colorViewInfo.subresourceRange.levelCount = 1;
-    colorViewInfo.subresourceRange.baseArrayLayer = 0;
-    colorViewInfo.subresourceRange.layerCount = 1;
-
-    if(tableVk.CreateImageView)
-      CHECK_VKCMD(tableVk.CreateImageView(gVkDevice, &colorViewInfo, nullptr, &m_renderTargetColorView) );
-
-    CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_IMAGE_VIEW, (uint64_t)m_renderTargetColorView, "helloxr color image view") );
-
-    attachments[attachmentCount++] = m_renderTargetColorView;
-  }
-
-  // Create depth image view
-  if(m_renderTargetDepthImage != VK_NULL_HANDLE)
-  {
-    VkImageViewCreateInfo depthViewInfo {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
-
-    depthViewInfo.image = m_renderTargetDepthImage;
-    depthViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-    depthViewInfo.format = renderPass.m_renderPassDepthFmt;
-    depthViewInfo.components.r = VK_COMPONENT_SWIZZLE_R;
-    depthViewInfo.components.g = VK_COMPONENT_SWIZZLE_G;
-    depthViewInfo.components.b = VK_COMPONENT_SWIZZLE_B;
-    depthViewInfo.components.a = VK_COMPONENT_SWIZZLE_A;
-    depthViewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
-    depthViewInfo.subresourceRange.baseMipLevel = 0;
-    depthViewInfo.subresourceRange.levelCount = 1;
-    depthViewInfo.subresourceRange.baseArrayLayer = 0;
-    depthViewInfo.subresourceRange.layerCount = 1;
-
-    if(tableVk.CreateImageView)
-      CHECK_VKCMD(tableVk.CreateImageView(gVkDevice, &depthViewInfo, nullptr, &m_renderTargetDepthView) );
-
-    CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_IMAGE_VIEW, (uint64_t)m_renderTargetDepthView, "helloxr depth image view") );
-    attachments[attachmentCount++] = m_renderTargetDepthView;
-  }
-
-  VkFramebufferCreateInfo fbInfo {VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO};
-
-  fbInfo.renderPass = renderPass.m_renderPassPass;
-  fbInfo.attachmentCount = attachmentCount;
-  fbInfo.pAttachments = attachments.data();
-  fbInfo.width = size.width;
-  fbInfo.height = size.height;
-  fbInfo.layers = 1;
-
-  if(tableVk.CreateFramebuffer)
-    CHECK_VKCMD(tableVk.CreateFramebuffer(gVkDevice, &fbInfo, nullptr, &m_renderTargetFrameBuffer) );
-
-  CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_FRAMEBUFFER, (uint64_t)m_renderTargetFrameBuffer, "helloxr framebuffer") );
-}
-
-//RenderTarget::RenderTarget(const RenderTarget&) = delete;
-
-//RenderTarget& RenderTarget::operator=(const RenderTarget&) = delete;
-
 SwapchainImageContext::~SwapchainImageContext()
 {
   if(gVkDevice)
@@ -2705,6 +2469,118 @@ SwapchainImageContext::~SwapchainImageContext()
 
   m_swapchainImageContext_depthBufferDepthImage = VK_NULL_HANDLE;
   m_swapchainImageContext_depthBufferDepthMemory = VK_NULL_HANDLE;
+
+  if(gVkDevice)
+  {
+    if(m_swapchainImageContext_renderPassPass != VK_NULL_HANDLE && tableVk.DestroyRenderPass)
+      tableVk.DestroyRenderPass(gVkDevice, m_swapchainImageContext_renderPassPass, nullptr);
+  }
+
+  m_swapchainImageContext_renderPassPass = VK_NULL_HANDLE;
+
+  for(int index = 0; index < m_swapchainImageContextStdVector_renderTargetFrameBuffer.size(); index++)
+  {
+    if(gVkDevice && m_swapchainImageContextStdVector_renderTargetFrameBuffer[index] != VK_NULL_HANDLE && tableVk.DestroyFramebuffer)
+      tableVk.DestroyFramebuffer(gVkDevice, m_swapchainImageContextStdVector_renderTargetFrameBuffer[index], nullptr);
+
+    if(gVkDevice && m_swapchainImageContextStdVector_renderTargetColorView[index] != VK_NULL_HANDLE && tableVk.DestroyImageView)
+      tableVk.DestroyImageView(gVkDevice, m_swapchainImageContextStdVector_renderTargetColorView[index], nullptr);
+
+    if(gVkDevice && m_swapchainImageContextStdVector_renderTargetDepthView[index] != VK_NULL_HANDLE && tableVk.DestroyImageView)
+      tableVk.DestroyImageView(gVkDevice, m_swapchainImageContextStdVector_renderTargetDepthView[index], nullptr);
+  }
+
+  m_swapchainImageContextStdVector_renderTargetColorImage.empty();
+  m_swapchainImageContextStdVector_renderTargetDepthImage.empty();
+  m_swapchainImageContextStdVector_renderTargetColorView.empty();
+  m_swapchainImageContextStdVector_renderTargetDepthView.empty();
+  m_swapchainImageContextStdVector_renderTargetFrameBuffer.empty();
+}
+
+void SwapchainImageContext::SwapchainImageContext_RenderTargetCreate(int index, const VulkanDebugObjectNamer& namer, VkDevice device, VkImage aColorImage, VkImage aDepthImage, VkExtent2D size, VkFormat& m_swapchainImageContext_renderPassColorFmt, VkFormat& m_swapchainImageContext_renderPassDepthFmt, VkRenderPass& m_swapchainImageContext_renderPassPass)
+{
+  m_swapchainImageContextStdVector_renderTargetColorImage[index] = aColorImage;
+  m_swapchainImageContextStdVector_renderTargetDepthImage[index] = aDepthImage;
+
+  std::array<VkImageView, 2> attachments {};
+
+  uint32_t attachmentCount = 0;
+
+  // Create color image view
+  if(m_swapchainImageContextStdVector_renderTargetColorImage[index] != VK_NULL_HANDLE)
+  {
+    VkImageViewCreateInfo colorViewInfo {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
+
+    colorViewInfo.image = m_swapchainImageContextStdVector_renderTargetColorImage[index];
+    colorViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+    colorViewInfo.format = m_swapchainImageContext_renderPassColorFmt;
+    colorViewInfo.components.r = VK_COMPONENT_SWIZZLE_R;
+    colorViewInfo.components.g = VK_COMPONENT_SWIZZLE_G;
+    colorViewInfo.components.b = VK_COMPONENT_SWIZZLE_B;
+    colorViewInfo.components.a = VK_COMPONENT_SWIZZLE_A;
+    colorViewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    colorViewInfo.subresourceRange.baseMipLevel = 0;
+    colorViewInfo.subresourceRange.levelCount = 1;
+    colorViewInfo.subresourceRange.baseArrayLayer = 0;
+    colorViewInfo.subresourceRange.layerCount = 1;
+
+    if(tableVk.CreateImageView)
+    {
+      VkImageView renderTargetColorView {VK_NULL_HANDLE};
+      CHECK_VKCMD(tableVk.CreateImageView(gVkDevice, &colorViewInfo, nullptr, &renderTargetColorView) );
+      m_swapchainImageContextStdVector_renderTargetColorView[index] = renderTargetColorView;
+    }
+
+    CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_IMAGE_VIEW, (uint64_t)m_swapchainImageContextStdVector_renderTargetColorView[index], "helloxr color image view") );
+    attachments[attachmentCount++] = m_swapchainImageContextStdVector_renderTargetColorView[index];
+  }
+
+  // Create depth image view
+  if(m_swapchainImageContextStdVector_renderTargetDepthImage[index] != VK_NULL_HANDLE)
+  {
+    VkImageViewCreateInfo depthViewInfo {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
+
+    depthViewInfo.image = m_swapchainImageContextStdVector_renderTargetDepthImage[index];
+    depthViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+    depthViewInfo.format = m_swapchainImageContext_renderPassDepthFmt;
+    depthViewInfo.components.r = VK_COMPONENT_SWIZZLE_R;
+    depthViewInfo.components.g = VK_COMPONENT_SWIZZLE_G;
+    depthViewInfo.components.b = VK_COMPONENT_SWIZZLE_B;
+    depthViewInfo.components.a = VK_COMPONENT_SWIZZLE_A;
+    depthViewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+    depthViewInfo.subresourceRange.baseMipLevel = 0;
+    depthViewInfo.subresourceRange.levelCount = 1;
+    depthViewInfo.subresourceRange.baseArrayLayer = 0;
+    depthViewInfo.subresourceRange.layerCount = 1;
+
+    if(tableVk.CreateImageView)
+    {
+      VkImageView renderTargetDepthView {VK_NULL_HANDLE};
+      CHECK_VKCMD(tableVk.CreateImageView(gVkDevice, &depthViewInfo, nullptr, &renderTargetDepthView) );
+      m_swapchainImageContextStdVector_renderTargetDepthView[index] = renderTargetDepthView;
+    }
+
+    CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_IMAGE_VIEW, (uint64_t)m_swapchainImageContextStdVector_renderTargetDepthView[index], "helloxr depth image view") );
+    attachments[attachmentCount++] = m_swapchainImageContextStdVector_renderTargetDepthView[index];
+  }
+
+  VkFramebufferCreateInfo fbInfo {VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO};
+
+  fbInfo.renderPass = m_swapchainImageContext_renderPassPass;
+  fbInfo.attachmentCount = attachmentCount;
+  fbInfo.pAttachments = attachments.data();
+  fbInfo.width = size.width;
+  fbInfo.height = size.height;
+  fbInfo.layers = 1;
+
+  if(tableVk.CreateFramebuffer)
+  {
+    VkFramebuffer renderTargetFrameBuffer {VK_NULL_HANDLE};
+    CHECK_VKCMD(tableVk.CreateFramebuffer(gVkDevice, &fbInfo, nullptr, &renderTargetFrameBuffer) );
+    m_swapchainImageContextStdVector_renderTargetFrameBuffer[index] = renderTargetFrameBuffer;
+  }
+
+  CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_FRAMEBUFFER, (uint64_t)m_swapchainImageContextStdVector_renderTargetFrameBuffer[index], "helloxr framebuffer") );
 }
 
 void SwapchainImageContext::SwapchainImageContext_DepthBufferCreate(const VulkanDebugObjectNamer& namer, VkDevice device, MemoryAllocator* memAllocator, VkFormat depthFormat, const XrSwapchainCreateInfo& swapchainCreateInfo)
@@ -2763,12 +2639,72 @@ void SwapchainImageContext::SwapchainImageContext_DepthBufferTransitionImageLayo
   m_swapchainImageContext_depthBufferVkImageLayout = newLayout;
 }
 
+bool SwapchainImageContext::SwapchainImageContext_RenderPassCreate(const VulkanDebugObjectNamer& namer, VkDevice device, VkFormat aColorFmt, VkFormat aDepthFmt)
+{
+  m_swapchainImageContext_renderPassColorFmt = aColorFmt;
+  m_swapchainImageContext_renderPassDepthFmt = aDepthFmt;
+
+  VkSubpassDescription subpass = {};
+  subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+
+  VkAttachmentReference colorRef = {0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL};
+  VkAttachmentReference depthRef = {1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL};
+
+  std::array<VkAttachmentDescription, 2> at = {};
+
+  VkRenderPassCreateInfo rpInfo {VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO};
+  rpInfo.attachmentCount = 0;
+  rpInfo.pAttachments = at.data();
+  rpInfo.subpassCount = 1;
+  rpInfo.pSubpasses = &subpass;
+
+  if(m_swapchainImageContext_renderPassColorFmt != VK_FORMAT_UNDEFINED)
+  {
+    colorRef.attachment = rpInfo.attachmentCount++;
+
+    at[colorRef.attachment].format = m_swapchainImageContext_renderPassColorFmt;
+    at[colorRef.attachment].samples = VK_SAMPLE_COUNT_1_BIT;
+    at[colorRef.attachment].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    at[colorRef.attachment].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+    at[colorRef.attachment].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    at[colorRef.attachment].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    at[colorRef.attachment].initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    at[colorRef.attachment].finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+    subpass.colorAttachmentCount = 1;
+    subpass.pColorAttachments = &colorRef;
+  }
+
+  if(m_swapchainImageContext_renderPassDepthFmt != VK_FORMAT_UNDEFINED)
+  {
+    depthRef.attachment = rpInfo.attachmentCount++;
+
+    at[depthRef.attachment].format = m_swapchainImageContext_renderPassDepthFmt;
+    at[depthRef.attachment].samples = VK_SAMPLE_COUNT_1_BIT;
+    at[depthRef.attachment].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    at[depthRef.attachment].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+    at[depthRef.attachment].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    at[depthRef.attachment].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    at[depthRef.attachment].initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+    at[depthRef.attachment].finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+    subpass.pDepthStencilAttachment = &depthRef;
+  }
+
+  if(tableVk.CreateRenderPass)
+    CHECK_VKCMD(tableVk.CreateRenderPass(gVkDevice, &rpInfo, nullptr, &m_swapchainImageContext_renderPassPass) );
+
+  CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_RENDER_PASS, (uint64_t)m_swapchainImageContext_renderPassPass, "helloxr render pass") );
+
+  return true;
+}
+
 void SwapchainImageContext::SwapchainImageContext_PipelineDynamic(VkDynamicState state)
 {
   m_swapchainImageContextPipe_pipelineDynamicStateEnables.emplace_back(state);
 }
 
-void SwapchainImageContext::SwapchainImageContext_PipelineCreate(VkDevice device, VkExtent2D size, const RenderPass& rp, const ShaderProgram& sp, const VertexBufferBase& vb)
+void SwapchainImageContext::SwapchainImageContext_PipelineCreate(VkDevice device, VkExtent2D size, VkRenderPass& m_swapchainImageContext_renderPassPass, const ShaderProgram& sp, const VertexBufferBase& vb)
 {
   VkPipelineDynamicStateCreateInfo dynamicState {VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO};
   dynamicState.dynamicStateCount = (uint32_t)m_swapchainImageContextPipe_pipelineDynamicStateEnables.size();
@@ -2865,7 +2801,7 @@ void SwapchainImageContext::SwapchainImageContext_PipelineCreate(VkDevice device
     pipeInfo.pDynamicState = &dynamicState;
 
   pipeInfo.layout = gVkPipelineLayout;
-  pipeInfo.renderPass = rp.m_renderPassPass;
+  pipeInfo.renderPass = m_swapchainImageContext_renderPassPass;
   pipeInfo.subpass = 0;
 
   if(tableVk.CreateGraphicsPipelines)
@@ -2904,6 +2840,16 @@ SwapchainImageContext::SwapchainImageContext(XrStructureType _swapchainImageType
 
 //SwapchainImageContext::SwapchainImageContext() = default;
 
+//std::vector<RenderTarget> m_swapchainImageContextRenderTarget;
+//
+//std::vector<VkImage> m_swapchainImageContextStdVector_renderTargetColorImage;
+//std::vector<VkImage> m_swapchainImageContextStdVector_renderTargetDepthImage;
+//std::vector<VkImageView> m_swapchainImageContextStdVector_renderTargetColorView;
+//std::vector<VkImageView> m_swapchainImageContextStdVector_renderTargetDepthView;
+//std::vector<VkFramebuffer> m_swapchainImageContextStdVector_renderTargetFrameBuffer;
+//
+//void SwapchainImageContext_RenderTargetCreate(int index, const VulkanDebugObjectNamer& namer, VkDevice device, VkImage aColorImage, VkImage aDepthImage, VkExtent2D size, VkFormat& m_swapchainImageContext_renderPassColorFmt, VkFormat& m_swapchainImageContext_renderPassDepthFmt, VkRenderPass& m_swapchainImageContext_renderPassPass);
+
 std::vector<XrSwapchainImageBaseHeader*> SwapchainImageContext::SwapchainImageContextCreate(const VulkanDebugObjectNamer& namer, VkDevice device, MemoryAllocator* memAllocator, uint32_t capacity, const XrSwapchainCreateInfo& swapchainCreateInfo, const ShaderProgram& sp, const VertexBuffer<Geometry::Vertex>& vb)
 {
   m_swapchainImageContextNamer = namer;
@@ -2914,12 +2860,17 @@ std::vector<XrSwapchainImageBaseHeader*> SwapchainImageContext::SwapchainImageCo
   // XXX handle swapchainCreateInfo.sampleCount
 
   SwapchainImageContext_DepthBufferCreate(m_swapchainImageContextNamer, gVkDevice, memAllocator, depthFormat, swapchainCreateInfo);
-  m_swapchainImageContextRenderPass.RenderPassCreate(m_swapchainImageContextNamer, gVkDevice, colorFormat, depthFormat);
+  SwapchainImageContext_RenderPassCreate(m_swapchainImageContextNamer, gVkDevice, colorFormat, depthFormat);
 
-  SwapchainImageContext_PipelineCreate(gVkDevice, m_swapchainImageContextSize, m_swapchainImageContextRenderPass, sp, vb);
+  SwapchainImageContext_PipelineCreate(gVkDevice, m_swapchainImageContextSize, m_swapchainImageContext_renderPassPass, sp, vb);
 
   m_swapchainImageContextSwapchainImages.resize(capacity);
-  m_swapchainImageContextRenderTarget.resize(capacity);
+
+  m_swapchainImageContextStdVector_renderTargetColorImage.resize(capacity);
+  m_swapchainImageContextStdVector_renderTargetDepthImage.resize(capacity);
+  m_swapchainImageContextStdVector_renderTargetColorView.resize(capacity);
+  m_swapchainImageContextStdVector_renderTargetDepthView.resize(capacity);
+  m_swapchainImageContextStdVector_renderTargetFrameBuffer.resize(capacity);
 
   std::vector<XrSwapchainImageBaseHeader*> bases(capacity);
 
@@ -2940,11 +2891,11 @@ uint32_t SwapchainImageContext::SwapchainImageContextImageIndex(const XrSwapchai
 
 void SwapchainImageContext::SwapchainImageContextBindRenderTarget(uint32_t index, VkRenderPassBeginInfo* renderPassBeginInfo)
 {
-  if(m_swapchainImageContextRenderTarget[index].m_renderTargetFrameBuffer == VK_NULL_HANDLE)
-    m_swapchainImageContextRenderTarget[index].RenderTargetCreate(m_swapchainImageContextNamer, gVkDevice, m_swapchainImageContextSwapchainImages[index].image, m_swapchainImageContext_depthBufferDepthImage, m_swapchainImageContextSize, m_swapchainImageContextRenderPass);
+  if(m_swapchainImageContextStdVector_renderTargetFrameBuffer[index] == VK_NULL_HANDLE)
+    SwapchainImageContext_RenderTargetCreate(index, m_swapchainImageContextNamer, gVkDevice, m_swapchainImageContextSwapchainImages[index].image, m_swapchainImageContext_depthBufferDepthImage, m_swapchainImageContextSize, m_swapchainImageContext_renderPassColorFmt, m_swapchainImageContext_renderPassDepthFmt, m_swapchainImageContext_renderPassPass);
 
-  renderPassBeginInfo->renderPass = m_swapchainImageContextRenderPass.m_renderPassPass;
-  renderPassBeginInfo->framebuffer = m_swapchainImageContextRenderTarget[index].m_renderTargetFrameBuffer;
+  renderPassBeginInfo->renderPass = m_swapchainImageContext_renderPassPass;
+  renderPassBeginInfo->framebuffer = m_swapchainImageContextStdVector_renderTargetFrameBuffer[index];
   renderPassBeginInfo->renderArea.offset = {0, 0};
   renderPassBeginInfo->renderArea.extent = m_swapchainImageContextSize;
 }
@@ -3343,17 +3294,19 @@ const XrBaseInStructure* VulkanGraphicsPlugin::VulkanGraphicsPluginGetGraphicsBi
 
 std::vector<XrSwapchainImageBaseHeader*> VulkanGraphicsPlugin::VulkanGraphicsPluginAllocateSwapchainImageStructs(uint32_t capacity, const XrSwapchainCreateInfo& swapchainCreateInfo)
 {
+  int index = m_vulkanGraphicsPluginStdList_SwapchainImageContext.size();
+
   // Allocate and initialize the buffer of image structs (must be sequential in memory for xrEnumerateSwapchainImages).
   // Return back an array of pointers to each swapchain image struct so the consumer doesn't need to know the type/size.
   // Keep the buffer alive by adding it into the list of buffers.
-  m_vulkanGraphicsPluginStdList_SwapchainImageContext.emplace_back(VulkanGraphicsPluginGetSwapchainImageType() );
-  SwapchainImageContext& swapchainImageContext = m_vulkanGraphicsPluginStdList_SwapchainImageContext.back();
+  m_vulkanGraphicsPluginStdList_SwapchainImageContext.push_back(new SwapchainImageContext(VulkanGraphicsPluginGetSwapchainImageType() ) );
+  SwapchainImageContext* swapchainImageContext = m_vulkanGraphicsPluginStdList_SwapchainImageContext[index];
 
-  std::vector<XrSwapchainImageBaseHeader*> bases = swapchainImageContext.SwapchainImageContextCreate(m_vulkanGraphicsPluginVulkanDebugObjectNamer, gVkDevice, &m_vulkanGraphicsPluginMemoryAllocator, capacity, swapchainCreateInfo, m_vulkanGraphicsPluginShaderProgram, m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer);
+  std::vector<XrSwapchainImageBaseHeader*> bases = swapchainImageContext->SwapchainImageContextCreate(m_vulkanGraphicsPluginVulkanDebugObjectNamer, gVkDevice, &m_vulkanGraphicsPluginMemoryAllocator, capacity, swapchainCreateInfo, m_vulkanGraphicsPluginShaderProgram, m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer);
 
   // Map every swapchainImage base pointer to this context
   for(auto& base : bases)
-    m_vulkanGraphicsPluginStdMap_XrSwapchainImageBaseHeader_SwapchainImageContext[base] = &swapchainImageContext;
+    m_vulkanGraphicsPluginStdMap_XrSwapchainImageBaseHeader_SwapchainImageContext[base] = index;
 
   return bases;
 }
@@ -3362,7 +3315,7 @@ void VulkanGraphicsPlugin::VulkanGraphicsPluginRenderView(const XrCompositionLay
 {
   CHECK(layerView.subImage.imageArrayIndex == 0);  // Texture arrays not supported.
 
-  auto swapchainContext = m_vulkanGraphicsPluginStdMap_XrSwapchainImageBaseHeader_SwapchainImageContext[swapchainImage];
+  auto swapchainContext = m_vulkanGraphicsPluginStdList_SwapchainImageContext[m_vulkanGraphicsPluginStdMap_XrSwapchainImageBaseHeader_SwapchainImageContext[swapchainImage] ];
   uint32_t imageIndex = swapchainContext->SwapchainImageContextImageIndex(swapchainImage);
 
   // XXX Should double-buffer the command buffers, for now just flush
@@ -3460,7 +3413,7 @@ void VulkanGraphicsPlugin::VulkanGraphicsPluginUpdateOptions(const std::shared_p
 
 //std::list<SwapchainImageContext> VulkanGraphicsPlugin::m_vulkanGraphicsPluginStdList_SwapchainImageContext;
 
-//std::map<const XrSwapchainImageBaseHeader*, SwapchainImageContext*> VulkanGraphicsPlugin::m_vulkanGraphicsPluginStdMap_XrSwapchainImageBaseHeader_SwapchainImageContext;
+//std::map<const XrSwapchainImageBaseHeader*, int> VulkanGraphicsPlugin::m_vulkanGraphicsPluginStdMap_XrSwapchainImageBaseHeader_SwapchainImageContext;
 
 //VulkanDebugObjectNamer VulkanGraphicsPlugin::m_vulkanGraphicsPluginVulkanDebugObjectNamer {};
 
