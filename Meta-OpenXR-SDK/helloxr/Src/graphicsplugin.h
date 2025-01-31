@@ -208,33 +208,6 @@ struct RenderTarget
   RenderTarget& operator=(const RenderTarget&) = delete;
 };
 
-struct DepthBuffer
-{
-  VkDeviceMemory m_depthBufferDepthMemory {VK_NULL_HANDLE};
-
-  VkImage m_depthBufferDepthImage {VK_NULL_HANDLE};
-
-  DepthBuffer() = default;
-
-  ~DepthBuffer();
-
-  DepthBuffer(DepthBuffer&& other);
-
-  DepthBuffer& operator=(DepthBuffer&& other);
-
-  void DepthBufferCreate(const VulkanDebugObjectNamer& namer, VkDevice device, MemoryAllocator* memAllocator, VkFormat depthFormat, const XrSwapchainCreateInfo& swapchainCreateInfo);
-
-  void DepthBufferTransitionImageLayout(CmdBuffer* cmdBuffer, VkImageLayout newLayout);
-
-  DepthBuffer(const DepthBuffer&) = delete;
-
-  DepthBuffer& operator=(const DepthBuffer&) = delete;
-
-private:
-
-  VkImageLayout m_depthBufferVkImageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-};
-
 struct SwapchainImageContext
 {
   SwapchainImageContext(XrStructureType _swapchainImageType);
@@ -246,7 +219,9 @@ struct SwapchainImageContext
 
   VkExtent2D m_swapchainImageContextSize {};
 
-  DepthBuffer m_swapchainImageContextDepthBuffer {};
+  VkDeviceMemory m_swapchainImageContext_depthBufferDepthMemory {VK_NULL_HANDLE};
+  VkImage m_swapchainImageContext_depthBufferDepthImage {VK_NULL_HANDLE};
+  VkImageLayout m_swapchainImageContext_depthBufferVkImageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
   RenderPass m_swapchainImageContextRenderPass {};
 
@@ -258,10 +233,17 @@ struct SwapchainImageContext
 
   SwapchainImageContext() = default;
 
+  SwapchainImageContext(SwapchainImageContext&& other) = delete;
+
+  SwapchainImageContext& operator=(SwapchainImageContext&& other) = delete;
+
+  ~SwapchainImageContext();
+
+  void SwapchainImageContext_DepthBufferCreate(const VulkanDebugObjectNamer& namer, VkDevice device, MemoryAllocator* memAllocator, VkFormat depthFormat, const XrSwapchainCreateInfo& swapchainCreateInfo);
+  void SwapchainImageContext_DepthBufferTransitionImageLayout(CmdBuffer* cmdBuffer, VkImageLayout newLayout);
+
   void SwapchainImageContext_PipelineDynamic(VkDynamicState state);
-
   void SwapchainImageContext_PipelineCreate(VkDevice device, VkExtent2D size, const RenderPass& rp, const ShaderProgram& sp, const VertexBufferBase& vb);
-
   void SwapchainImageContext_PipelineRelease();
 
   std::vector<XrSwapchainImageBaseHeader*> SwapchainImageContextCreate(const VulkanDebugObjectNamer& namer, VkDevice device, MemoryAllocator* memAllocator, uint32_t capacity, const XrSwapchainCreateInfo& swapchainCreateInfo, const ShaderProgram& sp, const VertexBuffer<Geometry::Vertex>& vb);

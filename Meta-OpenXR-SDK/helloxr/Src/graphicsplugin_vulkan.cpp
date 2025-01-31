@@ -2692,52 +2692,22 @@ void RenderTarget::RenderTargetCreate(const VulkanDebugObjectNamer& namer, VkDev
 
 //RenderTarget& RenderTarget::operator=(const RenderTarget&) = delete;
 
-//VkDeviceMemory DepthBuffer::m_depthBufferDepthMemory {VK_NULL_HANDLE};
-
-//VkImage DepthBuffer::m_depthBufferDepthImage {VK_NULL_HANDLE};
-
-//DepthBuffer::DepthBuffer() = default;
-
-DepthBuffer::~DepthBuffer()
+SwapchainImageContext::~SwapchainImageContext()
 {
   if(gVkDevice)
   {
-    if(m_depthBufferDepthImage != VK_NULL_HANDLE && tableVk.DestroyImage)
-      tableVk.DestroyImage(gVkDevice, m_depthBufferDepthImage, nullptr);
+    if(m_swapchainImageContext_depthBufferDepthImage != VK_NULL_HANDLE && tableVk.DestroyImage)
+      tableVk.DestroyImage(gVkDevice, m_swapchainImageContext_depthBufferDepthImage, nullptr);
 
-    if(m_depthBufferDepthMemory != VK_NULL_HANDLE && tableVk.FreeMemory)
-      tableVk.FreeMemory(gVkDevice, m_depthBufferDepthMemory, nullptr);
+    if(m_swapchainImageContext_depthBufferDepthMemory != VK_NULL_HANDLE && tableVk.FreeMemory)
+      tableVk.FreeMemory(gVkDevice, m_swapchainImageContext_depthBufferDepthMemory, nullptr);
   }
 
-  m_depthBufferDepthImage = VK_NULL_HANDLE;
-  m_depthBufferDepthMemory = VK_NULL_HANDLE;
+  m_swapchainImageContext_depthBufferDepthImage = VK_NULL_HANDLE;
+  m_swapchainImageContext_depthBufferDepthMemory = VK_NULL_HANDLE;
 }
 
-DepthBuffer::DepthBuffer(DepthBuffer&& other) : DepthBuffer()
-{
-  using std::swap;
-
-  swap(m_depthBufferDepthImage, other.m_depthBufferDepthImage);
-  swap(m_depthBufferDepthMemory, other.m_depthBufferDepthMemory);
-}
-
-DepthBuffer& DepthBuffer::operator=(DepthBuffer&& other)
-{
-  if( &other == this)
-    return *this;
-
-  // clean up self
-  this->~DepthBuffer();
-
-  using std::swap;
-
-  swap(m_depthBufferDepthImage, other.m_depthBufferDepthImage);
-  swap(m_depthBufferDepthMemory, other.m_depthBufferDepthMemory);
-
-  return *this;
-}
-
-void DepthBuffer::DepthBufferCreate(const VulkanDebugObjectNamer& namer, VkDevice device, MemoryAllocator* memAllocator, VkFormat depthFormat, const XrSwapchainCreateInfo& swapchainCreateInfo)
+void SwapchainImageContext::SwapchainImageContext_DepthBufferCreate(const VulkanDebugObjectNamer& namer, VkDevice device, MemoryAllocator* memAllocator, VkFormat depthFormat, const XrSwapchainCreateInfo& swapchainCreateInfo)
 {
   VkExtent2D size = {swapchainCreateInfo.width, swapchainCreateInfo.height};
 
@@ -2757,47 +2727,41 @@ void DepthBuffer::DepthBufferCreate(const VulkanDebugObjectNamer& namer, VkDevic
   imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
   if(tableVk.CreateImage)
-    CHECK_VKCMD(tableVk.CreateImage(gVkDevice, &imageInfo, nullptr, &m_depthBufferDepthImage) );
+    CHECK_VKCMD(tableVk.CreateImage(gVkDevice, &imageInfo, nullptr, &m_swapchainImageContext_depthBufferDepthImage) );
 
-  CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_IMAGE, (uint64_t)m_depthBufferDepthImage, "helloxr fallback depth image") );
+  CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_IMAGE, (uint64_t)m_swapchainImageContext_depthBufferDepthImage, "helloxr fallback depth image") );
 
   VkMemoryRequirements memRequirements {};
 
   if(tableVk.GetImageMemoryRequirements)
-    tableVk.GetImageMemoryRequirements(gVkDevice, m_depthBufferDepthImage, &memRequirements);
+    tableVk.GetImageMemoryRequirements(gVkDevice, m_swapchainImageContext_depthBufferDepthImage, &memRequirements);
 
-  memAllocator->MemoryAllocatorAllocate(memRequirements, &m_depthBufferDepthMemory, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-  CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_DEVICE_MEMORY, (uint64_t)m_depthBufferDepthMemory, "helloxr fallback depth image memory") );
+  memAllocator->MemoryAllocatorAllocate(memRequirements, &m_swapchainImageContext_depthBufferDepthMemory, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+  CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_DEVICE_MEMORY, (uint64_t)m_swapchainImageContext_depthBufferDepthMemory, "helloxr fallback depth image memory") );
 
   if(tableVk.BindImageMemory)
-    CHECK_VKCMD(tableVk.BindImageMemory(gVkDevice, m_depthBufferDepthImage, m_depthBufferDepthMemory, 0) );
+    CHECK_VKCMD(tableVk.BindImageMemory(gVkDevice, m_swapchainImageContext_depthBufferDepthImage, m_swapchainImageContext_depthBufferDepthMemory, 0) );
 }
 
-void DepthBuffer::DepthBufferTransitionImageLayout(CmdBuffer* cmdBuffer, VkImageLayout newLayout)
+void SwapchainImageContext::SwapchainImageContext_DepthBufferTransitionImageLayout(CmdBuffer* cmdBuffer, VkImageLayout newLayout)
 {
-  if(newLayout == m_depthBufferVkImageLayout)
+  if(newLayout == m_swapchainImageContext_depthBufferVkImageLayout)
     return;
 
   VkImageMemoryBarrier depthBarrier {VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER};
   depthBarrier.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
   depthBarrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
-  depthBarrier.oldLayout = m_depthBufferVkImageLayout;
+  depthBarrier.oldLayout = m_swapchainImageContext_depthBufferVkImageLayout;
   depthBarrier.newLayout = newLayout;
-  depthBarrier.image = m_depthBufferDepthImage;
+  depthBarrier.image = m_swapchainImageContext_depthBufferDepthImage;
 
   depthBarrier.subresourceRange = {VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1};
 
   if(tableVk.CmdPipelineBarrier)
     tableVk.CmdPipelineBarrier(cmdBuffer->m_cmdBufferBuffer, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, 0, 0, nullptr, 0, nullptr, 1, &depthBarrier);
 
-  m_depthBufferVkImageLayout = newLayout;
+  m_swapchainImageContext_depthBufferVkImageLayout = newLayout;
 }
-
-//DepthBuffer::DepthBuffer(const DepthBuffer&) = delete;
-
-//DepthBuffer& DepthBuffer::operator=(const DepthBuffer&) = delete;
-
-//VkImageLayout DepthBuffer::m_depthBufferVkImageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
 void SwapchainImageContext::SwapchainImageContext_PipelineDynamic(VkDynamicState state)
 {
@@ -2949,7 +2913,7 @@ std::vector<XrSwapchainImageBaseHeader*> SwapchainImageContext::SwapchainImageCo
   VkFormat depthFormat = VK_FORMAT_D32_SFLOAT;
   // XXX handle swapchainCreateInfo.sampleCount
 
-  m_swapchainImageContextDepthBuffer.DepthBufferCreate(m_swapchainImageContextNamer, gVkDevice, memAllocator, depthFormat, swapchainCreateInfo);
+  SwapchainImageContext_DepthBufferCreate(m_swapchainImageContextNamer, gVkDevice, memAllocator, depthFormat, swapchainCreateInfo);
   m_swapchainImageContextRenderPass.RenderPassCreate(m_swapchainImageContextNamer, gVkDevice, colorFormat, depthFormat);
 
   SwapchainImageContext_PipelineCreate(gVkDevice, m_swapchainImageContextSize, m_swapchainImageContextRenderPass, sp, vb);
@@ -2977,7 +2941,7 @@ uint32_t SwapchainImageContext::SwapchainImageContextImageIndex(const XrSwapchai
 void SwapchainImageContext::SwapchainImageContextBindRenderTarget(uint32_t index, VkRenderPassBeginInfo* renderPassBeginInfo)
 {
   if(m_swapchainImageContextRenderTarget[index].m_renderTargetFrameBuffer == VK_NULL_HANDLE)
-    m_swapchainImageContextRenderTarget[index].RenderTargetCreate(m_swapchainImageContextNamer, gVkDevice, m_swapchainImageContextSwapchainImages[index].image, m_swapchainImageContextDepthBuffer.m_depthBufferDepthImage, m_swapchainImageContextSize, m_swapchainImageContextRenderPass);
+    m_swapchainImageContextRenderTarget[index].RenderTargetCreate(m_swapchainImageContextNamer, gVkDevice, m_swapchainImageContextSwapchainImages[index].image, m_swapchainImageContext_depthBufferDepthImage, m_swapchainImageContextSize, m_swapchainImageContextRenderPass);
 
   renderPassBeginInfo->renderPass = m_swapchainImageContextRenderPass.m_renderPassPass;
   renderPassBeginInfo->framebuffer = m_swapchainImageContextRenderTarget[index].m_renderTargetFrameBuffer;
@@ -3407,7 +3371,7 @@ void VulkanGraphicsPlugin::VulkanGraphicsPluginRenderView(const XrCompositionLay
   m_vulkanGraphicsPluginCmdBuffer.CmdBufferBegin();
 
   // Ensure depth is in the right layout
-  swapchainContext->m_swapchainImageContextDepthBuffer.DepthBufferTransitionImageLayout(&m_vulkanGraphicsPluginCmdBuffer, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+  swapchainContext->SwapchainImageContext_DepthBufferTransitionImageLayout(&m_vulkanGraphicsPluginCmdBuffer, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 
   // Bind and clear eye render target
   static std::array<VkClearValue, 2> clearValues;
