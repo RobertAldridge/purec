@@ -25,25 +25,23 @@ struct OpenXrProgram
 
   ~OpenXrProgram();
 
-  friend void OpenXrProgram_LogLayersAndExtensions();
+  void OpenXrProgramLogInstanceInfo();
 
-  void LogInstanceInfo();
+  void OpenXrProgramCreateInstanceInternal();
 
-  void CreateInstanceInternal();
+  void OpenXrProgramCreateInstance();
 
-  void CreateInstance();
+  void OpenXrProgramLogViewConfigurations();
 
-  void LogViewConfigurations();
+  void OpenXrProgramLogEnvironmentBlendMode(XrViewConfigurationType type);
 
-  void LogEnvironmentBlendMode(XrViewConfigurationType type);
+  XrEnvironmentBlendMode OpenXrProgramGetPreferredBlendMode() const;
 
-  XrEnvironmentBlendMode GetPreferredBlendMode() const;
+  void OpenXrProgramInitializeSystem();
 
-  void InitializeSystem();
+  void OpenXrProgramInitializeDevice();
 
-  void InitializeDevice();
-
-  void LogReferenceSpaces();
+  void OpenXrProgramLogReferenceSpaces();
 
   struct InputState
   {
@@ -66,27 +64,27 @@ struct OpenXrProgram
     std::array<XrBool32, (int)Side::COUNT> handActive;
   };
 
-  void InitializeActions();
+  void OpenXrProgramInitializeActions();
 
-  void CreateVisualizedSpaces();
+  void OpenXrProgramCreateVisualizedSpaces();
 
-  void InitializeSession();
+  void OpenXrProgramInitializeSession();
 
-  void CreateSwapchains();
+  void OpenXrProgramCreateSwapchains();
 
-  const XrEventDataBaseHeader* TryReadNextEvent();
+  const XrEventDataBaseHeader* OpenXrProgramTryReadNextEvent();
 
-  void PollEvents(bool* exitRenderLoop, bool* requestRestart);
+  void OpenXrProgramPollEvents(bool* exitRenderLoop, bool* requestRestart);
 
-  void HandleSessionStateChangedEvent(const XrEventDataSessionStateChanged& stateChangedEvent, bool* exitRenderLoop, bool* requestRestart);
+  void OpenXrProgramHandleSessionStateChangedEvent(const XrEventDataSessionStateChanged& stateChangedEvent, bool* exitRenderLoop, bool* requestRestart);
 
-  void LogActionSourceName(XrAction action, const std::string& actionName) const;
+  void OpenXrProgramLogActionSourceName(XrAction action, const std::string& actionName) const;
 
-  bool IsSessionRunning() const;
+  bool OpenXrProgramIsSessionRunning() const;
 
-  bool IsSessionFocused() const;
+  bool OpenXrProgramIsSessionFocused() const;
 
-  void PollActions();
+  void OpenXrProgramPollActions();
 
   // Unreal UOculusXRFunctionLibrary::SetSuggestedCpuAndGpuPerformanceLevels (exposed in Blueprint)
   //
@@ -94,50 +92,52 @@ struct OpenXrProgram
   //
   // Native ovrp_SetSuggestedCpuPerformanceLevel, ovrp_GetSuggestedGpuPerformanceLevel
 
-  void RenderFrame();
+  void OpenXrProgramRenderFrame();
 
-  bool RenderLayer(XrTime predictedDisplayTime, std::vector<XrCompositionLayerProjectionView>& projectionLayerViews, XrCompositionLayerProjection& layer);
+  bool OpenXrProgramRenderLayer(XrTime predictedDisplayTime, std::vector<XrCompositionLayerProjectionView>& projectionLayerViews, XrCompositionLayerProjection& layer);
 
 private:
 
-  const std::shared_ptr<const Options> m_options;
+  const std::shared_ptr<const Options> m_OpenXrProgramStdSharedPtr_Options;
 
-  std::shared_ptr<AndroidPlatformPlugin> m_platformPlugin;
+  std::shared_ptr<AndroidPlatformPlugin> m_OpenXrProgramStdSharedPtr_AndroidPlatformPlugin;
 
-  std::shared_ptr<VulkanGraphicsPlugin> m_graphicsPlugin;
+  std::shared_ptr<VulkanGraphicsPlugin> m_OpenXrProgramStdSharedPtr_VulkanGraphicsPlugin;
 
-  XrInstance m_instance {XR_NULL_HANDLE};
+  XrInstance m_OpenXrProgramXrInstance {XR_NULL_HANDLE};
 
-  XrSession m_session {XR_NULL_HANDLE};
+  XrSession m_OpenXrProgramXrSession {XR_NULL_HANDLE};
 
-  XrSpace m_appSpace {XR_NULL_HANDLE};
+  XrSpace m_OpenXrProgramXrSpace {XR_NULL_HANDLE};
 
-  XrSystemId m_systemId {XR_NULL_SYSTEM_ID};
+  XrSystemId m_OpenXrProgramXrSystemId {XR_NULL_SYSTEM_ID};
 
-  std::vector<XrViewConfigurationView> m_configViews;
+  std::vector<XrViewConfigurationView> m_OpenXrProgramStdVector_XrViewConfigurationView;
 
-  std::vector<Swapchain> m_swapchains;
+  std::vector<Swapchain> m_OpenXrProgramStdVector_Swapchain;
 
-  std::map<XrSwapchain, std::vector<XrSwapchainImageBaseHeader*> > m_swapchainImages;
+  std::map<XrSwapchain, std::vector<XrSwapchainImageBaseHeader*> > m_OpenXrProgramStdMap_XrSwapchain_StdVectorXrSwapchainImageBaseHeader;
 
-  std::vector<XrView> m_views;
+  std::vector<XrView> m_OpenXrProgramStdVector_XrView;
 
-  int64_t m_colorSwapchainFormat {-1};
+  int64_t m_OpenXrProgramColorSwapchainFormat {-1};
 
-  std::vector<XrSpace> m_visualizedSpaces;
+  std::vector<XrSpace> m_OpenXrProgramStdVector_XrSpace;
 
   // Application's current lifecycle state according to the runtime
-  XrSessionState m_sessionState {XR_SESSION_STATE_UNKNOWN};
+  XrSessionState m_OpenXrProgramXrSessionState {XR_SESSION_STATE_UNKNOWN};
 
-  bool m_sessionRunning {false};
+  bool m_OpenXrProgramSessionRunning {false};
 
-  XrEventDataBuffer m_eventDataBuffer;
+  XrEventDataBuffer m_OpenXrProgramXrEventDataBuffer;
 
-  InputState m_input;
+  InputState m_OpenXrProgramInputState;
 
-  const std::set<XrEnvironmentBlendMode> m_acceptableBlendModes;
+  const std::set<XrEnvironmentBlendMode> m_OpenXrProgramStdSet_XrEnvironmentBlendMode;
+
+  friend void OpenXrProgram_LogLayersAndExtensions();
 };
 
-std::shared_ptr<OpenXrProgram> CreateOpenXrProgram(const std::shared_ptr<Options>& options, const std::shared_ptr<AndroidPlatformPlugin>& platformPlugin, const std::shared_ptr<VulkanGraphicsPlugin>& graphicsPlugin);
+std::shared_ptr<OpenXrProgram> OpenXrProgram_CreateOpenXrProgram(const std::shared_ptr<Options>& options, const std::shared_ptr<AndroidPlatformPlugin>& platformPlugin, const std::shared_ptr<VulkanGraphicsPlugin>& graphicsPlugin);
 
 #endif

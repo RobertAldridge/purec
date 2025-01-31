@@ -190,7 +190,7 @@
 
 #define XR_ARCH_ABI "arm64-v8a"
 
-#include "platform_utils.h"
+//#include "platform_utils.h"
 
 #include <dlfcn.h>
 

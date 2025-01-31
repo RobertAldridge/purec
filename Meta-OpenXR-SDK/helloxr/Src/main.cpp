@@ -174,7 +174,7 @@ void android_main(struct android_app* app)
     std::shared_ptr<VulkanGraphicsPlugin> graphicsPlugin = VulkanGraphicsPlugin_CreateGraphicsPlugin_Vulkan(options, platformPlugin);
 
     // Initialize the OpenXR program.
-    std::shared_ptr<OpenXrProgram> program = CreateOpenXrProgram(options, platformPlugin, graphicsPlugin);
+    std::shared_ptr<OpenXrProgram> program = OpenXrProgram_CreateOpenXrProgram(options, platformPlugin, graphicsPlugin);
 
     // Initialize the loader for this platform
     PFN_xrInitializeLoaderKHR initializeLoader = nullptr;
@@ -194,17 +194,17 @@ void android_main(struct android_app* app)
       initializeLoader( (const XrLoaderInitInfoBaseHeaderKHR*) &loaderInitInfoAndroid);
     }
 
-    program->CreateInstance();
-    program->InitializeSystem();
+    program->OpenXrProgramCreateInstance();
+    program->OpenXrProgramInitializeSystem();
 
-    options->SetEnvironmentBlendMode(program->GetPreferredBlendMode() );
+    options->SetEnvironmentBlendMode(program->OpenXrProgramGetPreferredBlendMode() );
     UpdateOptionsFromSystemProperties(*options);
     platformPlugin->UpdateOptions(options);
     graphicsPlugin->VulkanGraphicsPluginUpdateOptions(options);
 
-    program->InitializeDevice();
-    program->InitializeSession();
-    program->CreateSwapchains();
+    program->OpenXrProgramInitializeDevice();
+    program->OpenXrProgramInitializeSession();
+    program->OpenXrProgramCreateSwapchains();
 
     while(app->destroyRequested == 0)
     {
@@ -216,7 +216,7 @@ void android_main(struct android_app* app)
 
         // If the timeout is zero, returns immediately without blocking.
         // If the timeout is negative, waits indefinitely until an event appears.
-        const int timeoutMilliseconds = (!appState.Resumed && !program->IsSessionRunning() && app->destroyRequested == 0) ? -1 : 0;
+        const int timeoutMilliseconds = (!appState.Resumed && !program->OpenXrProgramIsSessionRunning() && app->destroyRequested == 0) ? -1 : 0;
 
         if(ALooper_pollOnce(timeoutMilliseconds, nullptr, &events, (void**)&source) < 0)
           break;
@@ -226,7 +226,7 @@ void android_main(struct android_app* app)
           source->process(app, source);
       }
 
-      program->PollEvents(&exitRenderLoop, &requestRestart);
+      program->OpenXrProgramPollEvents(&exitRenderLoop, &requestRestart);
 
       if(exitRenderLoop)
       {
@@ -234,15 +234,15 @@ void android_main(struct android_app* app)
         continue;
       }
 
-      if(!program->IsSessionRunning() )
+      if(!program->OpenXrProgramIsSessionRunning() )
       {
         // Throttle loop since xrWaitFrame won't be called.
         std::this_thread::sleep_for(std::chrono::milliseconds(250) );
         continue;
       }
 
-      program->PollActions();
-      program->RenderFrame();
+      program->OpenXrProgramPollActions();
+      program->OpenXrProgramRenderFrame();
     }
 
     app->activity->vm->DetachCurrentThread();
