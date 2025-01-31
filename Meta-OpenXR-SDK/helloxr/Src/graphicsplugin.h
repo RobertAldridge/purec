@@ -156,35 +156,37 @@ template <typename T> struct VertexBuffer : public VertexBufferBase
   void VertexBufferUpdateVertices(const T* data, uint32_t elements, uint32_t offset = 0);
 };
 
+#if 0
 struct SwapchainImageContext
 {
-  SwapchainImageContext(XrStructureType _swapchainImageType);
-
   // A packed array of XrSwapchainImageVulkan2KHR's for tableXr.EnumerateSwapchainImages
   std::vector<XrSwapchainImageVulkan2KHR> m_swapchainImageContextSwapchainImages;
 
-  //std::vector<RenderTarget> m_swapchainImageContextRenderTarget;
   std::vector<VkImage> m_swapchainImageContextStdVector_renderTargetColorImage;
   std::vector<VkImage> m_swapchainImageContextStdVector_renderTargetDepthImage;
   std::vector<VkImageView> m_swapchainImageContextStdVector_renderTargetColorView;
   std::vector<VkImageView> m_swapchainImageContextStdVector_renderTargetDepthView;
   std::vector<VkFramebuffer> m_swapchainImageContextStdVector_renderTargetFrameBuffer;
 
-  VkExtent2D m_swapchainImageContextSize {};
+  VkExtent2D m_swapchainImageContextSize;
 
-  VkDeviceMemory m_swapchainImageContext_depthBufferDepthMemory {VK_NULL_HANDLE};
-  VkImage m_swapchainImageContext_depthBufferDepthImage {VK_NULL_HANDLE};
-  VkImageLayout m_swapchainImageContext_depthBufferVkImageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+  VkDeviceMemory m_swapchainImageContext_depthBufferDepthMemory;
+  VkImage m_swapchainImageContext_depthBufferDepthImage;
+  VkImageLayout m_swapchainImageContext_depthBufferVkImageLayout;
 
-  VkFormat m_swapchainImageContext_renderPassColorFmt {};
-  VkFormat m_swapchainImageContext_renderPassDepthFmt {};
-  VkRenderPass m_swapchainImageContext_renderPassPass {VK_NULL_HANDLE};
+  VkFormat m_swapchainImageContext_renderPassColorFmt;
+  VkFormat m_swapchainImageContext_renderPassDepthFmt;
+  VkRenderPass m_swapchainImageContext_renderPassPass;
 
-  VkPipeline m_swapchainImageContextPipe_pipelinePipe {VK_NULL_HANDLE};
-  VkPrimitiveTopology m_swapchainImageContextPipe_pipelineTopology {VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST};
+  VkPipeline m_swapchainImageContextPipe_pipelinePipe;
+  VkPrimitiveTopology m_swapchainImageContextPipe_pipelineTopology;
   std::vector<VkDynamicState> m_swapchainImageContextPipe_pipelineDynamicStateEnables;
 
   XrStructureType m_swapchainImageContextSwapchainImageType;
+
+  VulkanDebugObjectNamer m_swapchainImageContextNamer;
+
+  SwapchainImageContext(XrStructureType _swapchainImageType);
 
   SwapchainImageContext() = default;
 
@@ -210,11 +212,8 @@ struct SwapchainImageContext
   uint32_t SwapchainImageContextImageIndex(const XrSwapchainImageBaseHeader* swapchainImageHeader);
 
   void SwapchainImageContextBindRenderTarget(uint32_t index, VkRenderPassBeginInfo* renderPassBeginInfo);
-
-private:
-
-  VulkanDebugObjectNamer m_swapchainImageContextNamer;
 };
+#endif
 
 std::string VulkanGraphicsPlugin_BlahVkObjectTypeToString(VkObjectType objectType);
 
@@ -256,7 +255,8 @@ protected:
 
   XrGraphicsBindingVulkan2KHR m_vulkanGraphicsPluginXrGraphicsBindingVulkan2KHR {XR_TYPE_GRAPHICS_BINDING_VULKAN2_KHR};
 
-  std::vector<SwapchainImageContext*> m_vulkanGraphicsPluginStdList_SwapchainImageContext;
+  //std::vector<SwapchainImageContext*> m_vulkanGraphicsPluginStdList_SwapchainImageContext;
+  std::vector<int> m_vulkanGraphicsPluginStdList_SwapchainImageContext;
 
   std::map<const XrSwapchainImageBaseHeader*, int> m_vulkanGraphicsPluginStdMap_XrSwapchainImageBaseHeader_SwapchainImageContext;
 
