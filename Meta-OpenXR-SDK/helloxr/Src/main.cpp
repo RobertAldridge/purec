@@ -171,10 +171,10 @@ void android_main(struct android_app* app)
     std::shared_ptr<AndroidPlatformPlugin> platformPlugin = CreatePlatformPlugin_Android(options, data);
 
     // Create graphics API implementation.
-    std::shared_ptr<VulkanGraphicsPlugin> graphicsPlugin = VulkanGraphicsPlugin_CreateGraphicsPlugin_Vulkan(options, platformPlugin);
+    VulkanGraphicsPlugin_CreateGraphicsPlugin_Vulkan(options, platformPlugin);
 
     // Initialize the OpenXR program.
-    std::shared_ptr<OpenXrProgram> program = OpenXrProgram_CreateOpenXrProgram(options, platformPlugin, graphicsPlugin);
+    std::shared_ptr<OpenXrProgram> program = OpenXrProgram_CreateOpenXrProgram(options, platformPlugin);
 
     // Initialize the loader for this platform
     PFN_xrInitializeLoaderKHR initializeLoader = nullptr;
@@ -200,7 +200,7 @@ void android_main(struct android_app* app)
     options->SetEnvironmentBlendMode(program->OpenXrProgramGetPreferredBlendMode() );
     UpdateOptionsFromSystemProperties(*options);
     platformPlugin->UpdateOptions(options);
-    graphicsPlugin->VulkanGraphicsPluginUpdateOptions(options);
+    VulkanGraphicsPlugin_VulkanGraphicsPluginUpdateOptions(options);
 
     program->OpenXrProgramInitializeDevice();
     program->OpenXrProgramInitializeSession();

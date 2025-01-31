@@ -21,7 +21,7 @@ enum class Side
 
 struct OpenXrProgram
 {
-  OpenXrProgram(const std::shared_ptr<Options>& options, const std::shared_ptr<AndroidPlatformPlugin>& platformPlugin, const std::shared_ptr<VulkanGraphicsPlugin>& graphicsPlugin);
+  OpenXrProgram(const std::shared_ptr<Options>& options, const std::shared_ptr<AndroidPlatformPlugin>& platformPlugin);
 
   ~OpenXrProgram();
 
@@ -102,8 +102,6 @@ private:
 
   std::shared_ptr<AndroidPlatformPlugin> m_OpenXrProgramStdSharedPtr_AndroidPlatformPlugin;
 
-  std::shared_ptr<VulkanGraphicsPlugin> m_OpenXrProgramStdSharedPtr_VulkanGraphicsPlugin;
-
   XrSpace m_OpenXrProgramXrSpace {XR_NULL_HANDLE};
 
   std::vector<XrViewConfigurationView> m_OpenXrProgramStdVector_XrViewConfigurationView;
@@ -132,6 +130,6 @@ private:
   friend void OpenXrProgram_LogLayersAndExtensions();
 };
 
-std::shared_ptr<OpenXrProgram> OpenXrProgram_CreateOpenXrProgram(const std::shared_ptr<Options>& options, const std::shared_ptr<AndroidPlatformPlugin>& platformPlugin, const std::shared_ptr<VulkanGraphicsPlugin>& graphicsPlugin);
+std::shared_ptr<OpenXrProgram> OpenXrProgram_CreateOpenXrProgram(const std::shared_ptr<Options>& options, const std::shared_ptr<AndroidPlatformPlugin>& platformPlugin);
 
 #endif

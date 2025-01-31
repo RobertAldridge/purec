@@ -184,10 +184,9 @@ void OpenXrProgram_LogLayersAndExtensions()
   }
 }
 
-OpenXrProgram::OpenXrProgram(const std::shared_ptr<Options>& options, const std::shared_ptr<AndroidPlatformPlugin>& platformPlugin, const std::shared_ptr<VulkanGraphicsPlugin>& graphicsPlugin)
+OpenXrProgram::OpenXrProgram(const std::shared_ptr<Options>& options, const std::shared_ptr<AndroidPlatformPlugin>& platformPlugin)
 : m_OpenXrProgramStdSharedPtr_Options(options),
   m_OpenXrProgramStdSharedPtr_AndroidPlatformPlugin(platformPlugin),
-  m_OpenXrProgramStdSharedPtr_VulkanGraphicsPlugin(graphicsPlugin),
   m_OpenXrProgramStdSet_XrEnvironmentBlendMode {XR_ENVIRONMENT_BLEND_MODE_OPAQUE, XR_ENVIRONMENT_BLEND_MODE_ADDITIVE, XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND}
 {
 }
@@ -257,7 +256,7 @@ void OpenXrProgram::OpenXrProgramCreateInstanceInternal()
   const std::vector<std::string> platformExtensions = m_OpenXrProgramStdSharedPtr_AndroidPlatformPlugin->GetInstanceExtensions();
   std::transform(platformExtensions.begin(), platformExtensions.end(), std::back_inserter(extensions), [] (const std::string& ext) { return ext.c_str(); } );
 
-  const std::vector<std::string> graphicsExtensions = m_OpenXrProgramStdSharedPtr_VulkanGraphicsPlugin->VulkanGraphicsPluginGetInstanceExtensions();
+  const std::vector<std::string> graphicsExtensions = VulkanGraphicsPlugin_VulkanGraphicsPluginGetInstanceExtensions();
   std::transform(graphicsExtensions.begin(), graphicsExtensions.end(), std::back_inserter(extensions), [] (const std::string& ext) { return ext.c_str(); } );
 
   XrInstanceCreateInfo createInfo {XR_TYPE_INSTANCE_CREATE_INFO};
@@ -437,7 +436,7 @@ void OpenXrProgram::OpenXrProgramInitializeDevice()
 {
   OpenXrProgramLogViewConfigurations();
 
-  m_OpenXrProgramStdSharedPtr_VulkanGraphicsPlugin->VulkanGraphicsPluginInitializeDevice(gXrInstance, gXrSystemId);
+  VulkanGraphicsPlugin_VulkanGraphicsPluginInitializeDevice(gXrInstance, gXrSystemId);
 }
 
 void OpenXrProgram::OpenXrProgramLogReferenceSpaces()
@@ -766,7 +765,7 @@ void OpenXrProgram::OpenXrProgramInitializeSession()
 
     XrSessionCreateInfo createInfo {XR_TYPE_SESSION_CREATE_INFO};
 
-    createInfo.next = m_OpenXrProgramStdSharedPtr_VulkanGraphicsPlugin->VulkanGraphicsPluginGetGraphicsBinding();
+    createInfo.next = VulkanGraphicsPlugin_VulkanGraphicsPluginGetGraphicsBinding();
     createInfo.systemId = gXrSystemId;
 
     if(tableXr.CreateSession)
@@ -838,7 +837,7 @@ void OpenXrProgram::OpenXrProgramCreateSwapchains()
       CHECK_XRCMD(tableXr.EnumerateSwapchainFormats(gXrSession, (uint32_t)swapchainFormats.size(), &swapchainFormatCount, swapchainFormats.data() ) );
 
     CHECK(swapchainFormatCount == swapchainFormats.size() );
-    m_OpenXrProgramColorSwapchainFormat = m_OpenXrProgramStdSharedPtr_VulkanGraphicsPlugin->VulkanGraphicsPluginSelectColorSwapchainFormat(swapchainFormats);
+    m_OpenXrProgramColorSwapchainFormat = VulkanGraphicsPlugin_VulkanGraphicsPluginSelectColorSwapchainFormat(swapchainFormats);
 
     // Print swapchain formats and the selected one
     {
@@ -877,7 +876,7 @@ void OpenXrProgram::OpenXrProgramCreateSwapchains()
       swapchainCreateInfo.height = vp.recommendedImageRectHeight;
       swapchainCreateInfo.mipCount = 1;
       swapchainCreateInfo.faceCount = 1;
-      swapchainCreateInfo.sampleCount = m_OpenXrProgramStdSharedPtr_VulkanGraphicsPlugin->VulkanGraphicsPluginGetSupportedSwapchainSampleCount(vp);
+      swapchainCreateInfo.sampleCount = VulkanGraphicsPlugin_VulkanGraphicsPluginGetSupportedSwapchainSampleCount(vp);
       swapchainCreateInfo.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
       Swapchain swapchain;
       swapchain.width = swapchainCreateInfo.width;
@@ -894,7 +893,7 @@ void OpenXrProgram::OpenXrProgramCreateSwapchains()
         CHECK_XRCMD(tableXr.EnumerateSwapchainImages(swapchain.handle, 0, &imageCount, nullptr) );
 
       // XXX This should really just return XrSwapchainImageBaseHeader*
-      std::vector<XrSwapchainImageBaseHeader*> swapchainImages = m_OpenXrProgramStdSharedPtr_VulkanGraphicsPlugin->VulkanGraphicsPluginAllocateSwapchainImageStructs(imageCount, swapchainCreateInfo);
+      std::vector<XrSwapchainImageBaseHeader*> swapchainImages = VulkanGraphicsPlugin_VulkanGraphicsPluginAllocateSwapchainImageStructs(imageCount, swapchainCreateInfo);
 
       if(tableXr.EnumerateSwapchainImages)
         CHECK_XRCMD(tableXr.EnumerateSwapchainImages(swapchain.handle, imageCount, &imageCount, swapchainImages[0] ) );
@@ -1691,7 +1690,7 @@ bool OpenXrProgram::OpenXrProgramRenderLayer(XrTime predictedDisplayTime, std::v
     projectionLayerViews[i].subImage.imageRect.extent = {viewSwapchain.width, viewSwapchain.height};
 
     const XrSwapchainImageBaseHeader* const swapchainImage = m_OpenXrProgramStdMap_XrSwapchain_StdVectorXrSwapchainImageBaseHeader[viewSwapchain.handle][swapchainImageIndex];
-    m_OpenXrProgramStdSharedPtr_VulkanGraphicsPlugin->VulkanGraphicsPluginRenderView(projectionLayerViews[i], swapchainImage, m_OpenXrProgramColorSwapchainFormat, cubes);
+    VulkanGraphicsPlugin_VulkanGraphicsPluginRenderView(projectionLayerViews[i], swapchainImage, m_OpenXrProgramColorSwapchainFormat, cubes);
 
     XrSwapchainImageReleaseInfo releaseInfo {XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
 
@@ -1737,7 +1736,7 @@ bool OpenXrProgram::OpenXrProgramRenderLayer(XrTime predictedDisplayTime, std::v
 
 //const std::set<XrEnvironmentBlendMode> OpenXrProgram::m_OpenXrProgramStdSet_XrEnvironmentBlendMode;
 
-std::shared_ptr<OpenXrProgram> OpenXrProgram_CreateOpenXrProgram(const std::shared_ptr<Options>& options, const std::shared_ptr<AndroidPlatformPlugin>& platformPlugin, const std::shared_ptr<VulkanGraphicsPlugin>& graphicsPlugin)
+std::shared_ptr<OpenXrProgram> OpenXrProgram_CreateOpenXrProgram(const std::shared_ptr<Options>& options, const std::shared_ptr<AndroidPlatformPlugin>& platformPlugin)
 {
-  return std::make_shared<OpenXrProgram>(options, platformPlugin, graphicsPlugin);
+  return std::make_shared<OpenXrProgram>(options, platformPlugin);
 }
