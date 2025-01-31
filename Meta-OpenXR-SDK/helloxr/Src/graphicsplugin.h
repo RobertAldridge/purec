@@ -208,46 +208,6 @@ struct RenderTarget
   RenderTarget& operator=(const RenderTarget&) = delete;
 };
 
-#if 0
-// Simple vertex MVP xform & color fragment shader layout
-struct PipelineLayout
-{
-  VkPipelineLayout m_pipelineLayoutLayout {VK_NULL_HANDLE};
-
-  PipelineLayout() = default;
-
-  ~PipelineLayout();
-
-  void PipelineLayoutCreate(VkDevice device);
-
-  PipelineLayout(const PipelineLayout& ) = delete;
-
-  PipelineLayout& operator=(const PipelineLayout& ) = delete;
-
-  PipelineLayout(PipelineLayout&& ) = delete;
-
-  PipelineLayout& operator=(PipelineLayout&& ) = delete;
-};
-#endif
-
-// Pipeline wrapper for rendering pipeline state
-struct Pipeline
-{
-  VkPipeline m_pipelinePipe {VK_NULL_HANDLE};
-
-  VkPrimitiveTopology m_pipelineTopology {VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST};
-
-  std::vector<VkDynamicState> m_pipelineDynamicStateEnables;
-
-  Pipeline() = default;
-
-  void PipelineDynamic(VkDynamicState state);
-
-  void PipelineCreate(VkDevice device, VkExtent2D size, const RenderPass& rp, const ShaderProgram& sp, const VertexBufferBase& vb);
-
-  void PipelineRelease();
-};
-
 struct DepthBuffer
 {
   VkDeviceMemory m_depthBufferDepthMemory {VK_NULL_HANDLE};
@@ -290,11 +250,19 @@ struct SwapchainImageContext
 
   RenderPass m_swapchainImageContextRenderPass {};
 
-  Pipeline m_swapchainImageContextPipe {};
+  VkPipeline m_swapchainImageContextPipe_pipelinePipe {VK_NULL_HANDLE};
+  VkPrimitiveTopology m_swapchainImageContextPipe_pipelineTopology {VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST};
+  std::vector<VkDynamicState> m_swapchainImageContextPipe_pipelineDynamicStateEnables;
 
   XrStructureType m_swapchainImageContextSwapchainImageType;
 
   SwapchainImageContext() = default;
+
+  void SwapchainImageContext_PipelineDynamic(VkDynamicState state);
+
+  void SwapchainImageContext_PipelineCreate(VkDevice device, VkExtent2D size, const RenderPass& rp, const ShaderProgram& sp, const VertexBufferBase& vb);
+
+  void SwapchainImageContext_PipelineRelease();
 
   std::vector<XrSwapchainImageBaseHeader*> SwapchainImageContextCreate(const VulkanDebugObjectNamer& namer, VkDevice device, MemoryAllocator* memAllocator, uint32_t capacity, const XrSwapchainCreateInfo& swapchainCreateInfo, const ShaderProgram& sp, const VertexBuffer<Geometry::Vertex>& vb);
 
