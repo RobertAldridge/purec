@@ -239,6 +239,12 @@ extern "C" {
 
 extern struct VkGeneratedDispatchTableCore tableVk;
 
+extern VkInstance gVkInstance;
+
+extern VkDevice gVkDevice;
+
+extern VkPhysicalDevice gVkPhysicalDevice;
+
 #ifdef __cplusplus
 }
 #endif
@@ -253,6 +259,20 @@ extern struct VkGeneratedDispatchTableCore tableVk;
 #include "openxr_reflection.h"
 #include "openxr_reflection_structs.h"
 #include "openxr_reflection_parent_structs.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern XrInstance gXrInstance;
+
+extern XrSession gXrSession;
+
+extern XrSystemId gXrSystemId;
+
+#ifdef __cplusplus
+}
+#endif
 
 #include "logger.h"
 #include "common.h"

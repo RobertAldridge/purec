@@ -104,13 +104,7 @@ private:
 
   std::shared_ptr<VulkanGraphicsPlugin> m_OpenXrProgramStdSharedPtr_VulkanGraphicsPlugin;
 
-  XrInstance m_OpenXrProgramXrInstance {XR_NULL_HANDLE};
-
-  XrSession m_OpenXrProgramXrSession {XR_NULL_HANDLE};
-
   XrSpace m_OpenXrProgramXrSpace {XR_NULL_HANDLE};
-
-  XrSystemId m_OpenXrProgramXrSystemId {XR_NULL_SYSTEM_ID};
 
   std::vector<XrViewConfigurationView> m_OpenXrProgramStdVector_XrViewConfigurationView;
 

@@ -19,8 +19,6 @@ struct MemoryAllocator
 
 private:
 
-  VkDevice m_memoryAllocatorVkDevice {VK_NULL_HANDLE};
-
   VkPhysicalDeviceMemoryProperties m_memoryAllocatorMemoryProperties {};
 };
 
@@ -72,8 +70,6 @@ struct CmdBuffer
 
 private:
 
-  VkDevice m_cmdBufferVkDevice {VK_NULL_HANDLE};
-
   void CmdBufferSetState(CmdBufferStateEnum newState);
 };
 
@@ -101,8 +97,6 @@ struct ShaderProgram
   void ShaderProgramInit(VkDevice device);
 
 private:
-
-  VkDevice m_shaderProgramVkDevice {VK_NULL_HANDLE};
 
   void ShaderProgramLoad(uint32_t index, const std::vector<uint32_t>& code);
 };
@@ -145,8 +139,6 @@ struct VertexBufferBase
 
 protected:
 
-  VkDevice m_vertexBufferBaseVkDevice {VK_NULL_HANDLE};
-
   void VertexBufferBaseAllocateBufferMemory(VkBuffer buf, VkDeviceMemory* mem) const;
 
 private:
@@ -186,10 +178,6 @@ struct RenderPass
   RenderPass(RenderPass&&) = delete;
 
   RenderPass& operator=(RenderPass&&) = delete;
-
-private:
-
-  VkDevice m_renderPassVkDevice {VK_NULL_HANDLE};
 };
 
 // VkImage + framebuffer wrapper
@@ -218,10 +206,6 @@ struct RenderTarget
   RenderTarget(const RenderTarget&) = delete;
 
   RenderTarget& operator=(const RenderTarget&) = delete;
-
-private:
-
-  VkDevice m_renderTargetVkDevice {VK_NULL_HANDLE};
 };
 
 // Simple vertex MVP xform & color fragment shader layout
@@ -242,10 +226,6 @@ struct PipelineLayout
   PipelineLayout(PipelineLayout&& ) = delete;
 
   PipelineLayout& operator=(PipelineLayout&& ) = delete;
-
-private:
-
-  VkDevice m_pipelineLayoutVkDevice {VK_NULL_HANDLE};
 };
 
 // Pipeline wrapper for rendering pipeline state
@@ -264,10 +244,6 @@ struct Pipeline
   void PipelineCreate(VkDevice device, VkExtent2D size, const PipelineLayout& layout, const RenderPass& rp, const ShaderProgram& sp, const VertexBufferBase& vb);
 
   void PipelineRelease();
-
-private:
-
-  VkDevice m_pipelineVkDevice {VK_NULL_HANDLE};
 };
 
 struct DepthBuffer
@@ -293,8 +269,6 @@ struct DepthBuffer
   DepthBuffer& operator=(const DepthBuffer&) = delete;
 
 private:
-
-  VkDevice m_depthBufferVkDevice {VK_NULL_HANDLE};
 
   VkImageLayout m_depthBufferVkImageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 };
@@ -327,8 +301,6 @@ struct SwapchainImageContext
   void SwapchainImageContextBindRenderTarget(uint32_t index, VkRenderPassBeginInfo* renderPassBeginInfo);
 
 private:
-
-  VkDevice m_swapchainImageContextVkDevice {VK_NULL_HANDLE};
 
   VulkanDebugObjectNamer m_swapchainImageContextNamer;
 };
@@ -374,12 +346,6 @@ protected:
   std::list<SwapchainImageContext> m_vulkanGraphicsPluginStdList_SwapchainImageContext;
 
   std::map<const XrSwapchainImageBaseHeader*, SwapchainImageContext*> m_vulkanGraphicsPluginStdMap_XrSwapchainImageBaseHeader_SwapchainImageContext;
-
-  VkInstance m_vulkanGraphicsPluginVkInstance {VK_NULL_HANDLE};
-
-  VkPhysicalDevice m_vulkanGraphicsPluginVkPhysicalDevice {VK_NULL_HANDLE};
-
-  VkDevice m_vulkanGraphicsPluginVkDevice {VK_NULL_HANDLE};
 
   VulkanDebugObjectNamer m_vulkanGraphicsPluginVulkanDebugObjectNamer {};
 

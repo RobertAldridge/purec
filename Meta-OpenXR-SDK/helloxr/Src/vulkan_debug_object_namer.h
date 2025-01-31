@@ -9,9 +9,9 @@ public:
 
   VulkanDebugObjectNamer() = default;
 
-  VulkanDebugObjectNamer(VkInstance instance, VkDevice device) : m_vkDevice {device}
+  VulkanDebugObjectNamer(VkInstance instance, VkDevice device)
   {
-    if(tableVk.GetInstanceProcAddr)
+    if(instance && tableVk.GetInstanceProcAddr)
       BlahVkSetDebugUtilsObjectNameEXT = (PFN_vkSetDebugUtilsObjectNameEXT)tableVk.GetInstanceProcAddr(instance, "vkSetDebugUtilsObjectNameEXT");
   }
 
@@ -30,14 +30,11 @@ public:
 
   VkResult SetName(VkObjectType objectType, uint64_t objectHandle, const char* pObjectName) const
   {
-    if(m_vkDevice == nullptr)
-      return VK_SUCCESS;
-
-    if(BlahVkSetDebugUtilsObjectNameEXT != nullptr)
+    if(gVkDevice && BlahVkSetDebugUtilsObjectNameEXT)
     {
       VkDebugUtilsObjectNameInfoEXT nameInfo {VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT, nullptr, objectType, objectHandle, pObjectName};
 
-      return BlahVkSetDebugUtilsObjectNameEXT(m_vkDevice, &nameInfo);
+      return BlahVkSetDebugUtilsObjectNameEXT(gVkDevice, &nameInfo);
     }
 
     return VK_SUCCESS;
@@ -46,13 +43,9 @@ public:
   void Reset()
   {
     BlahVkSetDebugUtilsObjectNameEXT = nullptr;
-
-    m_vkDevice = VK_NULL_HANDLE;
   }
 
 private:
-
-  VkDevice m_vkDevice {VK_NULL_HANDLE};
 
   PFN_vkSetDebugUtilsObjectNameEXT BlahVkSetDebugUtilsObjectNameEXT {nullptr};
 };

@@ -3,6 +3,20 @@
 
 #include "header.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+VkInstance gVkInstance = VK_NULL_HANDLE;
+
+VkDevice gVkDevice = VK_NULL_HANDLE;
+
+VkPhysicalDevice gVkPhysicalDevice = VK_NULL_HANDLE;
+
+#ifdef __cplusplus
+}
+#endif
+
 namespace
 {
 
@@ -1948,8 +1962,6 @@ R"_(
 
 void MemoryAllocator::MemoryAllocatorInit(VkPhysicalDevice physicalDevice, VkDevice device)
 {
-  m_memoryAllocatorVkDevice = device;
-
   if(tableVk.GetPhysicalDeviceMemoryProperties)
     tableVk.GetPhysicalDeviceMemoryProperties(physicalDevice, &m_memoryAllocatorMemoryProperties);
 }
@@ -1970,7 +1982,7 @@ void MemoryAllocator::MemoryAllocatorAllocate(VkMemoryRequirements const& memReq
         memAlloc.memoryTypeIndex = i;
 
         if(tableVk.AllocateMemory)
-          CHECK_VKCMD(tableVk.AllocateMemory(m_memoryAllocatorVkDevice, &memAlloc, nullptr, mem) );
+          CHECK_VKCMD(tableVk.AllocateMemory(gVkDevice, &memAlloc, nullptr, mem) );
 
         return;
       }
@@ -1979,8 +1991,6 @@ void MemoryAllocator::MemoryAllocatorAllocate(VkMemoryRequirements const& memReq
 
   THROW("Memory format not supported");
 }
-
-//VkDevice MemoryAllocator::m_memoryAllocatorVkDevice {VK_NULL_HANDLE};
 
 //VkPhysicalDeviceMemoryProperties MemoryAllocator::m_memoryAllocatorMemoryProperties {};
 
@@ -2008,22 +2018,21 @@ CmdBuffer::~CmdBuffer()
 {
   CmdBufferSetState(CmdBufferStateEnum::Undefined);
 
-  if(m_cmdBufferVkDevice != nullptr)
+  if(gVkDevice)
   {
     if(m_cmdBufferBuffer != VK_NULL_HANDLE && tableVk.FreeCommandBuffers)
-      tableVk.FreeCommandBuffers(m_cmdBufferVkDevice, m_cmdBufferPool, 1, &m_cmdBufferBuffer);
+      tableVk.FreeCommandBuffers(gVkDevice, m_cmdBufferPool, 1, &m_cmdBufferBuffer);
 
     if(m_cmdBufferPool != VK_NULL_HANDLE && tableVk.DestroyCommandPool)
-      tableVk.DestroyCommandPool(m_cmdBufferVkDevice, m_cmdBufferPool, nullptr);
+      tableVk.DestroyCommandPool(gVkDevice, m_cmdBufferPool, nullptr);
 
     if(m_cmdBufferExecFence != VK_NULL_HANDLE && tableVk.DestroyFence)
-      tableVk.DestroyFence(m_cmdBufferVkDevice, m_cmdBufferExecFence, nullptr);
+      tableVk.DestroyFence(gVkDevice, m_cmdBufferExecFence, nullptr);
   }
 
   m_cmdBufferBuffer = VK_NULL_HANDLE;
   m_cmdBufferPool = VK_NULL_HANDLE;
   m_cmdBufferExecFence = VK_NULL_HANDLE;
-  m_cmdBufferVkDevice = nullptr;
 }
 
 std::string CmdBuffer::CmdBufferStateString(CmdBufferStateEnum s)
@@ -2076,15 +2085,13 @@ bool CmdBuffer::CmdBufferInit(const VulkanDebugObjectNamer& namer, VkDevice devi
 {
   CHECK_CBSTATE(CmdBufferStateEnum::Undefined);
 
-  m_cmdBufferVkDevice = device;
-
   // Create a command pool to allocate our command buffer from
   VkCommandPoolCreateInfo cmdPoolInfo {VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO};
   cmdPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
   cmdPoolInfo.queueFamilyIndex = queueFamilyIndex;
 
   if(tableVk.CreateCommandPool)
-    CHECK_VKCMD(tableVk.CreateCommandPool(m_cmdBufferVkDevice, &cmdPoolInfo, nullptr, &m_cmdBufferPool) );
+    CHECK_VKCMD(tableVk.CreateCommandPool(gVkDevice, &cmdPoolInfo, nullptr, &m_cmdBufferPool) );
 
   CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_COMMAND_POOL, (uint64_t)m_cmdBufferPool, "helloxr command pool") );
 
@@ -2095,14 +2102,14 @@ bool CmdBuffer::CmdBufferInit(const VulkanDebugObjectNamer& namer, VkDevice devi
   cmd.commandBufferCount = 1;
 
   if(tableVk.AllocateCommandBuffers)
-    CHECK_VKCMD(tableVk.AllocateCommandBuffers(m_cmdBufferVkDevice, &cmd, &m_cmdBufferBuffer) );
+    CHECK_VKCMD(tableVk.AllocateCommandBuffers(gVkDevice, &cmd, &m_cmdBufferBuffer) );
 
   CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_COMMAND_BUFFER, (uint64_t)m_cmdBufferBuffer, "helloxr command buffer") );
 
   VkFenceCreateInfo fenceInfo {VK_STRUCTURE_TYPE_FENCE_CREATE_INFO};
 
   if(tableVk.CreateFence)
-    CHECK_VKCMD(tableVk.CreateFence(m_cmdBufferVkDevice, &fenceInfo, nullptr, &m_cmdBufferExecFence) );
+    CHECK_VKCMD(tableVk.CreateFence(gVkDevice, &fenceInfo, nullptr, &m_cmdBufferExecFence) );
 
   CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_FENCE, (uint64_t)m_cmdBufferExecFence, "helloxr fence") );
 
@@ -2169,7 +2176,7 @@ bool CmdBuffer::CmdBufferWait()
     VkResult res = VK_ERROR_OUT_OF_HOST_MEMORY;
 
     if(tableVk.WaitForFences)
-      res = tableVk.WaitForFences(m_cmdBufferVkDevice, 1, &m_cmdBufferExecFence, VK_TRUE, timeoutNs);
+      res = tableVk.WaitForFences(gVkDevice, 1, &m_cmdBufferExecFence, VK_TRUE, timeoutNs);
 
     if(res == VK_SUCCESS)
     {
@@ -2191,7 +2198,7 @@ bool CmdBuffer::CmdBufferReset()
     CHECK_CBSTATE(CmdBufferStateEnum::Executable);
 
     if(tableVk.ResetFences)
-      CHECK_VKCMD(tableVk.ResetFences(m_cmdBufferVkDevice, 1, &m_cmdBufferExecFence) );
+      CHECK_VKCMD(tableVk.ResetFences(gVkDevice, 1, &m_cmdBufferExecFence) );
 
     if(tableVk.ResetCommandBuffer)
       CHECK_VKCMD(tableVk.ResetCommandBuffer(m_cmdBufferBuffer, 0) );
@@ -2201,8 +2208,6 @@ bool CmdBuffer::CmdBufferReset()
 
   return true;
 }
-
-//VkDevice CmdBuffer::m_cmdBufferVkDevice {VK_NULL_HANDLE};
 
 void CmdBuffer::CmdBufferSetState(CmdBufferStateEnum newState)
 {
@@ -2219,20 +2224,18 @@ void CmdBuffer::CmdBufferSetState(CmdBufferStateEnum newState)
 
 ShaderProgram::~ShaderProgram()
 {
-  if(m_shaderProgramVkDevice != nullptr)
+  if(gVkDevice)
   {
     for(auto& si : m_shaderProgramShaderInfo)
     {
       if(si.module != VK_NULL_HANDLE && tableVk.DestroyShaderModule)
-        tableVk.DestroyShaderModule(m_shaderProgramVkDevice, m_shaderProgramShaderInfo[0].module, nullptr);
+        tableVk.DestroyShaderModule(gVkDevice, m_shaderProgramShaderInfo[0].module, nullptr);
 
       si.module = VK_NULL_HANDLE;
     }
   }
 
   m_shaderProgramShaderInfo = {};
-
-  m_shaderProgramVkDevice = nullptr;
 }
 
 //ShaderProgram::ShaderProgram(const ShaderProgram& ) = delete;
@@ -2255,10 +2258,7 @@ void ShaderProgram::ShaderProgramLoadFragmentShader(const std::vector<uint32_t>&
 
 void ShaderProgram::ShaderProgramInit(VkDevice device)
 {
-  m_shaderProgramVkDevice = device;
 }
-
-//VkDevice ShaderProgram::m_shaderProgramVkDevice {VK_NULL_HANDLE};
 
 void ShaderProgram::ShaderProgramLoad(uint32_t index, const std::vector<uint32_t>& code)
 {
@@ -2291,7 +2291,7 @@ void ShaderProgram::ShaderProgramLoad(uint32_t index, const std::vector<uint32_t
   CHECK_MSG( (modInfo.codeSize > 0) && modInfo.pCode, Fmt("Invalid %s shader ", name.c_str() ) );
 
   if(tableVk.CreateShaderModule)
-    CHECK_VKCMD(tableVk.CreateShaderModule(m_shaderProgramVkDevice, &modInfo, nullptr, &si.module) );
+    CHECK_VKCMD(tableVk.CreateShaderModule(gVkDevice, &modInfo, nullptr, &si.module) );
 
   Log::Write(Log::Level::Info, Fmt("Loaded %s shader", name.c_str() ) );
 }
@@ -2321,29 +2321,29 @@ void ShaderProgram::ShaderProgramLoad(uint32_t index, const std::vector<uint32_t
 
 VertexBufferBase::~VertexBufferBase()
 {
-  if(m_vertexBufferBaseVkDevice)
+  if(gVkDevice)
   {
     if(m_vertexBufferBaseIdxBuf != VK_NULL_HANDLE && tableVk.DestroyBuffer)
-      tableVk.DestroyBuffer(m_vertexBufferBaseVkDevice, m_vertexBufferBaseIdxBuf, nullptr);
+      tableVk.DestroyBuffer(gVkDevice, m_vertexBufferBaseIdxBuf, nullptr);
 
     if(m_vertexBufferBaseIdxMem != VK_NULL_HANDLE && tableVk.FreeMemory)
-      tableVk.FreeMemory(m_vertexBufferBaseVkDevice, m_vertexBufferBaseIdxMem, nullptr);
+      tableVk.FreeMemory(gVkDevice, m_vertexBufferBaseIdxMem, nullptr);
 
     if(m_vertexBufferBaseVtxBuf != VK_NULL_HANDLE && tableVk.DestroyBuffer)
-      tableVk.DestroyBuffer(m_vertexBufferBaseVkDevice, m_vertexBufferBaseVtxBuf, nullptr);
+      tableVk.DestroyBuffer(gVkDevice, m_vertexBufferBaseVtxBuf, nullptr);
 
     if(m_vertexBufferBaseVtxMem != VK_NULL_HANDLE && tableVk.FreeMemory)
-      tableVk.FreeMemory(m_vertexBufferBaseVkDevice, m_vertexBufferBaseVtxMem, nullptr);
+      tableVk.FreeMemory(gVkDevice, m_vertexBufferBaseVtxMem, nullptr);
   }
 
   m_vertexBufferBaseIdxBuf = VK_NULL_HANDLE;
   m_vertexBufferBaseIdxMem = VK_NULL_HANDLE;
   m_vertexBufferBaseVtxBuf = VK_NULL_HANDLE;
   m_vertexBufferBaseVtxMem = VK_NULL_HANDLE;
+
   m_vertexBufferBaseBindDesc = {};
   m_vertexBufferBaseAttrDesc.clear();
   m_vertexBufferBaseCount = {0, 0};
-  m_vertexBufferBaseVkDevice = nullptr;
 }
 
 //VertexBufferBase::VertexBufferBase(const VertexBufferBase& ) = delete;
@@ -2356,19 +2356,16 @@ VertexBufferBase::~VertexBufferBase()
 
 void VertexBufferBase::VertexBufferBaseInit(VkDevice device, const MemoryAllocator* memAllocator, const std::vector<VkVertexInputAttributeDescription>& attr)
 {
-  m_vertexBufferBaseVkDevice = device;
   m_vertexBufferBaseMemoryAllocator = memAllocator;
   m_vertexBufferBaseAttrDesc = attr;
 }
-
-//VkDevice VertexBufferBase::m_vertexBufferBaseVkDevice {VK_NULL_HANDLE};
 
 void VertexBufferBase::VertexBufferBaseAllocateBufferMemory(VkBuffer buf, VkDeviceMemory* mem) const
 {
   VkMemoryRequirements memReq = {};
 
   if(tableVk.GetBufferMemoryRequirements)
-    tableVk.GetBufferMemoryRequirements(m_vertexBufferBaseVkDevice, buf, &memReq);
+    tableVk.GetBufferMemoryRequirements(gVkDevice, buf, &memReq);
 
   m_vertexBufferBaseMemoryAllocator->MemoryAllocatorAllocate(memReq, mem);
 }
@@ -2385,23 +2382,23 @@ template <typename T> bool VertexBuffer<T>::VertexBufferCreate(uint32_t idxCount
   bufInfo.size = sizeof(uint16_t) * idxCount;
 
   if(tableVk.CreateBuffer)
-    CHECK_VKCMD(tableVk.CreateBuffer(m_vertexBufferBaseVkDevice, &bufInfo, nullptr, &m_vertexBufferBaseIdxBuf) );
+    CHECK_VKCMD(tableVk.CreateBuffer(gVkDevice, &bufInfo, nullptr, &m_vertexBufferBaseIdxBuf) );
 
   VertexBufferBaseAllocateBufferMemory(m_vertexBufferBaseIdxBuf, &m_vertexBufferBaseIdxMem);
 
   if(tableVk.BindBufferMemory)
-    CHECK_VKCMD(tableVk.BindBufferMemory(m_vertexBufferBaseVkDevice, m_vertexBufferBaseIdxBuf, m_vertexBufferBaseIdxMem, 0) );
+    CHECK_VKCMD(tableVk.BindBufferMemory(gVkDevice, m_vertexBufferBaseIdxBuf, m_vertexBufferBaseIdxMem, 0) );
 
   bufInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
   bufInfo.size = sizeof(T) * vtxCount;
 
   if(tableVk.CreateBuffer)
-    CHECK_VKCMD(tableVk.CreateBuffer(m_vertexBufferBaseVkDevice, &bufInfo, nullptr, &m_vertexBufferBaseVtxBuf) );
+    CHECK_VKCMD(tableVk.CreateBuffer(gVkDevice, &bufInfo, nullptr, &m_vertexBufferBaseVtxBuf) );
 
   VertexBufferBaseAllocateBufferMemory(m_vertexBufferBaseVtxBuf, &m_vertexBufferBaseVtxMem);
 
   if(tableVk.BindBufferMemory)
-    CHECK_VKCMD(tableVk.BindBufferMemory(m_vertexBufferBaseVkDevice, m_vertexBufferBaseVtxBuf, m_vertexBufferBaseVtxMem, 0) );
+    CHECK_VKCMD(tableVk.BindBufferMemory(gVkDevice, m_vertexBufferBaseVtxBuf, m_vertexBufferBaseVtxMem, 0) );
 
   m_vertexBufferBaseBindDesc.binding = 0;
   m_vertexBufferBaseBindDesc.stride = sizeof(T);
@@ -2417,13 +2414,13 @@ template <typename T> void VertexBuffer<T>::VertexBufferUpdateIndices(const uint
   uint16_t* map = nullptr;
 
   if(tableVk.MapMemory)
-    CHECK_VKCMD(tableVk.MapMemory(m_vertexBufferBaseVkDevice, m_vertexBufferBaseIdxMem, sizeof(map[0] ) * offset, sizeof(map[0] ) * elements, 0, (void**)&map) );
+    CHECK_VKCMD(tableVk.MapMemory(gVkDevice, m_vertexBufferBaseIdxMem, sizeof(map[0] ) * offset, sizeof(map[0] ) * elements, 0, (void**)&map) );
 
   for(size_t i = 0; i < elements; ++i)
     map[i] = data[i];
 
   if(tableVk.UnmapMemory)
-    tableVk.UnmapMemory(m_vertexBufferBaseVkDevice, m_vertexBufferBaseIdxMem);
+    tableVk.UnmapMemory(gVkDevice, m_vertexBufferBaseIdxMem);
 }
 
 template <typename T> void VertexBuffer<T>::VertexBufferUpdateVertices(const T* data, uint32_t elements, uint32_t offset)
@@ -2431,13 +2428,13 @@ template <typename T> void VertexBuffer<T>::VertexBufferUpdateVertices(const T* 
   T* map = nullptr;
 
   if(tableVk.MapMemory)
-    CHECK_VKCMD(tableVk.MapMemory(m_vertexBufferBaseVkDevice, m_vertexBufferBaseVtxMem, sizeof(map[0] ) * offset, sizeof(map[0] ) * elements, 0, (void**)&map) );
+    CHECK_VKCMD(tableVk.MapMemory(gVkDevice, m_vertexBufferBaseVtxMem, sizeof(map[0] ) * offset, sizeof(map[0] ) * elements, 0, (void**)&map) );
 
   for(size_t i = 0; i < elements; ++i)
     map[i] = data[i];
 
   if(tableVk.UnmapMemory)
-    tableVk.UnmapMemory(m_vertexBufferBaseVkDevice, m_vertexBufferBaseVtxMem);
+    tableVk.UnmapMemory(gVkDevice, m_vertexBufferBaseVtxMem);
 }
 
 // RenderPass wrapper
@@ -2452,7 +2449,6 @@ template <typename T> void VertexBuffer<T>::VertexBufferUpdateVertices(const T* 
 
 bool RenderPass::RenderPassCreate(const VulkanDebugObjectNamer& namer, VkDevice device, VkFormat aColorFmt, VkFormat aDepthFmt)
 {
-  m_renderPassVkDevice = device;
   m_renderPassColorFmt = aColorFmt;
   m_renderPassDepthFmt = aDepthFmt;
 
@@ -2504,7 +2500,7 @@ bool RenderPass::RenderPassCreate(const VulkanDebugObjectNamer& namer, VkDevice 
   }
 
   if(tableVk.CreateRenderPass)
-    CHECK_VKCMD(tableVk.CreateRenderPass(m_renderPassVkDevice, &rpInfo, nullptr, &m_renderPassPass) );
+    CHECK_VKCMD(tableVk.CreateRenderPass(gVkDevice, &rpInfo, nullptr, &m_renderPassPass) );
 
   CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_RENDER_PASS, (uint64_t)m_renderPassPass, "helloxr render pass") );
 
@@ -2513,14 +2509,13 @@ bool RenderPass::RenderPassCreate(const VulkanDebugObjectNamer& namer, VkDevice 
 
 RenderPass::~RenderPass()
 {
-    if(m_renderPassVkDevice)
-    {
-      if(m_renderPassPass != VK_NULL_HANDLE && tableVk.DestroyRenderPass)
-        tableVk.DestroyRenderPass(m_renderPassVkDevice, m_renderPassPass, nullptr);
-    }
+  if(gVkDevice)
+  {
+    if(m_renderPassPass != VK_NULL_HANDLE && tableVk.DestroyRenderPass)
+      tableVk.DestroyRenderPass(gVkDevice, m_renderPassPass, nullptr);
+  }
 
-    m_renderPassPass = VK_NULL_HANDLE;
-    m_renderPassVkDevice = nullptr;
+  m_renderPassPass = VK_NULL_HANDLE;
 }
 
 //RenderPass::RenderPass(const RenderPass&) = delete;
@@ -2530,8 +2525,6 @@ RenderPass::~RenderPass()
 //RenderPass::RenderPass(RenderPass&&) = delete;
 
 //RenderPass& RenderPass::operator=(RenderPass&&) = delete;
-
-//VkDevice RenderPass::m_renderPassVkDevice {VK_NULL_HANDLE};
 
 // VkImage + framebuffer wrapper
 
@@ -2549,16 +2542,16 @@ RenderPass::~RenderPass()
 
 RenderTarget::~RenderTarget()
 {
-  if(m_renderTargetVkDevice != nullptr)
+  if(gVkDevice)
   {
     if(m_renderTargetFrameBuffer != VK_NULL_HANDLE && tableVk.DestroyFramebuffer)
-      tableVk.DestroyFramebuffer(m_renderTargetVkDevice, m_renderTargetFrameBuffer, nullptr);
+      tableVk.DestroyFramebuffer(gVkDevice, m_renderTargetFrameBuffer, nullptr);
 
     if(m_renderTargetColorView != VK_NULL_HANDLE && tableVk.DestroyImageView)
-      tableVk.DestroyImageView(m_renderTargetVkDevice, m_renderTargetColorView, nullptr);
+      tableVk.DestroyImageView(gVkDevice, m_renderTargetColorView, nullptr);
 
     if(m_renderTargetDepthView != VK_NULL_HANDLE && tableVk.DestroyImageView)
-      tableVk.DestroyImageView(m_renderTargetVkDevice, m_renderTargetDepthView, nullptr);
+      tableVk.DestroyImageView(gVkDevice, m_renderTargetDepthView, nullptr);
   }
 
   // Note we don't own color, it will get destroyed when xrDestroySwapchain is called
@@ -2569,18 +2562,17 @@ RenderTarget::~RenderTarget()
   m_renderTargetColorView = VK_NULL_HANDLE;
   m_renderTargetDepthView = VK_NULL_HANDLE;
   m_renderTargetFrameBuffer = VK_NULL_HANDLE;
-  m_renderTargetVkDevice = nullptr;
 }
 
 RenderTarget::RenderTarget(RenderTarget&& other) : RenderTarget()
 {
   using std::swap;
+
   swap(m_renderTargetColorImage, other.m_renderTargetColorImage);
   swap(m_renderTargetDepthImage, other.m_renderTargetDepthImage);
   swap(m_renderTargetColorView, other.m_renderTargetColorView);
   swap(m_renderTargetDepthView, other.m_renderTargetDepthView);
   swap(m_renderTargetFrameBuffer, other.m_renderTargetFrameBuffer);
-  swap(m_renderTargetVkDevice, other.m_renderTargetVkDevice);
 }
 
 RenderTarget& RenderTarget::operator=(RenderTarget&& other)
@@ -2590,20 +2582,20 @@ RenderTarget& RenderTarget::operator=(RenderTarget&& other)
 
   // Clean up ourselves.
   this->~RenderTarget();
+
   using std::swap;
+
   swap(m_renderTargetColorImage, other.m_renderTargetColorImage);
   swap(m_renderTargetDepthImage, other.m_renderTargetDepthImage);
   swap(m_renderTargetColorView, other.m_renderTargetColorView);
   swap(m_renderTargetDepthView, other.m_renderTargetDepthView);
   swap(m_renderTargetFrameBuffer, other.m_renderTargetFrameBuffer);
-  swap(m_renderTargetVkDevice, other.m_renderTargetVkDevice);
+
   return *this;
 }
 
 void RenderTarget::RenderTargetCreate(const VulkanDebugObjectNamer& namer, VkDevice device, VkImage aColorImage, VkImage aDepthImage, VkExtent2D size, RenderPass& renderPass)
 {
-  m_renderTargetVkDevice = device;
-
   m_renderTargetColorImage = aColorImage;
   m_renderTargetDepthImage = aDepthImage;
 
@@ -2630,7 +2622,7 @@ void RenderTarget::RenderTargetCreate(const VulkanDebugObjectNamer& namer, VkDev
     colorViewInfo.subresourceRange.layerCount = 1;
 
     if(tableVk.CreateImageView)
-      CHECK_VKCMD(tableVk.CreateImageView(m_renderTargetVkDevice, &colorViewInfo, nullptr, &m_renderTargetColorView) );
+      CHECK_VKCMD(tableVk.CreateImageView(gVkDevice, &colorViewInfo, nullptr, &m_renderTargetColorView) );
 
     CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_IMAGE_VIEW, (uint64_t)m_renderTargetColorView, "helloxr color image view") );
 
@@ -2656,7 +2648,7 @@ void RenderTarget::RenderTargetCreate(const VulkanDebugObjectNamer& namer, VkDev
     depthViewInfo.subresourceRange.layerCount = 1;
 
     if(tableVk.CreateImageView)
-      CHECK_VKCMD(tableVk.CreateImageView(m_renderTargetVkDevice, &depthViewInfo, nullptr, &m_renderTargetDepthView) );
+      CHECK_VKCMD(tableVk.CreateImageView(gVkDevice, &depthViewInfo, nullptr, &m_renderTargetDepthView) );
 
     CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_IMAGE_VIEW, (uint64_t)m_renderTargetDepthView, "helloxr depth image view") );
     attachments[attachmentCount++] = m_renderTargetDepthView;
@@ -2672,7 +2664,7 @@ void RenderTarget::RenderTargetCreate(const VulkanDebugObjectNamer& namer, VkDev
   fbInfo.layers = 1;
 
   if(tableVk.CreateFramebuffer)
-    CHECK_VKCMD(tableVk.CreateFramebuffer(m_renderTargetVkDevice, &fbInfo, nullptr, &m_renderTargetFrameBuffer) );
+    CHECK_VKCMD(tableVk.CreateFramebuffer(gVkDevice, &fbInfo, nullptr, &m_renderTargetFrameBuffer) );
 
   CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_FRAMEBUFFER, (uint64_t)m_renderTargetFrameBuffer, "helloxr framebuffer") );
 }
@@ -2680,8 +2672,6 @@ void RenderTarget::RenderTargetCreate(const VulkanDebugObjectNamer& namer, VkDev
 //RenderTarget::RenderTarget(const RenderTarget&) = delete;
 
 //RenderTarget& RenderTarget::operator=(const RenderTarget&) = delete;
-
-//VkDevice RenderTarget::m_renderTargetVkDevice {VK_NULL_HANDLE};
 
 // Simple vertex MVP xform & color fragment shader layout
 
@@ -2691,20 +2681,17 @@ void RenderTarget::RenderTargetCreate(const VulkanDebugObjectNamer& namer, VkDev
 
 PipelineLayout::~PipelineLayout()
 {
-  if(m_pipelineLayoutVkDevice)
+  if(gVkDevice)
   {
     if(m_pipelineLayoutLayout != VK_NULL_HANDLE && tableVk.DestroyPipelineLayout)
-      tableVk.DestroyPipelineLayout(m_pipelineLayoutVkDevice, m_pipelineLayoutLayout, nullptr);
+      tableVk.DestroyPipelineLayout(gVkDevice, m_pipelineLayoutLayout, nullptr);
 
     m_pipelineLayoutLayout = VK_NULL_HANDLE;
-    m_pipelineLayoutVkDevice = nullptr;
   }
 }
 
 void PipelineLayout::PipelineLayoutCreate(VkDevice device)
 {
-  m_pipelineLayoutVkDevice = device;
-
   // MVP matrix is a push_constant
   VkPushConstantRange pcr = {};
   pcr.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
@@ -2717,7 +2704,7 @@ void PipelineLayout::PipelineLayoutCreate(VkDevice device)
   pipelineLayoutCreateInfo.pPushConstantRanges = &pcr;
 
   if(tableVk.CreatePipelineLayout)
-    CHECK_VKCMD(tableVk.CreatePipelineLayout(m_pipelineLayoutVkDevice, &pipelineLayoutCreateInfo, nullptr, &m_pipelineLayoutLayout) );
+    CHECK_VKCMD(tableVk.CreatePipelineLayout(gVkDevice, &pipelineLayoutCreateInfo, nullptr, &m_pipelineLayoutLayout) );
 }
 
 //PipelineLayout::PipelineLayout(const PipelineLayout& ) = delete;
@@ -2727,8 +2714,6 @@ void PipelineLayout::PipelineLayoutCreate(VkDevice device)
 //PipelineLayout::PipelineLayout(PipelineLayout&& ) = delete;
 
 //PipelineLayout& PipelineLayout::operator=(PipelineLayout&& ) = delete;
-
-//VkDevice PipelineLayout::m_pipelineLayoutVkDevice {VK_NULL_HANDLE};
 
 // Pipeline wrapper for rendering pipeline state
 
@@ -2747,8 +2732,6 @@ void Pipeline::PipelineDynamic(VkDynamicState state)
 
 void Pipeline::PipelineCreate(VkDevice device, VkExtent2D size, const PipelineLayout& layout, const RenderPass& rp, const ShaderProgram& sp, const VertexBufferBase& vb)
 {
-  m_pipelineVkDevice = device;
-
   VkPipelineDynamicStateCreateInfo dynamicState {VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO};
   dynamicState.dynamicStateCount = (uint32_t)m_pipelineDynamicStateEnables.size();
   dynamicState.pDynamicStates = m_pipelineDynamicStateEnables.data();
@@ -2848,22 +2831,19 @@ void Pipeline::PipelineCreate(VkDevice device, VkExtent2D size, const PipelineLa
   pipeInfo.subpass = 0;
 
   if(tableVk.CreateGraphicsPipelines)
-    CHECK_VKCMD(tableVk.CreateGraphicsPipelines(m_pipelineVkDevice, VK_NULL_HANDLE, 1, &pipeInfo, nullptr, &m_pipelinePipe) );
+    CHECK_VKCMD(tableVk.CreateGraphicsPipelines(gVkDevice, VK_NULL_HANDLE, 1, &pipeInfo, nullptr, &m_pipelinePipe) );
 }
 
 void Pipeline::PipelineRelease()
 {
-  if(m_pipelineVkDevice)
+  if(gVkDevice)
   {
     if(m_pipelinePipe != VK_NULL_HANDLE && tableVk.DestroyPipeline)
-      tableVk.DestroyPipeline(m_pipelineVkDevice, m_pipelinePipe, nullptr);
+      tableVk.DestroyPipeline(gVkDevice, m_pipelinePipe, nullptr);
   }
 
   m_pipelinePipe = VK_NULL_HANDLE;
-  m_pipelineVkDevice = nullptr;
 }
-
-//VkDevice Pipeline::m_pipelineVkDevice {VK_NULL_HANDLE};
 
 //VkDeviceMemory DepthBuffer::m_depthBufferDepthMemory {VK_NULL_HANDLE};
 
@@ -2873,18 +2853,17 @@ void Pipeline::PipelineRelease()
 
 DepthBuffer::~DepthBuffer()
 {
-  if(m_depthBufferVkDevice != nullptr)
+  if(gVkDevice)
   {
     if(m_depthBufferDepthImage != VK_NULL_HANDLE && tableVk.DestroyImage)
-      tableVk.DestroyImage(m_depthBufferVkDevice, m_depthBufferDepthImage, nullptr);
+      tableVk.DestroyImage(gVkDevice, m_depthBufferDepthImage, nullptr);
 
     if(m_depthBufferDepthMemory != VK_NULL_HANDLE && tableVk.FreeMemory)
-      tableVk.FreeMemory(m_depthBufferVkDevice, m_depthBufferDepthMemory, nullptr);
+      tableVk.FreeMemory(gVkDevice, m_depthBufferDepthMemory, nullptr);
   }
 
   m_depthBufferDepthImage = VK_NULL_HANDLE;
   m_depthBufferDepthMemory = VK_NULL_HANDLE;
-  m_depthBufferVkDevice = nullptr;
 }
 
 DepthBuffer::DepthBuffer(DepthBuffer&& other) : DepthBuffer()
@@ -2893,7 +2872,6 @@ DepthBuffer::DepthBuffer(DepthBuffer&& other) : DepthBuffer()
 
   swap(m_depthBufferDepthImage, other.m_depthBufferDepthImage);
   swap(m_depthBufferDepthMemory, other.m_depthBufferDepthMemory);
-  swap(m_depthBufferVkDevice, other.m_depthBufferVkDevice);
 }
 
 DepthBuffer& DepthBuffer::operator=(DepthBuffer&& other)
@@ -2903,18 +2881,17 @@ DepthBuffer& DepthBuffer::operator=(DepthBuffer&& other)
 
   // clean up self
   this->~DepthBuffer();
+
   using std::swap;
 
   swap(m_depthBufferDepthImage, other.m_depthBufferDepthImage);
   swap(m_depthBufferDepthMemory, other.m_depthBufferDepthMemory);
-  swap(m_depthBufferVkDevice, other.m_depthBufferVkDevice);
+
   return *this;
 }
 
 void DepthBuffer::DepthBufferCreate(const VulkanDebugObjectNamer& namer, VkDevice device, MemoryAllocator* memAllocator, VkFormat depthFormat, const XrSwapchainCreateInfo& swapchainCreateInfo)
 {
-  m_depthBufferVkDevice = device;
-
   VkExtent2D size = {swapchainCreateInfo.width, swapchainCreateInfo.height};
 
   // Create a D32 depthbuffer
@@ -2933,20 +2910,20 @@ void DepthBuffer::DepthBufferCreate(const VulkanDebugObjectNamer& namer, VkDevic
   imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
   if(tableVk.CreateImage)
-    CHECK_VKCMD(tableVk.CreateImage(m_depthBufferVkDevice, &imageInfo, nullptr, &m_depthBufferDepthImage) );
+    CHECK_VKCMD(tableVk.CreateImage(gVkDevice, &imageInfo, nullptr, &m_depthBufferDepthImage) );
 
   CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_IMAGE, (uint64_t)m_depthBufferDepthImage, "helloxr fallback depth image") );
 
   VkMemoryRequirements memRequirements {};
 
   if(tableVk.GetImageMemoryRequirements)
-    tableVk.GetImageMemoryRequirements(m_depthBufferVkDevice, m_depthBufferDepthImage, &memRequirements);
+    tableVk.GetImageMemoryRequirements(gVkDevice, m_depthBufferDepthImage, &memRequirements);
 
   memAllocator->MemoryAllocatorAllocate(memRequirements, &m_depthBufferDepthMemory, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
   CHECK_VKCMD(namer.SetName(VK_OBJECT_TYPE_DEVICE_MEMORY, (uint64_t)m_depthBufferDepthMemory, "helloxr fallback depth image memory") );
 
   if(tableVk.BindImageMemory)
-    CHECK_VKCMD(tableVk.BindImageMemory(m_depthBufferVkDevice, m_depthBufferDepthImage, m_depthBufferDepthMemory, 0) );
+    CHECK_VKCMD(tableVk.BindImageMemory(gVkDevice, m_depthBufferDepthImage, m_depthBufferDepthMemory, 0) );
 }
 
 void DepthBuffer::DepthBufferTransitionImageLayout(CmdBuffer* cmdBuffer, VkImageLayout newLayout)
@@ -2973,8 +2950,6 @@ void DepthBuffer::DepthBufferTransitionImageLayout(CmdBuffer* cmdBuffer, VkImage
 
 //DepthBuffer& DepthBuffer::operator=(const DepthBuffer&) = delete;
 
-//VkDevice DepthBuffer::m_depthBufferVkDevice {VK_NULL_HANDLE};
-
 //VkImageLayout DepthBuffer::m_depthBufferVkImageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
 SwapchainImageContext::SwapchainImageContext(XrStructureType _swapchainImageType) : m_swapchainImageContextSwapchainImageType(_swapchainImageType)
@@ -3000,7 +2975,6 @@ SwapchainImageContext::SwapchainImageContext(XrStructureType _swapchainImageType
 
 std::vector<XrSwapchainImageBaseHeader*> SwapchainImageContext::SwapchainImageContextCreate(const VulkanDebugObjectNamer& namer, VkDevice device, MemoryAllocator* memAllocator, uint32_t capacity, const XrSwapchainCreateInfo& swapchainCreateInfo, const PipelineLayout& layout, const ShaderProgram& sp, const VertexBuffer<Geometry::Vertex>& vb)
 {
-  m_swapchainImageContextVkDevice = device;
   m_swapchainImageContextNamer = namer;
 
   m_swapchainImageContextSize = {swapchainCreateInfo.width, swapchainCreateInfo.height};
@@ -3008,9 +2982,9 @@ std::vector<XrSwapchainImageBaseHeader*> SwapchainImageContext::SwapchainImageCo
   VkFormat depthFormat = VK_FORMAT_D32_SFLOAT;
   // XXX handle swapchainCreateInfo.sampleCount
 
-  m_swapchainImageContextDepthBuffer.DepthBufferCreate(m_swapchainImageContextNamer, m_swapchainImageContextVkDevice, memAllocator, depthFormat, swapchainCreateInfo);
-  m_swapchainImageContextRenderPass.RenderPassCreate(m_swapchainImageContextNamer, m_swapchainImageContextVkDevice, colorFormat, depthFormat);
-  m_swapchainImageContextPipe.PipelineCreate(m_swapchainImageContextVkDevice, m_swapchainImageContextSize, layout, m_swapchainImageContextRenderPass, sp, vb);
+  m_swapchainImageContextDepthBuffer.DepthBufferCreate(m_swapchainImageContextNamer, gVkDevice, memAllocator, depthFormat, swapchainCreateInfo);
+  m_swapchainImageContextRenderPass.RenderPassCreate(m_swapchainImageContextNamer, gVkDevice, colorFormat, depthFormat);
+  m_swapchainImageContextPipe.PipelineCreate(gVkDevice, m_swapchainImageContextSize, layout, m_swapchainImageContextRenderPass, sp, vb);
 
   m_swapchainImageContextSwapchainImages.resize(capacity);
   m_swapchainImageContextRenderTarget.resize(capacity);
@@ -3035,15 +3009,13 @@ uint32_t SwapchainImageContext::SwapchainImageContextImageIndex(const XrSwapchai
 void SwapchainImageContext::SwapchainImageContextBindRenderTarget(uint32_t index, VkRenderPassBeginInfo* renderPassBeginInfo)
 {
   if(m_swapchainImageContextRenderTarget[index].m_renderTargetFrameBuffer == VK_NULL_HANDLE)
-    m_swapchainImageContextRenderTarget[index].RenderTargetCreate(m_swapchainImageContextNamer, m_swapchainImageContextVkDevice, m_swapchainImageContextSwapchainImages[index].image, m_swapchainImageContextDepthBuffer.m_depthBufferDepthImage, m_swapchainImageContextSize, m_swapchainImageContextRenderPass);
+    m_swapchainImageContextRenderTarget[index].RenderTargetCreate(m_swapchainImageContextNamer, gVkDevice, m_swapchainImageContextSwapchainImages[index].image, m_swapchainImageContextDepthBuffer.m_depthBufferDepthImage, m_swapchainImageContextSize, m_swapchainImageContextRenderPass);
 
   renderPassBeginInfo->renderPass = m_swapchainImageContextRenderPass.m_renderPassPass;
   renderPassBeginInfo->framebuffer = m_swapchainImageContextRenderTarget[index].m_renderTargetFrameBuffer;
   renderPassBeginInfo->renderArea.offset = {0, 0};
   renderPassBeginInfo->renderArea.extent = m_swapchainImageContextSize;
 }
-
-//VkDevice SwapchainImageContext::m_swapchainImageContextVkDevice {VK_NULL_HANDLE};
 
 //VulkanDebugObjectNamer SwapchainImageContext::m_swapchainImageContextNamer;
 
@@ -3263,21 +3235,23 @@ void VulkanGraphicsPlugin::VulkanGraphicsPluginInitializeDevice(XrInstance insta
   createInfo.vulkanCreateInfo = &instInfo;
   createInfo.vulkanAllocator = nullptr;
 
-  CHECK_XRCMD(VulkanGraphicsPluginCreateVulkanInstanceKHR(instance, &createInfo, &m_vulkanGraphicsPluginVkInstance, &err) );
+  CHECK_XRCMD(VulkanGraphicsPluginCreateVulkanInstanceKHR(instance, &createInfo, &gVkInstance, &err) );
   CHECK_VKCMD(err);
 
   if(tableVk.GetInstanceProcAddr)
-    m_vulkanGraphicsPluginVkCreateDebugUtilsMessengerEXT = (PFN_vkCreateDebugUtilsMessengerEXT)tableVk.GetInstanceProcAddr(m_vulkanGraphicsPluginVkInstance, "vkCreateDebugUtilsMessengerEXT");
+    m_vulkanGraphicsPluginVkCreateDebugUtilsMessengerEXT = (PFN_vkCreateDebugUtilsMessengerEXT)tableVk.GetInstanceProcAddr(gVkInstance, "vkCreateDebugUtilsMessengerEXT");
 
   if(m_vulkanGraphicsPluginVkCreateDebugUtilsMessengerEXT != nullptr && tableVk.CreateDebugUtilsMessengerEXT)
-    CHECK_VKCMD(tableVk.CreateDebugUtilsMessengerEXT(m_vulkanGraphicsPluginVkInstance, &debugInfo, nullptr, &m_vulkanGraphicsPluginVkDebugUtilsMessenger) );
+    CHECK_VKCMD(tableVk.CreateDebugUtilsMessengerEXT(gVkInstance, &debugInfo, nullptr, &m_vulkanGraphicsPluginVkDebugUtilsMessenger) );
 
-  XrVulkanGraphicsDeviceGetInfoKHR deviceGetInfo {XR_TYPE_VULKAN_GRAPHICS_DEVICE_GET_INFO_KHR};
+  {
+    XrVulkanGraphicsDeviceGetInfoKHR deviceGetInfo {XR_TYPE_VULKAN_GRAPHICS_DEVICE_GET_INFO_KHR};
 
-  deviceGetInfo.systemId = systemId;
-  deviceGetInfo.vulkanInstance = m_vulkanGraphicsPluginVkInstance;
+    deviceGetInfo.systemId = systemId;
+    deviceGetInfo.vulkanInstance = gVkInstance;
 
-  CHECK_XRCMD(VulkanGraphicsPluginGetVulkanGraphicsDevice2KHR(instance, &deviceGetInfo, &m_vulkanGraphicsPluginVkPhysicalDevice) );
+    CHECK_XRCMD(VulkanGraphicsPluginGetVulkanGraphicsDevice2KHR(instance, &deviceGetInfo, &gVkPhysicalDevice) );
+  }
 
   VkDeviceQueueCreateInfo queueInfo {VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO};
 
@@ -3288,12 +3262,12 @@ void VulkanGraphicsPlugin::VulkanGraphicsPluginInitializeDevice(XrInstance insta
   uint32_t queueFamilyCount = 0;
 
   if(tableVk.GetPhysicalDeviceQueueFamilyProperties)
-    tableVk.GetPhysicalDeviceQueueFamilyProperties(m_vulkanGraphicsPluginVkPhysicalDevice, &queueFamilyCount, nullptr);
+    tableVk.GetPhysicalDeviceQueueFamilyProperties(gVkPhysicalDevice, &queueFamilyCount, nullptr);
 
   std::vector<VkQueueFamilyProperties> queueFamilyProps(queueFamilyCount);
 
   if(tableVk.GetPhysicalDeviceQueueFamilyProperties)
-    tableVk.GetPhysicalDeviceQueueFamilyProperties(m_vulkanGraphicsPluginVkPhysicalDevice, &queueFamilyCount, &queueFamilyProps[0] );
+    tableVk.GetPhysicalDeviceQueueFamilyProperties(gVkPhysicalDevice, &queueFamilyCount, &queueFamilyProps[0] );
 
   for(uint32_t i = 0; i < queueFamilyCount; ++i)
   {
@@ -3326,24 +3300,24 @@ void VulkanGraphicsPlugin::VulkanGraphicsPluginInitializeDevice(XrInstance insta
   deviceCreateInfo.pfnGetInstanceProcAddr = tableVk.GetInstanceProcAddr;
 
   deviceCreateInfo.vulkanCreateInfo = &deviceInfo;
-  deviceCreateInfo.vulkanPhysicalDevice = m_vulkanGraphicsPluginVkPhysicalDevice;
+  deviceCreateInfo.vulkanPhysicalDevice = gVkPhysicalDevice;
   deviceCreateInfo.vulkanAllocator = nullptr;
 
-  CHECK_XRCMD(VulkanGraphicsPluginCreateVulkanDeviceKHR(instance, &deviceCreateInfo, &m_vulkanGraphicsPluginVkDevice, &err) );
+  CHECK_XRCMD(VulkanGraphicsPluginCreateVulkanDeviceKHR(instance, &deviceCreateInfo, &gVkDevice, &err) );
   CHECK_VKCMD(err);
 
-  m_vulkanGraphicsPluginVulkanDebugObjectNamer.Init(m_vulkanGraphicsPluginVkInstance, m_vulkanGraphicsPluginVkDevice);
+  m_vulkanGraphicsPluginVulkanDebugObjectNamer.Init(gVkInstance, gVkDevice);
 
   if(tableVk.GetDeviceQueue)
-    tableVk.GetDeviceQueue(m_vulkanGraphicsPluginVkDevice, queueInfo.queueFamilyIndex, 0, &m_vulkanGraphicsPluginVkQueue);
+    tableVk.GetDeviceQueue(gVkDevice, queueInfo.queueFamilyIndex, 0, &m_vulkanGraphicsPluginVkQueue);
 
-  m_vulkanGraphicsPluginMemoryAllocator.MemoryAllocatorInit(m_vulkanGraphicsPluginVkPhysicalDevice, m_vulkanGraphicsPluginVkDevice);
+  m_vulkanGraphicsPluginMemoryAllocator.MemoryAllocatorInit(gVkPhysicalDevice, gVkDevice);
 
   VulkanGraphicsPluginInitializeResources();
 
-  m_vulkanGraphicsPluginXrGraphicsBindingVulkan2KHR.instance = m_vulkanGraphicsPluginVkInstance;
-  m_vulkanGraphicsPluginXrGraphicsBindingVulkan2KHR.physicalDevice = m_vulkanGraphicsPluginVkPhysicalDevice;
-  m_vulkanGraphicsPluginXrGraphicsBindingVulkan2KHR.device = m_vulkanGraphicsPluginVkDevice;
+  m_vulkanGraphicsPluginXrGraphicsBindingVulkan2KHR.instance = gVkInstance;
+  m_vulkanGraphicsPluginXrGraphicsBindingVulkan2KHR.physicalDevice = gVkPhysicalDevice;
+  m_vulkanGraphicsPluginXrGraphicsBindingVulkan2KHR.device = gVkDevice;
   m_vulkanGraphicsPluginXrGraphicsBindingVulkan2KHR.queueFamilyIndex = queueInfo.queueFamilyIndex;
   m_vulkanGraphicsPluginXrGraphicsBindingVulkan2KHR.queueIndex = 0;
 }
@@ -3377,7 +3351,7 @@ void VulkanGraphicsPlugin::VulkanGraphicsPluginInitializeResources()
 
   if(fragmentSPIRV.empty() ) THROW("Failed to compile fragment shader");
 
-  m_vulkanGraphicsPluginShaderProgram.ShaderProgramInit(m_vulkanGraphicsPluginVkDevice);
+  m_vulkanGraphicsPluginShaderProgram.ShaderProgramInit(gVkDevice);
   m_vulkanGraphicsPluginShaderProgram.ShaderProgramLoadVertexShader(vertexSPIRV);
   m_vulkanGraphicsPluginShaderProgram.ShaderProgramLoadFragmentShader(fragmentSPIRV);
 
@@ -3385,17 +3359,17 @@ void VulkanGraphicsPlugin::VulkanGraphicsPluginInitializeResources()
   VkSemaphoreCreateInfo semInfo {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
 
   if(tableVk.CreateSemaphore)
-    CHECK_VKCMD(tableVk.CreateSemaphore(m_vulkanGraphicsPluginVkDevice, &semInfo, nullptr, &m_vulkanGraphicsPluginVkSemaphoreDrawDone) );
+    CHECK_VKCMD(tableVk.CreateSemaphore(gVkDevice, &semInfo, nullptr, &m_vulkanGraphicsPluginVkSemaphoreDrawDone) );
 
   CHECK_VKCMD(m_vulkanGraphicsPluginVulkanDebugObjectNamer.SetName(VK_OBJECT_TYPE_SEMAPHORE, (uint64_t)m_vulkanGraphicsPluginVkSemaphoreDrawDone, "helloxr draw done semaphore") );
 
-  if(!m_vulkanGraphicsPluginCmdBuffer.CmdBufferInit(m_vulkanGraphicsPluginVulkanDebugObjectNamer, m_vulkanGraphicsPluginVkDevice, m_vulkanGraphicsPluginQueueFamilyIndex) ) THROW("Failed to create command buffer");
+  if(!m_vulkanGraphicsPluginCmdBuffer.CmdBufferInit(m_vulkanGraphicsPluginVulkanDebugObjectNamer, gVkDevice, m_vulkanGraphicsPluginQueueFamilyIndex) ) THROW("Failed to create command buffer");
 
-  m_vulkanGraphicsPluginPipelineLayout.PipelineLayoutCreate(m_vulkanGraphicsPluginVkDevice);
+  m_vulkanGraphicsPluginPipelineLayout.PipelineLayoutCreate(gVkDevice);
 
   static_assert(sizeof(Geometry::Vertex) == 24, "Unexpected Vertex size");
 
-  m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer.VertexBufferBaseInit(m_vulkanGraphicsPluginVkDevice, &m_vulkanGraphicsPluginMemoryAllocator, { {0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Position) }, {1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Color) } } );
+  m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer.VertexBufferBaseInit(gVkDevice, &m_vulkanGraphicsPluginMemoryAllocator, { {0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Position) }, {1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Color) } } );
 
   uint32_t numCubeIdicies = sizeof(Geometry::c_cubeIndices) / sizeof(Geometry::c_cubeIndices[0] );
   uint32_t numCubeVerticies = sizeof(Geometry::c_cubeVertices) / sizeof(Geometry::c_cubeVertices[0] );
@@ -3431,7 +3405,7 @@ std::vector<XrSwapchainImageBaseHeader*> VulkanGraphicsPlugin::VulkanGraphicsPlu
   m_vulkanGraphicsPluginStdList_SwapchainImageContext.emplace_back(VulkanGraphicsPluginGetSwapchainImageType() );
   SwapchainImageContext& swapchainImageContext = m_vulkanGraphicsPluginStdList_SwapchainImageContext.back();
 
-  std::vector<XrSwapchainImageBaseHeader*> bases = swapchainImageContext.SwapchainImageContextCreate(m_vulkanGraphicsPluginVulkanDebugObjectNamer, m_vulkanGraphicsPluginVkDevice, &m_vulkanGraphicsPluginMemoryAllocator, capacity, swapchainCreateInfo, m_vulkanGraphicsPluginPipelineLayout, m_vulkanGraphicsPluginShaderProgram, m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer);
+  std::vector<XrSwapchainImageBaseHeader*> bases = swapchainImageContext.SwapchainImageContextCreate(m_vulkanGraphicsPluginVulkanDebugObjectNamer, gVkDevice, &m_vulkanGraphicsPluginMemoryAllocator, capacity, swapchainCreateInfo, m_vulkanGraphicsPluginPipelineLayout, m_vulkanGraphicsPluginShaderProgram, m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer);
 
   // Map every swapchainImage base pointer to this context
   for(auto& base : bases)
@@ -3543,12 +3517,6 @@ void VulkanGraphicsPlugin::VulkanGraphicsPluginUpdateOptions(const std::shared_p
 //std::list<SwapchainImageContext> VulkanGraphicsPlugin::m_vulkanGraphicsPluginStdList_SwapchainImageContext;
 
 //std::map<const XrSwapchainImageBaseHeader*, SwapchainImageContext*> VulkanGraphicsPlugin::m_vulkanGraphicsPluginStdMap_XrSwapchainImageBaseHeader_SwapchainImageContext;
-
-//VkInstance VulkanGraphicsPlugin::m_vulkanGraphicsPluginVkInstance {VK_NULL_HANDLE};
-
-//VkPhysicalDevice VulkanGraphicsPlugin::m_vulkanGraphicsPluginVkPhysicalDevice {VK_NULL_HANDLE};
-
-//VkDevice VulkanGraphicsPlugin::m_vulkanGraphicsPluginVkDevice {VK_NULL_HANDLE};
 
 //VulkanDebugObjectNamer VulkanGraphicsPlugin::m_vulkanGraphicsPluginVulkanDebugObjectNamer {};
 
