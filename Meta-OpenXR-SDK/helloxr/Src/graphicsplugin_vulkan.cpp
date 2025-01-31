@@ -13,6 +13,8 @@ VkDevice gVkDevice = VK_NULL_HANDLE;
 
 VkPhysicalDevice gVkPhysicalDevice = VK_NULL_HANDLE;
 
+VkPipelineLayout gVkPipelineLayout = VK_NULL_HANDLE;
+
 #ifdef __cplusplus
 }
 #endif
@@ -1818,6 +1820,23 @@ inline VkResult CheckVkResult(VkResult res, const char* originator = nullptr, co
 
 #define CHECK_VKRESULT(res, cmdStr) CheckVkResult(res, cmdStr, FILE_AND_LINE)
 
+void PipelineLayout_PipelineLayoutCreate(VkDevice device)
+{
+  // MVP matrix is a push_constant
+  VkPushConstantRange pcr = {};
+  pcr.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+  pcr.offset = 0;
+  pcr.size = 4 * 4 * sizeof(float);
+
+  VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo {VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO};
+
+  pipelineLayoutCreateInfo.pushConstantRangeCount = 1;
+  pipelineLayoutCreateInfo.pPushConstantRanges = &pcr;
+
+  if(tableVk.CreatePipelineLayout)
+    CHECK_VKCMD(tableVk.CreatePipelineLayout(gVkDevice, &pipelineLayoutCreateInfo, nullptr, &gVkPipelineLayout) );
+}
+
 constexpr char VertexShaderGlsl[] =
 R"_(
 
@@ -2673,6 +2692,7 @@ void RenderTarget::RenderTargetCreate(const VulkanDebugObjectNamer& namer, VkDev
 
 //RenderTarget& RenderTarget::operator=(const RenderTarget&) = delete;
 
+#if 0
 // Simple vertex MVP xform & color fragment shader layout
 
 //VkPipelineLayout PipelineLayout::m_pipelineLayoutLayout {VK_NULL_HANDLE};
@@ -2714,6 +2734,7 @@ void PipelineLayout::PipelineLayoutCreate(VkDevice device)
 //PipelineLayout::PipelineLayout(PipelineLayout&& ) = delete;
 
 //PipelineLayout& PipelineLayout::operator=(PipelineLayout&& ) = delete;
+#endif
 
 // Pipeline wrapper for rendering pipeline state
 
@@ -2730,7 +2751,7 @@ void Pipeline::PipelineDynamic(VkDynamicState state)
   m_pipelineDynamicStateEnables.emplace_back(state);
 }
 
-void Pipeline::PipelineCreate(VkDevice device, VkExtent2D size, const PipelineLayout& layout, const RenderPass& rp, const ShaderProgram& sp, const VertexBufferBase& vb)
+void Pipeline::PipelineCreate(VkDevice device, VkExtent2D size, const RenderPass& rp, const ShaderProgram& sp, const VertexBufferBase& vb)
 {
   VkPipelineDynamicStateCreateInfo dynamicState {VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO};
   dynamicState.dynamicStateCount = (uint32_t)m_pipelineDynamicStateEnables.size();
@@ -2826,7 +2847,7 @@ void Pipeline::PipelineCreate(VkDevice device, VkExtent2D size, const PipelineLa
   if(dynamicState.dynamicStateCount > 0)
     pipeInfo.pDynamicState = &dynamicState;
 
-  pipeInfo.layout = layout.m_pipelineLayoutLayout;
+  pipeInfo.layout = gVkPipelineLayout;
   pipeInfo.renderPass = rp.m_renderPassPass;
   pipeInfo.subpass = 0;
 
@@ -2973,7 +2994,7 @@ SwapchainImageContext::SwapchainImageContext(XrStructureType _swapchainImageType
 
 //SwapchainImageContext::SwapchainImageContext() = default;
 
-std::vector<XrSwapchainImageBaseHeader*> SwapchainImageContext::SwapchainImageContextCreate(const VulkanDebugObjectNamer& namer, VkDevice device, MemoryAllocator* memAllocator, uint32_t capacity, const XrSwapchainCreateInfo& swapchainCreateInfo, const PipelineLayout& layout, const ShaderProgram& sp, const VertexBuffer<Geometry::Vertex>& vb)
+std::vector<XrSwapchainImageBaseHeader*> SwapchainImageContext::SwapchainImageContextCreate(const VulkanDebugObjectNamer& namer, VkDevice device, MemoryAllocator* memAllocator, uint32_t capacity, const XrSwapchainCreateInfo& swapchainCreateInfo, const ShaderProgram& sp, const VertexBuffer<Geometry::Vertex>& vb)
 {
   m_swapchainImageContextNamer = namer;
 
@@ -2984,7 +3005,7 @@ std::vector<XrSwapchainImageBaseHeader*> SwapchainImageContext::SwapchainImageCo
 
   m_swapchainImageContextDepthBuffer.DepthBufferCreate(m_swapchainImageContextNamer, gVkDevice, memAllocator, depthFormat, swapchainCreateInfo);
   m_swapchainImageContextRenderPass.RenderPassCreate(m_swapchainImageContextNamer, gVkDevice, colorFormat, depthFormat);
-  m_swapchainImageContextPipe.PipelineCreate(gVkDevice, m_swapchainImageContextSize, layout, m_swapchainImageContextRenderPass, sp, vb);
+  m_swapchainImageContextPipe.PipelineCreate(gVkDevice, m_swapchainImageContextSize, m_swapchainImageContextRenderPass, sp, vb);
 
   m_swapchainImageContextSwapchainImages.resize(capacity);
   m_swapchainImageContextRenderTarget.resize(capacity);
@@ -3085,6 +3106,17 @@ VulkanGraphicsPlugin::VulkanGraphicsPlugin(
 m_vulkanGraphicsPluginStdArray_float_4_clearColor(options->GetBackgroundClearColor() )
 {
   m_vulkanGraphicsPluginXrGraphicsBindingVulkan2KHR.type = VulkanGraphicsPluginGetGraphicsBindingType();
+}
+
+VulkanGraphicsPlugin::~VulkanGraphicsPlugin()
+{
+  if(gVkDevice)
+  {
+    if(gVkPipelineLayout != VK_NULL_HANDLE && tableVk.DestroyPipelineLayout)
+      tableVk.DestroyPipelineLayout(gVkDevice, gVkPipelineLayout, nullptr);
+
+    gVkPipelineLayout = VK_NULL_HANDLE;
+  }
 }
 
 std::vector<std::string> VulkanGraphicsPlugin::VulkanGraphicsPluginGetInstanceExtensions() const
@@ -3365,7 +3397,8 @@ void VulkanGraphicsPlugin::VulkanGraphicsPluginInitializeResources()
 
   if(!m_vulkanGraphicsPluginCmdBuffer.CmdBufferInit(m_vulkanGraphicsPluginVulkanDebugObjectNamer, gVkDevice, m_vulkanGraphicsPluginQueueFamilyIndex) ) THROW("Failed to create command buffer");
 
-  m_vulkanGraphicsPluginPipelineLayout.PipelineLayoutCreate(gVkDevice);
+  //gVkPipelineLayout.PipelineLayoutCreate(gVkDevice);
+  PipelineLayout_PipelineLayoutCreate(gVkDevice);
 
   static_assert(sizeof(Geometry::Vertex) == 24, "Unexpected Vertex size");
 
@@ -3405,7 +3438,7 @@ std::vector<XrSwapchainImageBaseHeader*> VulkanGraphicsPlugin::VulkanGraphicsPlu
   m_vulkanGraphicsPluginStdList_SwapchainImageContext.emplace_back(VulkanGraphicsPluginGetSwapchainImageType() );
   SwapchainImageContext& swapchainImageContext = m_vulkanGraphicsPluginStdList_SwapchainImageContext.back();
 
-  std::vector<XrSwapchainImageBaseHeader*> bases = swapchainImageContext.SwapchainImageContextCreate(m_vulkanGraphicsPluginVulkanDebugObjectNamer, gVkDevice, &m_vulkanGraphicsPluginMemoryAllocator, capacity, swapchainCreateInfo, m_vulkanGraphicsPluginPipelineLayout, m_vulkanGraphicsPluginShaderProgram, m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer);
+  std::vector<XrSwapchainImageBaseHeader*> bases = swapchainImageContext.SwapchainImageContextCreate(m_vulkanGraphicsPluginVulkanDebugObjectNamer, gVkDevice, &m_vulkanGraphicsPluginMemoryAllocator, capacity, swapchainCreateInfo, m_vulkanGraphicsPluginShaderProgram, m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer);
 
   // Map every swapchainImage base pointer to this context
   for(auto& base : bases)
@@ -3488,7 +3521,7 @@ void VulkanGraphicsPlugin::VulkanGraphicsPluginRenderView(const XrCompositionLay
     XrMatrix4x4f_Multiply(&mvp, &vp, &model);
 
     if(tableVk.CmdPushConstants)
-      tableVk.CmdPushConstants(m_vulkanGraphicsPluginCmdBuffer.m_cmdBufferBuffer, m_vulkanGraphicsPluginPipelineLayout.m_pipelineLayoutLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(mvp.m), &mvp.m[0] );
+      tableVk.CmdPushConstants(m_vulkanGraphicsPluginCmdBuffer.m_cmdBufferBuffer, gVkPipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(mvp.m), &mvp.m[0] );
 
     // draw the cube
     if(tableVk.CmdDrawIndexed)
@@ -3532,7 +3565,7 @@ void VulkanGraphicsPlugin::VulkanGraphicsPluginUpdateOptions(const std::shared_p
 
 //CmdBuffer VulkanGraphicsPlugin::m_vulkanGraphicsPluginCmdBuffer {};
 
-//PipelineLayout VulkanGraphicsPlugin::m_vulkanGraphicsPluginPipelineLayout {};
+//PipelineLayout VulkanGraphicsPlugin::gVkPipelineLayout {};
 
 //VertexBuffer<Geometry::Vertex> VulkanGraphicsPlugin::m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer {};
 

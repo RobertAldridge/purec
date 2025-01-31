@@ -208,6 +208,7 @@ struct RenderTarget
   RenderTarget& operator=(const RenderTarget&) = delete;
 };
 
+#if 0
 // Simple vertex MVP xform & color fragment shader layout
 struct PipelineLayout
 {
@@ -227,6 +228,7 @@ struct PipelineLayout
 
   PipelineLayout& operator=(PipelineLayout&& ) = delete;
 };
+#endif
 
 // Pipeline wrapper for rendering pipeline state
 struct Pipeline
@@ -241,7 +243,7 @@ struct Pipeline
 
   void PipelineDynamic(VkDynamicState state);
 
-  void PipelineCreate(VkDevice device, VkExtent2D size, const PipelineLayout& layout, const RenderPass& rp, const ShaderProgram& sp, const VertexBufferBase& vb);
+  void PipelineCreate(VkDevice device, VkExtent2D size, const RenderPass& rp, const ShaderProgram& sp, const VertexBufferBase& vb);
 
   void PipelineRelease();
 };
@@ -294,7 +296,7 @@ struct SwapchainImageContext
 
   SwapchainImageContext() = default;
 
-  std::vector<XrSwapchainImageBaseHeader*> SwapchainImageContextCreate(const VulkanDebugObjectNamer& namer, VkDevice device, MemoryAllocator* memAllocator, uint32_t capacity, const XrSwapchainCreateInfo& swapchainCreateInfo, const PipelineLayout& layout, const ShaderProgram& sp, const VertexBuffer<Geometry::Vertex>& vb);
+  std::vector<XrSwapchainImageBaseHeader*> SwapchainImageContextCreate(const VulkanDebugObjectNamer& namer, VkDevice device, MemoryAllocator* memAllocator, uint32_t capacity, const XrSwapchainCreateInfo& swapchainCreateInfo, const ShaderProgram& sp, const VertexBuffer<Geometry::Vertex>& vb);
 
   uint32_t SwapchainImageContextImageIndex(const XrSwapchainImageBaseHeader* swapchainImageHeader);
 
@@ -312,6 +314,8 @@ VKAPI_ATTR VkBool32 VKAPI_CALL VulkanGraphicsPlugin_debugMessageThunk(VkDebugUti
 struct VulkanGraphicsPlugin
 {
   VulkanGraphicsPlugin(const std::shared_ptr<Options>& options, std::shared_ptr<AndroidPlatformPlugin> /*unused*/);
+
+  ~VulkanGraphicsPlugin();
 
   std::vector<std::string> VulkanGraphicsPluginGetInstanceExtensions() const;
 
@@ -360,8 +364,6 @@ protected:
   ShaderProgram m_vulkanGraphicsPluginShaderProgram {};
 
   CmdBuffer m_vulkanGraphicsPluginCmdBuffer {};
-
-  PipelineLayout m_vulkanGraphicsPluginPipelineLayout {};
 
   VertexBuffer<Geometry::Vertex> m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer {};
 
