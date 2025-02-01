@@ -231,6 +231,8 @@ extern XrSystemId gXrSystemId;
 #include "shaderc.h"
 #include "shaderc_hpp.h"
 
+#include "check.h"
+
 #include "graphicsplugin.h"
 
 #include "openxr_program.h"
@@ -247,8 +249,6 @@ inline const char* to_string(XrEnvironmentBlendMode e);
 inline const char* to_string(XrSessionState e);
 inline const char* to_string(XrResult e);
 inline const char* to_string(XrFormFactor e);
-
-#include "check.h"
 
 #include "xr_linear.h"
 

@@ -1,13 +1,13 @@
 
 // graphicsplugin.h
 
-#define THROW_VK(res, cmd) ThrowVkResult(res, #cmd, FILE_AND_LINE_CHECK)
+#define THROW_VULKAN(res, cmd) ThrowVkResult(res, #cmd, FILE_AND_LINE_CHECK)
 
-#define CHECK_VKCMD(cmd) CheckVkResult(cmd, #cmd, FILE_AND_LINE_CHECK)
+#define CHECK_VULKANCMD(cmd) CheckVkResult(cmd, #cmd, FILE_AND_LINE_CHECK)
 
-#define CHECK_VKRESULT(res, cmdStr) CheckVkResult(res, cmdStr, FILE_AND_LINE_CHECK)
+#define CHECK_VULKANRESULT(res, cmdStr) CheckVkResult(res, cmdStr, FILE_AND_LINE_CHECK)
 
-#define CHECK_CBSTATE(s) \
+#define CHECK_VULKANCMDBUFFERSTATE(s) \
 do \
 { \
     if(gCmdBufferState != (s) ) \
@@ -308,9 +308,18 @@ void VulkanTutorialRecreateSwapChain(
 
 std::string BlahVkResultString(VkResult res);
 
-//[ [noreturn] ] inline void ThrowVkResult(VkResult res, const char* originator = nullptr, const char* sourceLocation = nullptr)
+[ [noreturn] ] inline void ThrowVkResult(VkResult res, const char* originator = nullptr, const char* sourceLocation = nullptr)
+{
+  ThrowCheck(Fmt("VkResult failure [%s]", BlahVkResultString(res).c_str() ), originator, sourceLocation);
+}
 
-//inline VkResult CheckVkResult(VkResult res, const char* originator = nullptr, const char* sourceLocation = nullptr)
+inline VkResult CheckVkResult(VkResult res, const char* originator = nullptr, const char* sourceLocation = nullptr)
+{
+  if( (res) < VK_SUCCESS)
+    ThrowVkResult(res, originator, sourceLocation);
+
+  return res;
+}
 
 void PipelineLayout_PipelineLayoutCreate(VkDevice device);
 
@@ -374,8 +383,6 @@ uint32_t SwapchainImageContext_SwapchainImageContextImageIndex(int index, const 
 
 void SwapchainImageContext_SwapchainImageContextBindRenderTarget(int index, uint32_t renderTarget, VkRenderPassBeginInfo* renderPassBeginInfo);
 
-void VulkanGraphicsPlugin_VulkanGraphicsPlugin();
-
 void VulkanGraphicsPlugin_VulkanGraphicsPlugin_Destructor();
 
 std::vector<std::string> VulkanGraphicsPlugin_VulkanGraphicsPluginGetInstanceExtensions();
@@ -384,8 +391,6 @@ std::vector<std::string> VulkanGraphicsPlugin_VulkanGraphicsPluginGetInstanceExt
 std::vector<const char*> VulkanGraphicsPlugin_VulkanGraphicsPluginParseExtensionString(char* names);
 
 const char* VulkanGraphicsPlugin_VulkanGraphicsPluginGetValidationLayerName();
-
-void VulkanGraphicsPlugin_VulkanGraphicsPluginInitializeDevice(XrInstance instance, XrSystemId systemId);
 
 // compile a shader to a SPIR-V binary
 std::vector<uint32_t> VulkanGraphicsPlugin_VulkanGraphicsPluginCompileGlslShader(const std::string& name, shaderc_shader_kind kind, const std::string& source);
@@ -402,13 +407,9 @@ void VulkanGraphicsPlugin_VulkanGraphicsPluginRenderView(const XrCompositionLaye
 
 uint32_t VulkanGraphicsPlugin_VulkanGraphicsPluginGetSupportedSwapchainSampleCount(const XrViewConfigurationView&);
 
-void VulkanGraphicsPlugin_VulkanGraphicsPluginUpdateOptions();
-
 VkBool32 VulkanGraphicsPlugin_VulkanGraphicsPluginDebugMessage(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData);
 
 VKAPI_ATTR VkBool32 VKAPI_CALL VulkanGraphicsPlugin_debugMessageThunk(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* /*pUserData*/);
-
-XrStructureType VulkanGraphicsPlugin_VulkanGraphicsPluginGetGraphicsBindingType();
 
 XrStructureType VulkanGraphicsPlugin_VulkanGraphicsPluginGetSwapchainImageType();
 
@@ -419,8 +420,6 @@ XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanDeviceKHR(XrInstan
 XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsDevice2KHR(XrInstance instance, const XrVulkanGraphicsDeviceGetInfoKHR* getInfo, VkPhysicalDevice* vulkanPhysicalDevice);
 
 XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsRequirements2KHR(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsVulkan2KHR* graphicsRequirements);
-
-void VulkanGraphicsPlugin_CreateGraphicsPlugin_Vulkan();
 
 //////////
 

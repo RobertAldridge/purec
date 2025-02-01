@@ -468,7 +468,9 @@ try
   CreatePlatformPlugin_Android();
 
   // Create graphics API implementation.
-  VulkanGraphicsPlugin_CreateGraphicsPlugin_Vulkan();
+  _operator_assign(gVulkanGraphicsPluginStdArray_float_4_clearColor, gOptions_BackgroundClearColor);
+
+  gVulkanGraphicsPluginXrGraphicsBindingVulkan2KHR.type = XR_TYPE_GRAPHICS_BINDING_VULKAN2_KHR;
 
   // Initialize the OpenXR program.
   // nop
@@ -539,48 +541,50 @@ try
 
   CHECK_CHECK(gXrInstance == XR_NULL_HANDLE);
 
-  // Create union of extensions required by platform and graphics plugins.
-  std::vector<const char*> extensions;
+  {
+    // Create union of extensions required by platform and graphics plugins.
+    std::vector<const char*> extensions;
 
-  // Transform platform and graphics extension std::strings to C strings.
+    // Transform platform and graphics extension std::strings to C strings.
 
-  const std::vector<std::string> platformExtensions = {XR_KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME};
+    const std::vector<std::string> platformExtensions = {XR_KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME};
 
-  std::transform(platformExtensions.begin(), platformExtensions.end(), std::back_inserter(extensions), [] (const std::string& ext) { return ext.c_str(); } );
+    std::transform(platformExtensions.begin(), platformExtensions.end(), std::back_inserter(extensions), [] (const std::string& ext) { return ext.c_str(); } );
 
-  const std::vector<std::string> graphicsExtensions = VulkanGraphicsPlugin_VulkanGraphicsPluginGetInstanceExtensions();
-  std::transform(graphicsExtensions.begin(), graphicsExtensions.end(), std::back_inserter(extensions), [] (const std::string& ext) { return ext.c_str(); } );
+    const std::vector<std::string> graphicsExtensions = VulkanGraphicsPlugin_VulkanGraphicsPluginGetInstanceExtensions();
+    std::transform(graphicsExtensions.begin(), graphicsExtensions.end(), std::back_inserter(extensions), [] (const std::string& ext) { return ext.c_str(); } );
 
-  XrInstanceCreateInfo createInfo {XR_TYPE_INSTANCE_CREATE_INFO};
-  createInfo.next = &instanceCreateInfoAndroid;
+    XrInstanceCreateInfo createInfo {XR_TYPE_INSTANCE_CREATE_INFO};
+    createInfo.next = &instanceCreateInfoAndroid;
 
-  // passthrough
-  extensions.push_back(XR_FB_PASSTHROUGH_EXTENSION_NAME);
-  extensions.push_back(XR_FB_TRIANGLE_MESH_EXTENSION_NAME);
+    // passthrough
+    extensions.push_back(XR_FB_PASSTHROUGH_EXTENSION_NAME);
+    extensions.push_back(XR_FB_TRIANGLE_MESH_EXTENSION_NAME);
 
-  // depth
-  extensions.push_back(XR_META_ENVIRONMENT_DEPTH_EXTENSION_NAME);
+    // depth
+    extensions.push_back(XR_META_ENVIRONMENT_DEPTH_EXTENSION_NAME);
 
-  createInfo.enabledExtensionCount = (uint32_t)extensions.size();
-  createInfo.enabledExtensionNames = extensions.data();
+    createInfo.enabledExtensionCount = (uint32_t)extensions.size();
+    createInfo.enabledExtensionNames = extensions.data();
 
-  strcpy(createInfo.applicationInfo.applicationName, "HelloXR");
+    strcpy(createInfo.applicationInfo.applicationName, "HelloXR");
 
-  // Current version is 1.1.x, but helloxr only requires 1.0.x
-  createInfo.applicationInfo.apiVersion = XR_API_VERSION_1_0;
+    // Current version is 1.1.x, but helloxr only requires 1.0.x
+    createInfo.applicationInfo.apiVersion = XR_API_VERSION_1_0;
 
-  for(int index = 0; index < extensions.size(); index++)
-    Log::Write(Log::Level::Info, Fmt("blah %i %s", index, extensions[index] ) );
+    for(int index = 0; index < extensions.size(); index++)
+      Log::Write(Log::Level::Info, Fmt("blah %i %s", index, extensions[index] ) );
 
-  // available Layers: (0)
-  // blah 0 XR_KHR_android_create_instance
-  // blah 1 XR_KHR_vulkan_enable
-  // blah 2 XR_FB_passthrough
-  // blah 3 XR_FB_triangle_mesh
-  // blah 4 XR_META_environment_depth
+    // available Layers: (0)
+    // blah 0 XR_KHR_android_create_instance
+    // blah 1 XR_KHR_vulkan_enable
+    // blah 2 XR_FB_passthrough
+    // blah 3 XR_FB_triangle_mesh
+    // blah 4 XR_META_environment_depth
 
-  if(tableXr.CreateInstance)
-    CHECK_XRCMD_CHECK(tableXr.CreateInstance(&createInfo, &gXrInstance) );
+    if(tableXr.CreateInstance)
+      CHECK_XRCMD_CHECK(tableXr.CreateInstance(&createInfo, &gXrInstance) );
+  }
 
   CHECK_CHECK(gXrInstance != XR_NULL_HANDLE);
 
@@ -638,7 +642,7 @@ try
 
   AndroidPlatformPlugin_UpdateOptions();
 
-  VulkanGraphicsPlugin_VulkanGraphicsPluginUpdateOptions();
+  _operator_assign(gVulkanGraphicsPluginStdArray_float_4_clearColor, gOptions_BackgroundClearColor);
 
   CHECK_CHECK(gXrInstance != XR_NULL_HANDLE);
   CHECK_CHECK(gXrSystemId != XR_NULL_SYSTEM_ID);
@@ -725,7 +729,183 @@ try
     CHECK_CHECK(blendModeFound);
   }
 
-  VulkanGraphicsPlugin_VulkanGraphicsPluginInitializeDevice(gXrInstance, gXrSystemId);
+  // Create the Vulkan device for the adapter associated with the system.
+  // Extension function must be loaded by name
+  XrGraphicsRequirementsVulkan2KHR graphicsRequirements {XR_TYPE_GRAPHICS_REQUIREMENTS_VULKAN2_KHR};
+
+  CHECK_XRCMD_CHECK(VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsRequirements2KHR(gXrInstance, gXrSystemId, &graphicsRequirements) );
+
+  VkResult err = VK_ERROR_OUT_OF_HOST_MEMORY;
+
+  std::vector<const char*> layers;
+
+#if !defined(NDEBUG)
+  const char* const validationLayerName = VulkanGraphicsPlugin_VulkanGraphicsPluginGetValidationLayerName();
+
+  if(validationLayerName)
+    layers.push_back(validationLayerName);
+  else
+    Log::Write(Log::Level::Warning, "No validation layers found in the system, skipping");
+#endif
+
+  std::vector<const char*> extensions;
+  {
+    uint32_t extensionCount = 0;
+
+    if(tableVk.EnumerateInstanceExtensionProperties)
+      CHECK_VULKANCMD(tableVk.EnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr) );
+
+    std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+
+    if(tableVk.EnumerateInstanceExtensionProperties)
+      CHECK_VULKANCMD(tableVk.EnumerateInstanceExtensionProperties(nullptr, &extensionCount, availableExtensions.data() ) );
+
+    const auto b = availableExtensions.begin();
+    const auto e = availableExtensions.end();
+
+    auto isExtSupported = [&](const char* extName) -> bool
+    {
+      auto it = std::find_if(b, e, [&](const VkExtensionProperties& properties)
+      {
+        return (0 == strcmp(extName, properties.extensionName) );
+      } );
+
+      return (it != e);
+    };
+
+    // Debug utils is optional and not always available
+    if(isExtSupported(VK_EXT_DEBUG_UTILS_EXTENSION_NAME) )
+      extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+
+    // TODO add back VK_EXT_debug_report code for compatibility with older systems? (Android)
+  }
+
+  VkDebugUtilsMessengerCreateInfoEXT debugInfo {VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT};
+
+  debugInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
+
+#if !defined(NDEBUG)
+  debugInfo.messageSeverity |= VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT;
+#endif
+
+  debugInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+
+  debugInfo.pfnUserCallback = VulkanGraphicsPlugin_debugMessageThunk;
+  debugInfo.pUserData = 0;
+
+  VkApplicationInfo appInfo {VK_STRUCTURE_TYPE_APPLICATION_INFO};
+
+  appInfo.pApplicationName = "helloxr";
+  appInfo.applicationVersion = 1;
+  appInfo.pEngineName = "helloxr";
+  appInfo.engineVersion = 1;
+  appInfo.apiVersion = VK_API_VERSION_1_0;
+
+  VkInstanceCreateInfo instInfo {VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO};
+
+  instInfo.pNext = &debugInfo;
+  instInfo.pApplicationInfo = &appInfo;
+  instInfo.enabledLayerCount = (uint32_t)layers.size();
+  instInfo.ppEnabledLayerNames = layers.empty() ? nullptr : layers.data();
+  instInfo.enabledExtensionCount = (uint32_t)extensions.size();
+  instInfo.ppEnabledExtensionNames = extensions.empty() ? nullptr : extensions.data();
+
+  {
+    XrVulkanInstanceCreateInfoKHR createInfo {XR_TYPE_VULKAN_INSTANCE_CREATE_INFO_KHR};
+
+    createInfo.systemId = gXrSystemId;
+
+    createInfo.pfnGetInstanceProcAddr = tableVk.GetInstanceProcAddr;
+
+    createInfo.vulkanCreateInfo = &instInfo;
+    createInfo.vulkanAllocator = nullptr;
+
+    CHECK_XRCMD_CHECK(VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanInstanceKHR(gXrInstance, &createInfo, &gVkInstance, &err) );
+    CHECK_VULKANCMD(err);
+  }
+
+  if(tableVk.GetInstanceProcAddr)
+    gVulkanGraphicsPluginVkCreateDebugUtilsMessengerEXT = (PFN_vkCreateDebugUtilsMessengerEXT)tableVk.GetInstanceProcAddr(gVkInstance, "vkCreateDebugUtilsMessengerEXT");
+
+  if(gVulkanGraphicsPluginVkCreateDebugUtilsMessengerEXT != nullptr && tableVk.CreateDebugUtilsMessengerEXT)
+    CHECK_VULKANCMD(tableVk.CreateDebugUtilsMessengerEXT(gVkInstance, &debugInfo, nullptr, &gVulkanGraphicsPluginVkDebugUtilsMessenger) );
+
+  {
+    XrVulkanGraphicsDeviceGetInfoKHR deviceGetInfo {XR_TYPE_VULKAN_GRAPHICS_DEVICE_GET_INFO_KHR};
+
+    deviceGetInfo.systemId = gXrSystemId;
+    deviceGetInfo.vulkanInstance = gVkInstance;
+
+    CHECK_XRCMD_CHECK(VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsDevice2KHR(gXrInstance, &deviceGetInfo, &gVkPhysicalDevice) );
+  }
+
+  VkDeviceQueueCreateInfo queueInfo {VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO};
+
+  float queuePriorities = 0;
+  queueInfo.queueCount = 1;
+  queueInfo.pQueuePriorities = &queuePriorities;
+
+  uint32_t queueFamilyCount = 0;
+
+  if(tableVk.GetPhysicalDeviceQueueFamilyProperties)
+    tableVk.GetPhysicalDeviceQueueFamilyProperties(gVkPhysicalDevice, &queueFamilyCount, nullptr);
+
+  std::vector<VkQueueFamilyProperties> queueFamilyProps(queueFamilyCount);
+
+  if(tableVk.GetPhysicalDeviceQueueFamilyProperties)
+    tableVk.GetPhysicalDeviceQueueFamilyProperties(gVkPhysicalDevice, &queueFamilyCount, &queueFamilyProps[0] );
+
+  for(uint32_t i = 0; i < queueFamilyCount; ++i)
+  {
+    // Only need graphics (not presentation) for draw queue
+    if(queueFamilyProps[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
+    {
+      gVulkanGraphicsPluginQueueFamilyIndex = queueInfo.queueFamilyIndex = i;
+      break;
+    }
+  }
+
+  std::vector<const char*> deviceExtensions;
+
+  VkPhysicalDeviceFeatures features {};
+  // features.samplerAnisotropy = VK_TRUE;
+
+  VkDeviceCreateInfo deviceInfo {VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO};
+  deviceInfo.queueCreateInfoCount = 1;
+  deviceInfo.pQueueCreateInfos = &queueInfo;
+  deviceInfo.enabledLayerCount = 0;
+  deviceInfo.ppEnabledLayerNames = nullptr;
+  deviceInfo.enabledExtensionCount = (uint32_t)deviceExtensions.size();
+  deviceInfo.ppEnabledExtensionNames = deviceExtensions.empty() ? nullptr : deviceExtensions.data();
+  deviceInfo.pEnabledFeatures = &features;
+
+  XrVulkanDeviceCreateInfoKHR deviceCreateInfo {XR_TYPE_VULKAN_DEVICE_CREATE_INFO_KHR};
+
+  deviceCreateInfo.systemId = gXrSystemId;
+
+  deviceCreateInfo.pfnGetInstanceProcAddr = tableVk.GetInstanceProcAddr;
+
+  deviceCreateInfo.vulkanCreateInfo = &deviceInfo;
+  deviceCreateInfo.vulkanPhysicalDevice = gVkPhysicalDevice;
+  deviceCreateInfo.vulkanAllocator = nullptr;
+
+  CHECK_XRCMD_CHECK(VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanDeviceKHR(gXrInstance, &deviceCreateInfo, &gVkDevice, &err) );
+  CHECK_VULKANCMD(err);
+
+  gVulkanGraphicsPluginVulkanDebugObjectNamer.Init(gVkInstance, gVkDevice);
+
+  if(tableVk.GetDeviceQueue)
+    tableVk.GetDeviceQueue(gVkDevice, queueInfo.queueFamilyIndex, 0, &gVulkanGraphicsPluginVkQueue);
+
+  MemoryAllocator_MemoryAllocatorInit(gVkPhysicalDevice);
+
+  VulkanGraphicsPlugin_VulkanGraphicsPluginInitializeResources();
+
+  gVulkanGraphicsPluginXrGraphicsBindingVulkan2KHR.instance = gVkInstance;
+  gVulkanGraphicsPluginXrGraphicsBindingVulkan2KHR.physicalDevice = gVkPhysicalDevice;
+  gVulkanGraphicsPluginXrGraphicsBindingVulkan2KHR.device = gVkDevice;
+  gVulkanGraphicsPluginXrGraphicsBindingVulkan2KHR.queueFamilyIndex = queueInfo.queueFamilyIndex;
+  gVulkanGraphicsPluginXrGraphicsBindingVulkan2KHR.queueIndex = 0;
 
   CHECK_CHECK(gXrInstance != XR_NULL_HANDLE);
   CHECK_CHECK(gXrSession == XR_NULL_HANDLE);
