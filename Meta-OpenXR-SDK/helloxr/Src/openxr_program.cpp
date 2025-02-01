@@ -48,8 +48,6 @@ bool gOpenXrProgramSessionRunning {false};
 
 XrEventDataBuffer gOpenXrProgramXrEventDataBuffer;
 
-const std::set<XrEnvironmentBlendMode> gOpenXrProgramStdSet_XrEnvironmentBlendMode {XR_ENVIRONMENT_BLEND_MODE_OPAQUE, XR_ENVIRONMENT_BLEND_MODE_ADDITIVE, XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND};
-
 extern "C" {
 XrPassthroughFB gPassthroughFeature = XR_NULL_HANDLE;
 }
@@ -72,37 +70,26 @@ PFN_xrSetEnvironmentDepthHandRemovalMETA gSetEnvironmentDepthHandRemovalMETA = n
 
 XrEnvironmentDepthProviderMETA gEnvironmentDepthProviderMETA = XR_NULL_HANDLE;
 
-#define strcpy_s(dest, source) strncpy( (dest), (source), sizeof(dest) )
-
-inline std::string GetXrVersionString(XrVersion ver)
+std::string GetXrVersionString(XrVersion ver)
 {
   return Fmt("%d.%d.%d", XR_VERSION_MAJOR(ver), XR_VERSION_MINOR(ver), XR_VERSION_PATCH(ver) );
 }
 
-namespace
-{
-
-namespace Math
-{
-
-namespace Pose
-{
-
-XrPosef Identity()
+XrPosef OpenXrProgram_Math::OpenXrProgram_Pose::Identity()
 {
   XrPosef t {};
   t.orientation.w = 1;
   return t;
 }
 
-XrPosef Translation(const XrVector3f& translation)
+XrPosef OpenXrProgram_Math::OpenXrProgram_Pose::Translation(const XrVector3f& translation)
 {
   XrPosef t = Identity();
   t.position = translation;
   return t;
 }
 
-XrPosef RotateCCWAboutYAxis(float radians, XrVector3f translation)
+XrPosef OpenXrProgram_Math::OpenXrProgram_Pose::RotateCCWAboutYAxis(float radians, XrVector3f translation)
 {
   XrPosef t = Identity();
   t.orientation.x = 0.f;
@@ -114,16 +101,10 @@ XrPosef RotateCCWAboutYAxis(float radians, XrVector3f translation)
   return t;
 }
 
-}  // namespace Pose
-
-}  // namespace Math
-
-}
-
-inline XrReferenceSpaceCreateInfo GetXrReferenceSpaceCreateInfo(const std::string& referenceSpaceTypeStr)
+XrReferenceSpaceCreateInfo GetXrReferenceSpaceCreateInfo(const std::string& referenceSpaceTypeStr)
 {
   XrReferenceSpaceCreateInfo referenceSpaceCreateInfo {XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
-  referenceSpaceCreateInfo.poseInReferenceSpace = Math::Pose::Identity();
+  referenceSpaceCreateInfo.poseInReferenceSpace = OpenXrProgram_Math::OpenXrProgram_Pose::Identity();
 
   if(EqualsIgnoreCase(referenceSpaceTypeStr, "View") )
   {
@@ -132,7 +113,7 @@ inline XrReferenceSpaceCreateInfo GetXrReferenceSpaceCreateInfo(const std::strin
   else if(EqualsIgnoreCase(referenceSpaceTypeStr, "ViewFront") )
   {
     // Render head-locked 2m in front of device.
-    referenceSpaceCreateInfo.poseInReferenceSpace = Math::Pose::Translation( {0.f, 0.f, -2.f} ),
+    referenceSpaceCreateInfo.poseInReferenceSpace = OpenXrProgram_Math::OpenXrProgram_Pose::Translation( {0.f, 0.f, -2.f} ),
     referenceSpaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_VIEW;
   }
   else if(EqualsIgnoreCase(referenceSpaceTypeStr, "Local") )
@@ -145,22 +126,22 @@ inline XrReferenceSpaceCreateInfo GetXrReferenceSpaceCreateInfo(const std::strin
   }
   else if(EqualsIgnoreCase(referenceSpaceTypeStr, "StageLeft") )
   {
-    referenceSpaceCreateInfo.poseInReferenceSpace = Math::Pose::RotateCCWAboutYAxis(0.f, {-2.f, 0.f, -2.f} );
+    referenceSpaceCreateInfo.poseInReferenceSpace = OpenXrProgram_Math::OpenXrProgram_Pose::RotateCCWAboutYAxis(0.f, {-2.f, 0.f, -2.f} );
     referenceSpaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_STAGE;
   }
   else if(EqualsIgnoreCase(referenceSpaceTypeStr, "StageRight") )
   {
-    referenceSpaceCreateInfo.poseInReferenceSpace = Math::Pose::RotateCCWAboutYAxis(0.f, {2.f, 0.f, -2.f} );
+    referenceSpaceCreateInfo.poseInReferenceSpace = OpenXrProgram_Math::OpenXrProgram_Pose::RotateCCWAboutYAxis(0.f, {2.f, 0.f, -2.f} );
     referenceSpaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_STAGE;
   }
   else if(EqualsIgnoreCase(referenceSpaceTypeStr, "StageLeftRotated") )
   {
-    referenceSpaceCreateInfo.poseInReferenceSpace = Math::Pose::RotateCCWAboutYAxis(3.14f / 3.f, {-2.f, 0.5f, -2.f} );
+    referenceSpaceCreateInfo.poseInReferenceSpace = OpenXrProgram_Math::OpenXrProgram_Pose::RotateCCWAboutYAxis(3.14f / 3.f, {-2.f, 0.5f, -2.f} );
     referenceSpaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_STAGE;
   }
   else if(EqualsIgnoreCase(referenceSpaceTypeStr, "StageRightRotated") )
   {
-    referenceSpaceCreateInfo.poseInReferenceSpace = Math::Pose::RotateCCWAboutYAxis(-3.14f / 3.f, {2.f, 0.5f, -2.f} );
+    referenceSpaceCreateInfo.poseInReferenceSpace = OpenXrProgram_Math::OpenXrProgram_Pose::RotateCCWAboutYAxis(-3.14f / 3.f, {2.f, 0.5f, -2.f} );
     referenceSpaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_STAGE;
   }
   else
@@ -531,8 +512,8 @@ void OpenXrProgram_OpenXrProgramInitializeActions()
   // Create an action set.
   {
     XrActionSetCreateInfo actionSetInfo {XR_TYPE_ACTION_SET_CREATE_INFO};
-    strcpy_s(actionSetInfo.actionSetName, "gameplay");
-    strcpy_s(actionSetInfo.localizedActionSetName, "Gameplay");
+    strncpy(actionSetInfo.actionSetName, "gameplay", sizeof(actionSetInfo.actionSetName) );
+    strncpy(actionSetInfo.localizedActionSetName, "Gameplay", sizeof(actionSetInfo.localizedActionSetName) );
     actionSetInfo.priority = 0;
 
     if(tableXr.CreateActionSet)
@@ -552,8 +533,8 @@ void OpenXrProgram_OpenXrProgramInitializeActions()
     // Create an input action for grabbing objects with the left and right hands.
     XrActionCreateInfo actionInfo {XR_TYPE_ACTION_CREATE_INFO};
     actionInfo.actionType = XR_ACTION_TYPE_FLOAT_INPUT;
-    strcpy_s(actionInfo.actionName, "grab_object");
-    strcpy_s(actionInfo.localizedActionName, "Grab Object");
+    strncpy(actionInfo.actionName, "grab_object", sizeof(actionInfo.actionName) );
+    strncpy(actionInfo.localizedActionName, "Grab Object", sizeof(actionInfo.localizedActionName) );
     actionInfo.countSubactionPaths = uint32_t(gOpenXrProgramInputState_InputState_handSubactionPath.size() );
     actionInfo.subactionPaths = gOpenXrProgramInputState_InputState_handSubactionPath.data();
 
@@ -562,8 +543,8 @@ void OpenXrProgram_OpenXrProgramInitializeActions()
 
     // Create an input action getting the left and right hand poses.
     actionInfo.actionType = XR_ACTION_TYPE_POSE_INPUT;
-    strcpy_s(actionInfo.actionName, "hand_pose");
-    strcpy_s(actionInfo.localizedActionName, "Hand Pose");
+    strncpy(actionInfo.actionName, "hand_pose", sizeof(actionInfo.actionName) );
+    strncpy(actionInfo.localizedActionName, "Hand OpenXrProgram_Pose", sizeof(actionInfo.localizedActionName) );
     actionInfo.countSubactionPaths = uint32_t(gOpenXrProgramInputState_InputState_handSubactionPath.size() );
     actionInfo.subactionPaths = gOpenXrProgramInputState_InputState_handSubactionPath.data();
 
@@ -572,8 +553,8 @@ void OpenXrProgram_OpenXrProgramInitializeActions()
 
     // Create output actions for vibrating the left and right controller.
     actionInfo.actionType = XR_ACTION_TYPE_VIBRATION_OUTPUT;
-    strcpy_s(actionInfo.actionName, "vibrate_hand");
-    strcpy_s(actionInfo.localizedActionName, "Vibrate Hand");
+    strncpy(actionInfo.actionName, "vibrate_hand", sizeof(actionInfo.actionName) );
+    strncpy(actionInfo.localizedActionName, "Vibrate Hand", sizeof(actionInfo.localizedActionName) );
     actionInfo.countSubactionPaths = uint32_t(gOpenXrProgramInputState_InputState_handSubactionPath.size() );
     actionInfo.subactionPaths = gOpenXrProgramInputState_InputState_handSubactionPath.data();
 
@@ -584,8 +565,8 @@ void OpenXrProgram_OpenXrProgramInitializeActions()
     // Since it doesn't matter which hand did this, we do not specify subaction paths for it.
     // We will just suggest bindings for both hands, where possible.
     actionInfo.actionType = XR_ACTION_TYPE_BOOLEAN_INPUT;
-    strcpy_s(actionInfo.actionName, "quit_session");
-    strcpy_s(actionInfo.localizedActionName, "Quit Session");
+    strncpy(actionInfo.actionName, "quit_session", sizeof(actionInfo.actionName) );
+    strncpy(actionInfo.localizedActionName, "Quit Session", sizeof(actionInfo.localizedActionName) );
     actionInfo.countSubactionPaths = 0;
     actionInfo.subactionPaths = nullptr;
 
@@ -1008,7 +989,7 @@ void OpenXrProgram_OpenXrProgramPollEvents(bool* exitRenderLoop, bool* requestRe
     {
       OpenXrProgram_OpenXrProgramLogActionSourceName(gOpenXrProgramInputState_InputState_grabAction, "Grab");
       OpenXrProgram_OpenXrProgramLogActionSourceName(gOpenXrProgramInputState_InputState_quitAction, "Quit");
-      OpenXrProgram_OpenXrProgramLogActionSourceName(gOpenXrProgramInputState_InputState_poseAction, "Pose");
+      OpenXrProgram_OpenXrProgramLogActionSourceName(gOpenXrProgramInputState_InputState_poseAction, "OpenXrProgram_Pose");
       OpenXrProgram_OpenXrProgramLogActionSourceName(gOpenXrProgramInputState_InputState_vibrateAction, "Vibrate");
     }
     break;

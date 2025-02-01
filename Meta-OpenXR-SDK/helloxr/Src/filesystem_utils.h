@@ -7,11 +7,11 @@ bool FileSysUtilsIsDirectory(const std::string& path);
 
 bool FileSysUtilsPathExists(const std::string& path);
 
+bool FileSysUtilsIsAbsolutePath(const std::string& path);
+
 bool FileSysUtilsGetCurrentPath(std::string& path);
 
 bool FileSysUtilsGetParentPath(const std::string& file_path, std::string& parent_path);
-
-bool FileSysUtilsIsAbsolutePath(const std::string& path);
 
 bool FileSysUtilsGetAbsolutePath(const std::string& path, std::string& absolute);
 

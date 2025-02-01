@@ -174,3 +174,5 @@ private:
 
   ObjectInfoCollection object_info_;
 };
+
+std::vector<XrDebugUtilsObjectNameInfoEXT> PopulateObjectNameInfo(std::vector<XrSdkLogObjectInfo> const& obj);

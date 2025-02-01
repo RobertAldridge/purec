@@ -7,6 +7,17 @@
 
 #define CHECK_VKRESULT(res, cmdStr) CheckVkResult(res, cmdStr, FILE_AND_LINE)
 
+#define CHECK_CBSTATE(s) \
+do \
+{ \
+    if(gCmdBufferState != (s) ) \
+    { \
+        Log::Write(Log::Level::Error, std::string("Expecting state " #s " from ") + __FUNCTION__ + ", in " + CmdBuffer_CmdBufferStateString(gCmdBufferState) ); \
+        return false; \
+    } \
+\
+}while(0)
+
 enum class CmdBufferStateEnum
 {
   Undefined,
@@ -27,6 +38,12 @@ struct VulkanTutorialSwapChainSupportDetails
   VkSurfaceCapabilitiesKHR capabilities;
   std::vector<VkSurfaceFormatKHR> formats;
   std::vector<VkPresentModeKHR> presentModes;
+};
+
+struct VulkanTutorialQueueFamilyIndices
+{
+  std::optional<uint32_t> graphicsFamily;
+  std::optional<uint32_t> presentFamily;
 };
 
 struct VertexBufferBaseBlah
@@ -132,9 +149,230 @@ extern PFN_vkCreateDebugUtilsMessengerEXT gVulkanGraphicsPluginVkCreateDebugUtil
 
 extern VkDebugUtilsMessengerEXT gVulkanGraphicsPluginVkDebugUtilsMessenger;
 
-std::string VulkanGraphicsPlugin_BlahVkObjectTypeToString(VkObjectType objectType);
+const std::vector<VkFormat> VulkanTutorialDepthFormatCandidates = {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT};
 
-VKAPI_ATTR VkBool32 VKAPI_CALL VulkanGraphicsPlugin_debugMessageThunk(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData);
+//constexpr char VertexShaderGlsl[];
+
+//constexpr char FragmentShaderGlsl[];
+
+//constexpr char SIX_DOF_VERTEX_SHADER[];
+
+//constexpr char SIX_DOF_FRAGMENT_SHADER[];
+
+extern std::array<VkPipelineShaderStageCreateInfo, 2> gShaderProgramShaderInfo;
+
+//////////
+
+uint32_t VulkanTutorialFindMemoryType(
+  VkPhysicalDevice& physicalDevice,
+  uint32_t typeFilter,
+  VkMemoryPropertyFlags properties
+);
+
+void VulkanTutorialCreateImage(
+  VkDevice& device,
+  VkPhysicalDevice& physicalDevice,
+  uint32_t width,
+  uint32_t height,
+  VkFormat format,
+  VkImageTiling tiling,
+  VkImageUsageFlags usage,
+  VkMemoryPropertyFlags properties,
+  VkImage& image,
+  VkDeviceMemory& imageMemory
+);
+
+VkImageView VulkanTutorialCreateImageView(
+  VkDevice& device,
+  VkImage image,
+  VkFormat format,
+  VkImageAspectFlags aspectFlags
+);
+
+VkCommandBuffer VulkanTutorialsBeginSingleTimeCommands(VkDevice& device, VkCommandPool& commandPool);
+
+void VulkanTutorialEndSingleTimeCommands(
+  VkDevice& device,
+  VkQueue& graphicsQueue,
+  VkCommandPool& commandPool,
+  VkCommandBuffer commandBuffer
+);
+
+void VulkanTutorialTransitionImageLayout(
+  VkDevice& device,
+  VkQueue& graphicsQueue,
+  VkCommandPool& commandPool,
+  VkImage image,
+  VkFormat format/*todo*/,
+  VkImageLayout oldLayout,
+  VkImageLayout newLayout
+);
+
+VkFormat VulkanTutorialFindSupportedFormat(
+  VkPhysicalDevice& physicalDevice,
+  const std::vector<VkFormat>& candidates,
+  VkImageTiling tiling,
+  VkFormatFeatureFlags features
+);
+
+void VulkanTutorialCreateDepthResources(
+  VkDevice& device,
+  VkPhysicalDevice& physicalDevice,
+  VkExtent2D& swapChainExtent,
+  VkImage& depthImage,
+  VkDeviceMemory& depthImageMemory,
+  VkImageView& depthImageView
+);
+
+void VulkanTutorialCreateRenderPass(
+  VkDevice& device,
+  VkPhysicalDevice& physicalDevice,
+  VkFormat& swapChainImageFormat,
+  VkRenderPass& renderPass
+);
+
+void VulkanTutorialCreateFramebuffers(
+  VkDevice& device,
+  VkExtent2D& swapChainExtent,
+  std::vector<VkImageView>& swapChainImageViews,
+  std::vector<VkFramebuffer>& swapChainFramebuffers,
+  VkRenderPass& renderPass,
+  VkImageView& depthImageView
+);
+
+void VulkanTutorialRecordCommandBuffer(
+  VkCommandBuffer commandBuffer,
+  uint32_t imageIndex,
+  VkExtent2D& swapChainExtent,
+  std::vector<VkFramebuffer>& swapChainFramebuffers,
+  VkRenderPass& renderPass,
+  VkPipelineLayout& pipelineLayout,
+  VkPipeline& graphicsPipeline,
+  VkBuffer& vertexBuffer,
+  VkBuffer& indexBuffer,
+  std::vector<VkDescriptorSet>& descriptorSets,
+  uint32_t& currentFrame
+);
+
+void VulkanTutorialCleanupSwapChain(
+  VkDevice& device,
+  VkSwapchainKHR& swapChain,
+  std::vector<VkImageView>& swapChainImageViews,
+  std::vector<VkFramebuffer>& swapChainFramebuffers,
+  VkImage& depthImage,
+  VkDeviceMemory& depthImageMemory,
+  VkImageView& depthImageView
+);
+
+VulkanTutorialSwapChainSupportDetails VulkanTutorialQuerySwapChainSupport(VkPhysicalDevice physicalDevice, VkSurfaceKHR& surface);
+
+VkSurfaceFormatKHR VulkanTutorialChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+
+VkPresentModeKHR VulkanTutorialChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
+
+VkExtent2D VulkanTutorialChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+
+VulkanTutorialQueueFamilyIndices VulkanTutorialFindQueueFamilies(VkPhysicalDevice physicalDevice, VkSurfaceKHR& surface);
+
+bool VulkanTutorialCheckDeviceExtensionSupport(VkPhysicalDevice physicalDevice);
+
+bool VulkanTutorialIsDeviceSuitable(VkPhysicalDevice physicalDevice, VkSurfaceKHR& surface);
+
+void VulkanTutorialCreateSwapChain(
+  VkDevice& device,
+  VkPhysicalDevice& physicalDevice,
+  VkSurfaceKHR& surface,
+  VkSwapchainKHR& swapChain,
+  std::vector<VkImage>& swapChainImages,
+  VkFormat& swapChainImageFormat,
+  VkExtent2D& swapChainExtent
+);
+
+void VulkanTutorialCreateImageViews(VkDevice& device, std::vector<VkImage>& swapChainImages, VkFormat& swapChainImageFormat, std::vector<VkImageView>& swapChainImageViews);
+
+void VulkanTutorialRecreateSwapChain(
+  VkDevice& device,
+  VkPhysicalDevice& physicalDevice,
+  VkSurfaceKHR& surface,
+  VkSwapchainKHR& swapChain,
+  std::vector<VkImage>& swapChainImages,
+  VkFormat& swapChainImageFormat,
+  VkExtent2D& swapChainExtent,
+  std::vector<VkImageView>& swapChainImageViews,
+  std::vector<VkFramebuffer>& swapChainFramebuffers,
+  VkRenderPass& renderPass,
+  VkImage& depthImage,
+  VkDeviceMemory& depthImageMemory,
+  VkImageView& depthImageView
+);
+
+std::string BlahVkResultString(VkResult res);
+
+//[ [noreturn] ] inline void ThrowVkResult(VkResult res, const char* originator = nullptr, const char* sourceLocation = nullptr)
+
+//inline VkResult CheckVkResult(VkResult res, const char* originator = nullptr, const char* sourceLocation = nullptr)
+
+void PipelineLayout_PipelineLayoutCreate(VkDevice device);
+
+void MemoryAllocator_MemoryAllocatorInit(VkPhysicalDevice physicalDevice);
+
+void MemoryAllocator_MemoryAllocatorAllocate(VkMemoryRequirements const& memReqs, VkDeviceMemory* mem, VkFlags flags = MemoryAllocator_m_memoryAllocatorDefaultFlags, void* pNext = nullptr);
+
+void CmdBuffer_CmdBufferSetState(CmdBufferStateEnum newState);
+
+std::string CmdBuffer_CmdBufferStateString(CmdBufferStateEnum s);
+
+bool CmdBuffer_CmdBufferInit(const VulkanDebugObjectNamer& namer, VkDevice device, uint32_t queueFamilyIndex);
+
+bool CmdBuffer_CmdBufferBegin();
+
+bool CmdBuffer_CmdBufferEnd();
+
+bool CmdBuffer_CmdBufferExec(VkQueue queue);
+
+bool CmdBuffer_CmdBufferWait();
+
+bool CmdBuffer_CmdBufferReset();
+
+void VertexBufferBase_VertexBufferBaseInit(const std::vector<VkVertexInputAttributeDescription>& attr);
+
+void VertexBufferBase_VertexBufferBaseAllocateBufferMemory(VkBuffer buf, VkDeviceMemory* mem);
+
+bool VertexBuffer_VertexBufferCreate(uint32_t idxCount, uint32_t vtxCount);
+
+void VertexBuffer_VertexBufferUpdateIndices(const uint16_t* data, uint32_t elements, uint32_t offset);
+
+void VertexBuffer_VertexBufferUpdateVertices(const Geometry::Vertex* data, uint32_t elements, uint32_t offset);
+
+void ShaderProgram_ShaderProgramLoad(uint32_t whichShaderInfo, const std::vector<uint32_t>& code);
+
+void ShaderProgram_ShaderProgramLoadVertexShader(const std::vector<uint32_t>& code);
+
+void ShaderProgram_ShaderProgramLoadFragmentShader(const std::vector<uint32_t>& code);
+
+void ShaderProgram_ShaderProgramInit(VkDevice device);
+
+void SwapchainImageContext_SwapchainImageContext_Constructor(int index, XrStructureType swapchainImageType, VulkanDebugObjectNamer& namer);
+
+void SwapchainImageContext_SwapchainImageContext_RenderTargetCreate(int index, int renderTarget, const VulkanDebugObjectNamer& namer, VkDevice device, VkImage aColorImage, VkImage aDepthImage, VkExtent2D size);
+
+void SwapchainImageContext_SwapchainImageContext_DepthBufferCreate(int index, const VulkanDebugObjectNamer& namer, VkDevice device, VkFormat depthFormat, const XrSwapchainCreateInfo& swapchainCreateInfo);
+
+void SwapchainImageContext_SwapchainImageContext_DepthBufferTransitionImageLayout(int index, VkImageLayout newLayout);
+
+bool SwapchainImageContext_SwapchainImageContext_RenderPassCreate(int index, const VulkanDebugObjectNamer& namer, VkDevice device, VkFormat aColorFmt, VkFormat aDepthFmt);
+
+void SwapchainImageContext_SwapchainImageContext_PipelineDynamic(int index, VkDynamicState state);
+
+void SwapchainImageContext_SwapchainImageContext_PipelineCreate(int index, VkDevice device, VkExtent2D size);
+
+void SwapchainImageContext_SwapchainImageContext_PipelineRelease(int index);
+
+std::vector<XrSwapchainImageBaseHeader*> SwapchainImageContext_SwapchainImageContextCreate(int index, const VulkanDebugObjectNamer& namer, VkDevice device, uint32_t capacity, const XrSwapchainCreateInfo& swapchainCreateInfo);
+
+uint32_t SwapchainImageContext_SwapchainImageContextImageIndex(int index, const XrSwapchainImageBaseHeader* swapchainImageHeader);
+
+void SwapchainImageContext_SwapchainImageContextBindRenderTarget(int index, uint32_t renderTarget, VkRenderPassBeginInfo* renderPassBeginInfo);
 
 void VulkanGraphicsPlugin_VulkanGraphicsPlugin();
 
@@ -149,7 +387,7 @@ const char* VulkanGraphicsPlugin_VulkanGraphicsPluginGetValidationLayerName();
 
 void VulkanGraphicsPlugin_VulkanGraphicsPluginInitializeDevice(XrInstance instance, XrSystemId systemId);
 
-// Compile a shader to a SPIR-V binary.
+// compile a shader to a SPIR-V binary
 std::vector<uint32_t> VulkanGraphicsPlugin_VulkanGraphicsPluginCompileGlslShader(const std::string& name, shaderc_shader_kind kind, const std::string& source);
 
 void VulkanGraphicsPlugin_VulkanGraphicsPluginInitializeResources();
@@ -162,11 +400,13 @@ std::vector<XrSwapchainImageBaseHeader*> VulkanGraphicsPlugin_VulkanGraphicsPlug
 
 void VulkanGraphicsPlugin_VulkanGraphicsPluginRenderView(const XrCompositionLayerProjectionView& layerView, const XrSwapchainImageBaseHeader* swapchainImage, int64_t /*swapchainFormat*/, const std::vector<Cube>& cubes);
 
-uint32_t VulkanGraphicsPlugin_VulkanGraphicsPluginGetSupportedSwapchainSampleCount(const XrViewConfigurationView& );
+uint32_t VulkanGraphicsPlugin_VulkanGraphicsPluginGetSupportedSwapchainSampleCount(const XrViewConfigurationView&);
 
 void VulkanGraphicsPlugin_VulkanGraphicsPluginUpdateOptions();
 
 VkBool32 VulkanGraphicsPlugin_VulkanGraphicsPluginDebugMessage(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData);
+
+VKAPI_ATTR VkBool32 VKAPI_CALL VulkanGraphicsPlugin_debugMessageThunk(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* /*pUserData*/);
 
 XrStructureType VulkanGraphicsPlugin_VulkanGraphicsPluginGetGraphicsBindingType();
 
@@ -181,3 +421,13 @@ XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsDevice2KHR(Xr
 XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsRequirements2KHR(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsVulkan2KHR* graphicsRequirements);
 
 void VulkanGraphicsPlugin_CreateGraphicsPlugin_Vulkan();
+
+//////////
+
+VkResult VulkanTutorialCreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
+
+void VulkanTutorialDestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
+
+bool VulkanTutorialQueueFamilyIndices_isComplete(VulkanTutorialQueueFamilyIndices _this);
+
+std::string VulkanGraphicsPlugin_BlahVkObjectTypeToString(VkObjectType objectType);

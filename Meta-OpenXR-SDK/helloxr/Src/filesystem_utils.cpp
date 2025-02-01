@@ -13,21 +13,27 @@
 #define HAVE_SECURE_GETENV 1
 #define HAVE___SECURE_GETENV 1
 
-void LogPlatformUtilsError(const std::string& message);
-
 #define FS_PREFIX std::filesystem
 
 #define PATH_SEPARATOR ':'
 #define DIRECTORY_SYMBOL '/'
 
-#if(USE_FINAL_FS == 1) || (USE_EXPERIMENTAL_FS == 1)
 // We can use one of the C++ filesystem packages
 
-bool FileSysUtilsIsRegularFile(const std::string& path) { return FS_PREFIX::is_regular_file(path); }
+bool FileSysUtilsIsRegularFile(const std::string& path)
+{
+  return FS_PREFIX::is_regular_file(path);
+}
 
-bool FileSysUtilsIsDirectory(const std::string& path) { return FS_PREFIX::is_directory(path); }
+bool FileSysUtilsIsDirectory(const std::string& path)
+{
+  return FS_PREFIX::is_directory(path);
+}
 
-bool FileSysUtilsPathExists(const std::string& path) { return FS_PREFIX::exists(path); }
+bool FileSysUtilsPathExists(const std::string& path)
+{
+  return FS_PREFIX::exists(path);
+}
 
 bool FileSysUtilsIsAbsolutePath(const std::string& path)
 {
@@ -94,125 +100,3 @@ bool FileSysUtilsFindFilesInPath(const std::string& path, std::vector<std::strin
 
   return true;
 }
-
-#else  // XR_OS_LINUX / XR_OS_APPLE fallback
-
-// simple POSIX-compatible implementation of the <filesystem> pieces used by OpenXR
-
-bool FileSysUtilsIsRegularFile(const std::string& path)
-{
-  struct stat path_stat;
-  stat(path.c_str(), &path_stat);
-  return S_ISREG(path_stat.st_mode);
-}
-
-bool FileSysUtilsIsDirectory(const std::string& path)
-{
-  struct stat path_stat;
-  stat(path.c_str(), &path_stat);
-  return S_ISDIR(path_stat.st_mode);
-}
-
-bool FileSysUtilsPathExists(const std::string& path) { return (access(path.c_str(), F_OK) != -1); }
-
-bool FileSysUtilsIsAbsolutePath(const std::string& path) { return (path[0] == DIRECTORY_SYMBOL); }
-
-bool FileSysUtilsGetCurrentPath(std::string& path)
-{
-  char tmp_path[PATH_MAX] = {0};
-
-  if(nullptr != getcwd(tmp_path, PATH_MAX - 1) )
-  {
-    path = tmp_path;
-    return true;
-  }
-
-  return false;
-}
-
-bool FileSysUtilsGetParentPath(const std::string& file_path, std::string& parent_path)
-{
-  std::string full_path;
-
-  if(FileSysUtilsGetAbsolutePath(file_path, full_path) )
-  {
-    std::string::size_type lastSeparator = full_path.find_last_of(DIRECTORY_SYMBOL);
-    parent_path = (lastSeparator == 0) ? full_path : full_path.substr(0, lastSeparator);
-    return true;
-  }
-
-  return false;
-}
-
-bool FileSysUtilsGetAbsolutePath(const std::string& path, std::string& absolute)
-{
-  // canonical path is absolute
-  return FileSysUtilsGetCanonicalPath(path, absolute);
-}
-
-bool FileSysUtilsGetCanonicalPath(const std::string& path, std::string& canonical)
-{
-  char buf[PATH_MAX] = {0};
-
-  if(nullptr != realpath(path.c_str(), buf) )
-  {
-    canonical = buf;
-    return true;
-  }
-
-  return false;
-}
-
-bool FileSysUtilsCombinePaths(const std::string& parent, const std::string& child, std::string& combined)
-{
-  std::string::size_type parent_len = parent.length();
-
-  if(0 == parent_len || "." == parent || "./" == parent)
-  {
-    combined = child;
-    return true;
-  }
-
-  char last_char = parent[parent_len - 1];
-
-  if(last_char == DIRECTORY_SYMBOL)
-    parent_len--;
-
-  combined = parent.substr(0, parent_len) + DIRECTORY_SYMBOL + child;
-
-  return true;
-}
-
-bool FileSysUtilsParsePathList(std::string& path_list, std::vector<std::string>& paths)
-{
-  std::string::size_type start = 0;
-  std::string::size_type location = path_list.find(PATH_SEPARATOR);
-
-  while(location != std::string::npos)
-  {
-    paths.push_back(path_list.substr(start, location) );
-    start = location + 1;
-    location = path_list.find(PATH_SEPARATOR, start);
-  }
-
-  paths.push_back(path_list.substr(start, location) );
-
-  return true;
-}
-
-bool FileSysUtilsFindFilesInPath(const std::string& path, std::vector<std::string>& files)
-{
-  DIR* dir = opendir(path.c_str() );
-  if(dir == nullptr)
-    return false;
-
-  struct dirent* entry = 0;
-  while( (entry = readdir(dir) ) != nullptr)
-    files.emplace_back(entry->d_name);
-
-  closedir(dir);
-
-  return true;
-}
-
-#endif

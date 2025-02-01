@@ -95,7 +95,7 @@ bool ObjectInfoCollection::LookUpObjectName(XrSdkLogObjectInfo& info) const
   return false;
 }
 
-static std::vector<XrDebugUtilsObjectNameInfoEXT> PopulateObjectNameInfo(std::vector<XrSdkLogObjectInfo> const& obj)
+std::vector<XrDebugUtilsObjectNameInfoEXT> PopulateObjectNameInfo(std::vector<XrSdkLogObjectInfo> const& obj)
 {
   std::vector<XrDebugUtilsObjectNameInfoEXT> ret;
   ret.reserve(obj.size() );
@@ -182,7 +182,7 @@ XrSdkSessionLabelList& DebugUtilsData::GetOrCreateSessionLabelList(XrSession ses
 {
   XrSdkSessionLabelList* vec_ptr = GetSessionLabelList(session);
 
-  if(vec_ptr == nullptr)
+  if( !vec_ptr)
   {
     std::unique_ptr<XrSdkSessionLabelList> vec(new XrSdkSessionLabelList);
     vec_ptr = vec.get();
@@ -205,7 +205,7 @@ void DebugUtilsData::EndLabelRegion(XrSession session)
 {
   XrSdkSessionLabelList* vec_ptr = GetSessionLabelList(session);
 
-  if(vec_ptr == nullptr)
+  if( !vec_ptr)
     return;
 
   RemoveIndividualLabel( *vec_ptr);
@@ -232,12 +232,15 @@ void DebugUtilsData::DeleteObject(uint64_t object_handle, XrObjectType object_ty
     auto session = TreatIntegerAsHandle<XrSession>(object_handle);
     XrSdkSessionLabelList* vec_ptr = GetSessionLabelList(session);
 
-    if(vec_ptr != nullptr)
+    if(vec_ptr)
       session_labels_.erase(session);
   }
 }
 
-void DebugUtilsData::DeleteSessionLabels(XrSession session) { session_labels_.erase(session); }
+void DebugUtilsData::DeleteSessionLabels(XrSession session)
+{
+  session_labels_.erase(session);
+}
 
 NamesAndLabels DebugUtilsData::PopulateNamesAndLabels(std::vector<XrSdkLogObjectInfo> objects) const
 {
@@ -288,6 +291,4 @@ void DebugUtilsData::WrapCallbackData(AugmentedCallbackData* aug_data, const XrD
   aug_data->modified_data.sessionLabelCount = static_cast<uint32_t>(aug_data->labels.size() );
   aug_data->modified_data.sessionLabels = aug_data->labels.empty() ? nullptr : aug_data->labels.data();
   aug_data->exported_data = &aug_data->modified_data;
-
-  return;
 }

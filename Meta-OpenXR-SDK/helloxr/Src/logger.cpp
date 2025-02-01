@@ -3,24 +3,21 @@
 
 #include "header.h"
 
-#define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, "helloxr", __VA_ARGS__)
-#define ALOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, "helloxr", __VA_ARGS__)
+Log::Level gLogger_minSeverity {Log::Level::Info};
 
-namespace
-{
-  Log::Level g_minSeverity {Log::Level::Info};
-  std::mutex g_logLock;
-
-} // namespace
+std::mutex gLogger_logLock;
 
 namespace Log
 {
 
-void SetLevel(Level minSeverity) { g_minSeverity = minSeverity; }
+void SetLevel(Level minSeverity)
+{
+  gLogger_minSeverity = minSeverity;
+}
 
 void Write(Level severity, const std::string& msg)
 {
-  if(severity < g_minSeverity)
+  if(severity < gLogger_minSeverity)
     return;
 
   const auto now = std::chrono::system_clock::now();
@@ -43,14 +40,14 @@ void Write(Level severity, const std::string& msg)
     << "." << std::setw(3) << milliseconds << "]"
     << "[" << severityName[severity] << "] " << msg << std::endl;
 
-  std::lock_guard<std::mutex> lock(g_logLock); // Ensure output is serialized
+  std::lock_guard<std::mutex> lock(gLogger_logLock); // Ensure output is serialized
 
   ( (severity == Level::Error) ? std::clog : std::cout) << out.str();
 
   if(severity == Level::Error)
-    ALOGE("%s", out.str().c_str() );
+    LOGGER_ALOGE("%s", out.str().c_str() );
   else
-    ALOGV("%s", out.str().c_str() );
+    LOGGER_ALOGV("%s", out.str().c_str() );
 }
 
 } // namespace Log

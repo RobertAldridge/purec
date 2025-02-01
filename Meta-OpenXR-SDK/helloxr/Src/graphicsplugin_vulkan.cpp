@@ -28,16 +28,10 @@ void VulkanTutorialDestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUti
     func(instance, debugMessenger, pAllocator);
 }
 
-struct VulkanTutorialQueueFamilyIndices
+bool VulkanTutorialQueueFamilyIndices_isComplete(VulkanTutorialQueueFamilyIndices _this)
 {
-  std::optional<uint32_t> graphicsFamily;
-  std::optional<uint32_t> presentFamily;
-
-  bool isComplete()
-  {
-    return graphicsFamily.has_value() && presentFamily.has_value();
-  }
-};
+  return _this.graphicsFamily.has_value() && _this.presentFamily.has_value();
+}
 
 #if 0
 struct VulkanTutorialVertex
@@ -308,13 +302,7 @@ VkFormat VulkanTutorialFindSupportedFormat(
 
 VkFormat VulkanTutorialFindDepthFormat(VkPhysicalDevice& physicalDevice)
 {
-  std::vector<VkFormat> candidates = {
-    VK_FORMAT_D32_SFLOAT,
-    VK_FORMAT_D32_SFLOAT_S8_UINT,
-    VK_FORMAT_D24_UNORM_S8_UINT
-  };
-
-  return VulkanTutorialFindSupportedFormat(physicalDevice, candidates, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+  return VulkanTutorialFindSupportedFormat(physicalDevice, VulkanTutorialDepthFormatCandidates, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 }
 
 void VulkanTutorialCreateDepthResources(
@@ -638,7 +626,7 @@ VulkanTutorialQueueFamilyIndices VulkanTutorialFindQueueFamilies(VkPhysicalDevic
     if(presentSupport)
       indices.presentFamily = family;
 
-    if(indices.isComplete() )
+    if(VulkanTutorialQueueFamilyIndices_isComplete(indices) )
       break;
 
     family++;
@@ -679,7 +667,7 @@ bool VulkanTutorialIsDeviceSuitable(VkPhysicalDevice physicalDevice, VkSurfaceKH
   VkPhysicalDeviceFeatures supportedFeatures;
   tableVk.GetPhysicalDeviceFeatures(physicalDevice, &supportedFeatures);
 
-  return indices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
+  return VulkanTutorialQueueFamilyIndices_isComplete(indices) && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
 }
 
 void VulkanTutorialCreateSwapChain(
@@ -1934,7 +1922,7 @@ void MemoryAllocator_MemoryAllocatorInit(VkPhysicalDevice physicalDevice)
     tableVk.GetPhysicalDeviceMemoryProperties(physicalDevice, &gMemoryAllocatorMemoryProperties);
 }
 
-void MemoryAllocator_MemoryAllocatorAllocate(VkMemoryRequirements const& memReqs, VkDeviceMemory* mem, VkFlags flags = MemoryAllocator_m_memoryAllocatorDefaultFlags, void* pNext = nullptr)
+void MemoryAllocator_MemoryAllocatorAllocate(VkMemoryRequirements const& memReqs, VkDeviceMemory* mem, VkFlags flags, void* pNext)
 {
   // Search memtypes to find first offset with those properties
   for(uint32_t offset = 0; offset < gMemoryAllocatorMemoryProperties.memoryTypeCount; offset++)
@@ -2030,17 +2018,6 @@ std::string CmdBuffer_CmdBufferStateString(CmdBufferStateEnum s)
 
   return "(Unknown)";
 }
-
-#define CHECK_CBSTATE(s) \
-do \
-{ \
-    if(gCmdBufferState != (s) ) \
-    { \
-        Log::Write(Log::Level::Error, std::string("Expecting state " #s " from ") + __FUNCTION__ + ", in " + CmdBuffer_CmdBufferStateString(gCmdBufferState) ); \
-        return false; \
-    } \
-\
-}while(0)
 
 bool CmdBuffer_CmdBufferInit(const VulkanDebugObjectNamer& namer, VkDevice device, uint32_t queueFamilyIndex)
 {
@@ -2169,8 +2146,6 @@ bool CmdBuffer_CmdBufferReset()
 
   return true;
 }
-
-#undef CHECK_CBSTATE
 
 VkBuffer gVertexBufferBaseIdxBuf {VK_NULL_HANDLE};
 

@@ -51,7 +51,7 @@ extern bool gOpenXrProgramSessionRunning;
 
 extern XrEventDataBuffer gOpenXrProgramXrEventDataBuffer;
 
-//const std::set<XrEnvironmentBlendMode> gOpenXrProgramStdSet_XrEnvironmentBlendMode {XR_ENVIRONMENT_BLEND_MODE_OPAQUE, XR_ENVIRONMENT_BLEND_MODE_ADDITIVE, XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND};
+const std::set<XrEnvironmentBlendMode> gOpenXrProgramStdSet_XrEnvironmentBlendMode {XR_ENVIRONMENT_BLEND_MODE_OPAQUE, XR_ENVIRONMENT_BLEND_MODE_ADDITIVE, XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND};
 
 extern "C" {
 extern XrPassthroughFB gPassthroughFeature;
@@ -75,6 +75,26 @@ extern PFN_xrSetEnvironmentDepthHandRemovalMETA gSetEnvironmentDepthHandRemovalM
 
 extern XrEnvironmentDepthProviderMETA gEnvironmentDepthProviderMETA;
 
+namespace OpenXrProgram_Math
+{
+
+namespace OpenXrProgram_Pose
+{
+
+XrPosef Identity();
+
+XrPosef Translation(const XrVector3f& translation);
+
+XrPosef RotateCCWAboutYAxis(float radians, XrVector3f translation);
+
+} // namespace OpenXrProgram_Pose
+
+} // namespace OpenXrProgram_Math
+
+std::string GetXrVersionString(XrVersion ver);
+
+XrReferenceSpaceCreateInfo GetXrReferenceSpaceCreateInfo(const std::string& referenceSpaceTypeStr);
+
 void OpenXrProgram_LogLayersAndExtensions();
 
 void OpenXrProgram_OpenXrProgram();
@@ -87,6 +107,17 @@ void OpenXrProgram_OpenXrProgramCreateInstanceInternal();
 
 void OpenXrProgram_OpenXrProgramCreateInstance();
 
+// Instance RuntimeName = Oculus RuntimeVersion = 71.601.0
+// Available View Configuration Types: (1)
+// Available Environment Blend Mode count : (1)
+// Environment Blend Mode (XR_ENVIRONMENT_BLEND_MODE_OPAQUE) : (Selected)
+// No validation layers found in the system, skipping
+//
+// System Properties: Name = Oculus Quest VendorId = 10291
+// System Graphics Properties: MaxWidth = 8192 MaxHeight = 8192 MaxLayers = 32
+// System Tracking Properties: OrientationTracking = True PositionTracking = True
+// Creating swapchain for view 0 with dimensions Width = 1680 Height = 1760 SampleCount = 1
+
 void OpenXrProgram_OpenXrProgramLogViewConfigurations();
 
 void OpenXrProgram_OpenXrProgramLogEnvironmentBlendMode(XrViewConfigurationType type);
@@ -98,6 +129,27 @@ void OpenXrProgram_OpenXrProgramInitializeSystem();
 void OpenXrProgram_OpenXrProgramInitializeDevice();
 
 void OpenXrProgram_OpenXrProgramLogReferenceSpaces();
+
+//struct OpenXrProgram_InputState
+//{
+//  XrActionSet actionSet {XR_NULL_HANDLE};
+//
+//  XrAction grabAction {XR_NULL_HANDLE};
+//
+//  XrAction poseAction {XR_NULL_HANDLE};
+//
+//  XrAction vibrateAction {XR_NULL_HANDLE};
+//
+//  XrAction quitAction {XR_NULL_HANDLE};
+//
+//  std::array<XrPath, Side_COUNT> handSubactionPath;
+//
+//  std::array<XrSpace, Side_COUNT> handSpace;
+//
+//  std::array<float, Side_COUNT> handScale = { {1.0f, 1.0f} };
+//
+//  std::array<XrBool32, Side_COUNT> handActive;
+//};
 
 void OpenXrProgram_OpenXrProgramInitializeActions();
 
