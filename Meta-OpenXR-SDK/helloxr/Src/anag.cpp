@@ -1223,9 +1223,69 @@ try
       case XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED:
       {
         auto sessionStateChangedEvent = *reinterpret_cast<const XrEventDataSessionStateChanged*>(event);
-        OpenXrProgram_OpenXrProgramHandleSessionStateChangedEvent(sessionStateChangedEvent, &exitRenderLoop, &requestRestart);
+
+        const XrSessionState oldState = gOpenXrProgramXrSessionState;
+        gOpenXrProgramXrSessionState = sessionStateChangedEvent.state;
+
+        Log::Write(Log::Level::Info, Fmt("XrEventDataSessionStateChanged: state %s->%s session=%lld time=%lld", to_string(oldState), to_string(gOpenXrProgramXrSessionState), sessionStateChangedEvent.session, sessionStateChangedEvent.time) );
+
+        if(sessionStateChangedEvent.session != XR_NULL_HANDLE && sessionStateChangedEvent.session != gXrSession)
+        {
+          Log::Write(Log::Level::Error, "XrEventDataSessionStateChanged for unknown session");
+          break;
+        }
+
+        switch(gOpenXrProgramXrSessionState)
+        {
+
+        case XR_SESSION_STATE_READY:
+        {
+          CHECK_CHECK(gXrSession != XR_NULL_HANDLE);
+
+          XrSessionBeginInfo sessionBeginInfo {XR_TYPE_SESSION_BEGIN_INFO};
+
+          sessionBeginInfo.primaryViewConfigurationType = gOptions_XrViewConfigurationType;
+
+          if(tableXr.BeginSession)
+            CHECK_XRCMD_CHECK(tableXr.BeginSession(gXrSession, &sessionBeginInfo) );
+
+          gOpenXrProgramSessionRunning = true;
+          break;
+        }
+
+        case XR_SESSION_STATE_STOPPING:
+        {
+          CHECK_CHECK(gXrSession != XR_NULL_HANDLE);
+          gOpenXrProgramSessionRunning = false;
+
+          if(tableXr.EndSession)
+            CHECK_XRCMD_CHECK(tableXr.EndSession(gXrSession) );
+
+          break;
+        }
+
+        case XR_SESSION_STATE_EXITING:
+        {
+          exitRenderLoop = true;
+          requestRestart = false;
+          break;
+        }
+
+        case XR_SESSION_STATE_LOSS_PENDING:
+        {
+          exitRenderLoop = true;
+          requestRestart = true;
+          break;
+        }
+
+        default:
+        {
+        }
         break;
+
+        }
       }
+      break;
 
       case XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED:
       {
@@ -1240,8 +1300,8 @@ try
       default:
       {
         Log::Write(Log::Level::Verbose, Fmt("Ignoring event type %d", event->type) );
-        break;
       }
+      break;
 
       }
     }

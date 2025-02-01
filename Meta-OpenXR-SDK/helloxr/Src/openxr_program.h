@@ -129,8 +129,6 @@ void OpenXrProgram_OpenXrProgram_Destructor();
 //  std::array<XrBool32, Side_COUNT> handActive;
 //};
 
-void OpenXrProgram_OpenXrProgramHandleSessionStateChangedEvent(const XrEventDataSessionStateChanged& stateChangedEvent, bool* exitRenderLoop, bool* requestRestart);
-
 void OpenXrProgram_OpenXrProgramLogActionSourceName(XrAction action, const std::string& actionName);
 
 bool OpenXrProgram_OpenXrProgramIsSessionRunning();
