@@ -66,6 +66,8 @@ extern std::vector<VkVertexInputAttributeDescription> gVertexBufferBaseAttrDesc;
 
 extern VertexBufferBaseBlah gVertexBufferBaseCount;
 
+extern std::array<VkPipelineShaderStageCreateInfo, 2> gShaderProgramShaderInfo;
+
 extern std::vector<std::vector<XrSwapchainImageVulkan2KHR> > m_swapchainImageContextSwapchainImages;
 
 extern std::vector<std::vector<VkImage> > m_swapchainImageContextStdVector_renderTargetColorImage;
@@ -252,8 +254,6 @@ R"_(
   }
 
 )_";
-
-extern std::array<VkPipelineShaderStageCreateInfo, 2> gShaderProgramShaderInfo;
 
 //////////
 

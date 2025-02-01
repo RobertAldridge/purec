@@ -11,6 +11,79 @@ VkPhysicalDevice gVkPhysicalDevice = VK_NULL_HANDLE;
 
 VkPipelineLayout gVkPipelineLayout = VK_NULL_HANDLE;
 
+VkPhysicalDeviceMemoryProperties gMemoryAllocatorMemoryProperties {};
+
+CmdBufferStateEnum gCmdBufferState {CmdBufferStateEnum::Undefined};
+
+VkCommandPool gCmdBufferPool {VK_NULL_HANDLE};
+
+VkCommandBuffer gCmdBufferBuffer {VK_NULL_HANDLE};
+
+VkFence gCmdBufferExecFence {VK_NULL_HANDLE};
+
+VkBuffer gVertexBufferBaseIdxBuf {VK_NULL_HANDLE};
+
+VkDeviceMemory gVertexBufferBaseIdxMem {VK_NULL_HANDLE};
+
+VkBuffer gVertexBufferBaseVtxBuf {VK_NULL_HANDLE};
+
+VkDeviceMemory gVertexBufferBaseVtxMem {VK_NULL_HANDLE};
+
+VkVertexInputBindingDescription gVertexBufferBaseBindDesc {};
+
+std::vector<VkVertexInputAttributeDescription> gVertexBufferBaseAttrDesc {};
+
+VertexBufferBaseBlah gVertexBufferBaseCount = {0, 0};
+
+std::array<VkPipelineShaderStageCreateInfo, 2> gShaderProgramShaderInfo { { {VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO}, {VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO} } };
+
+std::vector<std::vector<XrSwapchainImageVulkan2KHR> > m_swapchainImageContextSwapchainImages;
+
+std::vector<std::vector<VkImage> > m_swapchainImageContextStdVector_renderTargetColorImage;
+std::vector<std::vector<VkImage> > m_swapchainImageContextStdVector_renderTargetDepthImage;
+std::vector<std::vector<VkImageView> > m_swapchainImageContextStdVector_renderTargetColorView;
+std::vector<std::vector<VkImageView> > m_swapchainImageContextStdVector_renderTargetDepthView;
+std::vector<std::vector<VkFramebuffer> > m_swapchainImageContextStdVector_renderTargetFrameBuffer;
+
+std::vector<VkExtent2D> m_swapchainImageContextSize;
+
+std::vector<VkDeviceMemory> m_swapchainImageContext_depthBufferDepthMemory;
+std::vector<VkImage> m_swapchainImageContext_depthBufferDepthImage;
+std::vector<VkImageLayout> m_swapchainImageContext_depthBufferVkImageLayout;
+
+std::vector<VkFormat> m_swapchainImageContext_renderPassColorFmt;
+std::vector<VkFormat> m_swapchainImageContext_renderPassDepthFmt;
+std::vector<VkRenderPass> m_swapchainImageContext_renderPassPass;
+
+std::vector<VkPipeline> m_swapchainImageContextPipe_pipelinePipe;
+std::vector<VkPrimitiveTopology> m_swapchainImageContextPipe_pipelineTopology;
+std::vector<std::vector<VkDynamicState> > m_swapchainImageContextPipe_pipelineDynamicStateEnables;
+
+std::vector<XrStructureType> m_swapchainImageContextSwapchainImageType;
+
+std::vector<VulkanDebugObjectNamer> m_swapchainImageContextNamer;
+
+XrGraphicsBindingVulkan2KHR gVulkanGraphicsPluginXrGraphicsBindingVulkan2KHR {XR_TYPE_GRAPHICS_BINDING_VULKAN2_KHR};
+
+//std::vector<SwapchainImageContext*> gVulkanGraphicsPluginStdList_SwapchainImageContext;
+std::vector<int> gVulkanGraphicsPluginStdList_SwapchainImageContext;
+
+std::map<const XrSwapchainImageBaseHeader*, int> gVulkanGraphicsPluginStdMap_XrSwapchainImageBaseHeader_SwapchainImageContext;
+
+VulkanDebugObjectNamer gVulkanGraphicsPluginVulkanDebugObjectNamer {};
+
+uint32_t gVulkanGraphicsPluginQueueFamilyIndex = 0;
+
+VkQueue gVulkanGraphicsPluginVkQueue {VK_NULL_HANDLE};
+
+VkSemaphore gVulkanGraphicsPluginVkSemaphoreDrawDone {VK_NULL_HANDLE};
+
+std::array<float, 4> gVulkanGraphicsPluginStdArray_float_4_clearColor;
+
+PFN_vkCreateDebugUtilsMessengerEXT gVulkanGraphicsPluginVkCreateDebugUtilsMessengerEXT {nullptr};
+
+VkDebugUtilsMessengerEXT gVulkanGraphicsPluginVkDebugUtilsMessenger {VK_NULL_HANDLE};
+
 std::string BlahVkResultString(VkResult res)
 {
   switch(res)
@@ -111,8 +184,6 @@ void PipelineLayout_PipelineLayoutCreate(VkDevice device)
     CHECK_VULKANCMD(tableVk.CreatePipelineLayout(gVkDevice, &pipelineLayoutCreateInfo, nullptr, &gVkPipelineLayout) );
 }
 
-VkPhysicalDeviceMemoryProperties gMemoryAllocatorMemoryProperties {};
-
 void MemoryAllocator_MemoryAllocatorInit(VkPhysicalDevice physicalDevice)
 {
   if(tableVk.GetPhysicalDeviceMemoryProperties)
@@ -144,14 +215,6 @@ void MemoryAllocator_MemoryAllocatorAllocate(VkMemoryRequirements const& memReqs
 
   THROW_CHECK("Memory format not supported");
 }
-
-CmdBufferStateEnum gCmdBufferState {CmdBufferStateEnum::Undefined};
-
-VkCommandPool gCmdBufferPool {VK_NULL_HANDLE};
-
-VkCommandBuffer gCmdBufferBuffer {VK_NULL_HANDLE};
-
-VkFence gCmdBufferExecFence {VK_NULL_HANDLE};
 
 void CmdBuffer_CmdBufferSetState(CmdBufferStateEnum newState)
 {
@@ -344,20 +407,6 @@ bool CmdBuffer_CmdBufferReset()
   return true;
 }
 
-VkBuffer gVertexBufferBaseIdxBuf {VK_NULL_HANDLE};
-
-VkDeviceMemory gVertexBufferBaseIdxMem {VK_NULL_HANDLE};
-
-VkBuffer gVertexBufferBaseVtxBuf {VK_NULL_HANDLE};
-
-VkDeviceMemory gVertexBufferBaseVtxMem {VK_NULL_HANDLE};
-
-VkVertexInputBindingDescription gVertexBufferBaseBindDesc {};
-
-std::vector<VkVertexInputAttributeDescription> gVertexBufferBaseAttrDesc {};
-
-VertexBufferBaseBlah gVertexBufferBaseCount = {0, 0};
-
 #if 0
 void VertexBufferBase_VertexBufferBase_Destructor()
 {
@@ -465,8 +514,6 @@ void VertexBuffer_VertexBufferUpdateVertices(const Geometry::Vertex* data, uint3
     tableVk.UnmapMemory(gVkDevice, gVertexBufferBaseVtxMem);
 }
 
-std::array<VkPipelineShaderStageCreateInfo, 2> gShaderProgramShaderInfo { { {VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO}, {VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO} } };
-
 #if 0
 void ShaderProgram_ShaderProgramDestructor()
 {
@@ -534,32 +581,6 @@ void ShaderProgram_ShaderProgramLoadFragmentShader(const std::vector<uint32_t>& 
 void ShaderProgram_ShaderProgramInit(VkDevice device)
 {
 }
-
-std::vector<std::vector<XrSwapchainImageVulkan2KHR> > m_swapchainImageContextSwapchainImages;
-
-std::vector<std::vector<VkImage> > m_swapchainImageContextStdVector_renderTargetColorImage;
-std::vector<std::vector<VkImage> > m_swapchainImageContextStdVector_renderTargetDepthImage;
-std::vector<std::vector<VkImageView> > m_swapchainImageContextStdVector_renderTargetColorView;
-std::vector<std::vector<VkImageView> > m_swapchainImageContextStdVector_renderTargetDepthView;
-std::vector<std::vector<VkFramebuffer> > m_swapchainImageContextStdVector_renderTargetFrameBuffer;
-
-std::vector<VkExtent2D> m_swapchainImageContextSize;
-
-std::vector<VkDeviceMemory> m_swapchainImageContext_depthBufferDepthMemory;
-std::vector<VkImage> m_swapchainImageContext_depthBufferDepthImage;
-std::vector<VkImageLayout> m_swapchainImageContext_depthBufferVkImageLayout;
-
-std::vector<VkFormat> m_swapchainImageContext_renderPassColorFmt;
-std::vector<VkFormat> m_swapchainImageContext_renderPassDepthFmt;
-std::vector<VkRenderPass> m_swapchainImageContext_renderPassPass;
-
-std::vector<VkPipeline> m_swapchainImageContextPipe_pipelinePipe;
-std::vector<VkPrimitiveTopology> m_swapchainImageContextPipe_pipelineTopology;
-std::vector<std::vector<VkDynamicState> > m_swapchainImageContextPipe_pipelineDynamicStateEnables;
-
-std::vector<XrStructureType> m_swapchainImageContextSwapchainImageType;
-
-std::vector<VulkanDebugObjectNamer> m_swapchainImageContextNamer;
 
 void SwapchainImageContext_SwapchainImageContext_Constructor(int index, XrStructureType swapchainImageType, VulkanDebugObjectNamer& namer)
 {
@@ -1067,27 +1088,6 @@ _(DEBUG_UTILS_MESSENGER_EXT)
 
   return objName;
 }
-
-XrGraphicsBindingVulkan2KHR gVulkanGraphicsPluginXrGraphicsBindingVulkan2KHR {XR_TYPE_GRAPHICS_BINDING_VULKAN2_KHR};
-
-//std::vector<SwapchainImageContext*> gVulkanGraphicsPluginStdList_SwapchainImageContext;
-std::vector<int> gVulkanGraphicsPluginStdList_SwapchainImageContext;
-
-std::map<const XrSwapchainImageBaseHeader*, int> gVulkanGraphicsPluginStdMap_XrSwapchainImageBaseHeader_SwapchainImageContext;
-
-VulkanDebugObjectNamer gVulkanGraphicsPluginVulkanDebugObjectNamer {};
-
-uint32_t gVulkanGraphicsPluginQueueFamilyIndex = 0;
-
-VkQueue gVulkanGraphicsPluginVkQueue {VK_NULL_HANDLE};
-
-VkSemaphore gVulkanGraphicsPluginVkSemaphoreDrawDone {VK_NULL_HANDLE};
-
-std::array<float, 4> gVulkanGraphicsPluginStdArray_float_4_clearColor;
-
-PFN_vkCreateDebugUtilsMessengerEXT gVulkanGraphicsPluginVkCreateDebugUtilsMessengerEXT {nullptr};
-
-VkDebugUtilsMessengerEXT gVulkanGraphicsPluginVkDebugUtilsMessenger {VK_NULL_HANDLE};
 
 void VulkanGraphicsPlugin_VulkanGraphicsPlugin_Destructor()
 {
