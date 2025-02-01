@@ -95,17 +95,7 @@ std::string GetXrVersionString(XrVersion ver);
 
 XrReferenceSpaceCreateInfo GetXrReferenceSpaceCreateInfo(const std::string& referenceSpaceTypeStr);
 
-void OpenXrProgram_LogLayersAndExtensions();
-
-void OpenXrProgram_OpenXrProgram();
-
 void OpenXrProgram_OpenXrProgram_Destructor();
-
-void OpenXrProgram_OpenXrProgramLogInstanceInfo();
-
-void OpenXrProgram_OpenXrProgramCreateInstanceInternal();
-
-void OpenXrProgram_OpenXrProgramCreateInstance();
 
 // Instance RuntimeName = Oculus RuntimeVersion = 71.601.0
 // Available View Configuration Types: (1)
@@ -122,13 +112,7 @@ void OpenXrProgram_OpenXrProgramLogViewConfigurations();
 
 void OpenXrProgram_OpenXrProgramLogEnvironmentBlendMode(XrViewConfigurationType type);
 
-XrEnvironmentBlendMode OpenXrProgram_OpenXrProgramGetPreferredBlendMode();
-
-void OpenXrProgram_OpenXrProgramInitializeSystem();
-
 void OpenXrProgram_OpenXrProgramInitializeDevice();
-
-void OpenXrProgram_OpenXrProgramLogReferenceSpaces();
 
 //struct OpenXrProgram_InputState
 //{
@@ -150,10 +134,6 @@ void OpenXrProgram_OpenXrProgramLogReferenceSpaces();
 //
 //  std::array<XrBool32, Side_COUNT> handActive;
 //};
-
-void OpenXrProgram_OpenXrProgramInitializeActions();
-
-void OpenXrProgram_OpenXrProgramCreateVisualizedSpaces();
 
 const XrEventDataBaseHeader* OpenXrProgram_OpenXrProgramTryReadNextEvent();
 
@@ -178,5 +158,3 @@ void OpenXrProgram_OpenXrProgramPollActions();
 void OpenXrProgram_OpenXrProgramRenderFrame();
 
 bool OpenXrProgram_OpenXrProgramRenderLayer(XrTime predictedDisplayTime, std::vector<XrCompositionLayerProjectionView>& projectionLayerViews, XrCompositionLayerProjection& layer);
-
-void OpenXrProgram_CreateOpenXrProgram();

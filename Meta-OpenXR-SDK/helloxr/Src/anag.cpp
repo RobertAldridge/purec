@@ -471,7 +471,7 @@ try
   VulkanGraphicsPlugin_CreateGraphicsPlugin_Vulkan();
 
   // Initialize the OpenXR program.
-  OpenXrProgram_CreateOpenXrProgram();
+  // nop
 
   // Initialize the loader for this platform
   PFN_xrInitializeLoaderKHR initializeLoader = nullptr;
@@ -491,10 +491,148 @@ try
     initializeLoader( (const XrLoaderInitInfoBaseHeaderKHR*) &loaderInitInfoAndroid);
   }
 
-  OpenXrProgram_OpenXrProgramCreateInstance();
-  OpenXrProgram_OpenXrProgramInitializeSystem();
+  // Write out extension properties for a given layer.
+  const auto logExtensions = [](const char* layerName, int indent = 0 )
+  {
+    uint32_t instanceExtensionCount = 0;
 
-  Options_SetEnvironmentBlendMode(OpenXrProgram_OpenXrProgramGetPreferredBlendMode() );
+    if(tableXr.EnumerateInstanceExtensionProperties)
+      CHECK_XRCMD_CHECK(tableXr.EnumerateInstanceExtensionProperties(layerName, 0, &instanceExtensionCount, nullptr) );
+
+    std::vector<XrExtensionProperties> extensions(instanceExtensionCount, {XR_TYPE_EXTENSION_PROPERTIES} );
+
+    if(tableXr.EnumerateInstanceExtensionProperties)
+      CHECK_XRCMD_CHECK(tableXr.EnumerateInstanceExtensionProperties(layerName, (uint32_t)extensions.size(), &instanceExtensionCount, extensions.data() ) );
+
+    const std::string indentStr(indent, ' ');
+
+    Log::Write(Log::Level::Verbose, Fmt("%sAvailable Extensions: (%d)", indentStr.c_str(), instanceExtensionCount) );
+
+    for(const XrExtensionProperties& extension : extensions)
+      Log::Write(Log::Level::Verbose, Fmt("%s  Name=%s SpecVersion=%d", indentStr.c_str(), extension.extensionName, extension.extensionVersion) );
+  };
+
+  // Log non-layer extensions (layerName==nullptr).
+  logExtensions(nullptr);
+
+  // Log layers and any of their extensions.
+  {
+    uint32_t layerCount = 0;
+
+    if(tableXr.EnumerateApiLayerProperties)
+      CHECK_XRCMD_CHECK(tableXr.EnumerateApiLayerProperties(0, &layerCount, nullptr) );
+
+    std::vector<XrApiLayerProperties> layers(layerCount, {XR_TYPE_API_LAYER_PROPERTIES} );
+
+    if(tableXr.EnumerateApiLayerProperties)
+      CHECK_XRCMD_CHECK(tableXr.EnumerateApiLayerProperties( (uint32_t)layers.size(), &layerCount, layers.data() ) );
+
+    Log::Write(Log::Level::Info, Fmt("Available Layers: (%d)", layerCount) );
+
+    for(const XrApiLayerProperties& layer : layers)
+    {
+      Log::Write(Log::Level::Verbose, Fmt("  Name=%s SpecVersion=%s LayerVersion=%d Description=%s", layer.layerName, GetXrVersionString(layer.specVersion).c_str(), layer.layerVersion, layer.description) );
+
+      logExtensions(layer.layerName, 4);
+    }
+  }
+
+  CHECK_CHECK(gXrInstance == XR_NULL_HANDLE);
+
+  // Create union of extensions required by platform and graphics plugins.
+  std::vector<const char*> extensions;
+
+  // Transform platform and graphics extension std::strings to C strings.
+
+  const std::vector<std::string> platformExtensions = {XR_KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME};
+
+  std::transform(platformExtensions.begin(), platformExtensions.end(), std::back_inserter(extensions), [] (const std::string& ext) { return ext.c_str(); } );
+
+  const std::vector<std::string> graphicsExtensions = VulkanGraphicsPlugin_VulkanGraphicsPluginGetInstanceExtensions();
+  std::transform(graphicsExtensions.begin(), graphicsExtensions.end(), std::back_inserter(extensions), [] (const std::string& ext) { return ext.c_str(); } );
+
+  XrInstanceCreateInfo createInfo {XR_TYPE_INSTANCE_CREATE_INFO};
+  createInfo.next = &instanceCreateInfoAndroid;
+
+  // passthrough
+  extensions.push_back(XR_FB_PASSTHROUGH_EXTENSION_NAME);
+  extensions.push_back(XR_FB_TRIANGLE_MESH_EXTENSION_NAME);
+
+  // depth
+  extensions.push_back(XR_META_ENVIRONMENT_DEPTH_EXTENSION_NAME);
+
+  createInfo.enabledExtensionCount = (uint32_t)extensions.size();
+  createInfo.enabledExtensionNames = extensions.data();
+
+  strcpy(createInfo.applicationInfo.applicationName, "HelloXR");
+
+  // Current version is 1.1.x, but helloxr only requires 1.0.x
+  createInfo.applicationInfo.apiVersion = XR_API_VERSION_1_0;
+
+  for(int index = 0; index < extensions.size(); index++)
+    Log::Write(Log::Level::Info, Fmt("blah %i %s", index, extensions[index] ) );
+
+  // available Layers: (0)
+  // blah 0 XR_KHR_android_create_instance
+  // blah 1 XR_KHR_vulkan_enable
+  // blah 2 XR_FB_passthrough
+  // blah 3 XR_FB_triangle_mesh
+  // blah 4 XR_META_environment_depth
+
+  if(tableXr.CreateInstance)
+    CHECK_XRCMD_CHECK(tableXr.CreateInstance(&createInfo, &gXrInstance) );
+
+  CHECK_CHECK(gXrInstance != XR_NULL_HANDLE);
+
+  XrInstanceProperties instanceProperties {XR_TYPE_INSTANCE_PROPERTIES};
+
+  if(tableXr.GetInstanceProperties)
+    CHECK_XRCMD_CHECK(tableXr.GetInstanceProperties(gXrInstance, &instanceProperties) );
+
+  Log::Write(Log::Level::Info, Fmt("Instance RuntimeName=%s RuntimeVersion=%s", instanceProperties.runtimeName, GetXrVersionString(instanceProperties.runtimeVersion).c_str() ) );
+
+  CHECK_CHECK(gXrInstance != XR_NULL_HANDLE);
+  CHECK_CHECK(gXrSystemId == XR_NULL_SYSTEM_ID);
+
+  XrSystemGetInfo systemInfo {XR_TYPE_SYSTEM_GET_INFO};
+  systemInfo.formFactor = gOptions_XrFormFactor;
+
+  if(tableXr.GetSystem)
+    CHECK_XRCMD_CHECK(tableXr.GetSystem(gXrInstance, &systemInfo, &gXrSystemId) );
+
+  Log::Write(Log::Level::Verbose, Fmt("Using system %d for form factor %s", gXrSystemId, to_string(gOptions_XrFormFactor) ) );
+  CHECK_CHECK(gXrInstance != XR_NULL_HANDLE);
+  CHECK_CHECK(gXrSystemId != XR_NULL_SYSTEM_ID);
+
+  XrEnvironmentBlendMode environmentBlendMode = gOptions_XrEnvironmentBlendMode;
+
+  uint32_t count = 0;
+  bool found = false;
+
+  if(tableXr.EnumerateEnvironmentBlendModes)
+    CHECK_XRCMD_CHECK(tableXr.EnumerateEnvironmentBlendModes(gXrInstance, gXrSystemId, gOptions_XrViewConfigurationType, 0, &count, nullptr) );
+
+  CHECK_CHECK(count > 0);
+
+  std::vector<XrEnvironmentBlendMode> blendModes(count);
+
+  if(tableXr.EnumerateEnvironmentBlendModes)
+    CHECK_XRCMD_CHECK(tableXr.EnumerateEnvironmentBlendModes(gXrInstance, gXrSystemId, gOptions_XrViewConfigurationType, count, &count, blendModes.data() ) );
+
+  for(const auto& blendMode : blendModes)
+  {
+    if(gOpenXrProgramStdSet_XrEnvironmentBlendMode.count(blendMode) )
+    {
+      environmentBlendMode = blendMode;
+      found = true;
+      break;
+    }
+  }
+
+  if( !found)
+    THROW_CHECK("No acceptable blend mode returned from the tableXr.EnumerateEnvironmentBlendModes");
+
+  Options_SetEnvironmentBlendMode(environmentBlendMode);
 
   AnagUpdateOptionsFromSystemProperties();
 
@@ -519,9 +657,291 @@ try
       CHECK_XRCMD_CHECK(tableXr.CreateSession(gXrInstance, &createInfo, &gXrSession) );
   }
 
-  OpenXrProgram_OpenXrProgramLogReferenceSpaces();
-  OpenXrProgram_OpenXrProgramInitializeActions();
-  OpenXrProgram_OpenXrProgramCreateVisualizedSpaces();
+  CHECK_CHECK(gXrSession != XR_NULL_HANDLE);
+
+  uint32_t spaceCount = 0;
+
+  if(tableXr.EnumerateReferenceSpaces)
+    CHECK_XRCMD_CHECK(tableXr.EnumerateReferenceSpaces(gXrSession, 0, &spaceCount, nullptr) );
+
+  std::vector<XrReferenceSpaceType> spaces(spaceCount);
+
+  if(tableXr.EnumerateReferenceSpaces)
+    CHECK_XRCMD_CHECK(tableXr.EnumerateReferenceSpaces(gXrSession, spaceCount, &spaceCount, spaces.data() ) );
+
+  Log::Write(Log::Level::Info, Fmt("Available reference spaces: %d", spaceCount) );
+
+  for(XrReferenceSpaceType space : spaces)
+    Log::Write(Log::Level::Verbose, Fmt("  Name: %s", to_string(space) ) );
+
+  // Create an action set.
+  {
+    XrActionSetCreateInfo actionSetInfo {XR_TYPE_ACTION_SET_CREATE_INFO};
+    strncpy(actionSetInfo.actionSetName, "gameplay", sizeof(actionSetInfo.actionSetName) );
+    strncpy(actionSetInfo.localizedActionSetName, "Gameplay", sizeof(actionSetInfo.localizedActionSetName) );
+    actionSetInfo.priority = 0;
+
+    if(tableXr.CreateActionSet)
+      CHECK_XRCMD_CHECK(tableXr.CreateActionSet(gXrInstance, &actionSetInfo, &gOpenXrProgramInputState_InputState_actionSet) );
+  }
+
+  // Get the XrPath for the left and right hands - we will use them as subaction paths.
+
+  if(tableXr.StringToPath)
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left", &gOpenXrProgramInputState_InputState_handSubactionPath[ Side_LEFT] ) );
+
+  if(tableXr.StringToPath)
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right", &gOpenXrProgramInputState_InputState_handSubactionPath[ Side_RIGHT] ) );
+
+  // Create actions.
+  {
+    // Create an input action for grabbing objects with the left and right hands.
+    XrActionCreateInfo actionInfo {XR_TYPE_ACTION_CREATE_INFO};
+    actionInfo.actionType = XR_ACTION_TYPE_FLOAT_INPUT;
+    strncpy(actionInfo.actionName, "grab_object", sizeof(actionInfo.actionName) );
+    strncpy(actionInfo.localizedActionName, "Grab Object", sizeof(actionInfo.localizedActionName) );
+    actionInfo.countSubactionPaths = uint32_t(gOpenXrProgramInputState_InputState_handSubactionPath.size() );
+    actionInfo.subactionPaths = gOpenXrProgramInputState_InputState_handSubactionPath.data();
+
+    if(tableXr.CreateAction)
+      CHECK_XRCMD_CHECK(tableXr.CreateAction(gOpenXrProgramInputState_InputState_actionSet, &actionInfo, &gOpenXrProgramInputState_InputState_grabAction) );
+
+    // Create an input action getting the left and right hand poses.
+    actionInfo.actionType = XR_ACTION_TYPE_POSE_INPUT;
+    strncpy(actionInfo.actionName, "hand_pose", sizeof(actionInfo.actionName) );
+    strncpy(actionInfo.localizedActionName, "Hand OpenXrProgram_Pose", sizeof(actionInfo.localizedActionName) );
+    actionInfo.countSubactionPaths = uint32_t(gOpenXrProgramInputState_InputState_handSubactionPath.size() );
+    actionInfo.subactionPaths = gOpenXrProgramInputState_InputState_handSubactionPath.data();
+
+    if(tableXr.CreateAction)
+      CHECK_XRCMD_CHECK(tableXr.CreateAction(gOpenXrProgramInputState_InputState_actionSet, &actionInfo, &gOpenXrProgramInputState_InputState_poseAction) );
+
+    // Create output actions for vibrating the left and right controller.
+    actionInfo.actionType = XR_ACTION_TYPE_VIBRATION_OUTPUT;
+    strncpy(actionInfo.actionName, "vibrate_hand", sizeof(actionInfo.actionName) );
+    strncpy(actionInfo.localizedActionName, "Vibrate Hand", sizeof(actionInfo.localizedActionName) );
+    actionInfo.countSubactionPaths = uint32_t(gOpenXrProgramInputState_InputState_handSubactionPath.size() );
+    actionInfo.subactionPaths = gOpenXrProgramInputState_InputState_handSubactionPath.data();
+
+    if(tableXr.CreateAction)
+      CHECK_XRCMD_CHECK(tableXr.CreateAction(gOpenXrProgramInputState_InputState_actionSet, &actionInfo, &gOpenXrProgramInputState_InputState_vibrateAction) );
+
+    // Create input actions for quitting the session using the left and right controller.
+    // Since it doesn't matter which hand did this, we do not specify subaction paths for it.
+    // We will just suggest bindings for both hands, where possible.
+    actionInfo.actionType = XR_ACTION_TYPE_BOOLEAN_INPUT;
+    strncpy(actionInfo.actionName, "quit_session", sizeof(actionInfo.actionName) );
+    strncpy(actionInfo.localizedActionName, "Quit Session", sizeof(actionInfo.localizedActionName) );
+    actionInfo.countSubactionPaths = 0;
+    actionInfo.subactionPaths = nullptr;
+
+    if(tableXr.CreateAction)
+      CHECK_XRCMD_CHECK(tableXr.CreateAction(gOpenXrProgramInputState_InputState_actionSet, &actionInfo, &gOpenXrProgramInputState_InputState_quitAction) );
+  }
+
+  std::array<XrPath, Side_COUNT> selectPath;
+  std::array<XrPath, Side_COUNT> squeezeValuePath;
+  std::array<XrPath, Side_COUNT> squeezeForcePath;
+  std::array<XrPath, Side_COUNT> squeezeClickPath;
+  std::array<XrPath, Side_COUNT> posePath;
+  std::array<XrPath, Side_COUNT> hapticPath;
+  std::array<XrPath, Side_COUNT> menuClickPath;
+  std::array<XrPath, Side_COUNT> bClickPath;
+  std::array<XrPath, Side_COUNT> triggerValuePath;
+
+  if(tableXr.StringToPath)
+  {
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/select/click", &selectPath[ Side_LEFT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/select/click", &selectPath[ Side_RIGHT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/squeeze/value", &squeezeValuePath[ Side_LEFT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/squeeze/value", &squeezeValuePath[ Side_RIGHT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/squeeze/force", &squeezeForcePath[ Side_LEFT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/squeeze/force", &squeezeForcePath[ Side_RIGHT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/squeeze/click", &squeezeClickPath[ Side_LEFT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/squeeze/click", &squeezeClickPath[ Side_RIGHT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/grip/pose", &posePath[ Side_LEFT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/grip/pose", &posePath[ Side_RIGHT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/output/haptic", &hapticPath[ Side_LEFT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/output/haptic", &hapticPath[ Side_RIGHT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/menu/click", &menuClickPath[ Side_LEFT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/menu/click", &menuClickPath[ Side_RIGHT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/b/click", &bClickPath[ Side_LEFT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/b/click", &bClickPath[ Side_RIGHT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/trigger/value", &triggerValuePath[ Side_LEFT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/trigger/value", &triggerValuePath[ Side_RIGHT] ) );
+  }
+
+  // Suggest bindings for KHR Simple.
+  {
+    XrPath khrSimpleInteractionProfilePath;
+
+    if(tableXr.StringToPath)
+      CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/interaction_profiles/khr/simple_controller", &khrSimpleInteractionProfilePath) );
+
+    std::vector<XrActionSuggestedBinding> bindings { {// Fall back to a click input for the grab action.
+                                                    {gOpenXrProgramInputState_InputState_grabAction, selectPath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_grabAction, selectPath[ Side_RIGHT]},
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_RIGHT]},
+                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[ Side_RIGHT]},
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_RIGHT]} } };
+
+    XrInteractionProfileSuggestedBinding suggestedBindings {XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
+
+    suggestedBindings.interactionProfile = khrSimpleInteractionProfilePath;
+    suggestedBindings.suggestedBindings = bindings.data();
+    suggestedBindings.countSuggestedBindings = (uint32_t)bindings.size();
+
+    if(tableXr.SuggestInteractionProfileBindings)
+      CHECK_XRCMD_CHECK(tableXr.SuggestInteractionProfileBindings(gXrInstance, &suggestedBindings) );
+  }
+
+  // Suggest bindings for the Oculus Touch.
+  {
+    XrPath oculusTouchInteractionProfilePath;
+
+    if(tableXr.StringToPath)
+      CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/interaction_profiles/oculus/touch_controller", &oculusTouchInteractionProfilePath) );
+
+    std::vector<XrActionSuggestedBinding> bindings { { {gOpenXrProgramInputState_InputState_grabAction, squeezeValuePath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_grabAction, squeezeValuePath[ Side_RIGHT]},
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_RIGHT]},
+                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_RIGHT]} } };
+
+    XrInteractionProfileSuggestedBinding suggestedBindings {XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
+
+    suggestedBindings.interactionProfile = oculusTouchInteractionProfilePath;
+    suggestedBindings.suggestedBindings = bindings.data();
+    suggestedBindings.countSuggestedBindings = (uint32_t)bindings.size();
+
+    if(tableXr.SuggestInteractionProfileBindings)
+      CHECK_XRCMD_CHECK(tableXr.SuggestInteractionProfileBindings(gXrInstance, &suggestedBindings) );
+  }
+
+  // Suggest bindings for the Vive Controller.
+  {
+    XrPath viveControllerInteractionProfilePath;
+
+    if(tableXr.StringToPath)
+      CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/interaction_profiles/htc/vive_controller", &viveControllerInteractionProfilePath) );
+
+    std::vector<XrActionSuggestedBinding> bindings { { {gOpenXrProgramInputState_InputState_grabAction, triggerValuePath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_grabAction, triggerValuePath[ Side_RIGHT]},
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_RIGHT]},
+                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[ Side_RIGHT]},
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_RIGHT]} } };
+
+    XrInteractionProfileSuggestedBinding suggestedBindings {XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
+
+    suggestedBindings.interactionProfile = viveControllerInteractionProfilePath;
+    suggestedBindings.suggestedBindings = bindings.data();
+    suggestedBindings.countSuggestedBindings = (uint32_t)bindings.size();
+
+    if(tableXr.SuggestInteractionProfileBindings)
+      CHECK_XRCMD_CHECK(tableXr.SuggestInteractionProfileBindings(gXrInstance, &suggestedBindings) );
+  }
+
+  // Suggest bindings for the Valve Index Controller.
+  {
+    XrPath indexControllerInteractionProfilePath;
+
+    if(tableXr.StringToPath)
+      CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/interaction_profiles/valve/index_controller", &indexControllerInteractionProfilePath) );
+
+    std::vector<XrActionSuggestedBinding> bindings { { {gOpenXrProgramInputState_InputState_grabAction, squeezeForcePath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_grabAction, squeezeForcePath[ Side_RIGHT]},
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_RIGHT]},
+                                                    {gOpenXrProgramInputState_InputState_quitAction, bClickPath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_quitAction, bClickPath[ Side_RIGHT]},
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_RIGHT]} } };
+
+    XrInteractionProfileSuggestedBinding suggestedBindings {XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
+
+    suggestedBindings.interactionProfile = indexControllerInteractionProfilePath;
+    suggestedBindings.suggestedBindings = bindings.data();
+    suggestedBindings.countSuggestedBindings = (uint32_t)bindings.size();
+
+    if(tableXr.SuggestInteractionProfileBindings)
+      CHECK_XRCMD_CHECK(tableXr.SuggestInteractionProfileBindings(gXrInstance, &suggestedBindings) );
+  }
+
+  // Suggest bindings for the Microsoft Mixed Reality Motion Controller.
+  {
+    XrPath microsoftMixedRealityInteractionProfilePath;
+
+    if(tableXr.StringToPath)
+      CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/interaction_profiles/microsoft/motion_controller", &microsoftMixedRealityInteractionProfilePath) );
+
+    std::vector<XrActionSuggestedBinding> bindings { { {gOpenXrProgramInputState_InputState_grabAction, squeezeClickPath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_grabAction, squeezeClickPath[ Side_RIGHT]},
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_RIGHT]},
+                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[ Side_RIGHT]},
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_RIGHT]} } };
+
+    XrInteractionProfileSuggestedBinding suggestedBindings {XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
+
+    suggestedBindings.interactionProfile = microsoftMixedRealityInteractionProfilePath;
+    suggestedBindings.suggestedBindings = bindings.data();
+    suggestedBindings.countSuggestedBindings = (uint32_t)bindings.size();
+
+    if(tableXr.SuggestInteractionProfileBindings)
+      CHECK_XRCMD_CHECK(tableXr.SuggestInteractionProfileBindings(gXrInstance, &suggestedBindings) );
+  }
+
+  XrActionSpaceCreateInfo actionSpaceInfo {XR_TYPE_ACTION_SPACE_CREATE_INFO};
+
+  actionSpaceInfo.action = gOpenXrProgramInputState_InputState_poseAction;
+  actionSpaceInfo.poseInActionSpace.orientation.w = 1.f;
+  actionSpaceInfo.subactionPath = gOpenXrProgramInputState_InputState_handSubactionPath[ Side_LEFT];
+
+  if(tableXr.CreateActionSpace)
+    CHECK_XRCMD_CHECK(tableXr.CreateActionSpace(gXrSession, &actionSpaceInfo, &gOpenXrProgramInputState_InputState_handSpace[ Side_LEFT] ) );
+
+  actionSpaceInfo.subactionPath = gOpenXrProgramInputState_InputState_handSubactionPath[ Side_RIGHT];
+
+  if(tableXr.CreateActionSpace)
+    CHECK_XRCMD_CHECK(tableXr.CreateActionSpace(gXrSession, &actionSpaceInfo, &gOpenXrProgramInputState_InputState_handSpace[ Side_RIGHT] ) );
+
+  XrSessionActionSetsAttachInfo attachInfo {XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO};
+  attachInfo.countActionSets = 1;
+  attachInfo.actionSets = &gOpenXrProgramInputState_InputState_actionSet;
+
+  if(tableXr.AttachSessionActionSets)
+    CHECK_XRCMD_CHECK(tableXr.AttachSessionActionSets(gXrSession, &attachInfo) );
+
+  CHECK_CHECK(gXrSession != XR_NULL_HANDLE);
+
+  std::string visualizedSpaces[] = {"ViewFront", "Local", "Stage", "StageLeft", "StageRight", "StageLeftRotated", "StageRightRotated"};
+
+  for(const auto& visualizedSpace : visualizedSpaces)
+  {
+    XrReferenceSpaceCreateInfo referenceSpaceCreateInfo = GetXrReferenceSpaceCreateInfo(visualizedSpace);
+
+    XrSpace space;
+
+    XrResult res = XR_ERROR_VALIDATION_FAILURE;
+
+    if(tableXr.CreateReferenceSpace)
+      res = tableXr.CreateReferenceSpace(gXrSession, &referenceSpaceCreateInfo, &space);
+
+    if(XR_SUCCEEDED(res) )
+      gOpenXrProgramStdVector_XrSpace.push_back(space);
+    else
+      Log::Write(Log::Level::Warning, Fmt("Failed to create reference space %s with error %d", visualizedSpace.c_str(), res) );
+  }
 
   {
     XrReferenceSpaceCreateInfo referenceSpaceCreateInfo = GetXrReferenceSpaceCreateInfo(gOptions_AppSpace);
