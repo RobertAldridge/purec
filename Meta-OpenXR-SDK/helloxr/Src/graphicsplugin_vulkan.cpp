@@ -1291,10 +1291,7 @@ void createGraphicsPipeline()
   colorBlending.logicOp = VK_LOGIC_OP_COPY;
   colorBlending.attachmentCount = 1;
   colorBlending.pAttachments = &colorBlendAttachment;
-  colorBlending.blendConstants[0] = 0.0f;
-  colorBlending.blendConstants[1] = 0.0f;
-  colorBlending.blendConstants[2] = 0.0f;
-  colorBlending.blendConstants[3] = 0.0f;
+  colorBlending.blendConstants = 0.0f;
 
   std::vector<VkDynamicState> dynamicStates = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
 
@@ -2791,10 +2788,7 @@ void SwapchainImageContext_SwapchainImageContext_PipelineCreate(int index, VkDev
   cb.pAttachments = &attachState;
   cb.logicOpEnable = VK_FALSE;
   cb.logicOp = VK_LOGIC_OP_NO_OP;
-  cb.blendConstants[0] = 1.0f;
-  cb.blendConstants[1] = 1.0f;
-  cb.blendConstants[2] = 1.0f;
-  cb.blendConstants[3] = 1.0f;
+  _operator_assign(cb.blendConstants, 1.0f);
 
   VkRect2D scissor = { {0, 0}, size};
 
@@ -2987,12 +2981,9 @@ PFN_vkCreateDebugUtilsMessengerEXT gVulkanGraphicsPluginVkCreateDebugUtilsMessen
 
 VkDebugUtilsMessengerEXT gVulkanGraphicsPluginVkDebugUtilsMessenger {VK_NULL_HANDLE};
 
-void VulkanGraphicsPlugin_VulkanGraphicsPlugin(
-  const std::shared_ptr<Options>& options,
-  std::shared_ptr<AndroidPlatformPlugin> /* unused */
-)
+void VulkanGraphicsPlugin_VulkanGraphicsPlugin()
 {
-  gVulkanGraphicsPluginStdArray_float_4_clearColor = options->GetBackgroundClearColor();
+  _operator_assign(gVulkanGraphicsPluginStdArray_float_4_clearColor, gOptions_BackgroundClearColor);
 
   gVulkanGraphicsPluginXrGraphicsBindingVulkan2KHR.type = VulkanGraphicsPlugin_VulkanGraphicsPluginGetGraphicsBindingType();
 }
@@ -3363,10 +3354,7 @@ void VulkanGraphicsPlugin_VulkanGraphicsPluginRenderView(const XrCompositionLaye
   // Bind and clear eye render target
   static std::array<VkClearValue, 2> clearValues;
 
-  clearValues[0].color.float32[0] = gVulkanGraphicsPluginStdArray_float_4_clearColor[0];
-  clearValues[0].color.float32[1] = gVulkanGraphicsPluginStdArray_float_4_clearColor[1];
-  clearValues[0].color.float32[2] = gVulkanGraphicsPluginStdArray_float_4_clearColor[2];
-  clearValues[0].color.float32[3] = gVulkanGraphicsPluginStdArray_float_4_clearColor[3];
+  _operator_assign(clearValues[0].color.float32, gVulkanGraphicsPluginStdArray_float_4_clearColor);
   clearValues[1].depthStencil.depth = 1.0f;
   clearValues[1].depthStencil.stencil = 0;
 
@@ -3438,9 +3426,9 @@ uint32_t VulkanGraphicsPlugin_VulkanGraphicsPluginGetSupportedSwapchainSampleCou
   return VK_SAMPLE_COUNT_1_BIT;
 }
 
-void VulkanGraphicsPlugin_VulkanGraphicsPluginUpdateOptions(const std::shared_ptr<Options>& options)
+void VulkanGraphicsPlugin_VulkanGraphicsPluginUpdateOptions()
 {
-  gVulkanGraphicsPluginStdArray_float_4_clearColor = options->GetBackgroundClearColor();
+  _operator_assign(gVulkanGraphicsPluginStdArray_float_4_clearColor, gOptions_BackgroundClearColor);
 }
 
 VkBool32 VulkanGraphicsPlugin_VulkanGraphicsPluginDebugMessage(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData)
@@ -3592,7 +3580,7 @@ XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsRequirements2
   return result;
 }
 
-void VulkanGraphicsPlugin_CreateGraphicsPlugin_Vulkan(const std::shared_ptr<Options>& options, std::shared_ptr<AndroidPlatformPlugin> platformPlugin)
+void VulkanGraphicsPlugin_CreateGraphicsPlugin_Vulkan()
 {
-  VulkanGraphicsPlugin_VulkanGraphicsPlugin(options, std::move(platformPlugin) );
+  VulkanGraphicsPlugin_VulkanGraphicsPlugin();
 }

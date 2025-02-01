@@ -1,27 +1,18 @@
 
 // platformplugin.h
 
-struct PlatformData
-{
-  void* applicationVM;
-  void* applicationActivity;
-};
-
 #ifdef __cplusplus
 
-struct AndroidPlatformPlugin
+inline void AndroidPlatformPlugin_UpdateOptions()
 {
-  AndroidPlatformPlugin(const std::shared_ptr<Options>& /*unused*/, const std::shared_ptr<PlatformData>& data);
+  // options
+  // nop
+}
 
-  std::vector<std::string> GetInstanceExtensions() const;
-
-  XrBaseInStructure* GetInstanceCreateExtension() const;
-
-  void UpdateOptions(const std::shared_ptr<struct Options>& /*unused*/);
-
-  XrInstanceCreateInfoAndroidKHR instanceCreateInfoAndroid;
-};
-
-std::shared_ptr<AndroidPlatformPlugin> CreatePlatformPlugin_Android(const std::shared_ptr<Options>& options, const std::shared_ptr<struct PlatformData>& data);
+inline void CreatePlatformPlugin_Android()
+{
+  // options
+  // nop
+}
 
 #endif

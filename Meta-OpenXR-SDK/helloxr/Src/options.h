@@ -73,68 +73,69 @@ inline const char* GetXrEnvironmentBlendModeStr(XrEnvironmentBlendMode environme
   }
 }
 
-struct Options
+inline void Options_SetEnvironmentBlendMode(XrEnvironmentBlendMode /*environmentBlendMode*/)
 {
-  std::string GraphicsPlugin;
+  // environmentBlendMode
+  // nop
+}
 
-  std::string FormFactor {"Hmd"};
+inline void _operator_assign(std::array<float, 4>& lhs, const float rhs[4] )
+{
+  lhs[0] = rhs[0];
+  lhs[1] = rhs[1];
+  lhs[2] = rhs[2];
+  lhs[3] = rhs[3];
+}
 
-  std::string ViewConfiguration {"Stereo"};
+inline void _operator_assign(float lhs[4], const std::array<float, 4>& rhs)
+{
+  lhs[0] = rhs[0];
+  lhs[1] = rhs[1];
+  lhs[2] = rhs[2];
+  lhs[3] = rhs[3];
+}
 
-  std::string EnvironmentBlendMode {"Opaque"};
+inline void _operator_assign(float lhs[4], float rhs)
+{
+  lhs[0] = rhs;
+  lhs[1] = rhs;
+  lhs[2] = rhs;
+  lhs[3] = rhs;
+}
 
-  std::string AppSpace {"Local"};
+inline void _operator_assign(std::array<float, 4>& lhs, float rhs)
+{
+  lhs[0] = rhs;
+  lhs[1] = rhs;
+  lhs[2] = rhs;
+  lhs[3] = rhs;
+}
 
-  struct
-  {
-    XrFormFactor FormFactor {XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY};
+constexpr char gOptions_GraphicsPlugin[] {'V', 'u', 'l', 'k', 'a', 'n', 0};
 
-    XrViewConfigurationType ViewConfigType {XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO};
+constexpr char gOptions_StringFormFactor[] {'H', 'm', 'd', 0};
 
-    XrEnvironmentBlendMode EnvironmentBlendMode {XR_ENVIRONMENT_BLEND_MODE_OPAQUE};
+constexpr char gOptions_StringViewConfigurationType[] {'S', 't', 'e', 'r', 'e', 'o', 0};
 
-  }Parsed;
+constexpr char gOptions_StringEnvironmentBlendMode[] {'O', 'p', 'a', 'q', 'u', 'e', 0};
 
-  void ParseStrings()
-  {
-    Parsed.FormFactor = GetXrFormFactor(FormFactor);
-    Parsed.ViewConfigType = GetXrViewConfigurationType(ViewConfiguration);
-    Parsed.EnvironmentBlendMode = GetXrEnvironmentBlendMode(EnvironmentBlendMode);
-  }
+constexpr char gOptions_AppSpace[] {'L', 'o', 'c', 'a', 'l', 0};
 
-  std::array<float, 4> GetBackgroundClearColor() const
-  {
-    static const std::array<float, 4> SlateGrey {0.184313729f, 0.309803933f, 0.309803933f, 1.0f};
-    static const std::array<float, 4> TransparentBlack {0.0f, 0.0f, 0.0f, 0.0f};
-    static const std::array<float, 4> Black {0.0f, 0.0f, 0.0f, 1.0f};
+constexpr XrFormFactor gOptions_XrFormFactor {XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY};
 
-#if 0
-    switch(Parsed.EnvironmentBlendMode)
-    {
+constexpr XrViewConfigurationType gOptions_XrViewConfigurationType {XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO};
 
-    case XR_ENVIRONMENT_BLEND_MODE_OPAQUE:
-        return SlateGrey;
+//XR_ENVIRONMENT_BLEND_MODE_OPAQUE
+//XR_ENVIRONMENT_BLEND_MODE_ADDITIVE
+//XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND
+constexpr XrEnvironmentBlendMode gOptions_XrEnvironmentBlendMode {XR_ENVIRONMENT_BLEND_MODE_OPAQUE/*XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND*/};
 
-    case XR_ENVIRONMENT_BLEND_MODE_ADDITIVE:
-        return Black;
+constexpr float gOptions_SlateGrey[4] {0.184313729f, 0.309803933f, 0.309803933f, 1.0f};
+constexpr float gOptions_Grey[4] {0.5f, 0.5f, 0.5f, 1.0f};
+constexpr float gOptions_TransparentBlack[4] {0.0f, 0.0f, 0.0f, 0.0f};
+constexpr float gOptions_Black[4] {0.0f, 0.0f, 0.0f, 1.0f};
 
-    case XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND:
-        return TransparentBlack;
-
-    default:
-        return SlateGrey;
-
-    }
-#else
-    return TransparentBlack;
-#endif
-  }
-
-  void SetEnvironmentBlendMode(XrEnvironmentBlendMode environmentBlendMode)
-  {
-    EnvironmentBlendMode = GetXrEnvironmentBlendModeStr(environmentBlendMode);
-    Parsed.EnvironmentBlendMode = environmentBlendMode;
-  }
-};
+// gOptions_BackgroundClearColor = gOptions_TransparentBlack
+constexpr float gOptions_BackgroundClearColor[4] {0.0f, 0.0f, 0.0f, 0.0f};
 
 #endif

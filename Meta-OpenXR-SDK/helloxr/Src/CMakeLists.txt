@@ -25,7 +25,6 @@ set(
   openxr_reflection_structs.h
   options.h
   pch.h
-  platform_utils.h
   platformplugin.h
   shaderc.h
   shaderc_build_info.h
@@ -65,7 +64,6 @@ set(
   object_info.cpp
   openxr_program.cpp
   pch.cpp
-  platformplugin_android.cpp
   vulcan_wrapper.cpp
   xr_generated_dispatch_table_core.cpp
   C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libHLSL.a

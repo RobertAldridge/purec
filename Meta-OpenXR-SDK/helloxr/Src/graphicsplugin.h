@@ -15,7 +15,7 @@ std::string VulkanGraphicsPlugin_BlahVkObjectTypeToString(VkObjectType objectTyp
 
 VKAPI_ATTR VkBool32 VKAPI_CALL VulkanGraphicsPlugin_debugMessageThunk(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData);
 
-void VulkanGraphicsPlugin_VulkanGraphicsPlugin(const std::shared_ptr<Options>& options, std::shared_ptr<AndroidPlatformPlugin> /*unused*/);
+void VulkanGraphicsPlugin_VulkanGraphicsPlugin();
 
 void VulkanGraphicsPlugin_VulkanGraphicsPlugin_Destructor();
 
@@ -43,7 +43,7 @@ void VulkanGraphicsPlugin_VulkanGraphicsPluginRenderView(const XrCompositionLaye
 
 uint32_t VulkanGraphicsPlugin_VulkanGraphicsPluginGetSupportedSwapchainSampleCount(const XrViewConfigurationView& );
 
-void VulkanGraphicsPlugin_VulkanGraphicsPluginUpdateOptions(const std::shared_ptr<Options>& options);
+void VulkanGraphicsPlugin_VulkanGraphicsPluginUpdateOptions();
 
 VkBool32 VulkanGraphicsPlugin_VulkanGraphicsPluginDebugMessage(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData);
 
@@ -59,6 +59,6 @@ XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsDevice2KHR(Xr
 
 XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsRequirements2KHR(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsVulkan2KHR* graphicsRequirements);
 
-void VulkanGraphicsPlugin_CreateGraphicsPlugin_Vulkan(const std::shared_ptr<Options>& options, std::shared_ptr<AndroidPlatformPlugin> platformPlugin);
+void VulkanGraphicsPlugin_CreateGraphicsPlugin_Vulkan();
 
 #endif

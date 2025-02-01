@@ -19,117 +19,60 @@ enum class Side
   COUNT = 2
 };
 
-struct OpenXrProgram
-{
-  OpenXrProgram(const std::shared_ptr<Options>& options, const std::shared_ptr<AndroidPlatformPlugin>& platformPlugin);
+void OpenXrProgram_OpenXrProgram();
 
-  ~OpenXrProgram();
+void OpenXrProgram_OpenXrProgram_Destructor();
 
-  void OpenXrProgramLogInstanceInfo();
+void OpenXrProgram_OpenXrProgramLogInstanceInfo();
 
-  void OpenXrProgramCreateInstanceInternal();
+void OpenXrProgram_OpenXrProgramCreateInstanceInternal();
 
-  void OpenXrProgramCreateInstance();
+void OpenXrProgram_OpenXrProgramCreateInstance();
 
-  void OpenXrProgramLogViewConfigurations();
+void OpenXrProgram_OpenXrProgramLogViewConfigurations();
 
-  void OpenXrProgramLogEnvironmentBlendMode(XrViewConfigurationType type);
+void OpenXrProgram_OpenXrProgramLogEnvironmentBlendMode(XrViewConfigurationType type);
 
-  XrEnvironmentBlendMode OpenXrProgramGetPreferredBlendMode() const;
+XrEnvironmentBlendMode OpenXrProgram_OpenXrProgramGetPreferredBlendMode();
 
-  void OpenXrProgramInitializeSystem();
+void OpenXrProgram_OpenXrProgramInitializeSystem();
 
-  void OpenXrProgramInitializeDevice();
+void OpenXrProgram_OpenXrProgramInitializeDevice();
 
-  void OpenXrProgramLogReferenceSpaces();
+void OpenXrProgram_OpenXrProgramLogReferenceSpaces();
 
-  struct InputState
-  {
-    XrActionSet actionSet {XR_NULL_HANDLE};
+void OpenXrProgram_OpenXrProgramInitializeActions();
 
-    XrAction grabAction {XR_NULL_HANDLE};
+void OpenXrProgram_OpenXrProgramCreateVisualizedSpaces();
 
-    XrAction poseAction {XR_NULL_HANDLE};
+void OpenXrProgram_OpenXrProgramInitializeSession();
 
-    XrAction vibrateAction {XR_NULL_HANDLE};
+void OpenXrProgram_OpenXrProgramCreateSwapchains();
 
-    XrAction quitAction {XR_NULL_HANDLE};
+const XrEventDataBaseHeader* OpenXrProgram_OpenXrProgramTryReadNextEvent();
 
-    std::array<XrPath, (int)Side::COUNT> handSubactionPath;
+void OpenXrProgram_OpenXrProgramPollEvents(bool* exitRenderLoop, bool* requestRestart);
 
-    std::array<XrSpace, (int)Side::COUNT> handSpace;
+void OpenXrProgram_OpenXrProgramHandleSessionStateChangedEvent(const XrEventDataSessionStateChanged& stateChangedEvent, bool* exitRenderLoop, bool* requestRestart);
 
-    std::array<float, (int)Side::COUNT> handScale = { {1.0f, 1.0f} };
+void OpenXrProgram_OpenXrProgramLogActionSourceName(XrAction action, const std::string& actionName);
 
-    std::array<XrBool32, (int)Side::COUNT> handActive;
-  };
+bool OpenXrProgram_OpenXrProgramIsSessionRunning();
 
-  void OpenXrProgramInitializeActions();
+bool OpenXrProgram_OpenXrProgramIsSessionFocused();
 
-  void OpenXrProgramCreateVisualizedSpaces();
+void OpenXrProgram_OpenXrProgramPollActions();
 
-  void OpenXrProgramInitializeSession();
+// Unreal UOculusXRFunctionLibrary::SetSuggestedCpuAndGpuPerformanceLevels (exposed in Blueprint)
+//
+// Unity OVRPlugin::suggestedCpuPerfLevel, OVRPlugin::suggestedGpuPerfLevel
+//
+// Native ovrp_SetSuggestedCpuPerformanceLevel, ovrp_GetSuggestedGpuPerformanceLevel
 
-  void OpenXrProgramCreateSwapchains();
+void OpenXrProgram_OpenXrProgramRenderFrame();
 
-  const XrEventDataBaseHeader* OpenXrProgramTryReadNextEvent();
+bool OpenXrProgram_OpenXrProgramRenderLayer(XrTime predictedDisplayTime, std::vector<XrCompositionLayerProjectionView>& projectionLayerViews, XrCompositionLayerProjection& layer);
 
-  void OpenXrProgramPollEvents(bool* exitRenderLoop, bool* requestRestart);
-
-  void OpenXrProgramHandleSessionStateChangedEvent(const XrEventDataSessionStateChanged& stateChangedEvent, bool* exitRenderLoop, bool* requestRestart);
-
-  void OpenXrProgramLogActionSourceName(XrAction action, const std::string& actionName) const;
-
-  bool OpenXrProgramIsSessionRunning() const;
-
-  bool OpenXrProgramIsSessionFocused() const;
-
-  void OpenXrProgramPollActions();
-
-  // Unreal UOculusXRFunctionLibrary::SetSuggestedCpuAndGpuPerformanceLevels (exposed in Blueprint)
-  //
-  // Unity OVRPlugin::suggestedCpuPerfLevel, OVRPlugin::suggestedGpuPerfLevel
-  //
-  // Native ovrp_SetSuggestedCpuPerformanceLevel, ovrp_GetSuggestedGpuPerformanceLevel
-
-  void OpenXrProgramRenderFrame();
-
-  bool OpenXrProgramRenderLayer(XrTime predictedDisplayTime, std::vector<XrCompositionLayerProjectionView>& projectionLayerViews, XrCompositionLayerProjection& layer);
-
-private:
-
-  const std::shared_ptr<const Options> m_OpenXrProgramStdSharedPtr_Options;
-
-  std::shared_ptr<AndroidPlatformPlugin> m_OpenXrProgramStdSharedPtr_AndroidPlatformPlugin;
-
-  XrSpace m_OpenXrProgramXrSpace {XR_NULL_HANDLE};
-
-  std::vector<XrViewConfigurationView> m_OpenXrProgramStdVector_XrViewConfigurationView;
-
-  std::vector<Swapchain> m_OpenXrProgramStdVector_Swapchain;
-
-  std::map<XrSwapchain, std::vector<XrSwapchainImageBaseHeader*> > m_OpenXrProgramStdMap_XrSwapchain_StdVectorXrSwapchainImageBaseHeader;
-
-  std::vector<XrView> m_OpenXrProgramStdVector_XrView;
-
-  int64_t m_OpenXrProgramColorSwapchainFormat {-1};
-
-  std::vector<XrSpace> m_OpenXrProgramStdVector_XrSpace;
-
-  // Application's current lifecycle state according to the runtime
-  XrSessionState m_OpenXrProgramXrSessionState {XR_SESSION_STATE_UNKNOWN};
-
-  bool m_OpenXrProgramSessionRunning {false};
-
-  XrEventDataBuffer m_OpenXrProgramXrEventDataBuffer;
-
-  InputState m_OpenXrProgramInputState;
-
-  const std::set<XrEnvironmentBlendMode> m_OpenXrProgramStdSet_XrEnvironmentBlendMode;
-
-  friend void OpenXrProgram_LogLayersAndExtensions();
-};
-
-std::shared_ptr<OpenXrProgram> OpenXrProgram_CreateOpenXrProgram(const std::shared_ptr<Options>& options, const std::shared_ptr<AndroidPlatformPlugin>& platformPlugin);
+void OpenXrProgram_CreateOpenXrProgram();
 
 #endif

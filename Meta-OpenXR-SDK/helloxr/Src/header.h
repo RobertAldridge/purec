@@ -190,7 +190,7 @@
 
 #define XR_ARCH_ABI "arm64-v8a"
 
-//#include "platform_utils.h"
+#include "platformplugin.h"
 
 #include <dlfcn.h>
 
@@ -286,7 +286,6 @@ extern XrSystemId gXrSystemId;
 #include "shaderc.h"
 #include "shaderc_hpp.h"
 
-#include "platformplugin.h"
 #include "graphicsplugin.h"
 
 #include "openxr_program.h"
@@ -326,3 +325,15 @@ inline const char* to_string(XrFormFactor e);
 
 // todo
 #include "memory.h"
+
+//struct XrInstanceCreateInfoAndroidKHR
+//{
+//  XrStructureType type;
+//  const void* next;
+//  void* applicationVM;
+//  void* applicationActivity;
+//};
+
+extern XrInstanceCreateInfoAndroidKHR instanceCreateInfoAndroid;
+
+#define countof(blah) (sizeof(blah) / sizeof(blah[0] ) )

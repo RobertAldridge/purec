@@ -14,42 +14,39 @@ void ShowHelp()
   Log::Write(Log::Level::Info, "adb shell setprop debug.xr.blendMode Opaque | Additive | AlphaBlend");
 }
 
-bool UpdateOptionsFromSystemProperties(Options& options)
+bool UpdateOptionsFromSystemProperties()
 {
-  options.GraphicsPlugin = "Vulkan";
+  // options.GraphicsPlugin
+  // nop
 
   char value[PROP_VALUE_MAX] = {};
 
   if(__system_property_get("debug.xr.graphicsPlugin", value) != 0)
   {
-    options.GraphicsPlugin = value;
+    // options.GraphicsPlugin
+	// nop
   }
 
   if(__system_property_get("debug.xr.formFactor", value) != 0)
   {
-    options.FormFactor = value;
+    // options.FormFactor
+	// nop
   }
 
   if(__system_property_get("debug.xr.viewConfiguration", value) != 0)
   {
-    options.ViewConfiguration = value;
+    // options.ViewConfiguration
+	// nop
   }
 
   if(__system_property_get("debug.xr.blendMode", value) != 0)
   {
-    options.EnvironmentBlendMode = value;
+    // options.EnvironmentBlendMode
+	// nop
   }
 
-  try
-  {
-    options.ParseStrings();
-  }
-  catch(std::invalid_argument& ia)
-  {
-    Log::Write(Log::Level::Error, ia.what() );
-    ShowHelp();
-    return false;
-  }
+  // options
+  // nop
 
   return true;
 }
@@ -132,6 +129,16 @@ static void app_handle_cmd(struct android_app* app, int32_t cmd)
   }
 }
 
+//struct XrInstanceCreateInfoAndroidKHR
+//{
+//  XrStructureType type;
+//  const void* next;
+//  void* applicationVM;
+//  void* applicationActivity;
+//};
+
+XrInstanceCreateInfoAndroidKHR instanceCreateInfoAndroid {XR_TYPE_INSTANCE_CREATE_INFO_ANDROID_KHR, 0, 0, 0};
+
 /**
  * This is the main entry point of a native application that is using
  * anag.  It runs in its own thread, with its own
@@ -149,14 +156,11 @@ void android_main(struct android_app* app)
     app->userData = &appState;
     app->onAppCmd = app_handle_cmd;
 
-    std::shared_ptr<Options> options = std::make_shared<Options>();
-
-    if(!UpdateOptionsFromSystemProperties(*options) )
+    if( !UpdateOptionsFromSystemProperties() )
       return;
 
-    std::shared_ptr<PlatformData> data = std::make_shared<PlatformData>();
-    data->applicationVM = app->activity->vm;
-    data->applicationActivity = app->activity->clazz;
+    instanceCreateInfoAndroid.applicationVM = app->activity->vm;
+    instanceCreateInfoAndroid.applicationActivity = app->activity->clazz;
 
     bool requestRestart = false;
     bool exitRenderLoop = false;
@@ -167,14 +171,13 @@ void android_main(struct android_app* app)
     if(InitVulkan() )
       Log::Write(Log::Level::Verbose, "vk 1");
 
-    // Create platform-specific implementation.
-    std::shared_ptr<AndroidPlatformPlugin> platformPlugin = CreatePlatformPlugin_Android(options, data);
+    CreatePlatformPlugin_Android();
 
     // Create graphics API implementation.
-    VulkanGraphicsPlugin_CreateGraphicsPlugin_Vulkan(options, platformPlugin);
+    VulkanGraphicsPlugin_CreateGraphicsPlugin_Vulkan();
 
     // Initialize the OpenXR program.
-    std::shared_ptr<OpenXrProgram> program = OpenXrProgram_CreateOpenXrProgram(options, platformPlugin);
+    OpenXrProgram_CreateOpenXrProgram();
 
     // Initialize the loader for this platform
     PFN_xrInitializeLoaderKHR initializeLoader = nullptr;
@@ -194,17 +197,20 @@ void android_main(struct android_app* app)
       initializeLoader( (const XrLoaderInitInfoBaseHeaderKHR*) &loaderInitInfoAndroid);
     }
 
-    program->OpenXrProgramCreateInstance();
-    program->OpenXrProgramInitializeSystem();
+    OpenXrProgram_OpenXrProgramCreateInstance();
+    OpenXrProgram_OpenXrProgramInitializeSystem();
 
-    options->SetEnvironmentBlendMode(program->OpenXrProgramGetPreferredBlendMode() );
-    UpdateOptionsFromSystemProperties(*options);
-    platformPlugin->UpdateOptions(options);
-    VulkanGraphicsPlugin_VulkanGraphicsPluginUpdateOptions(options);
+    Options_SetEnvironmentBlendMode(OpenXrProgram_OpenXrProgramGetPreferredBlendMode() );
 
-    program->OpenXrProgramInitializeDevice();
-    program->OpenXrProgramInitializeSession();
-    program->OpenXrProgramCreateSwapchains();
+    UpdateOptionsFromSystemProperties();
+
+	AndroidPlatformPlugin_UpdateOptions();
+
+    VulkanGraphicsPlugin_VulkanGraphicsPluginUpdateOptions();
+
+    OpenXrProgram_OpenXrProgramInitializeDevice();
+    OpenXrProgram_OpenXrProgramInitializeSession();
+    OpenXrProgram_OpenXrProgramCreateSwapchains();
 
     while(app->destroyRequested == 0)
     {
@@ -216,7 +222,7 @@ void android_main(struct android_app* app)
 
         // If the timeout is zero, returns immediately without blocking.
         // If the timeout is negative, waits indefinitely until an event appears.
-        const int timeoutMilliseconds = (!appState.Resumed && !program->OpenXrProgramIsSessionRunning() && app->destroyRequested == 0) ? -1 : 0;
+        const int timeoutMilliseconds = (!appState.Resumed && !OpenXrProgram_OpenXrProgramIsSessionRunning() && app->destroyRequested == 0) ? -1 : 0;
 
         if(ALooper_pollOnce(timeoutMilliseconds, nullptr, &events, (void**)&source) < 0)
           break;
@@ -226,7 +232,7 @@ void android_main(struct android_app* app)
           source->process(app, source);
       }
 
-      program->OpenXrProgramPollEvents(&exitRenderLoop, &requestRestart);
+      OpenXrProgram_OpenXrProgramPollEvents( &exitRenderLoop, &requestRestart);
 
       if(exitRenderLoop)
       {
@@ -234,15 +240,15 @@ void android_main(struct android_app* app)
         continue;
       }
 
-      if(!program->OpenXrProgramIsSessionRunning() )
+      if( !OpenXrProgram_OpenXrProgramIsSessionRunning() )
       {
         // Throttle loop since xrWaitFrame won't be called.
         std::this_thread::sleep_for(std::chrono::milliseconds(250) );
         continue;
       }
 
-      program->OpenXrProgramPollActions();
-      program->OpenXrProgramRenderFrame();
+      OpenXrProgram_OpenXrProgramPollActions();
+      OpenXrProgram_OpenXrProgramRenderFrame();
     }
 
     app->activity->vm->DetachCurrentThread();
