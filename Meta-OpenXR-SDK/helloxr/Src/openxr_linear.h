@@ -582,7 +582,7 @@ inline static void XrMatrix4x4f_CreateProjection(
   const float tanAngleHeight = tanAngleDown - tanAngleUp;
 
   // Set to nearZ for a [-1,1] Z clip space (OpenGL / OpenGL ES).
-  // Set to zero for a [0,1] Z clip space (Vulkan / D3D / Metal).
+  // Set to zero for a [0,1] Z clip space (Vulkan).
   const float offsetZ = 0;
 
   if(farZ <= nearZ)

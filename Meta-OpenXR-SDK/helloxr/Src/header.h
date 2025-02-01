@@ -141,6 +141,9 @@
 #include <pthread.h>
 #include <sched.h>
 
+class _jobject;
+typedef _jobject* jobject;
+
 #include "anag.h"
 
 #include <jni.h>
