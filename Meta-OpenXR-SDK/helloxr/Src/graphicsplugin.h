@@ -151,13 +151,145 @@ extern VkDebugUtilsMessengerEXT gVulkanGraphicsPluginVkDebugUtilsMessenger;
 
 const std::vector<VkFormat> VulkanTutorialDepthFormatCandidates = {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT};
 
-//constexpr char VertexShaderGlsl[];
+constexpr char VertexShaderGlsl[] =
+R"_(
 
-//constexpr char FragmentShaderGlsl[];
+  #version 430
+  #extension GL_ARB_separate_shader_objects : enable
 
-//constexpr char SIX_DOF_VERTEX_SHADER[];
+  layout (std140, push_constant) uniform buf
+  {
+    mat4 mvp;
 
-//constexpr char SIX_DOF_FRAGMENT_SHADER[];
+  }ubuf;
+
+  layout (location = 0) in vec3 Position;
+  layout (location = 1) in vec3 Color;
+
+  layout (location = 0) out vec4 oColor;
+
+  out gl_PerVertex
+  {
+    vec4 gl_Position;
+  };
+
+  void main()
+  {
+    oColor = vec4(Color, 1.0);
+
+    gl_Position = ubuf.mvp * vec4(Position, 1.0);
+  }
+
+)_";
+
+constexpr char FragmentShaderGlsl[] =
+R"_(
+
+  #version 430
+  #extension GL_ARB_separate_shader_objects : enable
+
+  layout (location = 0) in vec4 oColor;
+
+  layout (location = 0) out vec4 FragColor;
+
+  in vec4 gl_FragCoord;
+
+  void main()
+  {
+    FragColor = oColor;
+    //FragColor = vec4(min(abs(gl_FragCoord.w), 1.0), 0, 0, oColor.a);
+  }
+
+)_";
+
+constexpr char SIX_DOF_VERTEX_SHADER[] =
+R"_(
+
+  #define NUM_VIEWS 2
+  #define VIEW_ID gl_ViewID_OVR
+  #extension GL_OVR_multiview2 : require
+
+  layout (num_views = NUM_VIEWS) in;
+
+  in vec3 vertexPosition;
+  in vec4 vertexColor;
+
+  uniform mat4 ModelMatrix;
+
+  uniform SceneMatrices
+  {
+    uniform mat4 ViewMatrix[NUM_VIEWS];
+    uniform mat4 ProjectionMatrix[NUM_VIEWS];
+
+  }sm;
+
+  out vec4 fragmentColor;
+  out vec4 cubeWorldPosition;
+
+  void main()
+  {
+    cubeWorldPosition = ModelMatrix * vec4(vertexPosition, 1.0f);
+
+    gl_Position = sm.ProjectionMatrix[VIEW_ID] * sm.ViewMatrix[VIEW_ID] * cubeWorldPosition;
+
+    fragmentColor = vertexColor;
+  }
+
+)_";
+
+constexpr char SIX_DOF_FRAGMENT_SHADER[] =
+R"_(
+
+  #define NUM_VIEWS 2
+  #define VIEW_ID gl_ViewID_OVR
+  #extension GL_OVR_multiview2 : require
+  #extension GL_ARB_shading_language_420pack : enable
+
+  in lowp vec4 fragmentColor;
+  in lowp vec4 cubeWorldPosition;
+
+  uniform highp mat4 DepthViewMatrix[NUM_VIEWS];
+  uniform highp mat4 DepthProjectionMatrix[NUM_VIEWS];
+
+  layout(binding = 0) uniform highp sampler2DArray EnvironmentDepthTexture;
+
+  out lowp vec4 outColor;
+
+  void main()
+  {
+    // Transform from world space to depth camera space using 6-DOF matrix
+    highp vec4 cubeDepthCameraPosition = DepthProjectionMatrix[VIEW_ID] * DepthViewMatrix[VIEW_ID] * cubeWorldPosition;
+
+    // 3D point --> Homogeneous Coordinates --> Normalized Coordinates in [0,1]
+    highp vec2 cubeDepthCameraPositionHC = cubeDepthCameraPosition.xy / cubeDepthCameraPosition.w;
+    cubeDepthCameraPositionHC = cubeDepthCameraPositionHC * 0.5f + 0.5f;
+
+    // Sample from Environment Depth API texture
+    highp vec3 depthViewCoord = vec3(cubeDepthCameraPositionHC, VIEW_ID);
+    highp float depthViewEyeZ = texture(EnvironmentDepthTexture, depthViewCoord).r;
+
+    // Get virtual object depth
+    highp float cubeDepth = cubeDepthCameraPosition.z / cubeDepthCameraPosition.w;
+    cubeDepth = cubeDepth * 0.5f + 0.5f;
+
+    // Test virtual object depth with environment depth.
+    // If the virtual object is further away (occluded) output a transparent color so real scene content from PT layer is displayed.
+    outColor = fragmentColor;
+
+    if (cubeDepth < depthViewEyeZ)
+    {
+      outColor.a = 1.0f; // fully opaque
+    }
+    else
+    {
+      // invisible
+      outColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    }
+
+    gl_FragDepth = cubeDepth;
+  }
+
+)_";
 
 extern std::array<VkPipelineShaderStageCreateInfo, 2> gShaderProgramShaderInfo;
 
@@ -394,8 +526,6 @@ const char* VulkanGraphicsPlugin_VulkanGraphicsPluginGetValidationLayerName();
 
 // compile a shader to a SPIR-V binary
 std::vector<uint32_t> VulkanGraphicsPlugin_VulkanGraphicsPluginCompileGlslShader(const std::string& name, shaderc_shader_kind kind, const std::string& source);
-
-void VulkanGraphicsPlugin_VulkanGraphicsPluginInitializeResources();
 
 int64_t VulkanGraphicsPlugin_VulkanGraphicsPluginSelectColorSwapchainFormat(const std::vector<int64_t>& runtimeFormats);
 

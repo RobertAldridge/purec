@@ -899,7 +899,40 @@ try
 
   MemoryAllocator_MemoryAllocatorInit(gVkPhysicalDevice);
 
-  VulkanGraphicsPlugin_VulkanGraphicsPluginInitializeResources();
+  auto vertexSPIRV = VulkanGraphicsPlugin_VulkanGraphicsPluginCompileGlslShader("vertex", shaderc_glsl_default_vertex_shader, VertexShaderGlsl);
+  auto fragmentSPIRV = VulkanGraphicsPlugin_VulkanGraphicsPluginCompileGlslShader("fragment", shaderc_glsl_default_fragment_shader, FragmentShaderGlsl);
+
+  if(vertexSPIRV.empty() ) THROW_CHECK("Failed to compile vertex shader");
+
+  if(fragmentSPIRV.empty() ) THROW_CHECK("Failed to compile fragment shader");
+
+  ShaderProgram_ShaderProgramInit(gVkDevice);
+  ShaderProgram_ShaderProgramLoadVertexShader(vertexSPIRV);
+  ShaderProgram_ShaderProgramLoadFragmentShader(fragmentSPIRV);
+
+  // Semaphore to block on draw complete
+  VkSemaphoreCreateInfo semInfo {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
+
+  if(tableVk.CreateSemaphore)
+    CHECK_VULKANCMD(tableVk.CreateSemaphore(gVkDevice, &semInfo, nullptr, &gVulkanGraphicsPluginVkSemaphoreDrawDone) );
+
+  CHECK_VULKANCMD(gVulkanGraphicsPluginVulkanDebugObjectNamer.SetName(VK_OBJECT_TYPE_SEMAPHORE, (uint64_t)gVulkanGraphicsPluginVkSemaphoreDrawDone, "helloxr draw done semaphore") );
+
+  if(!CmdBuffer_CmdBufferInit(gVulkanGraphicsPluginVulkanDebugObjectNamer, gVkDevice, gVulkanGraphicsPluginQueueFamilyIndex) ) THROW_CHECK("Failed to create command buffer");
+
+  //gVkPipelineLayout.PipelineLayoutCreate(gVkDevice);
+  PipelineLayout_PipelineLayoutCreate(gVkDevice);
+
+  static_assert(sizeof(Geometry::Vertex) == 24, "Unexpected Vertex size");
+
+  VertexBufferBase_VertexBufferBaseInit( { {0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Position) }, {1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Color) } } );
+
+  uint32_t numCubeIdicies = sizeof(Geometry::c_cubeIndices) / sizeof(Geometry::c_cubeIndices[0] );
+  uint32_t numCubeVerticies = sizeof(Geometry::c_cubeVertices) / sizeof(Geometry::c_cubeVertices[0] );
+
+  VertexBuffer_VertexBufferCreate(numCubeIdicies, numCubeVerticies);
+  VertexBuffer_VertexBufferUpdateIndices(Geometry::c_cubeIndices, numCubeIdicies, 0);
+  VertexBuffer_VertexBufferUpdateVertices(Geometry::c_cubeVertices, numCubeVerticies, 0);
 
   gVulkanGraphicsPluginXrGraphicsBindingVulkan2KHR.instance = gVkInstance;
   gVulkanGraphicsPluginXrGraphicsBindingVulkan2KHR.physicalDevice = gVkPhysicalDevice;
