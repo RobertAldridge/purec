@@ -235,6 +235,7 @@ extern XrSystemId gXrSystemId;
 #include "check.h"
 
 #include "vulkan_plugin.h"
+#include "vulkan_tutorial.h"
 
 #include "openxr_plugin.h"
 

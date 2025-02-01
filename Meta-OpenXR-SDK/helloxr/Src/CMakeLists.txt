@@ -31,7 +31,6 @@ set(
   shaderc_hpp.h
   shaderc_status.h
   shaderc_visibility.h
-  unique_asset.h
   vk_icd.h
   vk_layer.h
   vk_platform.h
@@ -41,6 +40,7 @@ set(
   vulcan_core2.h
   vulkan_debug_object_namer.h
   vulkan_plugin.h
+  vulkan_tutorial.h
   vulkan_video_codec_h264std.h
   vulkan_video_codec_h264std_decode.h
   vulkan_video_codec_h264std_encode.h
@@ -60,6 +60,7 @@ set(
   openxr_vtable.cpp
   pch.cpp
   vulkan_plugin.cpp
+  vulkan_tutorial.cpp
   vulkan_vtable.cpp
   C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libHLSL.a
   C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libOGLCompiler.a
