@@ -129,8 +129,6 @@ void OpenXrProgram_OpenXrProgram_Destructor();
 //  std::array<XrBool32, Side_COUNT> handActive;
 //};
 
-void OpenXrProgram_OpenXrProgramLogActionSourceName(XrAction action, const std::string& actionName);
-
 bool OpenXrProgram_OpenXrProgramIsSessionRunning();
 
 bool OpenXrProgram_OpenXrProgramIsSessionFocused();

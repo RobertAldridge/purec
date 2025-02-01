@@ -226,58 +226,6 @@ void OpenXrProgram_OpenXrProgram_Destructor()
 //  std::array<XrBool32, Side_COUNT> handActive;
 //};
 
-void OpenXrProgram_OpenXrProgramLogActionSourceName(XrAction action, const std::string& actionName)
-{
-  XrBoundSourcesForActionEnumerateInfo getInfo = {XR_TYPE_BOUND_SOURCES_FOR_ACTION_ENUMERATE_INFO};
-
-  getInfo.action = action;
-
-  uint32_t pathCount = 0;
-
-  if(tableXr.EnumerateBoundSourcesForAction)
-    CHECK_XRCMD_CHECK(tableXr.EnumerateBoundSourcesForAction(gXrSession, &getInfo, 0, &pathCount, nullptr) );
-
-  std::vector<XrPath> paths(pathCount);
-
-  if(tableXr.EnumerateBoundSourcesForAction)
-    CHECK_XRCMD_CHECK(tableXr.EnumerateBoundSourcesForAction(gXrSession, &getInfo, uint32_t(paths.size() ), &pathCount, paths.data() ) );
-
-  std::string sourceName;
-
-  for(uint32_t i = 0; i < pathCount; ++i)
-  {
-    constexpr XrInputSourceLocalizedNameFlags all = XR_INPUT_SOURCE_LOCALIZED_NAME_USER_PATH_BIT | XR_INPUT_SOURCE_LOCALIZED_NAME_INTERACTION_PROFILE_BIT | XR_INPUT_SOURCE_LOCALIZED_NAME_COMPONENT_BIT;
-
-    XrInputSourceLocalizedNameGetInfo nameInfo = {XR_TYPE_INPUT_SOURCE_LOCALIZED_NAME_GET_INFO};
-
-    nameInfo.sourcePath = paths[i];
-    nameInfo.whichComponents = all;
-
-    uint32_t size = 0;
-
-    if(tableXr.GetInputSourceLocalizedName)
-      CHECK_XRCMD_CHECK(tableXr.GetInputSourceLocalizedName(gXrSession, &nameInfo, 0, &size, nullptr) );
-
-    if(size < 1)
-      continue;
-
-    std::vector<char> grabSource(size);
-
-    if(tableXr.GetInputSourceLocalizedName)
-      CHECK_XRCMD_CHECK(tableXr.GetInputSourceLocalizedName(gXrSession, &nameInfo, uint32_t(grabSource.size() ), &size, grabSource.data() ) );
-
-    if(!sourceName.empty() )
-      sourceName += " and ";
-
-    sourceName += "'";
-    sourceName += std::string(grabSource.data(), size - 1);
-
-    sourceName += "'";
-  }
-
-  Log::Write(Log::Level::Info, Fmt("%s action is bound to %s", actionName.c_str(), ( (!sourceName.empty() ) ? sourceName.c_str() : "nothing") ) );
-}
-
 bool OpenXrProgram_OpenXrProgramIsSessionRunning()
 {
   return gOpenXrProgramSessionRunning;
