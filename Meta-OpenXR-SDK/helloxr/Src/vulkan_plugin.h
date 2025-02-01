@@ -1,5 +1,5 @@
 
-// graphicsplugin.h
+// vulkan_plugin.h
 
 #define THROW_VULKAN(res, cmd) ThrowVkResult(res, #cmd, FILE_AND_LINE_CHECK)
 

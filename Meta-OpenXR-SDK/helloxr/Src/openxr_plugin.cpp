@@ -1,5 +1,5 @@
 
-// openxr_program.cpp
+// openxr_plugin.cpp
 
 #include "header.h"
 

@@ -1,5 +1,5 @@
 
-// vulkan_wrapper.h
+// vulkan_vtable.h
 
 struct VkGeneratedDispatchTableCore
 {

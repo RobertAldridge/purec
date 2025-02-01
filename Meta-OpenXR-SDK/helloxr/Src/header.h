@@ -188,7 +188,7 @@
 #include "vulkan_android.h"
 #include "vulkan_beta.h"
 
-#include "vulkan_wrapper.h"
+#include "vulkan_vtable.h"
 
 #include "vk_layer.h"
 
@@ -225,6 +225,7 @@ extern XrSystemId gXrSystemId;
 
 #include "geometry.h"
 
+#include "shaderc_build_info.h"
 #include "shaderc_env.h"
 #include "shaderc_status.h"
 #include "shaderc_visibility.h"
@@ -233,11 +234,11 @@ extern XrSystemId gXrSystemId;
 
 #include "check.h"
 
-#include "graphicsplugin.h"
+#include "vulkan_plugin.h"
 
-#include "openxr_program.h"
+#include "openxr_plugin.h"
 
-#include "xr_generated_dispatch_table_core.h"
+#include "openxr_vtable.h"
 
 extern struct XrGeneratedDispatchTableCore tableXr;
 
@@ -250,7 +251,7 @@ inline const char* to_string(XrSessionState e);
 inline const char* to_string(XrResult e);
 inline const char* to_string(XrFormFactor e);
 
-#include "xr_linear.h"
+#include "openxr_linear.h"
 
 #include "hex_and_handles.h"
 
@@ -260,6 +261,8 @@ inline const char* to_string(XrFormFactor e);
 
 // todo
 #include "memory.h"
+
+#include "pch.h"
 
 //struct XrInstanceCreateInfoAndroidKHR
 //{

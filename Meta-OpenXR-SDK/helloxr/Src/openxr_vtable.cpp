@@ -1,5 +1,5 @@
 
-// xr_generated_dispatch_table_core.cpp
+// openxr_vtable.cpp
 
 #include "header.h"
 

@@ -1,5 +1,5 @@
 
-// openxr_program.h
+// openxr_plugin.h
 
 struct Swapchain
 {

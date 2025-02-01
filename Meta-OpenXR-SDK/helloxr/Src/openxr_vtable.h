@@ -1,5 +1,5 @@
 
-// xr_generated_dispatch_table_core.h
+// openxr_vtable.h
 
 struct XrGeneratedDispatchTableCore
 {

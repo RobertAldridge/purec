@@ -1,5 +1,5 @@
 
-// graphicsplugin_vulkan.cpp
+// vulkan_plugin.cpp
 
 #include "header.h"
 

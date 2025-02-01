@@ -6,22 +6,22 @@ set(
   anag.h
   check.h
   common.h
-  exception_handling.h
   extra_algorithms.h
   geometry.h
-  graphicsplugin.h
   header.h
   hex_and_handles.h
   logger.h
   object_info.h
   openxr.h
+  openxr_linear.h
   openxr_loader_negotiation.h
   openxr_platform.h
   openxr_platform_defines.h
-  openxr_program.h
+  openxr_plugin.h
   openxr_reflection.h
   openxr_reflection_parent_structs.h
   openxr_reflection_structs.h
+  openxr_vtable.h
   options.h
   pch.h
   platformplugin.h
@@ -40,7 +40,7 @@ set(
   vulcan_core1.h
   vulcan_core2.h
   vulkan_debug_object_namer.h
-  vulcan_hpp.h
+  vulkan_plugin.h
   vulkan_video_codec_h264std.h
   vulkan_video_codec_h264std_decode.h
   vulkan_video_codec_h264std_encode.h
@@ -48,21 +48,19 @@ set(
   vulkan_video_codec_h265std_decode.h
   vulkan_video_codec_h265std_encode.h
   vulkan_video_codecs_common.h
-  vulcan_wrapper.h
-  xr_generated_dispatch_table_core.h
-  xr_linear.h
+  vulkan_vtable.h
 )
 
 set(
   LOCAL_SOURCE
   anag.cpp
-  graphicsplugin_vulkan.cpp
   logger.cpp
   object_info.cpp
-  openxr_program.cpp
+  openxr_plugin.cpp
+  openxr_vtable.cpp
   pch.cpp
-  vulcan_wrapper.cpp
-  xr_generated_dispatch_table_core.cpp
+  vulkan_plugin.cpp
+  vulkan_vtable.cpp
   C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libHLSL.a
   C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libOGLCompiler.a
   C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libOSDependent.a

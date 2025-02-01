@@ -1,5 +1,5 @@
 
-// xr_linear.h
+// openxr_linear.h
 
 #define MATH_PI 3.14159265358979323846f
 
