@@ -1,10 +1,6 @@
 
 // vulkan_video_codec_h264std_encode.h
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 // vulkan_video_codec_h264std_encode is a preprocessor guard. Do not pass it to API calls.
 #define vulkan_video_codec_h264std_encode 1
 
@@ -123,8 +119,3 @@ typedef struct StdVideoEncodeH264SliceHeader {
     StdVideoH264DisableDeblockingFilterIdc    disable_deblocking_filter_idc;
     const StdVideoEncodeH264WeightTable*      pWeightTable;
 } StdVideoEncodeH264SliceHeader;
-
-
-#ifdef __cplusplus
-}
-#endif

@@ -1,10 +1,6 @@
 
 // anag.h
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 struct android_app;
 
 struct android_poll_source
@@ -91,16 +87,12 @@ enum
   APP_CMD_DESTROY
 };
 
-int8_t android_app_read_cmd(struct android_app* android_app);
+//int8_t android_app_read_cmd(struct android_app* android_app);
 
-void android_app_pre_exec_cmd(struct android_app* android_app, int8_t cmd);
+//void android_app_pre_exec_cmd(struct android_app* android_app, int8_t cmd);
 
-void android_app_post_exec_cmd(struct android_app* android_app, int8_t cmd);
+//void android_app_post_exec_cmd(struct android_app* android_app, int8_t cmd);
 
-__attribute__ ( (deprecated("Calls to app_dummy are no longer necessary. See https://github.com/android-ndk/ndk/issues/381.") ) ) void app_dummy();
+//__attribute__ ( (deprecated("Calls to app_dummy are no longer necessary. See https://github.com/android-ndk/ndk/issues/381.") ) ) void app_dummy();
 
-extern void android_main(struct android_app* app);
-
-#ifdef __cplusplus
-}
-#endif
+//extern void android_main(struct android_app* app);

@@ -1,10 +1,6 @@
 
 // openxr_loader_negotiation.h
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define XR_LOADER_VERSION_1_0 1
 
 #define XR_CURRENT_LOADER_API_LAYER_VERSION 1
@@ -116,7 +112,3 @@ XRAPI_ATTR XrResult XRAPI_CALL xrNegotiateLoaderApiLayerInterface(const XrNegoti
 #endif /* XR_EXTENSION_PROTOTYPES */
 
 #endif /* !XR_NO_PROTOTYPES */
-
-#ifdef __cplusplus
-}
-#endif

@@ -3,19 +3,11 @@
 
 #include "header.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 XrInstance gXrInstance = XR_NULL_HANDLE;
 
 XrSession gXrSession = XR_NULL_HANDLE;
 
 XrSystemId gXrSystemId = XR_NULL_SYSTEM_ID;
-
-#ifdef __cplusplus
-}
-#endif
 
 XrActionSet gOpenXrProgramInputState_InputState_actionSet {XR_NULL_HANDLE};
 

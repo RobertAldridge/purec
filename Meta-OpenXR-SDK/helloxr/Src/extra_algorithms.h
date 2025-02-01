@@ -1,8 +1,6 @@
 
 // extra_algorithms.h
 
-#ifdef __cplusplus
-
 template <typename T, typename Pred> static inline void map_erase_if(T& container, Pred&& predicate)
 {
   for(auto it = container.begin(); it != container.end(); )
@@ -21,5 +19,3 @@ template <typename T, typename Alloc, typename Pred> static inline void vector_r
 
   vec.erase(std::remove_if(b, e, std::forward<Pred>(predicate) ), e);
 }
-
-#endif

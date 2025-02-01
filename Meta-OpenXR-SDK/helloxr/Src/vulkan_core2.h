@@ -1,9 +1,7 @@
 
 // vulkan_core2.h
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 
 // VK_KHR_video_encode_h264 is a preprocessor guard. Do not pass it to API calls.
 #define VK_KHR_video_encode_h264 1
@@ -11099,6 +11097,4 @@ VKAPI_ATTR void VKAPI_CALL vkCmdDrawMeshTasksIndirectCountEXT(
     uint32_t                                    stride);
 #endif
 
-#ifdef __cplusplus
 }
-#endif

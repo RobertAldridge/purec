@@ -1,10 +1,6 @@
 
 // openxr_platform_defines.h
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define XRAPI_ATTR
 #define XRAPI_CALL
 #define XRAPI_PTR
@@ -25,13 +21,13 @@ extern "C" {
 
 #endif
 
-#if !defined(XR_CPP11_ENABLED) && defined(__cplusplus)
+#if !defined(XR_CPP11_ENABLED)
 
 #if defined(__GNUC__) && defined(__GXX_EXPERIMENTAL_CXX0X__)
 #define XR_CPP11_ENABLED 1
 #elif defined(_MSC_VER) && (_MSC_VER >= 1600)
 #define XR_CPP11_ENABLED 1
-#elif(__cplusplus >= 201103L) // 201103 is the first C++11 version.
+#else
 #define XR_CPP11_ENABLED 1
 #endif
 
@@ -52,7 +48,3 @@ extern "C" {
 #if !defined(XR_CPP_NULLPTR_SUPPORTED)
 #define XR_CPP_NULLPTR_SUPPORTED 0
 #endif // !defined(XR_CPP_NULLPTR_SUPPORTED)
-
-#ifdef __cplusplus
-}
-#endif

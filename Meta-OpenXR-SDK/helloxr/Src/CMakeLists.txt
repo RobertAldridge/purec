@@ -56,11 +56,10 @@ set(
 
 set(
   LOCAL_SOURCE
-  anag.c
+  anag.cpp
   filesystem_utils.cpp
   graphicsplugin_vulkan.cpp
   logger.cpp
-  main.cpp
   object_info.cpp
   openxr_program.cpp
   pch.cpp

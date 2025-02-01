@@ -1,10 +1,6 @@
 
 // vulkan_video_codec_h264std_decode.h
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 // vulkan_video_codec_h264std_decode is a preprocessor guard. Do not pass it to API calls.
 #define vulkan_video_codec_h264std_decode 1
 
@@ -53,7 +49,3 @@ typedef struct StdVideoDecodeH264ReferenceInfo {
     uint16_t                                reserved;
     int32_t                                 PicOrderCnt[STD_VIDEO_DECODE_H264_FIELD_ORDER_COUNT_LIST_SIZE];
 } StdVideoDecodeH264ReferenceInfo;
-
-#ifdef __cplusplus
-}
-#endif

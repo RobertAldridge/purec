@@ -3,15 +3,7 @@
 
 #include "header.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 struct XrGeneratedDispatchTableCore tableXr;
-
-#ifdef __cplusplus
-}
-#endif
 
 // dispatch tableXr blah function
 int InitOpenXr()

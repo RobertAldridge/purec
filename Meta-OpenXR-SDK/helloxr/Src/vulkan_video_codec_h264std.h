@@ -1,10 +1,6 @@
 
 // vulkan_video_codec_h264std.h
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 // vulkan_video_codec_h264std is a preprocessor guard. Do not pass it to API calls.
 #define vulkan_video_codec_h264std 1
 
@@ -289,7 +285,3 @@ typedef struct StdVideoH264PictureParameterSet {
     int8_t                             second_chroma_qp_index_offset;
     const StdVideoH264ScalingLists*    pScalingLists;
 } StdVideoH264PictureParameterSet;
-
-#ifdef __cplusplus
-}
-#endif

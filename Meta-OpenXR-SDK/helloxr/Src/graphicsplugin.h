@@ -7,8 +7,6 @@ struct Cube
   XrVector3f Scale;
 };
 
-#ifdef __cplusplus
-
 constexpr VkFlags MemoryAllocator_m_memoryAllocatorDefaultFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
 std::string VulkanGraphicsPlugin_BlahVkObjectTypeToString(VkObjectType objectType);
@@ -60,5 +58,3 @@ XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsDevice2KHR(Xr
 XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsRequirements2KHR(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsVulkan2KHR* graphicsRequirements);
 
 void VulkanGraphicsPlugin_CreateGraphicsPlugin_Vulkan();
-
-#endif

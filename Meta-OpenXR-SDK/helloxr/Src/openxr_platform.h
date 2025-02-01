@@ -1,10 +1,6 @@
 
 // openxr_platform.h
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define XR_KHR_android_thread_settings 1
 #define XR_KHR_android_thread_settings_SPEC_VERSION 6
 #define XR_KHR_ANDROID_THREAD_SETTINGS_EXTENSION_NAME "XR_KHR_android_thread_settings"
@@ -321,7 +317,3 @@ typedef struct XrVulkanSwapchainCreateInfoMETA {
     VkImageCreateFlags          additionalCreateFlags;
     VkImageUsageFlags           additionalUsageFlags;
 } XrVulkanSwapchainCreateInfoMETA;
-
-#ifdef __cplusplus
-}
-#endif

@@ -1,8 +1,6 @@
 
 // check.h
 
-#ifdef __cplusplus
-
 #define CHK_STRINGIFY(x) #x
 
 #define TOSTRING(x) CHK_STRINGIFY(x)
@@ -56,6 +54,3 @@ inline XrResult CheckXrResult(XrResult res, const char* originator = nullptr, co
 #define CHECK_XRCMD(cmd) CheckXrResult(cmd, #cmd, FILE_AND_LINE)
 
 #define CHECK_XRRESULT(res, cmdStr) CheckXrResult(res, cmdStr, FILE_AND_LINE)
-
-#endif
-

@@ -1,8 +1,6 @@
 
 // platformplugin.h
 
-#ifdef __cplusplus
-
 inline void AndroidPlatformPlugin_UpdateOptions()
 {
   // options
@@ -14,5 +12,3 @@ inline void CreatePlatformPlugin_Android()
   // options
   // nop
 }
-
-#endif

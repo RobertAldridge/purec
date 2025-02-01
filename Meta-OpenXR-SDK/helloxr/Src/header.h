@@ -1,8 +1,6 @@
 
 // header.h
 
-#ifdef __cplusplus
-
 #include <cassert>
 //#include <ccomplex>
 #include <cctype>
@@ -121,41 +119,6 @@
 #include <vector>
 #include <version>
 
-#else
-
-#include <assert.h>
-#include <complex.h>
-#include <ctype.h>
-#include <errno.h>
-#include <fenv.h>
-#include <float.h>
-#include <inttypes.h>
-#include <limits.h>
-#include <locale.h>
-#include <math.h>
-#include <setjmp.h>
-#include <signal.h>
-#include <stdalign.h>
-#include <stdarg.h>
-#include <stdatomic.h>
-//#include <stdbit.h>
-#include <stdbool.h>
-#include <stdckdint.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdnoreturn.h>
-#include <string.h>
-#include <tgmath.h>
-#include <threads.h>
-#include <time.h>
-#include <uchar.h>
-#include <wchar.h>
-#include <wctype.h>
-
-#endif
-
 #define USE_EXPERIMENTAL_FS 0
 #define USE_FINAL_FS 1
 
@@ -233,10 +196,6 @@
 
 #include "vk_icd.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 extern struct VkGeneratedDispatchTableCore tableVk;
 
 extern VkInstance gVkInstance;
@@ -244,10 +203,6 @@ extern VkInstance gVkInstance;
 extern VkDevice gVkDevice;
 
 extern VkPhysicalDevice gVkPhysicalDevice;
-
-#ifdef __cplusplus
-}
-#endif
 
 #include "vulkan_debug_object_namer.h"
 
@@ -260,19 +215,11 @@ extern VkPhysicalDevice gVkPhysicalDevice;
 #include "openxr_reflection_structs.h"
 #include "openxr_reflection_parent_structs.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 extern XrInstance gXrInstance;
 
 extern XrSession gXrSession;
 
 extern XrSystemId gXrSystemId;
-
-#ifdef __cplusplus
-}
-#endif
 
 #include "logger.h"
 #include "common.h"
@@ -292,17 +239,8 @@ extern XrSystemId gXrSystemId;
 
 #include "xr_generated_dispatch_table_core.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 extern struct XrGeneratedDispatchTableCore tableXr;
 
-#ifdef __cplusplus
-}
-#endif
-
-#ifdef __cplusplus
 inline std::string Fmt(const char* fmt, ...);
 
 inline const char* to_string(XrReferenceSpaceType e);
@@ -311,7 +249,6 @@ inline const char* to_string(XrEnvironmentBlendMode e);
 inline const char* to_string(XrSessionState e);
 inline const char* to_string(XrResult e);
 inline const char* to_string(XrFormFactor e);
-#endif
 
 #include "check.h"
 

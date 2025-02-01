@@ -1,9 +1,7 @@
 
 // vulkan_core1.h
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 
 // VK_VERSION_1_0 is a preprocessor guard. Do not pass it to API calls.
 #define VK_VERSION_1_0 1
@@ -22,11 +20,7 @@ extern "C" {
 
 #ifndef VK_DEFINE_NON_DISPATCHABLE_HANDLE
     #if (VK_USE_64_BIT_PTR_DEFINES==1)
-        #if (defined(__cplusplus) && (__cplusplus >= 201103L)) || (defined(_MSVC_LANG) && (_MSVC_LANG >= 201103L))
             #define VK_NULL_HANDLE nullptr
-        #else
-            #define VK_NULL_HANDLE ((void*)0)
-        #endif
     #else
         #define VK_NULL_HANDLE 0ULL
     #endif
@@ -8260,6 +8254,4 @@ VKAPI_ATTR void VKAPI_CALL vkCmdDecodeVideoKHR(
     const VkVideoDecodeInfoKHR*                 pDecodeInfo);
 #endif
 
-#ifdef __cplusplus
 }
-#endif

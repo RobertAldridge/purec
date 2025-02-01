@@ -1,8 +1,6 @@
 
 // shaderc_hpp.h
 
-#ifdef __cplusplus
-
 namespace shaderc
 {
 // A CompilationResult contains the compiler output, compilation status,
@@ -587,5 +585,3 @@ class Compiler {
 };
 
 }  // namespace shaderc
-
-#endif

@@ -3,10 +3,6 @@
 
 #include "header.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 VkInstance gVkInstance = VK_NULL_HANDLE;
 
 VkDevice gVkDevice = VK_NULL_HANDLE;
@@ -14,10 +10,6 @@ VkDevice gVkDevice = VK_NULL_HANDLE;
 VkPhysicalDevice gVkPhysicalDevice = VK_NULL_HANDLE;
 
 VkPipelineLayout gVkPipelineLayout = VK_NULL_HANDLE;
-
-#ifdef __cplusplus
-}
-#endif
 
 namespace
 {

@@ -1,9 +1,7 @@
 
 // vulkan_android.h
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 
 // VK_KHR_android_surface is a preprocessor guard. Do not pass it to API calls.
 #define VK_KHR_android_surface 1
@@ -131,7 +129,4 @@ typedef struct VkAndroidHardwareBufferFormatResolvePropertiesANDROID {
     VkFormat           colorAttachmentFormat;
 } VkAndroidHardwareBufferFormatResolvePropertiesANDROID;
 
-
-#ifdef __cplusplus
 }
-#endif

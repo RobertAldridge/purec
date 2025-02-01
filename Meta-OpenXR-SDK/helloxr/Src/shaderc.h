@@ -1,9 +1,7 @@
 
 // shaderc.h
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 
 // Source language kind.
 typedef enum {
@@ -560,6 +558,4 @@ SHADERC_EXPORT void shaderc_get_spv_version(unsigned int* version, unsigned int*
 SHADERC_EXPORT bool shaderc_parse_version_profile(const char* str, int* version,
                                    shaderc_profile* profile);
 
-#ifdef __cplusplus
 }
-#endif  // __cplusplus

@@ -1,10 +1,6 @@
 
 // vulkan_video_codec_h265std_encode.h
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 // vulkan_video_codec_h265std_encode is a preprocessor guard. Do not pass it to API calls.
 #define vulkan_video_codec_h265std_encode 1
 
@@ -133,7 +129,3 @@ typedef struct StdVideoEncodeH265ReferenceInfo {
     int32_t                                 PicOrderCntVal;
     uint8_t                                 TemporalId;
 } StdVideoEncodeH265ReferenceInfo;
-
-#ifdef __cplusplus
-}
-#endif

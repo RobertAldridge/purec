@@ -1,8 +1,6 @@
 
 // options.h
 
-#ifdef __cplusplus
-
 inline XrFormFactor GetXrFormFactor(const std::string& formFactorStr)
 {
   if(EqualsIgnoreCase(formFactorStr, "Hmd") )
@@ -137,5 +135,3 @@ constexpr float gOptions_Black[4] {0.0f, 0.0f, 0.0f, 1.0f};
 
 // gOptions_BackgroundClearColor = gOptions_TransparentBlack
 constexpr float gOptions_BackgroundClearColor[4] {0.0f, 0.0f, 0.0f, 0.0f};
-
-#endif

@@ -1,8 +1,6 @@
 
 // common.h
 
-#ifdef __cplusplus
-
 #define ENUM_CASE_STR(name, val) case name: return #name;
 
 #define MAKE_TO_STRING_FUNC(enumType) \
@@ -98,5 +96,3 @@ template <typename T, size_t Size> constexpr size_t ArraySize(const T (&unused)[
 
   return Size;
 }
-
-#endif

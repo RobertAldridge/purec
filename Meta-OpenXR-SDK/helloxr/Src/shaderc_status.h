@@ -1,10 +1,6 @@
 
 // shaderc_status.h
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 // Indicate the status of a compilation.
 typedef enum {
   shaderc_compilation_status_success = 0,
@@ -17,7 +13,3 @@ typedef enum {
   shaderc_compilation_status_transformation_error = 7,
   shaderc_compilation_status_configuration_error = 8,
 } shaderc_compilation_status;
-
-#ifdef __cplusplus
-}
-#endif  // __cplusplus

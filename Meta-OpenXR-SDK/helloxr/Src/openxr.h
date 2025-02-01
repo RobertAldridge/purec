@@ -1,10 +1,6 @@
 
 // openxr.h
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define XR_VERSION_1_0 1
 
 #define XR_MAKE_VERSION(major, minor, patch) \
@@ -8416,7 +8412,3 @@ typedef struct XrSpaceGroupUuidFilterInfoMETA {
  const void* XR_MAY_ALIAS next;
  XrUuid groupUuid;
 } XrSpaceGroupUuidFilterInfoMETA;
-
-#ifdef __cplusplus
-}
-#endif

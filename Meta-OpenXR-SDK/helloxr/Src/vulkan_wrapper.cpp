@@ -3,15 +3,7 @@
 
 #include "header.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 struct VkGeneratedDispatchTableCore tableVk;
-
-#ifdef __cplusplus
-}
-#endif
 
 int InitVulkan()
 {

@@ -10,8 +10,6 @@ struct Swapchain
 
 void OpenXrProgram_LogLayersAndExtensions();
 
-#ifdef __cplusplus
-
 enum class Side
 {
   LEFT = 0,
@@ -74,5 +72,3 @@ void OpenXrProgram_OpenXrProgramRenderFrame();
 bool OpenXrProgram_OpenXrProgramRenderLayer(XrTime predictedDisplayTime, std::vector<XrCompositionLayerProjectionView>& projectionLayerViews, XrCompositionLayerProjection& layer);
 
 void OpenXrProgram_CreateOpenXrProgram();
-
-#endif

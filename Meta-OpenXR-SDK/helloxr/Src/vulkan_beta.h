@@ -1,9 +1,7 @@
 
 // vulkan_beta.h
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 
 // VK_KHR_portability_subset is a preprocessor guard. Do not pass it to API calls.
 #define VK_KHR_portability_subset 1
@@ -194,7 +192,4 @@ typedef struct VkAccelerationStructureTrianglesDisplacementMicromapNV {
     VkMicromapEXT                       micromap;
 } VkAccelerationStructureTrianglesDisplacementMicromapNV;
 
-
-#ifdef __cplusplus
 }
-#endif

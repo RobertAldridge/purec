@@ -1,10 +1,6 @@
 
 // shaderc_env.h
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 typedef enum {
   shaderc_target_env_vulkan,  // SPIR-V under Vulkan semantics
   shaderc_target_env_opengl,  // SPIR-V under OpenGL semantics
@@ -48,7 +44,3 @@ typedef enum {
   shaderc_spirv_version_1_5 = 0x010500u,
   shaderc_spirv_version_1_6 = 0x010600u
 } shaderc_spirv_version;
-
-#ifdef __cplusplus
-}
-#endif  // __cplusplus
