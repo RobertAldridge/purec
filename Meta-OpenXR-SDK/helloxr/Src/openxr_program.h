@@ -108,12 +108,6 @@ void OpenXrProgram_OpenXrProgram_Destructor();
 // System Tracking Properties: OrientationTracking = True PositionTracking = True
 // Creating swapchain for view 0 with dimensions Width = 1680 Height = 1760 SampleCount = 1
 
-void OpenXrProgram_OpenXrProgramLogViewConfigurations();
-
-void OpenXrProgram_OpenXrProgramLogEnvironmentBlendMode(XrViewConfigurationType type);
-
-void OpenXrProgram_OpenXrProgramInitializeDevice();
-
 //struct OpenXrProgram_InputState
 //{
 //  XrActionSet actionSet {XR_NULL_HANDLE};

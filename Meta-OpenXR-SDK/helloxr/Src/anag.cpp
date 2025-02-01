@@ -606,18 +606,18 @@ try
 
   XrEnvironmentBlendMode environmentBlendMode = gOptions_XrEnvironmentBlendMode;
 
-  uint32_t count = 0;
+  uint32_t countBlendModes = 0;
   bool found = false;
 
   if(tableXr.EnumerateEnvironmentBlendModes)
-    CHECK_XRCMD_CHECK(tableXr.EnumerateEnvironmentBlendModes(gXrInstance, gXrSystemId, gOptions_XrViewConfigurationType, 0, &count, nullptr) );
+    CHECK_XRCMD_CHECK(tableXr.EnumerateEnvironmentBlendModes(gXrInstance, gXrSystemId, gOptions_XrViewConfigurationType, 0, &countBlendModes, nullptr) );
 
-  CHECK_CHECK(count > 0);
+  CHECK_CHECK(countBlendModes > 0);
 
-  std::vector<XrEnvironmentBlendMode> blendModes(count);
+  std::vector<XrEnvironmentBlendMode> blendModes(countBlendModes);
 
   if(tableXr.EnumerateEnvironmentBlendModes)
-    CHECK_XRCMD_CHECK(tableXr.EnumerateEnvironmentBlendModes(gXrInstance, gXrSystemId, gOptions_XrViewConfigurationType, count, &count, blendModes.data() ) );
+    CHECK_XRCMD_CHECK(tableXr.EnumerateEnvironmentBlendModes(gXrInstance, gXrSystemId, gOptions_XrViewConfigurationType, countBlendModes, &countBlendModes, blendModes.data() ) );
 
   for(const auto& blendMode : blendModes)
   {
@@ -640,7 +640,92 @@ try
 
   VulkanGraphicsPlugin_VulkanGraphicsPluginUpdateOptions();
 
-  OpenXrProgram_OpenXrProgramInitializeDevice();
+  CHECK_CHECK(gXrInstance != XR_NULL_HANDLE);
+  CHECK_CHECK(gXrSystemId != XR_NULL_SYSTEM_ID);
+
+  uint32_t viewConfigurationTypeCount = 0;
+
+  if(tableXr.EnumerateViewConfigurations)
+    CHECK_XRCMD_CHECK(tableXr.EnumerateViewConfigurations(gXrInstance, gXrSystemId, 0, &viewConfigurationTypeCount, nullptr) );
+
+  std::vector<XrViewConfigurationType> viewConfigurationTypes(viewConfigurationTypeCount);
+
+  if(tableXr.EnumerateViewConfigurations)
+    CHECK_XRCMD_CHECK(tableXr.EnumerateViewConfigurations(gXrInstance, gXrSystemId, viewConfigurationTypeCount, &viewConfigurationTypeCount, viewConfigurationTypes.data() ) );
+
+  CHECK_CHECK( (uint32_t)viewConfigurationTypes.size() == viewConfigurationTypeCount);
+
+  Log::Write(Log::Level::Info, Fmt("Available View Configuration Types: (%d)", viewConfigurationTypeCount) );
+
+  for(XrViewConfigurationType viewConfigurationType : viewConfigurationTypes)
+  {
+    Log::Write(Log::Level::Verbose, Fmt("View Configuration Type: %s %s", to_string(viewConfigurationType), viewConfigurationType == gOptions_XrViewConfigurationType ? "(Selected)" : "") );
+
+    XrViewConfigurationProperties viewConfigProperties {XR_TYPE_VIEW_CONFIGURATION_PROPERTIES};
+
+    if(tableXr.GetViewConfigurationProperties)
+      CHECK_XRCMD_CHECK(tableXr.GetViewConfigurationProperties(gXrInstance, gXrSystemId, viewConfigurationType, &viewConfigProperties) );
+
+    Log::Write(Log::Level::Verbose, Fmt("View configuration FovMutable=%s", viewConfigProperties.fovMutable == XR_TRUE ? "True" : "False") );
+
+    uint32_t viewCount = 0;
+
+    if(tableXr.EnumerateViewConfigurationViews)
+      CHECK_XRCMD_CHECK(tableXr.EnumerateViewConfigurationViews(gXrInstance, gXrSystemId, viewConfigurationType, 0, &viewCount, nullptr) );
+
+    if(viewCount > 0)
+    {
+      std::vector<XrViewConfigurationView> views(viewCount, {XR_TYPE_VIEW_CONFIGURATION_VIEW} );
+
+      if(tableXr.EnumerateViewConfigurationViews)
+        CHECK_XRCMD_CHECK(tableXr.EnumerateViewConfigurationViews(gXrInstance, gXrSystemId, viewConfigurationType, viewCount, &viewCount, views.data() ) );
+
+      for(uint32_t i = 0; i < views.size(); i++)
+      {
+        const XrViewConfigurationView& view = views[i];
+
+        Log::Write(Log::Level::Verbose, Fmt("View [%d]: Recommended Width=%d Height=%d SampleCount=%d", i, view.recommendedImageRectWidth, view.recommendedImageRectHeight, view.recommendedSwapchainSampleCount) );
+
+        Log::Write(Log::Level::Verbose, Fmt("View [%d]: Maximum Width=%d Height=%d SampleCount=%d", i, view.maxImageRectWidth, view.maxImageRectHeight, view.maxSwapchainSampleCount) );
+      }
+    }
+    else
+    {
+      Log::Write(Log::Level::Error, Fmt("Empty view configuration type") );
+    }
+
+    CHECK_CHECK(gXrInstance != XR_NULL_HANDLE);
+    CHECK_CHECK(gXrSystemId != 0);
+
+    uint32_t count = 0;
+
+    if(tableXr.EnumerateEnvironmentBlendModes)
+      CHECK_XRCMD_CHECK(tableXr.EnumerateEnvironmentBlendModes(gXrInstance, gXrSystemId, viewConfigurationType, 0, &count, nullptr) );
+
+    CHECK_CHECK(count > 0);
+
+    Log::Write(Log::Level::Info, Fmt("Available Environment Blend Mode count : (%d)", count) );
+
+    std::vector<XrEnvironmentBlendMode> blendModes(count);
+
+    if(tableXr.EnumerateEnvironmentBlendModes)
+      CHECK_XRCMD_CHECK(tableXr.EnumerateEnvironmentBlendModes(gXrInstance, gXrSystemId, viewConfigurationType, count, &count, blendModes.data() ) );
+
+    bool blendModeFound = false;
+
+    for(XrEnvironmentBlendMode mode : blendModes)
+    {
+      const bool blendModeMatch = (mode == gOptions_XrEnvironmentBlendMode);
+
+      Log::Write(Log::Level::Info, Fmt("Environment Blend Mode (%s) : %s", to_string(mode), blendModeMatch ? "(Selected)" : "") );
+
+      blendModeFound |= blendModeMatch;
+    }
+
+    CHECK_CHECK(blendModeFound);
+  }
+
+  VulkanGraphicsPlugin_VulkanGraphicsPluginInitializeDevice(gXrInstance, gXrSystemId);
 
   CHECK_CHECK(gXrInstance != XR_NULL_HANDLE);
   CHECK_CHECK(gXrSession == XR_NULL_HANDLE);
