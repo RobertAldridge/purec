@@ -1746,7 +1746,7 @@ std::string BlahVkResultString(VkResult res)
 
 [ [noreturn] ] inline void ThrowVkResult(VkResult res, const char* originator = nullptr, const char* sourceLocation = nullptr)
 {
-  Throw(Fmt("VkResult failure [%s]", BlahVkResultString(res).c_str() ), originator, sourceLocation);
+  ThrowCheck(Fmt("VkResult failure [%s]", BlahVkResultString(res).c_str() ), originator, sourceLocation);
 }
 
 inline VkResult CheckVkResult(VkResult res, const char* originator = nullptr, const char* sourceLocation = nullptr)
@@ -1945,7 +1945,7 @@ void MemoryAllocator_MemoryAllocatorAllocate(VkMemoryRequirements const& memReqs
     }
   }
 
-  THROW("Memory format not supported");
+  THROW_CHECK("Memory format not supported");
 }
 
 CmdBufferStateEnum gCmdBufferState {CmdBufferStateEnum::Undefined};
@@ -2310,7 +2310,7 @@ void ShaderProgram_ShaderProgramLoad(uint32_t whichShaderInfo, const std::vector
       break;
 
   default:
-      THROW(Fmt("Unknown code whichShaderInfo %d", whichShaderInfo) );
+      THROW_CHECK(Fmt("Unknown code whichShaderInfo %d", whichShaderInfo) );
 
   }
 
@@ -2972,7 +2972,7 @@ void VulkanGraphicsPlugin_VulkanGraphicsPluginInitializeDevice(XrInstance instan
   // Extension function must be loaded by name
   XrGraphicsRequirementsVulkan2KHR graphicsRequirements {XR_TYPE_GRAPHICS_REQUIREMENTS_VULKAN2_KHR};
 
-  CHECK_XRCMD(VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsRequirements2KHR(instance, systemId, &graphicsRequirements) );
+  CHECK_XRCMD_CHECK(VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsRequirements2KHR(instance, systemId, &graphicsRequirements) );
 
   VkResult err = VK_ERROR_OUT_OF_HOST_MEMORY;
 
@@ -3058,7 +3058,7 @@ void VulkanGraphicsPlugin_VulkanGraphicsPluginInitializeDevice(XrInstance instan
   createInfo.vulkanCreateInfo = &instInfo;
   createInfo.vulkanAllocator = nullptr;
 
-  CHECK_XRCMD(VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanInstanceKHR(instance, &createInfo, &gVkInstance, &err) );
+  CHECK_XRCMD_CHECK(VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanInstanceKHR(instance, &createInfo, &gVkInstance, &err) );
   CHECK_VKCMD(err);
 
   if(tableVk.GetInstanceProcAddr)
@@ -3073,7 +3073,7 @@ void VulkanGraphicsPlugin_VulkanGraphicsPluginInitializeDevice(XrInstance instan
     deviceGetInfo.systemId = systemId;
     deviceGetInfo.vulkanInstance = gVkInstance;
 
-    CHECK_XRCMD(VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsDevice2KHR(instance, &deviceGetInfo, &gVkPhysicalDevice) );
+    CHECK_XRCMD_CHECK(VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsDevice2KHR(instance, &deviceGetInfo, &gVkPhysicalDevice) );
   }
 
   VkDeviceQueueCreateInfo queueInfo {VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO};
@@ -3126,7 +3126,7 @@ void VulkanGraphicsPlugin_VulkanGraphicsPluginInitializeDevice(XrInstance instan
   deviceCreateInfo.vulkanPhysicalDevice = gVkPhysicalDevice;
   deviceCreateInfo.vulkanAllocator = nullptr;
 
-  CHECK_XRCMD(VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanDeviceKHR(instance, &deviceCreateInfo, &gVkDevice, &err) );
+  CHECK_XRCMD_CHECK(VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanDeviceKHR(instance, &deviceCreateInfo, &gVkDevice, &err) );
   CHECK_VKCMD(err);
 
   gVulkanGraphicsPluginVulkanDebugObjectNamer.Init(gVkInstance, gVkDevice);
@@ -3170,9 +3170,9 @@ void VulkanGraphicsPlugin_VulkanGraphicsPluginInitializeResources()
   auto vertexSPIRV = VulkanGraphicsPlugin_VulkanGraphicsPluginCompileGlslShader("vertex", shaderc_glsl_default_vertex_shader, VertexShaderGlsl);
   auto fragmentSPIRV = VulkanGraphicsPlugin_VulkanGraphicsPluginCompileGlslShader("fragment", shaderc_glsl_default_fragment_shader, FragmentShaderGlsl);
 
-  if(vertexSPIRV.empty() ) THROW("Failed to compile vertex shader");
+  if(vertexSPIRV.empty() ) THROW_CHECK("Failed to compile vertex shader");
 
-  if(fragmentSPIRV.empty() ) THROW("Failed to compile fragment shader");
+  if(fragmentSPIRV.empty() ) THROW_CHECK("Failed to compile fragment shader");
 
   ShaderProgram_ShaderProgramInit(gVkDevice);
   ShaderProgram_ShaderProgramLoadVertexShader(vertexSPIRV);
@@ -3186,7 +3186,7 @@ void VulkanGraphicsPlugin_VulkanGraphicsPluginInitializeResources()
 
   CHECK_VKCMD(gVulkanGraphicsPluginVulkanDebugObjectNamer.SetName(VK_OBJECT_TYPE_SEMAPHORE, (uint64_t)gVulkanGraphicsPluginVkSemaphoreDrawDone, "helloxr draw done semaphore") );
 
-  if(!CmdBuffer_CmdBufferInit(gVulkanGraphicsPluginVulkanDebugObjectNamer, gVkDevice, gVulkanGraphicsPluginQueueFamilyIndex) ) THROW("Failed to create command buffer");
+  if(!CmdBuffer_CmdBufferInit(gVulkanGraphicsPluginVulkanDebugObjectNamer, gVkDevice, gVulkanGraphicsPluginQueueFamilyIndex) ) THROW_CHECK("Failed to create command buffer");
 
   //gVkPipelineLayout.PipelineLayoutCreate(gVkDevice);
   PipelineLayout_PipelineLayoutCreate(gVkDevice);
@@ -3211,7 +3211,7 @@ int64_t VulkanGraphicsPlugin_VulkanGraphicsPluginSelectColorSwapchainFormat(cons
   auto swapchainFormatIt = std::find_first_of(runtimeFormats.begin(), runtimeFormats.end(), std::begin(SupportedColorSwapchainFormats), std::end(SupportedColorSwapchainFormats) );
 
   if(swapchainFormatIt == runtimeFormats.end() )
-    THROW("No runtime swapchain format supported for color swapchain");
+    THROW_CHECK("No runtime swapchain format supported for color swapchain");
 
   return *swapchainFormatIt;
 }
@@ -3249,7 +3249,7 @@ std::vector<XrSwapchainImageBaseHeader*> VulkanGraphicsPlugin_VulkanGraphicsPlug
 
 void VulkanGraphicsPlugin_VulkanGraphicsPluginRenderView(const XrCompositionLayerProjectionView& layerView, const XrSwapchainImageBaseHeader* swapchainImage, int64_t /*swapchainFormat*/, const std::vector<Cube>& cubes)
 {
-  CHECK(layerView.subImage.imageArrayIndex == 0);  // Texture arrays not supported.
+  CHECK_CHECK(layerView.subImage.imageArrayIndex == 0);  // Texture arrays not supported.
 
   int swapchainContextIndex = gVulkanGraphicsPluginStdMap_XrSwapchainImageBaseHeader_SwapchainImageContext[swapchainImage];
   uint32_t renderTarget = SwapchainImageContext_SwapchainImageContextImageIndex(swapchainContextIndex, swapchainImage);
@@ -3425,7 +3425,7 @@ XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanInstanceKHR(XrInst
   if(tableXr.GetInstanceProcAddr)
   {
     result = tableXr.GetInstanceProcAddr(instance, "xrCreateVulkanInstanceKHR", reinterpret_cast<PFN_xrVoidFunction*>( &pfnCreateVulkanInstanceKHR) );
-    CHECK_XRCMD(result);
+    CHECK_XRCMD_CHECK(result);
   }
 
   if(pfnCreateVulkanInstanceKHR)
@@ -3444,7 +3444,7 @@ XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanDeviceKHR(XrInstan
   if(tableXr.GetInstanceProcAddr)
   {
     result = tableXr.GetInstanceProcAddr(instance, "xrCreateVulkanDeviceKHR", reinterpret_cast<PFN_xrVoidFunction*>( &pfnCreateVulkanDeviceKHR) );
-    CHECK_XRCMD(result);
+    CHECK_XRCMD_CHECK(result);
   }
 
   if(pfnCreateVulkanDeviceKHR)
@@ -3463,7 +3463,7 @@ XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsDevice2KHR(Xr
   if(tableXr.GetInstanceProcAddr)
   {
     result = tableXr.GetInstanceProcAddr(instance, "xrGetVulkanGraphicsDevice2KHR", reinterpret_cast<PFN_xrVoidFunction*>( &pfnGetVulkanGraphicsDevice2KHR) );
-    CHECK_XRCMD(result);
+    CHECK_XRCMD_CHECK(result);
   }
 
   if(pfnGetVulkanGraphicsDevice2KHR)
@@ -3482,7 +3482,7 @@ XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsRequirements2
   if(tableXr.GetInstanceProcAddr)
   {
     result = tableXr.GetInstanceProcAddr(instance, "xrGetVulkanGraphicsRequirements2KHR", reinterpret_cast<PFN_xrVoidFunction*>( &pfnGetVulkanGraphicsRequirements2KHR) );
-    CHECK_XRCMD(result);
+    CHECK_XRCMD_CHECK(result);
   }
 
   if(pfnGetVulkanGraphicsRequirements2KHR)

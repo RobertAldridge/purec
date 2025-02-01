@@ -1,11 +1,11 @@
 
 // graphicsplugin.h
 
-#define THROW_VK(res, cmd) ThrowVkResult(res, #cmd, FILE_AND_LINE)
+#define THROW_VK(res, cmd) ThrowVkResult(res, #cmd, FILE_AND_LINE_CHECK)
 
-#define CHECK_VKCMD(cmd) CheckVkResult(cmd, #cmd, FILE_AND_LINE)
+#define CHECK_VKCMD(cmd) CheckVkResult(cmd, #cmd, FILE_AND_LINE_CHECK)
 
-#define CHECK_VKRESULT(res, cmdStr) CheckVkResult(res, cmdStr, FILE_AND_LINE)
+#define CHECK_VKRESULT(res, cmdStr) CheckVkResult(res, cmdStr, FILE_AND_LINE_CHECK)
 
 #define CHECK_CBSTATE(s) \
 do \

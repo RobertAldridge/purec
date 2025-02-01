@@ -155,10 +155,6 @@ void OpenXrProgram_OpenXrProgramInitializeActions();
 
 void OpenXrProgram_OpenXrProgramCreateVisualizedSpaces();
 
-void OpenXrProgram_OpenXrProgramInitializeSession();
-
-void OpenXrProgram_OpenXrProgramCreateSwapchains();
-
 const XrEventDataBaseHeader* OpenXrProgram_OpenXrProgramTryReadNextEvent();
 
 void OpenXrProgram_OpenXrProgramPollEvents(bool* exitRenderLoop, bool* requestRestart);

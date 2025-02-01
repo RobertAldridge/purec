@@ -503,8 +503,148 @@ try
   VulkanGraphicsPlugin_VulkanGraphicsPluginUpdateOptions();
 
   OpenXrProgram_OpenXrProgramInitializeDevice();
-  OpenXrProgram_OpenXrProgramInitializeSession();
-  OpenXrProgram_OpenXrProgramCreateSwapchains();
+
+  CHECK_CHECK(gXrInstance != XR_NULL_HANDLE);
+  CHECK_CHECK(gXrSession == XR_NULL_HANDLE);
+
+  {
+    Log::Write(Log::Level::Verbose, Fmt("Creating session...") );
+
+    XrSessionCreateInfo createInfo {XR_TYPE_SESSION_CREATE_INFO};
+
+    createInfo.next = VulkanGraphicsPlugin_VulkanGraphicsPluginGetGraphicsBinding();
+    createInfo.systemId = gXrSystemId;
+
+    if(tableXr.CreateSession)
+      CHECK_XRCMD_CHECK(tableXr.CreateSession(gXrInstance, &createInfo, &gXrSession) );
+  }
+
+  OpenXrProgram_OpenXrProgramLogReferenceSpaces();
+  OpenXrProgram_OpenXrProgramInitializeActions();
+  OpenXrProgram_OpenXrProgramCreateVisualizedSpaces();
+
+  {
+    XrReferenceSpaceCreateInfo referenceSpaceCreateInfo = GetXrReferenceSpaceCreateInfo(gOptions_AppSpace);
+
+    if(tableXr.CreateReferenceSpace)
+      CHECK_XRCMD_CHECK(tableXr.CreateReferenceSpace(gXrSession, &referenceSpaceCreateInfo, &gOpenXrProgramXrSpace) );
+  }
+
+  CHECK_CHECK(gXrSession != XR_NULL_HANDLE);
+  CHECK_CHECK(gOpenXrProgramStdVector_Swapchain.empty() );
+  CHECK_CHECK(gOpenXrProgramStdVector_XrViewConfigurationView.empty() );
+
+  // Read graphics properties for preferred swapchain length and logging.
+  XrSystemProperties systemProperties {XR_TYPE_SYSTEM_PROPERTIES};
+
+  if(tableXr.GetSystemProperties)
+    CHECK_XRCMD_CHECK(tableXr.GetSystemProperties(gXrInstance, gXrSystemId, &systemProperties) );
+
+  // Log system properties.
+  Log::Write(Log::Level::Info, Fmt("System Properties: Name=%s VendorId=%d", systemProperties.systemName, systemProperties.vendorId) );
+
+  Log::Write(Log::Level::Info, Fmt("System Graphics Properties: MaxWidth=%d MaxHeight=%d MaxLayers=%d", systemProperties.graphicsProperties.maxSwapchainImageWidth, systemProperties.graphicsProperties.maxSwapchainImageHeight, systemProperties.graphicsProperties.maxLayerCount) );
+
+  Log::Write(Log::Level::Info, Fmt("System Tracking Properties: OrientationTracking=%s PositionTracking=%s", systemProperties.trackingProperties.orientationTracking == XR_TRUE ? "True" : "False", systemProperties.trackingProperties.positionTracking == XR_TRUE ? "True" : "False") );
+
+  // Note: No other view configurations exist at the time this code was written. If this
+  // condition is not met, the project will need to be audited to see how support should be
+  // added.
+  CHECK_MSG(gOptions_XrViewConfigurationType == XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO, "Unsupported view configuration type");
+
+  // Query and cache view configuration views.
+  uint32_t viewCount;
+
+  if(tableXr.EnumerateViewConfigurationViews)
+    CHECK_XRCMD_CHECK(tableXr.EnumerateViewConfigurationViews(gXrInstance, gXrSystemId, gOptions_XrViewConfigurationType, 0, &viewCount, nullptr) );
+
+  gOpenXrProgramStdVector_XrViewConfigurationView.resize(viewCount, {XR_TYPE_VIEW_CONFIGURATION_VIEW} );
+
+  if(tableXr.EnumerateViewConfigurationViews)
+    CHECK_XRCMD_CHECK(tableXr.EnumerateViewConfigurationViews(gXrInstance, gXrSystemId, gOptions_XrViewConfigurationType, viewCount, &viewCount, gOpenXrProgramStdVector_XrViewConfigurationView.data() ) );
+
+  // Create and cache view buffer for xrLocateViews later
+  gOpenXrProgramStdVector_XrView.resize(viewCount, {XR_TYPE_VIEW} );
+
+  // Create the swapchain and get the images.
+  if(viewCount > 0)
+  {
+    // Select a swapchain format.
+    uint32_t swapchainFormatCount = 0;
+
+    if(tableXr.EnumerateSwapchainFormats)
+      CHECK_XRCMD_CHECK(tableXr.EnumerateSwapchainFormats(gXrSession, 0, &swapchainFormatCount, nullptr) );
+
+    std::vector<int64_t> swapchainFormats(swapchainFormatCount);
+
+    if(tableXr.EnumerateSwapchainFormats)
+      CHECK_XRCMD_CHECK(tableXr.EnumerateSwapchainFormats(gXrSession, (uint32_t)swapchainFormats.size(), &swapchainFormatCount, swapchainFormats.data() ) );
+
+    CHECK_CHECK(swapchainFormatCount == swapchainFormats.size() );
+    gOpenXrProgramColorSwapchainFormat = VulkanGraphicsPlugin_VulkanGraphicsPluginSelectColorSwapchainFormat(swapchainFormats);
+
+    // Print swapchain formats and the selected one
+    {
+      std::string swapchainFormatsString;
+
+      for(int64_t format : swapchainFormats)
+      {
+        const bool selected = (format == gOpenXrProgramColorSwapchainFormat);
+
+        swapchainFormatsString += " ";
+
+        if(selected)
+          swapchainFormatsString += "[";
+
+        swapchainFormatsString += std::to_string(format);
+
+        if(selected)
+          swapchainFormatsString += "]";
+      }
+
+      Log::Write(Log::Level::Verbose, Fmt("Swapchain Formats: %s", swapchainFormatsString.c_str() ) );
+    }
+
+    // Create a swapchain for each view
+    for(uint32_t i = 0; i < viewCount; i++)
+    {
+      const XrViewConfigurationView& vp = gOpenXrProgramStdVector_XrViewConfigurationView[i];
+
+      Log::Write(Log::Level::Info, Fmt("Creating swapchain for view %d with dimensions Width=%d Height=%d SampleCount=%d", i, vp.recommendedImageRectWidth, vp.recommendedImageRectHeight, vp.recommendedSwapchainSampleCount) );
+
+      // Create the swapchain.
+      XrSwapchainCreateInfo swapchainCreateInfo {XR_TYPE_SWAPCHAIN_CREATE_INFO};
+      swapchainCreateInfo.arraySize = 1;
+      swapchainCreateInfo.format = gOpenXrProgramColorSwapchainFormat;
+      swapchainCreateInfo.width = vp.recommendedImageRectWidth;
+      swapchainCreateInfo.height = vp.recommendedImageRectHeight;
+      swapchainCreateInfo.mipCount = 1;
+      swapchainCreateInfo.faceCount = 1;
+      swapchainCreateInfo.sampleCount = VulkanGraphicsPlugin_VulkanGraphicsPluginGetSupportedSwapchainSampleCount(vp);
+      swapchainCreateInfo.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
+      Swapchain swapchain;
+      swapchain.width = swapchainCreateInfo.width;
+      swapchain.height = swapchainCreateInfo.height;
+
+      if(tableXr.CreateSwapchain)
+        CHECK_XRCMD_CHECK(tableXr.CreateSwapchain(gXrSession, &swapchainCreateInfo, &swapchain.handle) );
+
+      gOpenXrProgramStdVector_Swapchain.push_back(swapchain);
+
+      uint32_t imageCount = 0;
+
+      if(tableXr.EnumerateSwapchainImages)
+        CHECK_XRCMD_CHECK(tableXr.EnumerateSwapchainImages(swapchain.handle, 0, &imageCount, nullptr) );
+
+      // XXX This should really just return XrSwapchainImageBaseHeader*
+      std::vector<XrSwapchainImageBaseHeader*> swapchainImages = VulkanGraphicsPlugin_VulkanGraphicsPluginAllocateSwapchainImageStructs(imageCount, swapchainCreateInfo);
+
+      if(tableXr.EnumerateSwapchainImages)
+        CHECK_XRCMD_CHECK(tableXr.EnumerateSwapchainImages(swapchain.handle, imageCount, &imageCount, swapchainImages[0] ) );
+
+      gOpenXrProgramStdMap_XrSwapchain_StdVectorXrSwapchainImageBaseHeader.insert(std::make_pair(swapchain.handle, std::move(swapchainImages) ) );
+    }
+  }
 
   while(app->destroyRequested == 0)
   {
@@ -602,7 +742,7 @@ try
     syncInfo.activeActionSets = &activeActionSet;
 
     if(tableXr.SyncActions)
-      CHECK_XRCMD(tableXr.SyncActions(gXrSession, &syncInfo) );
+      CHECK_XRCMD_CHECK(tableXr.SyncActions(gXrSession, &syncInfo) );
 
     // Get pose and grab action state and start haptic vibrate when hand is 90% squeezed.
     for(auto hand : {Side_LEFT, Side_RIGHT} )
@@ -615,7 +755,7 @@ try
       XrActionStateFloat grabValue {XR_TYPE_ACTION_STATE_FLOAT};
 
       if(tableXr.GetActionStateFloat)
-        CHECK_XRCMD(tableXr.GetActionStateFloat(gXrSession, &getInfo, &grabValue) );
+        CHECK_XRCMD_CHECK(tableXr.GetActionStateFloat(gXrSession, &getInfo, &grabValue) );
 
       if(grabValue.isActive == XR_TRUE)
       {
@@ -634,7 +774,7 @@ try
           hapticActionInfo.subactionPath = gOpenXrProgramInputState_InputState_handSubactionPath[hand];
 
           if(tableXr.ApplyHapticFeedback)
-            CHECK_XRCMD(tableXr.ApplyHapticFeedback(gXrSession, &hapticActionInfo, (XrHapticBaseHeader*) &vibration) );
+            CHECK_XRCMD_CHECK(tableXr.ApplyHapticFeedback(gXrSession, &hapticActionInfo, (XrHapticBaseHeader*) &vibration) );
         }
       }
 
@@ -643,7 +783,7 @@ try
       XrActionStatePose poseState {XR_TYPE_ACTION_STATE_POSE};
 
       if(tableXr.GetActionStatePose)
-        CHECK_XRCMD(tableXr.GetActionStatePose(gXrSession, &getInfo, &poseState) );
+        CHECK_XRCMD_CHECK(tableXr.GetActionStatePose(gXrSession, &getInfo, &poseState) );
 
       gOpenXrProgramInputState_InputState_handActive[hand] = poseState.isActive;
     }
@@ -653,27 +793,27 @@ try
     XrActionStateBoolean quitValue {XR_TYPE_ACTION_STATE_BOOLEAN};
 
     if(tableXr.GetActionStateBoolean)
-      CHECK_XRCMD(tableXr.GetActionStateBoolean(gXrSession, &getInfo, &quitValue) );
+      CHECK_XRCMD_CHECK(tableXr.GetActionStateBoolean(gXrSession, &getInfo, &quitValue) );
 
     if(quitValue.isActive == XR_TRUE && quitValue.changedSinceLastSync == XR_TRUE && quitValue.currentState == XR_TRUE && tableXr.RequestExitSession)
-      CHECK_XRCMD(tableXr.RequestExitSession(gXrSession) );
+      CHECK_XRCMD_CHECK(tableXr.RequestExitSession(gXrSession) );
 
     //OpenXrProgram_OpenXrProgramRenderFrame();
 
     // void OpenXrProgram_OpenXrProgramRenderFrame()
 
-    CHECK(gXrSession != XR_NULL_HANDLE);
+    CHECK_CHECK(gXrSession != XR_NULL_HANDLE);
 
     XrFrameWaitInfo frameWaitInfo {XR_TYPE_FRAME_WAIT_INFO};
     XrFrameState frameState {XR_TYPE_FRAME_STATE};
 
     if(tableXr.WaitFrame)
-      CHECK_XRCMD(tableXr.WaitFrame(gXrSession, &frameWaitInfo, &frameState) );
+      CHECK_XRCMD_CHECK(tableXr.WaitFrame(gXrSession, &frameWaitInfo, &frameState) );
 
     XrFrameBeginInfo frameBeginInfo {XR_TYPE_FRAME_BEGIN_INFO};
 
     if(tableXr.BeginFrame)
-      CHECK_XRCMD(tableXr.BeginFrame(gXrSession, &frameBeginInfo) );
+      CHECK_XRCMD_CHECK(tableXr.BeginFrame(gXrSession, &frameBeginInfo) );
 
     if(gPassthroughFeature == XR_NULL_HANDLE)
     {
@@ -694,7 +834,7 @@ try
       frameEndInfo.layers = layers.data();
 
       if(tableXr.EndFrame)
-        CHECK_XRCMD(tableXr.EndFrame(gXrSession, &frameEndInfo) );
+        CHECK_XRCMD_CHECK(tableXr.EndFrame(gXrSession, &frameEndInfo) );
     }
     else
     {
@@ -724,7 +864,7 @@ try
       frameEndInfo.layers = layers;
 
       if(tableXr.EndFrame)
-        CHECK_XRCMD(tableXr.EndFrame(gXrSession, &frameEndInfo) );
+        CHECK_XRCMD_CHECK(tableXr.EndFrame(gXrSession, &frameEndInfo) );
     }
 
     //XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT

@@ -122,8 +122,6 @@
 #define USE_EXPERIMENTAL_FS 0
 #define USE_FINAL_FS 1
 
-#include "filesystem_utils.h"
-
 #include <android/native_window.h>
 #include <android/window.h>
 #include <android/native_window_jni.h>

@@ -1,13 +1,13 @@
 
 // check.h
 
-#define CHK_STRINGIFY(x) #x
+#define CHK_STRINGIFY_CHECK(x) #x
 
-#define TOSTRING(x) CHK_STRINGIFY(x)
+#define TOSTRING_CHECK(x) CHK_STRINGIFY_CHECK(x)
 
-#define FILE_AND_LINE __FILE__ ":" TOSTRING(__LINE__)
+#define FILE_AND_LINE_CHECK __FILE__ ":" TOSTRING_CHECK(__LINE__)
 
-[ [noreturn] ] inline void Throw(std::string failureMessage, const char* originator = nullptr, const char* sourceLocation = nullptr)
+[ [noreturn] ] inline void ThrowCheck(std::string failureMessage, const char* originator = nullptr, const char* sourceLocation = nullptr)
 {
   if(originator != nullptr)
     failureMessage += Fmt("\nOrigin: %s", originator);
@@ -18,13 +18,13 @@
   throw std::logic_error(failureMessage);
 }
 
-#define THROW(msg) Throw(msg, nullptr, FILE_AND_LINE)
+#define THROW_CHECK(msg) ThrowCheck(msg, nullptr, FILE_AND_LINE_CHECK)
 
-#define CHECK(exp) \
+#define CHECK_CHECK(exp) \
   do \
   { \
     if( !(exp) ) \
-      Throw("Check failed", #exp, FILE_AND_LINE); \
+      ThrowCheck("Check failed", #exp, FILE_AND_LINE_CHECK); \
   \
   }while(0)
 
@@ -32,13 +32,13 @@
   do \
   { \
     if( !(exp) ) \
-      Throw(msg, #exp, FILE_AND_LINE); \
+      ThrowCheck(msg, #exp, FILE_AND_LINE_CHECK); \
   \
   }while(0)
 
 [ [noreturn] ] inline void ThrowXrResult(XrResult res, const char* originator = nullptr, const char* sourceLocation = nullptr)
 {
-  Throw(Fmt("XrResult failure [%s]", to_string(res) ), originator, sourceLocation);
+  ThrowCheck(Fmt("XrResult failure [%s]", to_string(res) ), originator, sourceLocation);
 }
 
 inline XrResult CheckXrResult(XrResult res, const char* originator = nullptr, const char* sourceLocation = nullptr)
@@ -49,8 +49,8 @@ inline XrResult CheckXrResult(XrResult res, const char* originator = nullptr, co
   return res;
 }
 
-#define THROW_XR(xr, cmd) ThrowXrResult(xr, #cmd, FILE_AND_LINE)
+#define THROW_XR_CHECK(xr, cmd) ThrowXrResult(xr, #cmd, FILE_AND_LINE_CHECK)
 
-#define CHECK_XRCMD(cmd) CheckXrResult(cmd, #cmd, FILE_AND_LINE)
+#define CHECK_XRCMD_CHECK(cmd) CheckXrResult(cmd, #cmd, FILE_AND_LINE_CHECK)
 
-#define CHECK_XRRESULT(res, cmdStr) CheckXrResult(res, cmdStr, FILE_AND_LINE)
+#define CHECK_XRRESULT(res, cmdStr) CheckXrResult(res, cmdStr, FILE_AND_LINE_CHECK)

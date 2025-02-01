@@ -8,7 +8,6 @@ set(
   common.h
   exception_handling.h
   extra_algorithms.h
-  filesystem_utils.h
   geometry.h
   graphicsplugin.h
   header.h
@@ -57,7 +56,6 @@ set(
 set(
   LOCAL_SOURCE
   anag.cpp
-  filesystem_utils.cpp
   graphicsplugin_vulkan.cpp
   logger.cpp
   object_info.cpp
