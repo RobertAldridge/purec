@@ -19,13 +19,13 @@ XrAction gOpenXrProgramInputState_InputState_vibrateAction {XR_NULL_HANDLE};
 
 XrAction gOpenXrProgramInputState_InputState_quitAction {XR_NULL_HANDLE};
 
-std::array<XrPath, (int)Side::COUNT> gOpenXrProgramInputState_InputState_handSubactionPath;
+std::array<XrPath, Side_COUNT> gOpenXrProgramInputState_InputState_handSubactionPath;
 
-std::array<XrSpace, (int)Side::COUNT> gOpenXrProgramInputState_InputState_handSpace;
+std::array<XrSpace, Side_COUNT> gOpenXrProgramInputState_InputState_handSpace;
 
-std::array<float, (int)Side::COUNT> gOpenXrProgramInputState_InputState_handScale = { {1.0f, 1.0f} };
+std::array<float, Side_COUNT> gOpenXrProgramInputState_InputState_handScale = { {1.0f, 1.0f} };
 
-std::array<XrBool32, (int)Side::COUNT> gOpenXrProgramInputState_InputState_handActive;
+std::array<XrBool32, Side_COUNT> gOpenXrProgramInputState_InputState_handActive;
 
 XrSpace gOpenXrProgramXrSpace {XR_NULL_HANDLE};
 
@@ -49,6 +49,28 @@ bool gOpenXrProgramSessionRunning {false};
 XrEventDataBuffer gOpenXrProgramXrEventDataBuffer;
 
 const std::set<XrEnvironmentBlendMode> gOpenXrProgramStdSet_XrEnvironmentBlendMode {XR_ENVIRONMENT_BLEND_MODE_OPAQUE, XR_ENVIRONMENT_BLEND_MODE_ADDITIVE, XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND};
+
+extern "C" {
+XrPassthroughFB gPassthroughFeature = XR_NULL_HANDLE;
+}
+
+XrPassthroughLayerFB gPassthroughLayer = XR_NULL_HANDLE;
+
+PFN_xrCreatePassthroughFB gCreatePassthroughFB = nullptr;
+PFN_xrCreatePassthroughLayerFB gCreatePassthroughLayerFB = nullptr;
+
+PFN_xrCreateEnvironmentDepthProviderMETA gCreateEnvironmentDepthProviderMETA = nullptr;
+PFN_xrDestroyEnvironmentDepthProviderMETA gDestroyEnvironmentDepthProviderMETA = nullptr;
+PFN_xrStartEnvironmentDepthProviderMETA gStartEnvironmentDepthProviderMETA = nullptr;
+PFN_xrStopEnvironmentDepthProviderMETA gStopEnvironmentDepthProviderMETA = nullptr;
+PFN_xrCreateEnvironmentDepthSwapchainMETA gCreateEnvironmentDepthSwapchainMETA = nullptr;
+PFN_xrDestroyEnvironmentDepthSwapchainMETA gDestroyEnvironmentDepthSwapchainMETA = nullptr;
+PFN_xrEnumerateEnvironmentDepthSwapchainImagesMETA gEnumerateEnvironmentDepthSwapchainImagesMETA = nullptr;
+PFN_xrGetEnvironmentDepthSwapchainStateMETA gGetEnvironmentDepthSwapchainStateMETA = nullptr;
+PFN_xrAcquireEnvironmentDepthImageMETA gAcquireEnvironmentDepthImageMETA = nullptr;
+PFN_xrSetEnvironmentDepthHandRemovalMETA gSetEnvironmentDepthHandRemovalMETA = nullptr;
+
+XrEnvironmentDepthProviderMETA gEnvironmentDepthProviderMETA = XR_NULL_HANDLE;
 
 namespace
 {
@@ -147,25 +169,6 @@ inline XrReferenceSpaceCreateInfo GetXrReferenceSpaceCreateInfo(const std::strin
   return referenceSpaceCreateInfo;
 }
 
-static XrPassthroughFB gPassthroughFeature = XR_NULL_HANDLE;
-static XrPassthroughLayerFB gPassthroughLayer = XR_NULL_HANDLE;
-
-static PFN_xrCreatePassthroughFB gCreatePassthroughFB = nullptr;
-static PFN_xrCreatePassthroughLayerFB gCreatePassthroughLayerFB = nullptr;
-
-static PFN_xrCreateEnvironmentDepthProviderMETA gCreateEnvironmentDepthProviderMETA = nullptr;
-static PFN_xrDestroyEnvironmentDepthProviderMETA gDestroyEnvironmentDepthProviderMETA = nullptr;
-static PFN_xrStartEnvironmentDepthProviderMETA gStartEnvironmentDepthProviderMETA = nullptr;
-static PFN_xrStopEnvironmentDepthProviderMETA gStopEnvironmentDepthProviderMETA = nullptr;
-static PFN_xrCreateEnvironmentDepthSwapchainMETA gCreateEnvironmentDepthSwapchainMETA = nullptr;
-static PFN_xrDestroyEnvironmentDepthSwapchainMETA gDestroyEnvironmentDepthSwapchainMETA = nullptr;
-static PFN_xrEnumerateEnvironmentDepthSwapchainImagesMETA gEnumerateEnvironmentDepthSwapchainImagesMETA = nullptr;
-static PFN_xrGetEnvironmentDepthSwapchainStateMETA gGetEnvironmentDepthSwapchainStateMETA = nullptr;
-static PFN_xrAcquireEnvironmentDepthImageMETA gAcquireEnvironmentDepthImageMETA = nullptr;
-static PFN_xrSetEnvironmentDepthHandRemovalMETA gSetEnvironmentDepthHandRemovalMETA = nullptr;
-
-static XrEnvironmentDepthProviderMETA gEnvironmentDepthProviderMETA = XR_NULL_HANDLE;
-
 }
 
 void OpenXrProgram_LogLayersAndExtensions()
@@ -225,7 +228,7 @@ void OpenXrProgram_OpenXrProgram_Destructor()
 {
   if(gOpenXrProgramInputState_InputState_actionSet != XR_NULL_HANDLE)
   {
-    for(auto hand : { (int)Side::LEFT, (int)Side::RIGHT} )
+    for(auto hand : { Side_LEFT, Side_RIGHT} )
     {
       if(tableXr.DestroySpace)
         tableXr.DestroySpace(gOpenXrProgramInputState_InputState_handSpace[hand] );
@@ -514,13 +517,13 @@ void OpenXrProgram_OpenXrProgramLogReferenceSpaces()
 //
 //  XrAction quitAction {XR_NULL_HANDLE};
 //
-//  std::array<XrPath, (int)Side::COUNT> handSubactionPath;
+//  std::array<XrPath, Side_COUNT> handSubactionPath;
 //
-//  std::array<XrSpace, (int)Side::COUNT> handSpace;
+//  std::array<XrSpace, Side_COUNT> handSpace;
 //
-//  std::array<float, (int)Side::COUNT> handScale = { {1.0f, 1.0f} };
+//  std::array<float, Side_COUNT> handScale = { {1.0f, 1.0f} };
 //
-//  std::array<XrBool32, (int)Side::COUNT> handActive;
+//  std::array<XrBool32, Side_COUNT> handActive;
 //};
 
 void OpenXrProgram_OpenXrProgramInitializeActions()
@@ -539,10 +542,10 @@ void OpenXrProgram_OpenXrProgramInitializeActions()
   // Get the XrPath for the left and right hands - we will use them as subaction paths.
 
   if(tableXr.StringToPath)
-    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/left", &gOpenXrProgramInputState_InputState_handSubactionPath[ (int)Side::LEFT] ) );
+    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/left", &gOpenXrProgramInputState_InputState_handSubactionPath[ Side_LEFT] ) );
 
   if(tableXr.StringToPath)
-    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/right", &gOpenXrProgramInputState_InputState_handSubactionPath[ (int)Side::RIGHT] ) );
+    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/right", &gOpenXrProgramInputState_InputState_handSubactionPath[ Side_RIGHT] ) );
 
   // Create actions.
   {
@@ -590,36 +593,36 @@ void OpenXrProgram_OpenXrProgramInitializeActions()
       CHECK_XRCMD(tableXr.CreateAction(gOpenXrProgramInputState_InputState_actionSet, &actionInfo, &gOpenXrProgramInputState_InputState_quitAction) );
   }
 
-  std::array<XrPath, (int)Side::COUNT> selectPath;
-  std::array<XrPath, (int)Side::COUNT> squeezeValuePath;
-  std::array<XrPath, (int)Side::COUNT> squeezeForcePath;
-  std::array<XrPath, (int)Side::COUNT> squeezeClickPath;
-  std::array<XrPath, (int)Side::COUNT> posePath;
-  std::array<XrPath, (int)Side::COUNT> hapticPath;
-  std::array<XrPath, (int)Side::COUNT> menuClickPath;
-  std::array<XrPath, (int)Side::COUNT> bClickPath;
-  std::array<XrPath, (int)Side::COUNT> triggerValuePath;
+  std::array<XrPath, Side_COUNT> selectPath;
+  std::array<XrPath, Side_COUNT> squeezeValuePath;
+  std::array<XrPath, Side_COUNT> squeezeForcePath;
+  std::array<XrPath, Side_COUNT> squeezeClickPath;
+  std::array<XrPath, Side_COUNT> posePath;
+  std::array<XrPath, Side_COUNT> hapticPath;
+  std::array<XrPath, Side_COUNT> menuClickPath;
+  std::array<XrPath, Side_COUNT> bClickPath;
+  std::array<XrPath, Side_COUNT> triggerValuePath;
 
   if(tableXr.StringToPath)
   {
-    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/select/click", &selectPath[ (int)Side::LEFT] ) );
-    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/select/click", &selectPath[ (int)Side::RIGHT] ) );
-    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/squeeze/value", &squeezeValuePath[ (int)Side::LEFT] ) );
-    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/squeeze/value", &squeezeValuePath[ (int)Side::RIGHT] ) );
-    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/squeeze/force", &squeezeForcePath[ (int)Side::LEFT] ) );
-    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/squeeze/force", &squeezeForcePath[ (int)Side::RIGHT] ) );
-    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/squeeze/click", &squeezeClickPath[ (int)Side::LEFT] ) );
-    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/squeeze/click", &squeezeClickPath[ (int)Side::RIGHT] ) );
-    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/grip/pose", &posePath[ (int)Side::LEFT] ) );
-    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/grip/pose", &posePath[ (int)Side::RIGHT] ) );
-    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/left/output/haptic", &hapticPath[ (int)Side::LEFT] ) );
-    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/right/output/haptic", &hapticPath[ (int)Side::RIGHT] ) );
-    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/menu/click", &menuClickPath[ (int)Side::LEFT] ) );
-    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/menu/click", &menuClickPath[ (int)Side::RIGHT] ) );
-    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/b/click", &bClickPath[ (int)Side::LEFT] ) );
-    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/b/click", &bClickPath[ (int)Side::RIGHT] ) );
-    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/trigger/value", &triggerValuePath[ (int)Side::LEFT] ) );
-    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/trigger/value", &triggerValuePath[ (int)Side::RIGHT] ) );
+    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/select/click", &selectPath[ Side_LEFT] ) );
+    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/select/click", &selectPath[ Side_RIGHT] ) );
+    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/squeeze/value", &squeezeValuePath[ Side_LEFT] ) );
+    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/squeeze/value", &squeezeValuePath[ Side_RIGHT] ) );
+    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/squeeze/force", &squeezeForcePath[ Side_LEFT] ) );
+    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/squeeze/force", &squeezeForcePath[ Side_RIGHT] ) );
+    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/squeeze/click", &squeezeClickPath[ Side_LEFT] ) );
+    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/squeeze/click", &squeezeClickPath[ Side_RIGHT] ) );
+    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/grip/pose", &posePath[ Side_LEFT] ) );
+    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/grip/pose", &posePath[ Side_RIGHT] ) );
+    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/left/output/haptic", &hapticPath[ Side_LEFT] ) );
+    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/right/output/haptic", &hapticPath[ Side_RIGHT] ) );
+    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/menu/click", &menuClickPath[ Side_LEFT] ) );
+    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/menu/click", &menuClickPath[ Side_RIGHT] ) );
+    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/b/click", &bClickPath[ Side_LEFT] ) );
+    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/b/click", &bClickPath[ Side_RIGHT] ) );
+    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/trigger/value", &triggerValuePath[ Side_LEFT] ) );
+    CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/trigger/value", &triggerValuePath[ Side_RIGHT] ) );
   }
 
   // Suggest bindings for KHR Simple.
@@ -630,14 +633,14 @@ void OpenXrProgram_OpenXrProgramInitializeActions()
       CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/interaction_profiles/khr/simple_controller", &khrSimpleInteractionProfilePath) );
 
     std::vector<XrActionSuggestedBinding> bindings { {// Fall back to a click input for the grab action.
-                                                    {gOpenXrProgramInputState_InputState_grabAction, selectPath[ (int)Side::LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_grabAction, selectPath[ (int)Side::RIGHT]},
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ (int)Side::LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ (int)Side::RIGHT]},
-                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[ (int)Side::LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[ (int)Side::RIGHT]},
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ (int)Side::LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ (int)Side::RIGHT]} } };
+                                                    {gOpenXrProgramInputState_InputState_grabAction, selectPath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_grabAction, selectPath[ Side_RIGHT]},
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_RIGHT]},
+                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[ Side_RIGHT]},
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_RIGHT]} } };
 
     XrInteractionProfileSuggestedBinding suggestedBindings {XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
 
@@ -656,13 +659,13 @@ void OpenXrProgram_OpenXrProgramInitializeActions()
     if(tableXr.StringToPath)
       CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/interaction_profiles/oculus/touch_controller", &oculusTouchInteractionProfilePath) );
 
-    std::vector<XrActionSuggestedBinding> bindings { { {gOpenXrProgramInputState_InputState_grabAction, squeezeValuePath[ (int)Side::LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_grabAction, squeezeValuePath[ (int)Side::RIGHT]},
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ (int)Side::LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ (int)Side::RIGHT]},
-                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[ (int)Side::LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ (int)Side::LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ (int)Side::RIGHT]} } };
+    std::vector<XrActionSuggestedBinding> bindings { { {gOpenXrProgramInputState_InputState_grabAction, squeezeValuePath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_grabAction, squeezeValuePath[ Side_RIGHT]},
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_RIGHT]},
+                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_RIGHT]} } };
 
     XrInteractionProfileSuggestedBinding suggestedBindings {XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
 
@@ -681,14 +684,14 @@ void OpenXrProgram_OpenXrProgramInitializeActions()
     if(tableXr.StringToPath)
       CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/interaction_profiles/htc/vive_controller", &viveControllerInteractionProfilePath) );
 
-    std::vector<XrActionSuggestedBinding> bindings { { {gOpenXrProgramInputState_InputState_grabAction, triggerValuePath[ (int)Side::LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_grabAction, triggerValuePath[ (int)Side::RIGHT]},
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ (int)Side::LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ (int)Side::RIGHT]},
-                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[ (int)Side::LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[ (int)Side::RIGHT]},
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ (int)Side::LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ (int)Side::RIGHT]} } };
+    std::vector<XrActionSuggestedBinding> bindings { { {gOpenXrProgramInputState_InputState_grabAction, triggerValuePath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_grabAction, triggerValuePath[ Side_RIGHT]},
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_RIGHT]},
+                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[ Side_RIGHT]},
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_RIGHT]} } };
 
     XrInteractionProfileSuggestedBinding suggestedBindings {XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
 
@@ -707,14 +710,14 @@ void OpenXrProgram_OpenXrProgramInitializeActions()
     if(tableXr.StringToPath)
       CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/interaction_profiles/valve/index_controller", &indexControllerInteractionProfilePath) );
 
-    std::vector<XrActionSuggestedBinding> bindings { { {gOpenXrProgramInputState_InputState_grabAction, squeezeForcePath[ (int)Side::LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_grabAction, squeezeForcePath[ (int)Side::RIGHT]},
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ (int)Side::LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ (int)Side::RIGHT]},
-                                                    {gOpenXrProgramInputState_InputState_quitAction, bClickPath[ (int)Side::LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_quitAction, bClickPath[ (int)Side::RIGHT]},
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ (int)Side::LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ (int)Side::RIGHT]} } };
+    std::vector<XrActionSuggestedBinding> bindings { { {gOpenXrProgramInputState_InputState_grabAction, squeezeForcePath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_grabAction, squeezeForcePath[ Side_RIGHT]},
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_RIGHT]},
+                                                    {gOpenXrProgramInputState_InputState_quitAction, bClickPath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_quitAction, bClickPath[ Side_RIGHT]},
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_RIGHT]} } };
 
     XrInteractionProfileSuggestedBinding suggestedBindings {XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
 
@@ -733,14 +736,14 @@ void OpenXrProgram_OpenXrProgramInitializeActions()
     if(tableXr.StringToPath)
       CHECK_XRCMD(tableXr.StringToPath(gXrInstance, "/interaction_profiles/microsoft/motion_controller", &microsoftMixedRealityInteractionProfilePath) );
 
-    std::vector<XrActionSuggestedBinding> bindings { { {gOpenXrProgramInputState_InputState_grabAction, squeezeClickPath[ (int)Side::LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_grabAction, squeezeClickPath[ (int)Side::RIGHT]},
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ (int)Side::LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ (int)Side::RIGHT]},
-                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[ (int)Side::LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[ (int)Side::RIGHT]},
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ (int)Side::LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ (int)Side::RIGHT]} } };
+    std::vector<XrActionSuggestedBinding> bindings { { {gOpenXrProgramInputState_InputState_grabAction, squeezeClickPath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_grabAction, squeezeClickPath[ Side_RIGHT]},
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_RIGHT]},
+                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[ Side_RIGHT]},
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_LEFT]},
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_RIGHT]} } };
 
     XrInteractionProfileSuggestedBinding suggestedBindings {XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
 
@@ -756,15 +759,15 @@ void OpenXrProgram_OpenXrProgramInitializeActions()
 
   actionSpaceInfo.action = gOpenXrProgramInputState_InputState_poseAction;
   actionSpaceInfo.poseInActionSpace.orientation.w = 1.f;
-  actionSpaceInfo.subactionPath = gOpenXrProgramInputState_InputState_handSubactionPath[ (int)Side::LEFT];
+  actionSpaceInfo.subactionPath = gOpenXrProgramInputState_InputState_handSubactionPath[ Side_LEFT];
 
   if(tableXr.CreateActionSpace)
-    CHECK_XRCMD(tableXr.CreateActionSpace(gXrSession, &actionSpaceInfo, &gOpenXrProgramInputState_InputState_handSpace[ (int)Side::LEFT] ) );
+    CHECK_XRCMD(tableXr.CreateActionSpace(gXrSession, &actionSpaceInfo, &gOpenXrProgramInputState_InputState_handSpace[ Side_LEFT] ) );
 
-  actionSpaceInfo.subactionPath = gOpenXrProgramInputState_InputState_handSubactionPath[ (int)Side::RIGHT];
+  actionSpaceInfo.subactionPath = gOpenXrProgramInputState_InputState_handSubactionPath[ Side_RIGHT];
 
   if(tableXr.CreateActionSpace)
-    CHECK_XRCMD(tableXr.CreateActionSpace(gXrSession, &actionSpaceInfo, &gOpenXrProgramInputState_InputState_handSpace[ (int)Side::RIGHT] ) );
+    CHECK_XRCMD(tableXr.CreateActionSpace(gXrSession, &actionSpaceInfo, &gOpenXrProgramInputState_InputState_handSpace[ Side_RIGHT] ) );
 
   XrSessionActionSetsAttachInfo attachInfo {XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO};
   attachInfo.countActionSets = 1;
@@ -977,6 +980,7 @@ const XrEventDataBaseHeader* OpenXrProgram_OpenXrProgramTryReadNextEvent()
 
 void OpenXrProgram_OpenXrProgramPollEvents(bool* exitRenderLoop, bool* requestRestart)
 {
+#if 0
   *exitRenderLoop = *requestRestart = false;
 
   while(const XrEventDataBaseHeader* event = OpenXrProgram_OpenXrProgramTryReadNextEvent() )
@@ -1018,6 +1022,7 @@ void OpenXrProgram_OpenXrProgramPollEvents(bool* exitRenderLoop, bool* requestRe
 
     }
   }
+#endif
 }
 
 void OpenXrProgram_OpenXrProgramHandleSessionStateChangedEvent(const XrEventDataSessionStateChanged& stateChangedEvent, bool* exitRenderLoop, bool* requestRestart)
@@ -1148,6 +1153,7 @@ bool OpenXrProgram_OpenXrProgramIsSessionFocused()
 
 void OpenXrProgram_OpenXrProgramPollActions()
 {
+#if 0
   gOpenXrProgramInputState_InputState_handActive = {XR_FALSE, XR_FALSE};
 
   // Sync actions
@@ -1161,7 +1167,7 @@ void OpenXrProgram_OpenXrProgramPollActions()
     CHECK_XRCMD(tableXr.SyncActions(gXrSession, &syncInfo) );
 
   // Get pose and grab action state and start haptic vibrate when hand is 90% squeezed.
-  for(auto hand : {(int)Side::LEFT, (int)Side::RIGHT} )
+  for(auto hand : {Side_LEFT, Side_RIGHT} )
   {
     XrActionStateGetInfo getInfo {XR_TYPE_ACTION_STATE_GET_INFO};
 
@@ -1213,6 +1219,7 @@ void OpenXrProgram_OpenXrProgramPollActions()
 
   if(quitValue.isActive == XR_TRUE && quitValue.changedSinceLastSync == XR_TRUE && quitValue.currentState == XR_TRUE && tableXr.RequestExitSession)
     CHECK_XRCMD(tableXr.RequestExitSession(gXrSession) );
+#endif
 }
 
 // Unreal UOculusXRFunctionLibrary::SetSuggestedCpuAndGpuPerformanceLevels (exposed in Blueprint)
@@ -1223,6 +1230,7 @@ void OpenXrProgram_OpenXrProgramPollActions()
 
 void OpenXrProgram_OpenXrProgramRenderFrame()
 {
+#if 0
   CHECK(gXrSession != XR_NULL_HANDLE);
 
   XrFrameWaitInfo frameWaitInfo {XR_TYPE_FRAME_WAIT_INFO};
@@ -1620,6 +1628,7 @@ void OpenXrProgram_OpenXrProgramRenderFrame()
   }
 
   //Log::Write(Log::Level::Info, Fmt("number of render layers %i", layers.size() ) );
+#endif
 }
 
 bool OpenXrProgram_OpenXrProgramRenderLayer(XrTime predictedDisplayTime, std::vector<XrCompositionLayerProjectionView>& projectionLayerViews, XrCompositionLayerProjection& layer)
@@ -1676,7 +1685,7 @@ bool OpenXrProgram_OpenXrProgramRenderLayer(XrTime predictedDisplayTime, std::ve
 
   // Render a 10cm cube scaled by grabAction for each hand. Note renderHand will only be
   // true when the application has focus.
-  for(auto hand : {(int)Side::LEFT, (int)Side::RIGHT} )
+  for(auto hand : {Side_LEFT, Side_RIGHT} )
   {
     XrSpaceLocation spaceLocation {XR_TYPE_SPACE_LOCATION};
 

@@ -7,11 +7,11 @@
 
 typedef enum XrAndroidThreadTypeKHR
 {
-    XR_ANDROID_THREAD_TYPE_APPLICATION_MAIN_KHR = 1,
-    XR_ANDROID_THREAD_TYPE_APPLICATION_WORKER_KHR = 2,
-    XR_ANDROID_THREAD_TYPE_RENDERER_MAIN_KHR = 3,
-    XR_ANDROID_THREAD_TYPE_RENDERER_WORKER_KHR = 4,
-    XR_ANDROID_THREAD_TYPE_MAX_ENUM_KHR = 0x7FFFFFFF
+ XR_ANDROID_THREAD_TYPE_APPLICATION_MAIN_KHR = 1,
+ XR_ANDROID_THREAD_TYPE_APPLICATION_WORKER_KHR = 2,
+ XR_ANDROID_THREAD_TYPE_RENDERER_MAIN_KHR = 3,
+ XR_ANDROID_THREAD_TYPE_RENDERER_WORKER_KHR = 4,
+ XR_ANDROID_THREAD_TYPE_MAX_ENUM_KHR = 0x7FFFFFFF
 
 }XrAndroidThreadTypeKHR;
 
@@ -48,10 +48,10 @@ XRAPI_ATTR XrResult XRAPI_CALL xrCreateSwapchainAndroidSurfaceKHR(XrSession sess
 // XrInstanceCreateInfoAndroidKHR extends XrInstanceCreateInfo
 typedef struct XrInstanceCreateInfoAndroidKHR
 {
-  XrStructureType type;
-  const void* XR_MAY_ALIAS next;
-  void* XR_MAY_ALIAS applicationVM;
-  void* XR_MAY_ALIAS applicationActivity;
+ XrStructureType type;
+ const void* XR_MAY_ALIAS next;
+ void* XR_MAY_ALIAS applicationVM;
+ void* XR_MAY_ALIAS applicationActivity;
 
 }XrInstanceCreateInfoAndroidKHR;
 
@@ -62,10 +62,10 @@ typedef struct XrInstanceCreateInfoAndroidKHR
 
 typedef struct XrVulkanSwapchainFormatListCreateInfoKHR
 {
-  XrStructureType type;
-  const void* XR_MAY_ALIAS next;
-  uint32_t viewFormatCount;
-  const VkFormat* viewFormats;
+ XrStructureType type;
+ const void* XR_MAY_ALIAS next;
+ uint32_t viewFormatCount;
+ const VkFormat* viewFormats;
 
 }XrVulkanSwapchainFormatListCreateInfoKHR;
 
@@ -75,26 +75,26 @@ typedef struct XrVulkanSwapchainFormatListCreateInfoKHR
 #define XR_KHR_VULKAN_ENABLE_EXTENSION_NAME "XR_KHR_vulkan_enable"
 // XrGraphicsBindingVulkanKHR extends XrSessionCreateInfo
 typedef struct XrGraphicsBindingVulkanKHR {
-    XrStructureType             type;
-    const void* XR_MAY_ALIAS    next;
-    VkInstance                  instance;
-    VkPhysicalDevice            physicalDevice;
-    VkDevice                    device;
-    uint32_t                    queueFamilyIndex;
-    uint32_t                    queueIndex;
+ XrStructureType type;
+ const void* XR_MAY_ALIAS next;
+ VkInstance instance;
+ VkPhysicalDevice physicalDevice;
+ VkDevice device;
+ uint32_t queueFamilyIndex;
+ uint32_t queueIndex;
 } XrGraphicsBindingVulkanKHR;
 
 typedef struct XrSwapchainImageVulkanKHR {
-    XrStructureType       type;
-    void* XR_MAY_ALIAS    next;
-    VkImage               image;
+ XrStructureType type;
+ void* XR_MAY_ALIAS next;
+ VkImage image;
 } XrSwapchainImageVulkanKHR;
 
 typedef struct XrGraphicsRequirementsVulkanKHR {
-    XrStructureType       type;
-    void* XR_MAY_ALIAS    next;
-    XrVersion             minApiVersionSupported;
-    XrVersion             maxApiVersionSupported;
+ XrStructureType type;
+ void* XR_MAY_ALIAS next;
+ XrVersion minApiVersionSupported;
+ XrVersion maxApiVersionSupported;
 } XrGraphicsRequirementsVulkanKHR;
 
 typedef XrResult (XRAPI_PTR *PFN_xrGetVulkanInstanceExtensionsKHR)(XrInstance instance, XrSystemId systemId, uint32_t bufferCapacityInput, uint32_t* bufferCountOutput, char* buffer);
@@ -105,29 +105,29 @@ typedef XrResult (XRAPI_PTR *PFN_xrGetVulkanGraphicsRequirementsKHR)(XrInstance 
 #ifndef XR_NO_PROTOTYPES
 #ifdef XR_EXTENSION_PROTOTYPES
 XRAPI_ATTR XrResult XRAPI_CALL xrGetVulkanInstanceExtensionsKHR(
-    XrInstance                                  instance,
-    XrSystemId                                  systemId,
-    uint32_t                                    bufferCapacityInput,
-    uint32_t*                                   bufferCountOutput,
-    char*                                       buffer);
+ XrInstance instance,
+ XrSystemId systemId,
+ uint32_t bufferCapacityInput,
+ uint32_t* bufferCountOutput,
+ char* buffer);
 
 XRAPI_ATTR XrResult XRAPI_CALL xrGetVulkanDeviceExtensionsKHR(
-    XrInstance                                  instance,
-    XrSystemId                                  systemId,
-    uint32_t                                    bufferCapacityInput,
-    uint32_t*                                   bufferCountOutput,
-    char*                                       buffer);
+ XrInstance instance,
+ XrSystemId systemId,
+ uint32_t bufferCapacityInput,
+ uint32_t* bufferCountOutput,
+ char* buffer);
 
 XRAPI_ATTR XrResult XRAPI_CALL xrGetVulkanGraphicsDeviceKHR(
-    XrInstance                                  instance,
-    XrSystemId                                  systemId,
-    VkInstance                                  vkInstance,
-    VkPhysicalDevice*                           vulkanPhysicalDevice);
+ XrInstance instance,
+ XrSystemId systemId,
+ VkInstance vkInstance,
+ VkPhysicalDevice* vulkanPhysicalDevice);
 
 XRAPI_ATTR XrResult XRAPI_CALL xrGetVulkanGraphicsRequirementsKHR(
-    XrInstance                                  instance,
-    XrSystemId                                  systemId,
-    XrGraphicsRequirementsVulkanKHR*            graphicsRequirements);
+ XrInstance instance,
+ XrSystemId systemId,
+ XrGraphicsRequirementsVulkanKHR* graphicsRequirements);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
@@ -138,19 +138,19 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetVulkanGraphicsRequirementsKHR(
 #define XR_KHR_convert_timespec_time_SPEC_VERSION 1
 #define XR_KHR_CONVERT_TIMESPEC_TIME_EXTENSION_NAME "XR_KHR_convert_timespec_time"
 typedef XrResult (XRAPI_PTR *PFN_xrConvertTimespecTimeToTimeKHR)(XrInstance instance, const struct timespec* timespecTime, XrTime* time);
-typedef XrResult (XRAPI_PTR *PFN_xrConvertTimeToTimespecTimeKHR)(XrInstance instance, XrTime   time, struct timespec* timespecTime);
+typedef XrResult (XRAPI_PTR *PFN_xrConvertTimeToTimespecTimeKHR)(XrInstance instance, XrTime time, struct timespec* timespecTime);
 
 #ifndef XR_NO_PROTOTYPES
 #ifdef XR_EXTENSION_PROTOTYPES
 XRAPI_ATTR XrResult XRAPI_CALL xrConvertTimespecTimeToTimeKHR(
-    XrInstance                                  instance,
-    const struct timespec*                      timespecTime,
-    XrTime*                                     time);
+ XrInstance instance,
+ const struct timespec* timespecTime,
+ XrTime* time);
 
 XRAPI_ATTR XrResult XRAPI_CALL xrConvertTimeToTimespecTimeKHR(
-    XrInstance                                  instance,
-    XrTime                                      time,
-    struct timespec*                            timespecTime);
+ XrInstance instance,
+ XrTime time,
+ struct timespec* timespecTime);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 #endif /* XR_USE_TIMESPEC */
@@ -160,10 +160,10 @@ XRAPI_ATTR XrResult XRAPI_CALL xrConvertTimeToTimespecTimeKHR(
 #define XR_KHR_loader_init_android_SPEC_VERSION 1
 #define XR_KHR_LOADER_INIT_ANDROID_EXTENSION_NAME "XR_KHR_loader_init_android"
 typedef struct XrLoaderInitInfoAndroidKHR {
-    XrStructureType             type;
-    const void* XR_MAY_ALIAS    next;
-    void* XR_MAY_ALIAS          applicationVM;
-    void* XR_MAY_ALIAS          applicationContext;
+ XrStructureType type;
+ const void* XR_MAY_ALIAS next;
+ void* XR_MAY_ALIAS applicationVM;
+ void* XR_MAY_ALIAS applicationContext;
 } XrLoaderInitInfoAndroidKHR;
 
 // XR_KHR_vulkan_enable2 is a preprocessor guard. Do not pass it to API calls.
@@ -179,33 +179,33 @@ typedef XrFlags64 XrVulkanDeviceCreateFlagsKHR;
 // Flag bits for XrVulkanDeviceCreateFlagsKHR
 
 typedef struct XrVulkanInstanceCreateInfoKHR {
-    XrStructureType                   type;
-    const void* XR_MAY_ALIAS          next;
-    XrSystemId                        systemId;
-    XrVulkanInstanceCreateFlagsKHR    createFlags;
-    PFN_vkGetInstanceProcAddr         pfnGetInstanceProcAddr;
-    const VkInstanceCreateInfo*       vulkanCreateInfo;
-    const VkAllocationCallbacks*      vulkanAllocator;
+ XrStructureType type;
+ const void* XR_MAY_ALIAS next;
+ XrSystemId systemId;
+ XrVulkanInstanceCreateFlagsKHR createFlags;
+ PFN_vkGetInstanceProcAddr pfnGetInstanceProcAddr;
+ const VkInstanceCreateInfo* vulkanCreateInfo;
+ const VkAllocationCallbacks* vulkanAllocator;
 } XrVulkanInstanceCreateInfoKHR;
 
 typedef struct XrVulkanDeviceCreateInfoKHR {
-    XrStructureType                 type;
-    const void* XR_MAY_ALIAS        next;
-    XrSystemId                      systemId;
-    XrVulkanDeviceCreateFlagsKHR    createFlags;
-    PFN_vkGetInstanceProcAddr       pfnGetInstanceProcAddr;
-    VkPhysicalDevice                vulkanPhysicalDevice;
-    const VkDeviceCreateInfo*       vulkanCreateInfo;
-    const VkAllocationCallbacks*    vulkanAllocator;
+ XrStructureType type;
+ const void* XR_MAY_ALIAS next;
+ XrSystemId systemId;
+ XrVulkanDeviceCreateFlagsKHR createFlags;
+ PFN_vkGetInstanceProcAddr pfnGetInstanceProcAddr;
+ VkPhysicalDevice vulkanPhysicalDevice;
+ const VkDeviceCreateInfo* vulkanCreateInfo;
+ const VkAllocationCallbacks* vulkanAllocator;
 } XrVulkanDeviceCreateInfoKHR;
 
 typedef XrGraphicsBindingVulkanKHR XrGraphicsBindingVulkan2KHR;
 
 typedef struct XrVulkanGraphicsDeviceGetInfoKHR {
-    XrStructureType             type;
-    const void* XR_MAY_ALIAS    next;
-    XrSystemId                  systemId;
-    VkInstance                  vulkanInstance;
+ XrStructureType type;
+ const void* XR_MAY_ALIAS next;
+ XrSystemId systemId;
+ VkInstance vulkanInstance;
 } XrVulkanGraphicsDeviceGetInfoKHR;
 
 typedef XrSwapchainImageVulkanKHR XrSwapchainImageVulkan2KHR;
@@ -220,26 +220,26 @@ typedef XrResult (XRAPI_PTR *PFN_xrGetVulkanGraphicsRequirements2KHR)(XrInstance
 #ifndef XR_NO_PROTOTYPES
 #ifdef XR_EXTENSION_PROTOTYPES
 XRAPI_ATTR XrResult XRAPI_CALL xrCreateVulkanInstanceKHR(
-    XrInstance                                  instance,
-    const XrVulkanInstanceCreateInfoKHR*        createInfo,
-    VkInstance*                                 vulkanInstance,
-    VkResult*                                   vulkanResult);
+ XrInstance instance,
+ const XrVulkanInstanceCreateInfoKHR* createInfo,
+ VkInstance* vulkanInstance,
+ VkResult* vulkanResult);
 
 XRAPI_ATTR XrResult XRAPI_CALL xrCreateVulkanDeviceKHR(
-    XrInstance                                  instance,
-    const XrVulkanDeviceCreateInfoKHR*          createInfo,
-    VkDevice*                                   vulkanDevice,
-    VkResult*                                   vulkanResult);
+ XrInstance instance,
+ const XrVulkanDeviceCreateInfoKHR* createInfo,
+ VkDevice* vulkanDevice,
+ VkResult* vulkanResult);
 
 XRAPI_ATTR XrResult XRAPI_CALL xrGetVulkanGraphicsDevice2KHR(
-    XrInstance                                  instance,
-    const XrVulkanGraphicsDeviceGetInfoKHR*     getInfo,
-    VkPhysicalDevice*                           vulkanPhysicalDevice);
+ XrInstance instance,
+ const XrVulkanGraphicsDeviceGetInfoKHR* getInfo,
+ VkPhysicalDevice* vulkanPhysicalDevice);
 
 XRAPI_ATTR XrResult XRAPI_CALL xrGetVulkanGraphicsRequirements2KHR(
-    XrInstance                                  instance,
-    XrSystemId                                  systemId,
-    XrGraphicsRequirementsVulkanKHR*            graphicsRequirements);
+ XrInstance instance,
+ XrSystemId systemId,
+ XrGraphicsRequirementsVulkanKHR* graphicsRequirements);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
@@ -255,9 +255,9 @@ static const XrAndroidSurfaceSwapchainFlagsFB XR_ANDROID_SURFACE_SWAPCHAIN_USE_T
 
 // XrAndroidSurfaceSwapchainCreateInfoFB extends XrSwapchainCreateInfo
 typedef struct XrAndroidSurfaceSwapchainCreateInfoFB {
-    XrStructureType                     type;
-    const void* XR_MAY_ALIAS            next;
-    XrAndroidSurfaceSwapchainFlagsFB    createFlags;
+ XrStructureType type;
+ const void* XR_MAY_ALIAS next;
+ XrAndroidSurfaceSwapchainFlagsFB createFlags;
 } XrAndroidSurfaceSwapchainCreateInfoFB;
 
 // XR_FB_foveation_vulkan is a preprocessor guard. Do not pass it to API calls.
@@ -266,11 +266,11 @@ typedef struct XrAndroidSurfaceSwapchainCreateInfoFB {
 #define XR_FB_FOVEATION_VULKAN_EXTENSION_NAME "XR_FB_foveation_vulkan"
 // XrSwapchainImageFoveationVulkanFB extends XrSwapchainImageVulkanKHR
 typedef struct XrSwapchainImageFoveationVulkanFB {
-    XrStructureType       type;
-    void* XR_MAY_ALIAS    next;
-    VkImage               image;
-    uint32_t              width;
-    uint32_t              height;
+ XrStructureType type;
+ void* XR_MAY_ALIAS next;
+ VkImage image;
+ uint32_t width;
+ uint32_t height;
 } XrSwapchainImageFoveationVulkanFB;
 
 // XR_FB_swapchain_update_state_android_surface is a preprocessor guard. Do not pass it to API calls.
@@ -279,10 +279,10 @@ typedef struct XrSwapchainImageFoveationVulkanFB {
 #define XR_FB_SWAPCHAIN_UPDATE_STATE_ANDROID_SURFACE_EXTENSION_NAME "XR_FB_swapchain_update_state_android_surface"
 
 typedef struct XrSwapchainStateAndroidSurfaceDimensionsFB {
-    XrStructureType       type;
-    void* XR_MAY_ALIAS    next;
-    uint32_t              width;
-    uint32_t              height;
+ XrStructureType type;
+ void* XR_MAY_ALIAS next;
+ uint32_t width;
+ uint32_t height;
 } XrSwapchainStateAndroidSurfaceDimensionsFB;
 
 // XR_FB_swapchain_update_state_vulkan is a preprocessor guard. Do not pass it to API calls.
@@ -291,19 +291,19 @@ typedef struct XrSwapchainStateAndroidSurfaceDimensionsFB {
 #define XR_FB_SWAPCHAIN_UPDATE_STATE_VULKAN_EXTENSION_NAME "XR_FB_swapchain_update_state_vulkan"
 
 typedef struct XrSwapchainStateSamplerVulkanFB {
-    XrStructureType         type;
-    void* XR_MAY_ALIAS      next;
-    VkFilter                minFilter;
-    VkFilter                magFilter;
-    VkSamplerMipmapMode     mipmapMode;
-    VkSamplerAddressMode    wrapModeS;
-    VkSamplerAddressMode    wrapModeT;
-    VkComponentSwizzle      swizzleRed;
-    VkComponentSwizzle      swizzleGreen;
-    VkComponentSwizzle      swizzleBlue;
-    VkComponentSwizzle      swizzleAlpha;
-    float                   maxAnisotropy;
-    XrColor4f               borderColor;
+ XrStructureType type;
+ void* XR_MAY_ALIAS next;
+ VkFilter minFilter;
+ VkFilter magFilter;
+ VkSamplerMipmapMode mipmapMode;
+ VkSamplerAddressMode wrapModeS;
+ VkSamplerAddressMode wrapModeT;
+ VkComponentSwizzle swizzleRed;
+ VkComponentSwizzle swizzleGreen;
+ VkComponentSwizzle swizzleBlue;
+ VkComponentSwizzle swizzleAlpha;
+ float maxAnisotropy;
+ XrColor4f borderColor;
 } XrSwapchainStateSamplerVulkanFB;
 
 // XR_META_vulkan_swapchain_create_info is a preprocessor guard. Do not pass it to API calls.
@@ -312,8 +312,8 @@ typedef struct XrSwapchainStateSamplerVulkanFB {
 #define XR_META_VULKAN_SWAPCHAIN_CREATE_INFO_EXTENSION_NAME "XR_META_vulkan_swapchain_create_info"
 // XrVulkanSwapchainCreateInfoMETA extends XrSwapchainCreateInfo
 typedef struct XrVulkanSwapchainCreateInfoMETA {
-    XrStructureType             type;
-    const void* XR_MAY_ALIAS    next;
-    VkImageCreateFlags          additionalCreateFlags;
-    VkImageUsageFlags           additionalUsageFlags;
+ XrStructureType type;
+ const void* XR_MAY_ALIAS next;
+ VkImageCreateFlags additionalCreateFlags;
+ VkImageUsageFlags additionalUsageFlags;
 } XrVulkanSwapchainCreateInfoMETA;

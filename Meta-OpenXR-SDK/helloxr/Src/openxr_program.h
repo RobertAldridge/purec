@@ -8,14 +8,72 @@ struct Swapchain
   int32_t height;
 };
 
-void OpenXrProgram_LogLayersAndExtensions();
+constexpr int Side_LEFT {0};
+constexpr int Side_RIGHT {1};
+constexpr int Side_COUNT {2};
 
-enum class Side
-{
-  LEFT = 0,
-  RIGHT = 1,
-  COUNT = 2
-};
+extern XrActionSet gOpenXrProgramInputState_InputState_actionSet;
+
+extern XrAction gOpenXrProgramInputState_InputState_grabAction;
+
+extern XrAction gOpenXrProgramInputState_InputState_poseAction;
+
+extern XrAction gOpenXrProgramInputState_InputState_vibrateAction;
+
+extern XrAction gOpenXrProgramInputState_InputState_quitAction;
+
+extern std::array<XrPath, Side_COUNT> gOpenXrProgramInputState_InputState_handSubactionPath;
+
+extern std::array<XrSpace, Side_COUNT> gOpenXrProgramInputState_InputState_handSpace;
+
+extern std::array<float, Side_COUNT> gOpenXrProgramInputState_InputState_handScale;
+
+extern std::array<XrBool32, Side_COUNT> gOpenXrProgramInputState_InputState_handActive;
+
+extern XrSpace gOpenXrProgramXrSpace;
+
+extern std::vector<XrViewConfigurationView> gOpenXrProgramStdVector_XrViewConfigurationView;
+
+extern std::vector<Swapchain> gOpenXrProgramStdVector_Swapchain;
+
+extern std::map<XrSwapchain, std::vector<XrSwapchainImageBaseHeader*> > gOpenXrProgramStdMap_XrSwapchain_StdVectorXrSwapchainImageBaseHeader;
+
+extern std::vector<XrView> gOpenXrProgramStdVector_XrView;
+
+extern int64_t gOpenXrProgramColorSwapchainFormat;
+
+extern std::vector<XrSpace> gOpenXrProgramStdVector_XrSpace;
+
+// Application's current lifecycle state according to the runtime
+extern XrSessionState gOpenXrProgramXrSessionState;
+
+extern bool gOpenXrProgramSessionRunning;
+
+extern XrEventDataBuffer gOpenXrProgramXrEventDataBuffer;
+
+extern "C" {
+extern XrPassthroughFB gPassthroughFeature;
+}
+
+extern XrPassthroughLayerFB gPassthroughLayer;
+
+extern PFN_xrCreatePassthroughFB gCreatePassthroughFB;
+extern PFN_xrCreatePassthroughLayerFB gCreatePassthroughLayerFB;
+
+extern PFN_xrCreateEnvironmentDepthProviderMETA gCreateEnvironmentDepthProviderMETA;
+extern PFN_xrDestroyEnvironmentDepthProviderMETA gDestroyEnvironmentDepthProviderMETA;
+extern PFN_xrStartEnvironmentDepthProviderMETA gStartEnvironmentDepthProviderMETA;
+extern PFN_xrStopEnvironmentDepthProviderMETA gStopEnvironmentDepthProviderMETA;
+extern PFN_xrCreateEnvironmentDepthSwapchainMETA gCreateEnvironmentDepthSwapchainMETA;
+extern PFN_xrDestroyEnvironmentDepthSwapchainMETA gDestroyEnvironmentDepthSwapchainMETA;
+extern PFN_xrEnumerateEnvironmentDepthSwapchainImagesMETA gEnumerateEnvironmentDepthSwapchainImagesMETA;
+extern PFN_xrGetEnvironmentDepthSwapchainStateMETA gGetEnvironmentDepthSwapchainStateMETA;
+extern PFN_xrAcquireEnvironmentDepthImageMETA gAcquireEnvironmentDepthImageMETA;
+extern PFN_xrSetEnvironmentDepthHandRemovalMETA gSetEnvironmentDepthHandRemovalMETA;
+
+extern XrEnvironmentDepthProviderMETA gEnvironmentDepthProviderMETA;
+
+void OpenXrProgram_LogLayersAndExtensions();
 
 void OpenXrProgram_OpenXrProgram();
 

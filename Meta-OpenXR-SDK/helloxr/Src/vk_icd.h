@@ -1,31 +1,31 @@
 
 // vk_icd.h
 
-// Loader-ICD version negotiation API.  Versions add the following features:
-//   Version 0 - Initial.  Doesn't support vk_icdGetInstanceProcAddr
-//               or vk_icdNegotiateLoaderICDInterfaceVersion.
-//   Version 1 - Add support for vk_icdGetInstanceProcAddr.
-//   Version 2 - Add Loader/ICD Interface version negotiation
-//               via vk_icdNegotiateLoaderICDInterfaceVersion.
-//   Version 3 - Add ICD creation/destruction of KHR_surface objects.
-//   Version 4 - Add unknown physical device extension querying via
-//               vk_icdGetPhysicalDeviceProcAddr.
-//   Version 5 - Tells ICDs that the loader is now paying attention to the
-//               application version of Vulkan passed into the ApplicationInfo
-//               structure during vkCreateInstance.  This will tell the ICD
-//               that if the loader is older, it should automatically fail a
-//               call for any API version > 1.0.  Otherwise, the loader will
-//               manually determine if it can support the expected version.
-//   Version 6 - Add support for vk_icdEnumerateAdapterPhysicalDevices.
-//   Version 7 - If an ICD supports any of the following functions, they must be
-//               queryable with vk_icdGetInstanceProcAddr:
-//                   vk_icdNegotiateLoaderICDInterfaceVersion
-//                   vk_icdGetPhysicalDeviceProcAddr
-//                   vk_icdEnumerateAdapterPhysicalDevices (Windows only)
-//               In addition, these functions no longer need to be exported directly.
-//               This version allows drivers provided through the extension
-//               VK_LUNARG_direct_driver_loading be able to support the entire
-//               Driver-Loader interface.
+// Loader-ICD version negotiation API. Versions add the following features:
+// Version 0 - Initial. Doesn't support vk_icdGetInstanceProcAddr
+// or vk_icdNegotiateLoaderICDInterfaceVersion.
+// Version 1 - Add support for vk_icdGetInstanceProcAddr.
+// Version 2 - Add Loader/ICD Interface version negotiation
+// via vk_icdNegotiateLoaderICDInterfaceVersion.
+// Version 3 - Add ICD creation/destruction of KHR_surface objects.
+// Version 4 - Add unknown physical device extension querying via
+// vk_icdGetPhysicalDeviceProcAddr.
+// Version 5 - Tells ICDs that the loader is now paying attention to the
+// application version of Vulkan passed into the ApplicationInfo
+// structure during vkCreateInstance. This will tell the ICD
+// that if the loader is older, it should automatically fail a
+// call for any API version > 1.0. Otherwise, the loader will
+// manually determine if it can support the expected version.
+// Version 6 - Add support for vk_icdEnumerateAdapterPhysicalDevices.
+// Version 7 - If an ICD supports any of the following functions, they must be
+// queryable with vk_icdGetInstanceProcAddr:
+// vk_icdNegotiateLoaderICDInterfaceVersion
+// vk_icdGetPhysicalDeviceProcAddr
+// vk_icdEnumerateAdapterPhysicalDevices (Windows only)
+// In addition, these functions no longer need to be exported directly.
+// This version allows drivers provided through the extension
+// VK_LUNARG_direct_driver_loading be able to support the entire
+// Driver-Loader interface.
 
 #define CURRENT_LOADER_ICD_INTERFACE_VERSION 7
 #define MIN_SUPPORTED_LOADER_ICD_INTERFACE_VERSION 0
@@ -60,18 +60,18 @@ VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL vk_icdGetPhysicalDeviceProcAddr(VkInsta
 #define ICD_LOADER_MAGIC 0x01CDC0DE
 
 typedef union {
-    uintptr_t loaderMagic;
-    void *loaderData;
+ uintptr_t loaderMagic;
+ void *loaderData;
 } VK_LOADER_DATA;
 
 static inline void set_loader_magic_value(void *pNewObject) {
-    VK_LOADER_DATA *loader_info = (VK_LOADER_DATA *)pNewObject;
-    loader_info->loaderMagic = ICD_LOADER_MAGIC;
+ VK_LOADER_DATA *loader_info = (VK_LOADER_DATA *)pNewObject;
+ loader_info->loaderMagic = ICD_LOADER_MAGIC;
 }
 
 static inline bool valid_loader_magic_value(void *pNewObject) {
-    const VK_LOADER_DATA *loader_info = (VK_LOADER_DATA *)pNewObject;
-    return (loader_info->loaderMagic & 0xffffffff) == ICD_LOADER_MAGIC;
+ const VK_LOADER_DATA *loader_info = (VK_LOADER_DATA *)pNewObject;
+ return (loader_info->loaderMagic & 0xffffffff) == ICD_LOADER_MAGIC;
 }
 
 /*
@@ -79,44 +79,44 @@ static inline bool valid_loader_magic_value(void *pNewObject) {
  * contains the platform-specific connection and surface information.
  */
 typedef enum {
-    VK_ICD_WSI_PLATFORM_MIR,
-    VK_ICD_WSI_PLATFORM_WAYLAND,
-    VK_ICD_WSI_PLATFORM_WIN32,
-    VK_ICD_WSI_PLATFORM_XCB,
-    VK_ICD_WSI_PLATFORM_XLIB,
-    VK_ICD_WSI_PLATFORM_ANDROID,
-    VK_ICD_WSI_PLATFORM_MACOS,
-    VK_ICD_WSI_PLATFORM_IOS,
-    VK_ICD_WSI_PLATFORM_DISPLAY,
-    VK_ICD_WSI_PLATFORM_HEADLESS,
-    VK_ICD_WSI_PLATFORM_METAL,
-    VK_ICD_WSI_PLATFORM_DIRECTFB,
-    VK_ICD_WSI_PLATFORM_VI,
-    VK_ICD_WSI_PLATFORM_GGP,
-    VK_ICD_WSI_PLATFORM_SCREEN,
-    VK_ICD_WSI_PLATFORM_FUCHSIA,
+ VK_ICD_WSI_PLATFORM_MIR,
+ VK_ICD_WSI_PLATFORM_WAYLAND,
+ VK_ICD_WSI_PLATFORM_WIN32,
+ VK_ICD_WSI_PLATFORM_XCB,
+ VK_ICD_WSI_PLATFORM_XLIB,
+ VK_ICD_WSI_PLATFORM_ANDROID,
+ VK_ICD_WSI_PLATFORM_MACOS,
+ VK_ICD_WSI_PLATFORM_IOS,
+ VK_ICD_WSI_PLATFORM_DISPLAY,
+ VK_ICD_WSI_PLATFORM_HEADLESS,
+ VK_ICD_WSI_PLATFORM_METAL,
+ VK_ICD_WSI_PLATFORM_DIRECTFB,
+ VK_ICD_WSI_PLATFORM_VI,
+ VK_ICD_WSI_PLATFORM_GGP,
+ VK_ICD_WSI_PLATFORM_SCREEN,
+ VK_ICD_WSI_PLATFORM_FUCHSIA,
 } VkIcdWsiPlatform;
 
 typedef struct {
-    VkIcdWsiPlatform platform;
+ VkIcdWsiPlatform platform;
 } VkIcdSurfaceBase;
 
 typedef struct {
-    VkIcdSurfaceBase base;
-    struct ANativeWindow *window;
+ VkIcdSurfaceBase base;
+ struct ANativeWindow *window;
 } VkIcdSurfaceAndroid;
 
 typedef struct {
-    VkIcdSurfaceBase base;
-    VkDisplayModeKHR displayMode;
-    uint32_t planeIndex;
-    uint32_t planeStackIndex;
-    VkSurfaceTransformFlagBitsKHR transform;
-    float globalAlpha;
-    VkDisplayPlaneAlphaFlagBitsKHR alphaMode;
-    VkExtent2D imageExtent;
+ VkIcdSurfaceBase base;
+ VkDisplayModeKHR displayMode;
+ uint32_t planeIndex;
+ uint32_t planeStackIndex;
+ VkSurfaceTransformFlagBitsKHR transform;
+ float globalAlpha;
+ VkDisplayPlaneAlphaFlagBitsKHR alphaMode;
+ VkExtent2D imageExtent;
 } VkIcdSurfaceDisplay;
 
 typedef struct {
-    VkIcdSurfaceBase base;
+ VkIcdSurfaceBase base;
 } VkIcdSurfaceHeadless;

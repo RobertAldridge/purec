@@ -27,42 +27,29 @@
 #endif
 #endif
 
-
 #define XR_NULL_SYSTEM_ID 0
-
 
 #define XR_NULL_PATH 0
 
-
 #define XR_SUCCEEDED(result) ((result) >= 0)
-
 
 #define XR_FAILED(result) ((result) < 0)
 
-
 #define XR_UNQUALIFIED_SUCCESS(result) ((result) == 0)
-
 
 #define XR_NO_DURATION 0
 
-
 #define XR_INFINITE_DURATION 0x7fffffffffffffffLL
-
 
 #define XR_MIN_HAPTIC_DURATION -1
 
-
 #define XR_FREQUENCY_UNSPECIFIED 0
-
 
 #define XR_MAX_EVENT_DATA_SIZE sizeof(XrEventDataBuffer)
 
-
 #define XR_EXTENSION_ENUM_BASE 1000000000
 
-
 #define XR_EXTENSION_ENUM_STRIDE 1000
-
 
 #if !defined(XR_MAY_ALIAS)
 #if defined(__clang__) || (defined(__GNUC__) && (__GNUC__ > 4))
@@ -72,7 +59,6 @@
 #endif
 #endif
 
-
 #if !defined(XR_DEFINE_HANDLE)
 #if(XR_PTR_SIZE == 8)
  #define XR_DEFINE_HANDLE(object) typedef struct object##_T* object;
@@ -81,7 +67,6 @@
 #endif
 #endif
 
-
 #if !defined(XR_DEFINE_OPAQUE_64)
  #if(XR_PTR_SIZE == 8)
  #define XR_DEFINE_OPAQUE_64(object) typedef struct object##_T* object;
@@ -89,7 +74,6 @@
  #define XR_DEFINE_OPAQUE_64(object) typedef uint64_t object;
  #endif
 #endif
-
 
 #if !defined(XR_DEFINE_ATOM)
  #define XR_DEFINE_ATOM(object) typedef uint64_t object;
@@ -1907,8 +1891,6 @@ typedef struct XrCompositionLayerColorScaleBiasKHR {
  XrColor4f colorBias;
 } XrCompositionLayerColorScaleBiasKHR;
 
-
-
 // XR_KHR_loader_init is a preprocessor guard. Do not pass it to API calls.
 #define XR_KHR_loader_init 1
 #define XR_KHR_loader_init_SPEC_VERSION 2
@@ -1926,7 +1908,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrInitializeLoaderKHR(
  const XrLoaderInitInfoBaseHeaderKHR* loaderInitInfo);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
-
 
 // XR_KHR_composition_layer_equirect2 is a preprocessor guard. Do not pass it to API calls.
 #define XR_KHR_composition_layer_equirect2 1
@@ -1946,8 +1927,6 @@ typedef struct XrCompositionLayerEquirect2KHR {
  float lowerVerticalAngle;
 } XrCompositionLayerEquirect2KHR;
 
-
-
 // XR_KHR_binding_modification is a preprocessor guard. Do not pass it to API calls.
 #define XR_KHR_binding_modification 1
 #define XR_KHR_binding_modification_SPEC_VERSION 1
@@ -1965,13 +1944,10 @@ typedef struct XrBindingModificationsKHR {
  const XrBindingModificationBaseHeaderKHR* const* bindingModifications;
 } XrBindingModificationsKHR;
 
-
-
 // XR_KHR_swapchain_usage_input_attachment_bit is a preprocessor guard. Do not pass it to API calls.
 #define XR_KHR_swapchain_usage_input_attachment_bit 1
 #define XR_KHR_swapchain_usage_input_attachment_bit_SPEC_VERSION 3
 #define XR_KHR_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_EXTENSION_NAME "XR_KHR_swapchain_usage_input_attachment_bit"
-
 
 // XR_KHR_locate_spaces is a preprocessor guard. Do not pass it to API calls.
 #define XR_KHR_locate_spaces 1
@@ -1998,7 +1974,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrLocateSpacesKHR(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_KHR_maintenance1 is a preprocessor guard. Do not pass it to API calls.
 #define XR_KHR_maintenance1 1
 #define XR_KHR_maintenance1_SPEC_VERSION 1
@@ -2012,8 +1987,6 @@ typedef XrSpheref XrSpherefKHR;
 typedef XrBoxf XrBoxfKHR;
 
 typedef XrFrustumf XrFrustumfKHR;
-
-
 
 // XR_EXT_performance_settings is a preprocessor guard. Do not pass it to API calls.
 #define XR_EXT_performance_settings 1
@@ -2067,7 +2040,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrPerfSettingsSetPerformanceLevelEXT(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_EXT_thermal_query is a preprocessor guard. Do not pass it to API calls.
 #define XR_EXT_thermal_query 1
 #define XR_EXT_thermal_query_SPEC_VERSION 2
@@ -2084,7 +2056,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrThermalGetTemperatureTrendEXT(
  float* tempSlope);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
-
 
 // XR_EXT_debug_utils is a preprocessor guard. Do not pass it to API calls.
 #define XR_EXT_debug_utils 1
@@ -2139,7 +2110,6 @@ typedef XrBool32 (XRAPI_PTR *PFN_xrDebugUtilsMessengerCallbackEXT)(
  const XrDebugUtilsMessengerCallbackDataEXT* callbackData,
  void* userData);
 
-
 // XrDebugUtilsMessengerCreateInfoEXT extends XrInstanceCreateInfo
 typedef struct XrDebugUtilsMessengerCreateInfoEXT {
  XrStructureType type;
@@ -2191,7 +2161,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrSessionInsertDebugUtilsLabelEXT(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_EXT_eye_gaze_interaction is a preprocessor guard. Do not pass it to API calls.
 #define XR_EXT_eye_gaze_interaction 1
 #define XR_EXT_eye_gaze_interaction_SPEC_VERSION 2
@@ -2209,8 +2178,6 @@ typedef struct XrEyeGazeSampleTimeEXT {
  void* XR_MAY_ALIAS next;
  XrTime time;
 } XrEyeGazeSampleTimeEXT;
-
-
 
 // XR_EXTX_overlay is a preprocessor guard. Do not pass it to API calls.
 #define XR_EXTX_overlay 1
@@ -2240,19 +2207,15 @@ typedef struct XrEventDataMainSessionVisibilityChangedEXTX {
  XrOverlayMainSessionFlagsEXTX flags;
 } XrEventDataMainSessionVisibilityChangedEXTX;
 
-
-
 // XR_VARJO_quad_views is a preprocessor guard. Do not pass it to API calls.
 #define XR_VARJO_quad_views 1
 #define XR_VARJO_quad_views_SPEC_VERSION 2
 #define XR_VARJO_QUAD_VIEWS_EXTENSION_NAME "XR_VARJO_quad_views"
 
-
 // XR_MSFT_unbounded_reference_space is a preprocessor guard. Do not pass it to API calls.
 #define XR_MSFT_unbounded_reference_space 1
 #define XR_MSFT_unbounded_reference_space_SPEC_VERSION 1
 #define XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME "XR_MSFT_unbounded_reference_space"
-
 
 // XR_MSFT_spatial_anchor is a preprocessor guard. Do not pass it to API calls.
 #define XR_MSFT_spatial_anchor 1
@@ -2295,7 +2258,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrDestroySpatialAnchorMSFT(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_FB_composition_layer_image_layout is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_composition_layer_image_layout 1
 #define XR_FB_composition_layer_image_layout_SPEC_VERSION 1
@@ -2311,8 +2273,6 @@ typedef struct XrCompositionLayerImageLayoutFB {
  void* XR_MAY_ALIAS next;
  XrCompositionLayerImageLayoutFlagsFB flags;
 } XrCompositionLayerImageLayoutFB;
-
-
 
 // XR_FB_composition_layer_alpha_blend is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_composition_layer_alpha_blend 1
@@ -2338,19 +2298,15 @@ typedef struct XrCompositionLayerAlphaBlendFB {
  XrBlendFactorFB dstFactorAlpha;
 } XrCompositionLayerAlphaBlendFB;
 
-
-
 // XR_MND_headless is a preprocessor guard. Do not pass it to API calls.
 #define XR_MND_headless 1
 #define XR_MND_headless_SPEC_VERSION 2
 #define XR_MND_HEADLESS_EXTENSION_NAME "XR_MND_headless"
 
-
 // XR_OCULUS_android_session_state_enable is a preprocessor guard. Do not pass it to API calls.
 #define XR_OCULUS_android_session_state_enable 1
 #define XR_OCULUS_android_session_state_enable_SPEC_VERSION 1
 #define XR_OCULUS_ANDROID_SESSION_STATE_ENABLE_EXTENSION_NAME "XR_OCULUS_android_session_state_enable"
-
 
 // XR_EXT_view_configuration_depth_range is a preprocessor guard. Do not pass it to API calls.
 #define XR_EXT_view_configuration_depth_range 1
@@ -2365,8 +2321,6 @@ typedef struct XrViewConfigurationDepthRangeEXT {
  float recommendedFarZ;
  float maxFarZ;
 } XrViewConfigurationDepthRangeEXT;
-
-
 
 // XR_EXT_conformance_automation is a preprocessor guard. Do not pass it to API calls.
 #define XR_EXT_conformance_automation 1
@@ -2412,7 +2366,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrSetInputDeviceLocationEXT(
  XrPosef pose);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
-
 
 // XR_MSFT_spatial_graph_bridge is a preprocessor guard. Do not pass it to API calls.
 #define XR_MSFT_spatial_graph_bridge 1
@@ -2480,7 +2433,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetSpatialGraphNodeBindingPropertiesMSFT(
  XrSpatialGraphNodeBindingPropertiesMSFT* properties);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
-
 
 // XR_MSFT_hand_interaction is a preprocessor guard. Do not pass it to API calls.
 #define XR_MSFT_hand_interaction 1
@@ -2608,7 +2560,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrLocateHandJointsEXT(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_MSFT_hand_tracking_mesh is a preprocessor guard. Do not pass it to API calls.
 #define XR_MSFT_hand_tracking_mesh 1
 #define XR_MSFT_hand_tracking_mesh_SPEC_VERSION 4
@@ -2695,7 +2646,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrUpdateHandMeshMSFT(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_MSFT_secondary_view_configuration is a preprocessor guard. Do not pass it to API calls.
 #define XR_MSFT_secondary_view_configuration 1
 #define XR_MSFT_secondary_view_configuration_SPEC_VERSION 1
@@ -2747,13 +2697,10 @@ typedef struct XrSecondaryViewConfigurationSwapchainCreateInfoMSFT {
  XrViewConfigurationType viewConfigurationType;
 } XrSecondaryViewConfigurationSwapchainCreateInfoMSFT;
 
-
-
 // XR_MSFT_first_person_observer is a preprocessor guard. Do not pass it to API calls.
 #define XR_MSFT_first_person_observer 1
 #define XR_MSFT_first_person_observer_SPEC_VERSION 1
 #define XR_MSFT_FIRST_PERSON_OBSERVER_EXTENSION_NAME "XR_MSFT_first_person_observer"
-
 
 // XR_MSFT_controller_model is a preprocessor guard. Do not pass it to API calls.
 #define XR_MSFT_controller_model 1
@@ -2830,12 +2777,10 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetControllerModelStateMSFT(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_EXT_win32_appcontainer_compatible is a preprocessor guard. Do not pass it to API calls.
 #define XR_EXT_win32_appcontainer_compatible 1
 #define XR_EXT_win32_appcontainer_compatible_SPEC_VERSION 1
 #define XR_EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME "XR_EXT_win32_appcontainer_compatible"
-
 
 // XR_EPIC_view_configuration_fov is a preprocessor guard. Do not pass it to API calls.
 #define XR_EPIC_view_configuration_fov 1
@@ -2848,8 +2793,6 @@ typedef struct XrViewConfigurationViewFovEPIC {
  XrFovf recommendedFov;
  XrFovf maxMutableFov;
 } XrViewConfigurationViewFovEPIC;
-
-
 
 // XR_MSFT_composition_layer_reprojection is a preprocessor guard. Do not pass it to API calls.
 #define XR_MSFT_composition_layer_reprojection 1
@@ -2893,12 +2836,10 @@ XRAPI_ATTR XrResult XRAPI_CALL xrEnumerateReprojectionModesMSFT(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_HUAWEI_controller_interaction is a preprocessor guard. Do not pass it to API calls.
 #define XR_HUAWEI_controller_interaction 1
 #define XR_HUAWEI_controller_interaction_SPEC_VERSION 1
 #define XR_HUAWEI_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_HUAWEI_controller_interaction"
-
 
 // XR_FB_swapchain_update_state is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_swapchain_update_state 1
@@ -2924,7 +2865,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetSwapchainStateFB(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_FB_composition_layer_secure_content is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_composition_layer_secure_content 1
 #define XR_FB_composition_layer_secure_content_SPEC_VERSION 1
@@ -2941,8 +2881,6 @@ typedef struct XrCompositionLayerSecureContentFB {
  const void* XR_MAY_ALIAS next;
  XrCompositionLayerSecureContentFlagsFB flags;
 } XrCompositionLayerSecureContentFB;
-
-
 
 // XR_FB_body_tracking is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_body_tracking 1
@@ -3105,7 +3043,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetBodySkeletonFB(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_EXT_dpad_binding is a preprocessor guard. Do not pass it to API calls.
 #define XR_EXT_dpad_binding 1
 #define XR_EXT_dpad_binding_SPEC_VERSION 1
@@ -3124,8 +3061,6 @@ typedef struct XrInteractionProfileDpadBindingEXT {
  const XrHapticBaseHeader* offHaptic;
 } XrInteractionProfileDpadBindingEXT;
 
-
-
 // XR_VALVE_analog_threshold is a preprocessor guard. Do not pass it to API calls.
 #define XR_VALVE_analog_threshold 1
 #define XR_VALVE_analog_threshold_SPEC_VERSION 2
@@ -3140,8 +3075,6 @@ typedef struct XrInteractionProfileAnalogThresholdVALVE {
  const XrHapticBaseHeader* onHaptic;
  const XrHapticBaseHeader* offHaptic;
 } XrInteractionProfileAnalogThresholdVALVE;
-
-
 
 // XR_EXT_hand_joints_motion_range is a preprocessor guard. Do not pass it to API calls.
 #define XR_EXT_hand_joints_motion_range 1
@@ -3160,31 +3093,25 @@ typedef struct XrHandJointsMotionRangeInfoEXT {
  XrHandJointsMotionRangeEXT handJointsMotionRange;
 } XrHandJointsMotionRangeInfoEXT;
 
-
-
 // XR_EXT_samsung_odyssey_controller is a preprocessor guard. Do not pass it to API calls.
 #define XR_EXT_samsung_odyssey_controller 1
 #define XR_EXT_samsung_odyssey_controller_SPEC_VERSION 1
 #define XR_EXT_SAMSUNG_ODYSSEY_CONTROLLER_EXTENSION_NAME "XR_EXT_samsung_odyssey_controller"
-
 
 // XR_EXT_hp_mixed_reality_controller is a preprocessor guard. Do not pass it to API calls.
 #define XR_EXT_hp_mixed_reality_controller 1
 #define XR_EXT_hp_mixed_reality_controller_SPEC_VERSION 1
 #define XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME "XR_EXT_hp_mixed_reality_controller"
 
-
 // XR_MND_swapchain_usage_input_attachment_bit is a preprocessor guard. Do not pass it to API calls.
 #define XR_MND_swapchain_usage_input_attachment_bit 1
 #define XR_MND_swapchain_usage_input_attachment_bit_SPEC_VERSION 2
 #define XR_MND_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_EXTENSION_NAME "XR_MND_swapchain_usage_input_attachment_bit"
 
-
 // XR_MSFT_scene_understanding is a preprocessor guard. Do not pass it to API calls.
 #define XR_MSFT_scene_understanding 1
 
  XR_DEFINE_HANDLE(XrSceneObserverMSFT)
-
 
  XR_DEFINE_HANDLE(XrSceneMSFT)
 
@@ -3510,7 +3437,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetSceneMeshBuffersMSFT(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_MSFT_scene_understanding_serialization is a preprocessor guard. Do not pass it to API calls.
 #define XR_MSFT_scene_understanding_serialization 1
 #define XR_MSFT_scene_understanding_serialization_SPEC_VERSION 2
@@ -3551,7 +3477,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetSerializedSceneFragmentDataMSFT(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_FB_display_refresh_rate is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_display_refresh_rate 1
 #define XR_FB_display_refresh_rate_SPEC_VERSION 1
@@ -3585,12 +3510,10 @@ XRAPI_ATTR XrResult XRAPI_CALL xrRequestDisplayRefreshRateFB(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_HTC_vive_cosmos_controller_interaction is a preprocessor guard. Do not pass it to API calls.
 #define XR_HTC_vive_cosmos_controller_interaction 1
 #define XR_HTC_vive_cosmos_controller_interaction_SPEC_VERSION 1
 #define XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_HTC_vive_cosmos_controller_interaction"
-
 
 // XR_HTCX_vive_tracker_interaction is a preprocessor guard. Do not pass it to API calls.
 #define XR_HTCX_vive_tracker_interaction 1
@@ -3621,12 +3544,10 @@ XRAPI_ATTR XrResult XRAPI_CALL xrEnumerateViveTrackerPathsHTCX(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_HTC_facial_tracking is a preprocessor guard. Do not pass it to API calls.
 #define XR_HTC_facial_tracking 1
 
 #define XR_FACIAL_EXPRESSION_EYE_COUNT_HTC 14
-
 
 #define XR_FACIAL_EXPRESSION_LIP_COUNT_HTC 37
 
@@ -3745,24 +3666,20 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetFacialExpressionsHTC(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_HTC_vive_focus3_controller_interaction is a preprocessor guard. Do not pass it to API calls.
 #define XR_HTC_vive_focus3_controller_interaction 1
 #define XR_HTC_vive_focus3_controller_interaction_SPEC_VERSION 2
 #define XR_HTC_VIVE_FOCUS3_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_HTC_vive_focus3_controller_interaction"
-
 
 // XR_HTC_hand_interaction is a preprocessor guard. Do not pass it to API calls.
 #define XR_HTC_hand_interaction 1
 #define XR_HTC_hand_interaction_SPEC_VERSION 1
 #define XR_HTC_HAND_INTERACTION_EXTENSION_NAME "XR_HTC_hand_interaction"
 
-
 // XR_HTC_vive_wrist_tracker_interaction is a preprocessor guard. Do not pass it to API calls.
 #define XR_HTC_vive_wrist_tracker_interaction 1
 #define XR_HTC_vive_wrist_tracker_interaction_SPEC_VERSION 1
 #define XR_HTC_VIVE_WRIST_TRACKER_INTERACTION_EXTENSION_NAME "XR_HTC_vive_wrist_tracker_interaction"
-
 
 // XR_FB_color_space is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_color_space 1
@@ -3856,7 +3773,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetHandMeshFB(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_FB_hand_tracking_aim is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_hand_tracking_aim 1
 #define XR_FB_hand_tracking_aim_SPEC_VERSION 2
@@ -3886,8 +3802,6 @@ typedef struct XrHandTrackingAimStateFB {
  float pinchStrengthLittle;
 } XrHandTrackingAimStateFB;
 
-
-
 // XR_FB_hand_tracking_capsules is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_hand_tracking_capsules 1
 #define XR_HAND_TRACKING_CAPSULE_POINT_COUNT_FB 2
@@ -3908,8 +3822,6 @@ typedef struct XrHandTrackingCapsulesStateFB {
  void* XR_MAY_ALIAS next;
  XrHandCapsuleFB capsules[XR_HAND_TRACKING_CAPSULE_COUNT_FB];
 } XrHandTrackingCapsulesStateFB;
-
-
 
 // XR_FB_spatial_entity is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_spatial_entity 1
@@ -4016,7 +3928,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetSpaceComponentStatusFB(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_FB_foveation is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_foveation 1
 XR_DEFINE_HANDLE(XrFoveationProfileFB)
@@ -4066,7 +3977,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrDestroyFoveationProfileFB(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_FB_foveation_configuration is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_foveation_configuration 1
 #define XR_FB_foveation_configuration_SPEC_VERSION 1
@@ -4093,8 +4003,6 @@ typedef struct XrFoveationLevelProfileCreateInfoFB {
  float verticalOffset;
  XrFoveationDynamicFB dynamic;
 } XrFoveationLevelProfileCreateInfoFB;
-
-
 
 // XR_FB_keyboard_tracking is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_keyboard_tracking 1
@@ -4157,7 +4065,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrCreateKeyboardSpaceFB(
  XrSpace* keyboardSpace);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
-
 
 // XR_FB_triangle_mesh is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_triangle_mesh 1
@@ -4230,7 +4137,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrTriangleMeshEndVertexBufferUpdateFB(
  XrTriangleMeshFB mesh);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
-
 
 // XR_FB_passthrough is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_passthrough 1
@@ -4421,7 +4327,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGeometryInstanceSetTransformFB(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_FB_render_model is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_render_model 1
 
@@ -4505,7 +4410,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrLoadRenderModelFB(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_VARJO_foveated_rendering is a preprocessor guard. Do not pass it to API calls.
 #define XR_VARJO_foveated_rendering 1
 #define XR_VARJO_foveated_rendering_SPEC_VERSION 3
@@ -4531,8 +4435,6 @@ typedef struct XrSystemFoveatedRenderingPropertiesVARJO {
  XrBool32 supportsFoveatedRendering;
 } XrSystemFoveatedRenderingPropertiesVARJO;
 
-
-
 // XR_VARJO_composition_layer_depth_test is a preprocessor guard. Do not pass it to API calls.
 #define XR_VARJO_composition_layer_depth_test 1
 #define XR_VARJO_composition_layer_depth_test_SPEC_VERSION 2
@@ -4544,8 +4446,6 @@ typedef struct XrCompositionLayerDepthTestVARJO {
  float depthTestRangeNearZ;
  float depthTestRangeFarZ;
 } XrCompositionLayerDepthTestVARJO;
-
-
 
 // XR_VARJO_environment_depth_estimation is a preprocessor guard. Do not pass it to API calls.
 #define XR_VARJO_environment_depth_estimation 1
@@ -4560,7 +4460,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrSetEnvironmentDepthEstimationVARJO(
  XrBool32 enabled);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
-
 
 // XR_VARJO_marker_tracking is a preprocessor guard. Do not pass it to API calls.
 #define XR_VARJO_marker_tracking 1
@@ -4623,7 +4522,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrCreateMarkerSpaceVARJO(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_VARJO_view_offset is a preprocessor guard. Do not pass it to API calls.
 #define XR_VARJO_view_offset 1
 #define XR_VARJO_view_offset_SPEC_VERSION 1
@@ -4638,18 +4536,15 @@ XRAPI_ATTR XrResult XRAPI_CALL xrSetViewOffsetVARJO(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_VARJO_xr4_controller_interaction is a preprocessor guard. Do not pass it to API calls.
 #define XR_VARJO_xr4_controller_interaction 1
 #define XR_VARJO_xr4_controller_interaction_SPEC_VERSION 2
 #define XR_VARJO_XR4_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_VARJO_xr4_controller_interaction"
 
-
 // XR_ML_ml2_controller_interaction is a preprocessor guard. Do not pass it to API calls.
 #define XR_ML_ml2_controller_interaction 1
 #define XR_ML_ml2_controller_interaction_SPEC_VERSION 1
 #define XR_ML_ML2_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_ML_ml2_controller_interaction"
-
 
 // XR_ML_frame_end_info is a preprocessor guard. Do not pass it to API calls.
 #define XR_ML_frame_end_info 1
@@ -4669,8 +4564,6 @@ typedef struct XrFrameEndInfoML {
  XrFrameEndInfoFlagsML flags;
 } XrFrameEndInfoML;
 
-
-
 // XR_ML_global_dimmer is a preprocessor guard. Do not pass it to API calls.
 #define XR_ML_global_dimmer 1
 #define XR_ML_global_dimmer_SPEC_VERSION 1
@@ -4687,8 +4580,6 @@ typedef struct XrGlobalDimmerFrameEndInfoML {
  float dimmerValue;
  XrGlobalDimmerFrameEndInfoFlagsML flags;
 } XrGlobalDimmerFrameEndInfoML;
-
-
 
 // XR_ML_marker_understanding is a preprocessor guard. Do not pass it to API calls.
 #define XR_ML_marker_understanding 1
@@ -4918,7 +4809,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrCreateMarkerSpaceML(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_ML_localization_map is a preprocessor guard. Do not pass it to API calls.
 #define XR_ML_localization_map 1
 XR_DEFINE_HANDLE(XrExportedLocalizationMapML)
@@ -5045,7 +4935,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetExportedLocalizationMapDataML(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_ML_spatial_anchors is a preprocessor guard. Do not pass it to API calls.
 #define XR_ML_spatial_anchors 1
 XR_DEFINE_OPAQUE_64(XrFutureEXT)
@@ -5106,7 +4995,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetSpatialAnchorStateML(
  XrSpatialAnchorStateML* state);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
-
 
 // XR_ML_spatial_anchors_storage is a preprocessor guard. Do not pass it to API calls.
 #define XR_ML_spatial_anchors_storage 1
@@ -5284,7 +5172,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrUpdateSpatialAnchorsExpirationCompleteML(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_MSFT_spatial_anchor_persistence is a preprocessor guard. Do not pass it to API calls.
 #define XR_MSFT_spatial_anchor_persistence 1
 XR_DEFINE_HANDLE(XrSpatialAnchorStoreConnectionMSFT)
@@ -5349,7 +5236,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrClearSpatialAnchorStoreMSFT(
  XrSpatialAnchorStoreConnectionMSFT spatialAnchorStore);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
-
 
 // XR_MSFT_scene_marker is a preprocessor guard. Do not pass it to API calls.
 #define XR_MSFT_scene_marker 1
@@ -5423,7 +5309,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetSceneMarkerDecodedStringMSFT(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_ULTRALEAP_hand_tracking_forearm is a preprocessor guard. Do not pass it to API calls.
 #define XR_ULTRALEAP_hand_tracking_forearm 1
 
@@ -5462,7 +5347,6 @@ typedef enum XrHandForearmJointULTRALEAP {
  XR_HAND_FOREARM_JOINT_ELBOW_ULTRALEAP = 26,
  XR_HAND_FOREARM_JOINT_MAX_ENUM_ULTRALEAP = 0x7FFFFFFF
 } XrHandForearmJointULTRALEAP;
-
 
 // XR_FB_spatial_entity_query is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_spatial_entity_query 1
@@ -5563,7 +5447,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrRetrieveSpaceQueryResultsFB(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_FB_spatial_entity_storage is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_spatial_entity_storage 1
 #define XR_FB_spatial_entity_storage_SPEC_VERSION 1
@@ -5626,12 +5509,10 @@ XRAPI_ATTR XrResult XRAPI_CALL xrEraseSpaceFB(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_FB_touch_controller_pro is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_touch_controller_pro 1
 #define XR_FB_touch_controller_pro_SPEC_VERSION 1
 #define XR_FB_TOUCH_CONTROLLER_PRO_EXTENSION_NAME "XR_FB_touch_controller_pro"
-
 
 // XR_FB_spatial_entity_sharing is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_spatial_entity_sharing 1
@@ -5665,7 +5546,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrShareSpacesFB(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_FB_space_warp is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_space_warp 1
 #define XR_FB_space_warp_SPEC_VERSION 2
@@ -5697,8 +5577,6 @@ typedef struct XrSystemSpaceWarpPropertiesFB {
  uint32_t recommendedMotionVectorImageRectHeight;
 } XrSystemSpaceWarpPropertiesFB;
 
-
-
 // XR_FB_haptic_amplitude_envelope is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_haptic_amplitude_envelope 1
 
@@ -5713,8 +5591,6 @@ typedef struct XrHapticAmplitudeEnvelopeVibrationFB {
  uint32_t amplitudeCount;
  const float* amplitudes;
 } XrHapticAmplitudeEnvelopeVibrationFB;
-
-
 
 // XR_FB_scene is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_scene 1
@@ -5808,12 +5684,10 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetSpaceRoomLayoutFB(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_EXT_palm_pose is a preprocessor guard. Do not pass it to API calls.
 #define XR_EXT_palm_pose 1
 #define XR_EXT_palm_pose_SPEC_VERSION 3
 #define XR_EXT_PALM_POSE_EXTENSION_NAME "XR_EXT_palm_pose"
-
 
 // XR_ALMALENCE_digital_lens_control is a preprocessor guard. Do not pass it to API calls.
 #define XR_ALMALENCE_digital_lens_control 1
@@ -5839,7 +5713,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrSetDigitalLensControlALMALENCE(
  const XrDigitalLensControlALMALENCE* digitalLensControl);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
-
 
 // XR_FB_scene_capture is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_scene_capture 1
@@ -5870,7 +5743,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrRequestSceneCaptureFB(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_FB_spatial_entity_container is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_spatial_entity_container 1
 #define XR_FB_spatial_entity_container_SPEC_VERSION 2
@@ -5893,7 +5765,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetSpaceContainerFB(
  XrSpaceContainerFB* spaceContainerOutput);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
-
 
 // XR_META_foveation_eye_tracked is a preprocessor guard. Do not pass it to API calls.
 #define XR_META_foveation_eye_tracked 1
@@ -5939,7 +5810,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetFoveationEyeTrackedStateMETA(
  XrFoveationEyeTrackedStateMETA* foveationState);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
-
 
 // XR_FB_face_tracking is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_face_tracking 1
@@ -6085,7 +5955,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetFaceExpressionWeightsFB(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_FB_eye_tracking_social is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_eye_tracking_social 1
 XR_DEFINE_HANDLE(XrEyeTrackerFB)
@@ -6151,7 +6020,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetEyeGazesFB(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_FB_passthrough_keyboard_hands is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_passthrough_keyboard_hands 1
 #define XR_FB_passthrough_keyboard_hands_SPEC_VERSION 2
@@ -6173,7 +6041,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrPassthroughLayerSetKeyboardHandsIntensityFB(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_FB_composition_layer_settings is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_composition_layer_settings 1
 #define XR_FB_composition_layer_settings_SPEC_VERSION 1
@@ -6194,13 +6061,10 @@ typedef struct XrCompositionLayerSettingsFB {
  XrCompositionLayerSettingsFlagsFB layerFlags;
 } XrCompositionLayerSettingsFB;
 
-
-
 // XR_FB_touch_controller_proximity is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_touch_controller_proximity 1
 #define XR_FB_touch_controller_proximity_SPEC_VERSION 1
 #define XR_FB_TOUCH_CONTROLLER_PROXIMITY_EXTENSION_NAME "XR_FB_touch_controller_proximity"
-
 
 // XR_FB_haptic_pcm is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_haptic_pcm 1
@@ -6238,7 +6102,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetDeviceSampleRateFB(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_FB_composition_layer_depth_test is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_composition_layer_depth_test 1
 #define XR_FB_composition_layer_depth_test_SPEC_VERSION 1
@@ -6263,8 +6126,6 @@ typedef struct XrCompositionLayerDepthTestFB {
  XrCompareOpFB compareOp;
 } XrCompositionLayerDepthTestFB;
 
-
-
 // XR_META_local_dimming is a preprocessor guard. Do not pass it to API calls.
 #define XR_META_local_dimming 1
 #define XR_META_local_dimming_SPEC_VERSION 1
@@ -6281,8 +6142,6 @@ typedef struct XrLocalDimmingFrameEndInfoMETA {
  const void* XR_MAY_ALIAS next;
  XrLocalDimmingModeMETA localDimmingMode;
 } XrLocalDimmingFrameEndInfoMETA;
-
-
 
 // XR_META_passthrough_preferences is a preprocessor guard. Do not pass it to API calls.
 #define XR_META_passthrough_preferences 1
@@ -6308,7 +6167,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetPassthroughPreferencesMETA(
  XrPassthroughPreferencesMETA* preferences);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
-
 
 // XR_META_virtual_keyboard is a preprocessor guard. Do not pass it to API calls.
 #define XR_META_virtual_keyboard 1
@@ -6512,7 +6370,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrChangeVirtualKeyboardTextContextMETA(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_OCULUS_external_camera is a preprocessor guard. Do not pass it to API calls.
 #define XR_OCULUS_external_camera 1
 #define XR_MAX_EXTERNAL_CAMERA_NAME_SIZE_OCULUS 32
@@ -6569,7 +6426,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrEnumerateExternalCamerasOCULUS(
  XrExternalCameraOCULUS* cameras);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
-
 
 // XR_META_performance_metrics is a preprocessor guard. Do not pass it to API calls.
 #define XR_META_performance_metrics 1
@@ -6634,7 +6490,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrQueryPerformanceMetricsCounterMETA(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_FB_spatial_entity_storage_batch is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_spatial_entity_storage_batch 1
 #define XR_FB_spatial_entity_storage_batch_SPEC_VERSION 1
@@ -6664,7 +6519,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrSaveSpaceListFB(
  XrAsyncRequestIdFB* requestId);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
-
 
 // XR_FB_spatial_entity_user is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_spatial_entity_user 1
@@ -6697,7 +6551,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrDestroySpaceUserFB(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_META_headset_id is a preprocessor guard. Do not pass it to API calls.
 #define XR_META_headset_id 1
 #define XR_META_headset_id_SPEC_VERSION 2
@@ -6708,8 +6561,6 @@ typedef struct XrSystemHeadsetIdPropertiesMETA {
  void* XR_MAY_ALIAS next;
  XrUuidEXT id;
 } XrSystemHeadsetIdPropertiesMETA;
-
-
 
 // XR_META_recommended_layer_resolution is a preprocessor guard. Do not pass it to API calls.
 #define XR_META_recommended_layer_resolution 1
@@ -6739,7 +6590,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetRecommendedLayerResolutionMETA(
  XrRecommendedLayerResolutionMETA* resolution);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
-
 
 // XR_META_passthrough_color_lut is a preprocessor guard. Do not pass it to API calls.
 #define XR_META_passthrough_color_lut 1
@@ -6815,7 +6665,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrUpdatePassthroughColorLutMETA(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_META_spatial_entity_mesh is a preprocessor guard. Do not pass it to API calls.
 #define XR_META_spatial_entity_mesh 1
 #define XR_META_spatial_entity_mesh_SPEC_VERSION 1
@@ -6847,18 +6696,15 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetSpaceTriangleMeshMETA(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_META_automatic_layer_filter is a preprocessor guard. Do not pass it to API calls.
 #define XR_META_automatic_layer_filter 1
 #define XR_META_automatic_layer_filter_SPEC_VERSION 1
 #define XR_META_AUTOMATIC_LAYER_FILTER_EXTENSION_NAME "XR_META_automatic_layer_filter"
 
-
 // XR_META_touch_controller_plus is a preprocessor guard. Do not pass it to API calls.
 #define XR_META_touch_controller_plus 1
 #define XR_META_touch_controller_plus_SPEC_VERSION 1
 #define XR_META_TOUCH_CONTROLLER_PLUS_EXTENSION_NAME "XR_META_touch_controller_plus"
-
 
 // XR_META_passthrough_layer_resumed_event is a preprocessor guard. Do not pass it to API calls.
 #define XR_META_passthrough_layer_resumed_event 1
@@ -6869,8 +6715,6 @@ typedef struct XrEventDataPassthroughLayerResumedMETA {
  const void* XR_MAY_ALIAS next;
  XrPassthroughLayerFB layer;
 } XrEventDataPassthroughLayerResumedMETA;
-
-
 
 // XR_FB_face_tracking2 is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_face_tracking2 1
@@ -7026,7 +6870,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetFaceExpressionWeights2FB(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_META_spatial_entity_sharing is a preprocessor guard. Do not pass it to API calls.
 #define XR_META_spatial_entity_sharing 1
 #define XR_META_spatial_entity_sharing_SPEC_VERSION 1
@@ -7069,7 +6912,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrShareSpacesMETA(
  XrAsyncRequestIdFB* requestId);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
-
 
 // XR_META_environment_depth is a preprocessor guard. Do not pass it to API calls.
 #define XR_META_environment_depth 1
@@ -7197,19 +7039,16 @@ XRAPI_ATTR XrResult XRAPI_CALL xrSetEnvironmentDepthHandRemovalMETA(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_EXT_uuid is a preprocessor guard. Do not pass it to API calls.
 #define XR_EXT_uuid 1
 #define XR_EXT_uuid_SPEC_VERSION 1
 #define XR_EXT_UUID_EXTENSION_NAME "XR_EXT_uuid"
 #define XR_UUID_SIZE_EXT 16
 
-
 // XR_EXT_hand_interaction is a preprocessor guard. Do not pass it to API calls.
 #define XR_EXT_hand_interaction 1
 #define XR_EXT_hand_interaction_SPEC_VERSION 1
 #define XR_EXT_HAND_INTERACTION_EXTENSION_NAME "XR_EXT_hand_interaction"
-
 
 // XR_QCOM_tracking_optimization_settings is a preprocessor guard. Do not pass it to API calls.
 #define XR_QCOM_tracking_optimization_settings 1
@@ -7239,7 +7078,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrSetTrackingOptimizationSettingsHintQCOM(
  XrTrackingOptimizationSettingsHintQCOM hint);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
-
 
 // XR_HTC_passthrough is a preprocessor guard. Do not pass it to API calls.
 #define XR_HTC_passthrough 1
@@ -7301,7 +7139,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrDestroyPassthroughHTC(
  XrPassthroughHTC passthrough);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
-
 
 // XR_HTC_foveation is a preprocessor guard. Do not pass it to API calls.
 #define XR_HTC_foveation 1
@@ -7369,7 +7206,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrApplyFoveationHTC(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_HTC_anchor is a preprocessor guard. Do not pass it to API calls.
 #define XR_HTC_anchor 1
 #define XR_MAX_SPATIAL_ANCHOR_NAME_SIZE_HTC 256
@@ -7409,7 +7245,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetSpatialAnchorNameHTC(
  XrSpatialAnchorNameHTC* name);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
-
 
 // XR_HTC_body_tracking is a preprocessor guard. Do not pass it to API calls.
 #define XR_HTC_body_tracking 1
@@ -7535,7 +7370,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetBodySkeletonHTC(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_EXT_active_action_set_priority is a preprocessor guard. Do not pass it to API calls.
 #define XR_EXT_active_action_set_priority 1
 #define XR_EXT_active_action_set_priority_SPEC_VERSION 1
@@ -7552,8 +7386,6 @@ typedef struct XrActiveActionSetPrioritiesEXT {
  uint32_t actionSetPriorityCount;
  const XrActiveActionSetPriorityEXT* actionSetPriorities;
 } XrActiveActionSetPrioritiesEXT;
-
-
 
 // XR_MNDX_force_feedback_curl is a preprocessor guard. Do not pass it to API calls.
 #define XR_MNDX_force_feedback_curl 1
@@ -7597,18 +7429,15 @@ XRAPI_ATTR XrResult XRAPI_CALL xrApplyForceFeedbackCurlMNDX(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_BD_controller_interaction is a preprocessor guard. Do not pass it to API calls.
 #define XR_BD_controller_interaction 1
 #define XR_BD_controller_interaction_SPEC_VERSION 2
 #define XR_BD_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_BD_controller_interaction"
 
-
 // XR_EXT_local_floor is a preprocessor guard. Do not pass it to API calls.
 #define XR_EXT_local_floor 1
 #define XR_EXT_local_floor_SPEC_VERSION 1
 #define XR_EXT_LOCAL_FLOOR_EXTENSION_NAME "XR_EXT_local_floor"
-
 
 // XR_EXT_hand_tracking_data_source is a preprocessor guard. Do not pass it to API calls.
 #define XR_EXT_hand_tracking_data_source 1
@@ -7635,8 +7464,6 @@ typedef struct XrHandTrackingDataSourceStateEXT {
  XrBool32 isActive;
  XrHandTrackingDataSourceEXT dataSource;
 } XrHandTrackingDataSourceStateEXT;
-
-
 
 // XR_EXT_plane_detection is a preprocessor guard. Do not pass it to API calls.
 #define XR_EXT_plane_detection 1
@@ -7788,12 +7615,10 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetPlanePolygonBufferEXT(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_OPPO_controller_interaction is a preprocessor guard. Do not pass it to API calls.
 #define XR_OPPO_controller_interaction 1
 #define XR_OPPO_controller_interaction_SPEC_VERSION 1
 #define XR_OPPO_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_OPPO_controller_interaction"
-
 
 // XR_EXT_future is a preprocessor guard. Do not pass it to API calls.
 #define XR_EXT_future 1
@@ -7852,7 +7677,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrCancelFutureEXT(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_EXT_user_presence is a preprocessor guard. Do not pass it to API calls.
 #define XR_EXT_user_presence 1
 #define XR_EXT_user_presence_SPEC_VERSION 1
@@ -7870,8 +7694,6 @@ typedef struct XrSystemUserPresencePropertiesEXT {
  void* XR_MAY_ALIAS next;
  XrBool32 supportsUserPresence;
 } XrSystemUserPresencePropertiesEXT;
-
-
 
 // XR_ML_user_calibration is a preprocessor guard. Do not pass it to API calls.
 #define XR_ML_user_calibration 1
@@ -7922,7 +7744,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrEnableUserCalibrationEventsML(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_ML_system_notifications is a preprocessor guard. Do not pass it to API calls.
 #define XR_ML_system_notifications 1
 #define XR_ML_system_notifications_SPEC_VERSION 1
@@ -7942,7 +7763,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrSetSystemNotificationsML(
  const XrSystemNotificationsSetInfoML* info);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
-
 
 // XR_ML_world_mesh_detection is a preprocessor guard. Do not pass it to API calls.
 #define XR_ML_world_mesh_detection 1
@@ -8142,7 +7962,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrRequestWorldMeshCompleteML(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_ML_facial_expression is a preprocessor guard. Do not pass it to API calls.
 #define XR_ML_facial_expression 1
 XR_DEFINE_HANDLE(XrFacialExpressionClientML)
@@ -8254,24 +8073,20 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetFacialExpressionBlendShapePropertiesML(
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_ML_view_configuration_depth_range_change is a preprocessor guard. Do not pass it to API calls.
 #define XR_ML_view_configuration_depth_range_change 1
 #define XR_ML_view_configuration_depth_range_change_SPEC_VERSION 1
 #define XR_ML_VIEW_CONFIGURATION_DEPTH_RANGE_CHANGE_EXTENSION_NAME "XR_ML_view_configuration_depth_range_change"
-
 
 // XR_YVR_controller_interaction is a preprocessor guard. Do not pass it to API calls.
 #define XR_YVR_controller_interaction 1
 #define XR_YVR_controller_interaction_SPEC_VERSION 1
 #define XR_YVR_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_YVR_controller_interaction"
 
-
 // XR_EXT_composition_layer_inverted_alpha is a preprocessor guard. Do not pass it to API calls.
 #define XR_EXT_composition_layer_inverted_alpha 1
 #define XR_EXT_composition_layer_inverted_alpha_SPEC_VERSION 1
 #define XR_EXT_COMPOSITION_LAYER_INVERTED_ALPHA_EXTENSION_NAME "XR_EXT_composition_layer_inverted_alpha"
-
 
 // XR_META_colocation_discovery is a preprocessor guard. Do not pass it to API calls.
 #define XR_META_colocation_discovery 1
@@ -8387,7 +8202,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrStopColocationAdvertisementMETA(
  XrAsyncRequestIdFB* requestId);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
-
 
 // XR_META_spatial_entity_group_sharing is a preprocessor guard. Do not pass it to API calls.
 #define XR_META_spatial_entity_group_sharing 1
