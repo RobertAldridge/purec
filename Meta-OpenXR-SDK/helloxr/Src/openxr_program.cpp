@@ -72,15 +72,15 @@ PFN_xrSetEnvironmentDepthHandRemovalMETA gSetEnvironmentDepthHandRemovalMETA = n
 
 XrEnvironmentDepthProviderMETA gEnvironmentDepthProviderMETA = XR_NULL_HANDLE;
 
-namespace
-{
-
 #define strcpy_s(dest, source) strncpy( (dest), (source), sizeof(dest) )
 
 inline std::string GetXrVersionString(XrVersion ver)
 {
   return Fmt("%d.%d.%d", XR_VERSION_MAJOR(ver), XR_VERSION_MINOR(ver), XR_VERSION_PATCH(ver) );
 }
+
+namespace
+{
 
 namespace Math
 {
@@ -117,6 +117,8 @@ XrPosef RotateCCWAboutYAxis(float radians, XrVector3f translation)
 }  // namespace Pose
 
 }  // namespace Math
+
+}
 
 inline XrReferenceSpaceCreateInfo GetXrReferenceSpaceCreateInfo(const std::string& referenceSpaceTypeStr)
 {
@@ -167,8 +169,6 @@ inline XrReferenceSpaceCreateInfo GetXrReferenceSpaceCreateInfo(const std::strin
   }
 
   return referenceSpaceCreateInfo;
-}
-
 }
 
 void OpenXrProgram_LogLayersAndExtensions()

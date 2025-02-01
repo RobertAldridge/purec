@@ -11,30 +11,6 @@ VkPhysicalDevice gVkPhysicalDevice = VK_NULL_HANDLE;
 
 VkPipelineLayout gVkPipelineLayout = VK_NULL_HANDLE;
 
-namespace
-{
-
-const uint32_t VULKAN_TUTORIAL_WIDTH = 800;
-const uint32_t VULKAN_TUTORIAL_HEIGHT = 600;
-
-const int VULKAN_TUTORIAL_MAX_FRAMES_IN_FLIGHT = 2;
-
-const std::vector<const char*> VulkanTutorialValidationLayers =
-{
-  "VK_LAYER_KHRONOS_validation"
-};
-
-const std::vector<const char*> VulkanTutorialDeviceExtensions =
-{
-  VK_KHR_SWAPCHAIN_EXTENSION_NAME
-};
-
-#ifdef NDEBUG
-const bool VulkanTutorialEnableValidationLayers = false;
-#else
-const bool VulkanTutorialEnableValidationLayers = true;
-#endif
-
 VkResult VulkanTutorialCreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
 {
   auto func = (PFN_vkCreateDebugUtilsMessengerEXT)tableVk.GetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
@@ -61,13 +37,6 @@ struct VulkanTutorialQueueFamilyIndices
   {
     return graphicsFamily.has_value() && presentFamily.has_value();
   }
-};
-
-struct VulkanTutorialSwapChainSupportDetails
-{
-  VkSurfaceCapabilitiesKHR capabilities;
-  std::vector<VkSurfaceFormatKHR> formats;
-  std::vector<VkPresentModeKHR> presentModes;
 };
 
 #if 0
@@ -132,8 +101,6 @@ const std::vector<Vertex> VulkanTutorialVertices =
   { {-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f} }
 };
 #endif
-
-const std::vector<uint16_t> VulkanTutorialIndices = {0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4};
 
 uint32_t VulkanTutorialFindMemoryType(
   VkPhysicalDevice& physicalDevice,
@@ -1802,13 +1769,6 @@ inline VkResult CheckVkResult(VkResult res, const char* originator = nullptr, co
   return res;
 }
 
-// XXX These really shouldn't have trailing ';'s
-#define THROW_VK(res, cmd) ThrowVkResult(res, #cmd, FILE_AND_LINE)
-
-#define CHECK_VKCMD(cmd) CheckVkResult(cmd, #cmd, FILE_AND_LINE)
-
-#define CHECK_VKRESULT(res, cmdStr) CheckVkResult(res, cmdStr, FILE_AND_LINE)
-
 void PipelineLayout_PipelineLayoutCreate(VkDevice device)
 {
   // MVP matrix is a push_constant
@@ -1966,8 +1926,6 @@ R"_(
 
 )_";
 
-} // namespace
-
 VkPhysicalDeviceMemoryProperties gMemoryAllocatorMemoryProperties {};
 
 void MemoryAllocator_MemoryAllocatorInit(VkPhysicalDevice physicalDevice)
@@ -2001,15 +1959,6 @@ void MemoryAllocator_MemoryAllocatorAllocate(VkMemoryRequirements const& memReqs
 
   THROW("Memory format not supported");
 }
-
-enum class CmdBufferStateEnum
-{
-  Undefined,
-  Initialized,
-  Recording,
-  Executable,
-  Executing
-};
 
 CmdBufferStateEnum gCmdBufferState {CmdBufferStateEnum::Undefined};
 
@@ -2235,12 +2184,7 @@ VkVertexInputBindingDescription gVertexBufferBaseBindDesc {};
 
 std::vector<VkVertexInputAttributeDescription> gVertexBufferBaseAttrDesc {};
 
-struct
-{
-  uint32_t idx;
-  uint32_t vtx;
-
-}gVertexBufferBaseCount = {0, 0};
+VertexBufferBaseBlah gVertexBufferBaseCount = {0, 0};
 
 #if 0
 void VertexBufferBase_VertexBufferBase_Destructor()

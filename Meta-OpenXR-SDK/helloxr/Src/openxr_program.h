@@ -51,6 +51,8 @@ extern bool gOpenXrProgramSessionRunning;
 
 extern XrEventDataBuffer gOpenXrProgramXrEventDataBuffer;
 
+//const std::set<XrEnvironmentBlendMode> gOpenXrProgramStdSet_XrEnvironmentBlendMode {XR_ENVIRONMENT_BLEND_MODE_OPAQUE, XR_ENVIRONMENT_BLEND_MODE_ADDITIVE, XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND};
+
 extern "C" {
 extern XrPassthroughFB gPassthroughFeature;
 }
