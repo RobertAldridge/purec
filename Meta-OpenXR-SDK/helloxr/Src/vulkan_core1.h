@@ -8,7 +8,6 @@ extern "C" {
 
 #define VK_DEFINE_HANDLE(object) typedef struct object##_T* object;
 
-
 #ifndef VK_USE_64_BIT_PTR_DEFINES
  #if defined(__LP64__) || defined(_WIN64) || (defined(__x86_64__) && !defined(__ILP32__) ) || defined(_M_X64) || defined(__ia64) || defined (_M_IA64) || defined(__aarch64__) || defined(__powerpc64__) || (defined(__riscv) && __riscv_xlen == 64)
  #define VK_USE_64_BIT_PTR_DEFINES 1
@@ -16,7 +15,6 @@ extern "C" {
  #define VK_USE_64_BIT_PTR_DEFINES 0
  #endif
 #endif
-
 
 #ifndef VK_DEFINE_NON_DISPATCHABLE_HANDLE
  #if (VK_USE_64_BIT_PTR_DEFINES==1)
@@ -28,7 +26,6 @@ extern "C" {
 #ifndef VK_NULL_HANDLE
  #define VK_NULL_HANDLE 0
 #endif
-
 
 #ifndef VK_DEFINE_NON_DISPATCHABLE_HANDLE
  #if (VK_USE_64_BIT_PTR_DEFINES==1)
@@ -4819,7 +4816,6 @@ VKAPI_ATTR void VKAPI_CALL vkCmdExecuteCommands(
  const VkCommandBuffer* pCommandBuffers);
 #endif
 
-
 // VK_VERSION_1_1 is a preprocessor guard. Do not pass it to API calls.
 #define VK_VERSION_1_1 1
 // Vulkan 1.1 version number
@@ -5686,7 +5682,6 @@ VKAPI_ATTR void VKAPI_CALL vkGetDescriptorSetLayoutSupport(
  VkDescriptorSetLayoutSupport* pSupport);
 #endif
 
-
 // VK_VERSION_1_2 is a preprocessor guard. Do not pass it to API calls.
 #define VK_VERSION_1_2 1
 // Vulkan 1.2 version number
@@ -6444,7 +6439,6 @@ VKAPI_ATTR uint64_t VKAPI_CALL vkGetDeviceMemoryOpaqueCaptureAddress(
  const VkDeviceMemoryOpaqueCaptureAddressInfo* pInfo);
 #endif
 
-
 // VK_VERSION_1_3 is a preprocessor guard. Do not pass it to API calls.
 #define VK_VERSION_1_3 1
 // Vulkan 1.3 version number
@@ -6632,7 +6626,6 @@ static const VkAccessFlagBits2 VK_ACCESS_2_MICROMAP_READ_BIT_EXT = 0x10000000000
 static const VkAccessFlagBits2 VK_ACCESS_2_MICROMAP_WRITE_BIT_EXT = 0x200000000000ULL;
 static const VkAccessFlagBits2 VK_ACCESS_2_OPTICAL_FLOW_READ_BIT_NV = 0x40000000000ULL;
 static const VkAccessFlagBits2 VK_ACCESS_2_OPTICAL_FLOW_WRITE_BIT_NV = 0x80000000000ULL;
-
 
 typedef enum VkSubmitFlagBits {
  VK_SUBMIT_PROTECTED_BIT = 0x00000001,
@@ -7479,7 +7472,6 @@ VKAPI_ATTR void VKAPI_CALL vkGetDeviceImageSparseMemoryRequirements(
  VkSparseImageMemoryRequirements2* pSparseMemoryRequirements);
 #endif
 
-
 // VK_KHR_surface is a preprocessor guard. Do not pass it to API calls.
 #define VK_KHR_surface 1
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkSurfaceKHR)
@@ -7593,7 +7585,6 @@ VKAPI_ATTR VkResult VKAPI_CALL vkGetPhysicalDeviceSurfacePresentModesKHR(
  uint32_t* pPresentModeCount,
  VkPresentModeKHR* pPresentModes);
 #endif
-
 
 // VK_KHR_swapchain is a preprocessor guard. Do not pass it to API calls.
 #define VK_KHR_swapchain 1
@@ -7755,7 +7746,6 @@ VKAPI_ATTR VkResult VKAPI_CALL vkAcquireNextImage2KHR(
  uint32_t* pImageIndex);
 #endif
 
-
 // VK_KHR_display is a preprocessor guard. Do not pass it to API calls.
 #define VK_KHR_display 1
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDisplayKHR)
@@ -7881,7 +7871,6 @@ VKAPI_ATTR VkResult VKAPI_CALL vkCreateDisplayPlaneSurfaceKHR(
  VkSurfaceKHR* pSurface);
 #endif
 
-
 // VK_KHR_display_swapchain is a preprocessor guard. Do not pass it to API calls.
 #define VK_KHR_display_swapchain 1
 #define VK_KHR_DISPLAY_SWAPCHAIN_SPEC_VERSION 10
@@ -7905,12 +7894,10 @@ VKAPI_ATTR VkResult VKAPI_CALL vkCreateSharedSwapchainsKHR(
  VkSwapchainKHR* pSwapchains);
 #endif
 
-
 // VK_KHR_sampler_mirror_clamp_to_edge is a preprocessor guard. Do not pass it to API calls.
 #define VK_KHR_sampler_mirror_clamp_to_edge 1
 #define VK_KHR_SAMPLER_MIRROR_CLAMP_TO_EDGE_SPEC_VERSION 3
 #define VK_KHR_SAMPLER_MIRROR_CLAMP_TO_EDGE_EXTENSION_NAME "VK_KHR_sampler_mirror_clamp_to_edge"
-
 
 // VK_KHR_video_queue is a preprocessor guard. Do not pass it to API calls.
 #define VK_KHR_video_queue 1
@@ -8198,7 +8185,6 @@ VKAPI_ATTR void VKAPI_CALL vkCmdControlVideoCodingKHR(
  VkCommandBuffer commandBuffer,
  const VkVideoCodingControlInfoKHR* pCodingControlInfo);
 #endif
-
 
 // VK_KHR_video_decode_queue is a preprocessor guard. Do not pass it to API calls.
 #define VK_KHR_video_decode_queue 1

@@ -145,7 +145,6 @@ VKAPI_ATTR void VKAPI_CALL vkCmdDispatchGraphIndirectCountAMDX(
  VkDeviceAddress countInfo);
 #endif
 
-
 // VK_NV_displacement_micromap is a preprocessor guard. Do not pass it to API calls.
 #define VK_NV_displacement_micromap 1
 #define VK_NV_DISPLACEMENT_MICROMAP_SPEC_VERSION 2

@@ -18,14 +18,16 @@ static const XrColor4f XrColorLightGrey = {0.7f, 0.7f, 0.7f, 1.0f};
 static const XrColor4f XrColorGrey = {0.5f, 0.5f, 0.5f, 1.0f};
 static const XrColor4f XrColorDarkGrey = {0.3f, 0.3f, 0.3f, 1.0f};
 
-typedef enum GraphicsAPI { GRAPHICS_VULKAN } GraphicsAPI;
+enum GraphicsAPI
+{
+  GRAPHICS_VULKAN
+};
 
 // column-major, pre-multiplied. This type does not exist in the OpenXR API and is provided for convenience.
-typedef struct XrMatrix4x4f
+struct XrMatrix4x4f
 {
   float m[16];
-
-}XrMatrix4x4f;
+};
 
 inline static float XrRcpSqrt(const float x)
 {
@@ -307,15 +309,19 @@ inline static void XrMatrix4x4f_Transpose(XrMatrix4x4f* result, const XrMatrix4x
 // Returns a 3x3 minor of a 4x4 matrix.
 inline static float XrMatrix4x4f_Minor(const XrMatrix4x4f* matrix, int r0, int r1, int r2, int c0, int c1, int c2)
 {
-  return matrix->m[4 * r0 + c0] * (matrix->m[4 * r1 + c1] * matrix->m[4 * r2 + c2] - matrix->m[4 * r2 + c1] * matrix->m[4 * r1 + c2] ) -
-    matrix->m[4 * r0 + c1] * (matrix->m[4 * r1 + c0] * matrix->m[4 * r2 + c2] - matrix->m[4 * r2 + c0] * matrix->m[4 * r1 + c2] ) +
-    matrix->m[4 * r0 + c2] * (matrix->m[4 * r1 + c0] * matrix->m[4 * r2 + c1] - matrix->m[4 * r2 + c0] * matrix->m[4 * r1 + c1] );
+  return matrix->m[4 * r0 + c0] *
+    (matrix->m[4 * r1 + c1] * matrix->m[4 * r2 + c2] - matrix->m[4 * r2 + c1] * matrix->m[4 * r1 + c2] ) -
+    matrix->m[4 * r0 + c1] *
+    (matrix->m[4 * r1 + c0] * matrix->m[4 * r2 + c2] - matrix->m[4 * r2 + c0] * matrix->m[4 * r1 + c2] ) +
+    matrix->m[4 * r0 + c2] *
+    (matrix->m[4 * r1 + c0] * matrix->m[4 * r2 + c1] - matrix->m[4 * r2 + c0] * matrix->m[4 * r1 + c1] );
 }
 
 // Calculates the inverse of a 4x4 matrix.
 inline static void XrMatrix4x4f_Invert(XrMatrix4x4f* result, const XrMatrix4x4f* src)
 {
-  const float rcpDet = 1.0f / (src->m[0] * XrMatrix4x4f_Minor(src, 1, 2, 3, 1, 2, 3) -
+  const float rcpDet = 1.0f /
+    (src->m[0] * XrMatrix4x4f_Minor(src, 1, 2, 3, 1, 2, 3) -
     src->m[1] * XrMatrix4x4f_Minor(src, 1, 2, 3, 0, 2, 3) +
     src->m[2] * XrMatrix4x4f_Minor(src, 1, 2, 3, 0, 1, 3) -
     src->m[3] * XrMatrix4x4f_Minor(src, 1, 2, 3, 0, 1, 2)
@@ -645,7 +651,8 @@ inline static void XrMatrix4x4f_CreateProjectionFov(
   XrMatrix4x4f_CreateProjection(result, graphicsApi, tanLeft, tanRight, tanUp, tanDown, nearZ, farZ);
 }
 
-// Creates a matrix that transforms the -1 to 1 cube to cover the given 'mins' and 'maxs' transformed with the given 'matrix'.
+// Creates a matrix that transforms the -1 to 1 cube to cover the given 'mins' and 'maxs' transformed with the given
+// 'matrix'.
 inline static void XrMatrix4x4f_CreateOffsetScaleForBounds(
   XrMatrix4x4f* result,
   const XrMatrix4x4f* matrix,

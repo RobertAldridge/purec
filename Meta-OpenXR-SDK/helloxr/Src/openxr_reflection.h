@@ -5376,8 +5376,6 @@
  _(next) \
  _(groupUuid) \
 
-
-
 /// Calls your macro with the structure type name and the XrStructureType constant for
 /// each known/available structure type, excluding those unavailable due to preprocessor definitions.
 #define XR_LIST_STRUCTURE_TYPES(_) \
@@ -5397,7 +5395,6 @@
  XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_EGL(_) \
  XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_ML(_) \
  XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_WIN32(_) \
-
 
 /// Implementation detail of XR_LIST_STRUCTURE_TYPES() - structure types available without any preprocessor definitions
 #define XR_LIST_STRUCTURE_TYPES_CORE(_) \
@@ -5998,8 +5995,6 @@
  _(XR_META_spatial_entity_group_sharing, 573) \
  _(XR_KHR_maintenance1, 711) \
 
-
-
 /// For every function defined by XR_VERSION_1_0 in this version of the spec,
 /// calls your macro with the function name and extension name.
 /// Trims the leading `xr` from the function name and the leading `XR_` from the feature name,
@@ -6061,7 +6056,6 @@
  _(ApplyHapticFeedback, VERSION_1_0) \
  _(StopHapticFeedback, VERSION_1_0) \
 
-
 /// For every function defined by XR_LOADER_VERSION_1_0 in this version of the spec,
 /// calls your macro with the function name and extension name.
 /// Trims the leading `xr` from the function name and the leading `XR_` from the feature name,
@@ -6071,14 +6065,12 @@
  _(NegotiateLoaderRuntimeInterface, LOADER_VERSION_1_0) \
  _(NegotiateLoaderApiLayerInterface, LOADER_VERSION_1_0) \
 
-
 /// For every function defined by XR_VERSION_1_1 in this version of the spec,
 /// calls your macro with the function name and extension name.
 /// Trims the leading `xr` from the function name and the leading `XR_` from the feature name,
 /// because it is easy to add back but impossible to remove with the preprocessor.
 #define XR_LIST_FUNCTIONS_XR_VERSION_1_1(_) \
  _(LocateSpaces, VERSION_1_1) \
-
 
 /// For every function defined by XR_KHR_android_thread_settings in this version of the spec,
 /// calls your macro with the function name and extension name.
@@ -6087,14 +6079,12 @@
 #define XR_LIST_FUNCTIONS_XR_KHR_android_thread_settings(_) \
  _(SetAndroidApplicationThreadKHR, KHR_android_thread_settings) \
 
-
 /// For every function defined by XR_KHR_android_surface_swapchain in this version of the spec,
 /// calls your macro with the function name and extension name.
 /// Trims the leading `xr` from the function name and the leading `XR_` from the feature name,
 /// because it is easy to add back but impossible to remove with the preprocessor.
 #define XR_LIST_FUNCTIONS_XR_KHR_android_surface_swapchain(_) \
  _(CreateSwapchainAndroidSurfaceKHR, KHR_android_surface_swapchain) \
-
 
 /// For every function defined by XR_KHR_opengl_enable in this version of the spec,
 /// calls your macro with the function name and extension name.
@@ -6103,14 +6093,12 @@
 #define XR_LIST_FUNCTIONS_XR_KHR_opengl_enable(_) \
  _(GetOpenGLGraphicsRequirementsKHR, KHR_opengl_enable) \
 
-
 /// For every function defined by XR_KHR_opengl_es_enable in this version of the spec,
 /// calls your macro with the function name and extension name.
 /// Trims the leading `xr` from the function name and the leading `XR_` from the feature name,
 /// because it is easy to add back but impossible to remove with the preprocessor.
 #define XR_LIST_FUNCTIONS_XR_KHR_opengl_es_enable(_) \
  _(GetOpenGLESGraphicsRequirementsKHR, KHR_opengl_es_enable) \
-
 
 /// For every function defined by XR_KHR_vulkan_enable in this version of the spec,
 /// calls your macro with the function name and extension name.
@@ -6122,14 +6110,12 @@
  _(GetVulkanGraphicsDeviceKHR, KHR_vulkan_enable) \
  _(GetVulkanGraphicsRequirementsKHR, KHR_vulkan_enable) \
 
-
 /// For every function defined by XR_KHR_D3D11_enable in this version of the spec,
 /// calls your macro with the function name and extension name.
 /// Trims the leading `xr` from the function name and the leading `XR_` from the feature name,
 /// because it is easy to add back but impossible to remove with the preprocessor.
 #define XR_LIST_FUNCTIONS_XR_KHR_D3D11_enable(_) \
  _(GetD3D11GraphicsRequirementsKHR, KHR_D3D11_enable) \
-
 
 /// For every function defined by XR_KHR_D3D12_enable in this version of the spec,
 /// calls your macro with the function name and extension name.
@@ -6138,7 +6124,6 @@
 #define XR_LIST_FUNCTIONS_XR_KHR_D3D12_enable(_) \
  _(GetD3D12GraphicsRequirementsKHR, KHR_D3D12_enable) \
 
-
 /// For every function defined by XR_KHR_metal_enable in this version of the spec,
 /// calls your macro with the function name and extension name.
 /// Trims the leading `xr` from the function name and the leading `XR_` from the feature name,
@@ -6146,14 +6131,12 @@
 #define XR_LIST_FUNCTIONS_XR_KHR_metal_enable(_) \
  _(GetMetalGraphicsRequirementsKHR, KHR_metal_enable) \
 
-
 /// For every function defined by XR_KHR_visibility_mask in this version of the spec,
 /// calls your macro with the function name and extension name.
 /// Trims the leading `xr` from the function name and the leading `XR_` from the feature name,
 /// because it is easy to add back but impossible to remove with the preprocessor.
 #define XR_LIST_FUNCTIONS_XR_KHR_visibility_mask(_) \
  _(GetVisibilityMaskKHR, KHR_visibility_mask) \
-
 
 /// For every function defined by XR_KHR_win32_convert_performance_counter_time in this version of the spec,
 /// calls your macro with the function name and extension name.
@@ -6163,7 +6146,6 @@
  _(ConvertWin32PerformanceCounterToTimeKHR, KHR_win32_convert_performance_counter_time) \
  _(ConvertTimeToWin32PerformanceCounterKHR, KHR_win32_convert_performance_counter_time) \
 
-
 /// For every function defined by XR_KHR_convert_timespec_time in this version of the spec,
 /// calls your macro with the function name and extension name.
 /// Trims the leading `xr` from the function name and the leading `XR_` from the feature name,
@@ -6172,14 +6154,12 @@
  _(ConvertTimespecTimeToTimeKHR, KHR_convert_timespec_time) \
  _(ConvertTimeToTimespecTimeKHR, KHR_convert_timespec_time) \
 
-
 /// For every function defined by XR_KHR_loader_init in this version of the spec,
 /// calls your macro with the function name and extension name.
 /// Trims the leading `xr` from the function name and the leading `XR_` from the feature name,
 /// because it is easy to add back but impossible to remove with the preprocessor.
 #define XR_LIST_FUNCTIONS_XR_KHR_loader_init(_) \
  _(InitializeLoaderKHR, KHR_loader_init) \
-
 
 /// For every function defined by XR_KHR_vulkan_enable2 in this version of the spec,
 /// calls your macro with the function name and extension name.
@@ -6190,7 +6170,6 @@
  _(CreateVulkanDeviceKHR, KHR_vulkan_enable2) \
  _(GetVulkanGraphicsDevice2KHR, KHR_vulkan_enable2) \
 
-
 /// For every function defined by XR_EXT_performance_settings in this version of the spec,
 /// calls your macro with the function name and extension name.
 /// Trims the leading `xr` from the function name and the leading `XR_` from the feature name,
@@ -6198,14 +6177,12 @@
 #define XR_LIST_FUNCTIONS_XR_EXT_performance_settings(_) \
  _(PerfSettingsSetPerformanceLevelEXT, EXT_performance_settings) \
 
-
 /// For every function defined by XR_EXT_thermal_query in this version of the spec,
 /// calls your macro with the function name and extension name.
 /// Trims the leading `xr` from the function name and the leading `XR_` from the feature name,
 /// because it is easy to add back but impossible to remove with the preprocessor.
 #define XR_LIST_FUNCTIONS_XR_EXT_thermal_query(_) \
  _(ThermalGetTemperatureTrendEXT, EXT_thermal_query) \
-
 
 /// For every function defined by XR_EXT_debug_utils in this version of the spec,
 /// calls your macro with the function name and extension name.
@@ -6220,7 +6197,6 @@
  _(SessionEndDebugUtilsLabelRegionEXT, EXT_debug_utils) \
  _(SessionInsertDebugUtilsLabelEXT, EXT_debug_utils) \
 
-
 /// For every function defined by XR_MSFT_spatial_anchor in this version of the spec,
 /// calls your macro with the function name and extension name.
 /// Trims the leading `xr` from the function name and the leading `XR_` from the feature name,
@@ -6229,7 +6205,6 @@
  _(CreateSpatialAnchorMSFT, MSFT_spatial_anchor) \
  _(CreateSpatialAnchorSpaceMSFT, MSFT_spatial_anchor) \
  _(DestroySpatialAnchorMSFT, MSFT_spatial_anchor) \
-
 
 /// For every function defined by XR_EXT_conformance_automation in this version of the spec,
 /// calls your macro with the function name and extension name.
@@ -6242,7 +6217,6 @@
  _(SetInputDeviceStateVector2fEXT, EXT_conformance_automation) \
  _(SetInputDeviceLocationEXT, EXT_conformance_automation) \
 
-
 /// For every function defined by XR_MSFT_spatial_graph_bridge in this version of the spec,
 /// calls your macro with the function name and extension name.
 /// Trims the leading `xr` from the function name and the leading `XR_` from the feature name,
@@ -6252,7 +6226,6 @@
  _(TryCreateSpatialGraphStaticNodeBindingMSFT, MSFT_spatial_graph_bridge) \
  _(DestroySpatialGraphNodeBindingMSFT, MSFT_spatial_graph_bridge) \
  _(GetSpatialGraphNodeBindingPropertiesMSFT, MSFT_spatial_graph_bridge) \
-
 
 /// For every function defined by XR_EXT_hand_tracking in this version of the spec,
 /// calls your macro with the function name and extension name.

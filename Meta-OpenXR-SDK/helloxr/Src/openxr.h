@@ -18,7 +18,6 @@
 
 #define XR_MIN_COMPOSITION_LAYERS_SUPPORTED 16
 
-
 #if !defined(XR_NULL_HANDLE)
 #if(XR_PTR_SIZE == 8) && XR_CPP_NULLPTR_SUPPORTED
  #define XR_NULL_HANDLE nullptr
@@ -1678,7 +1677,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrStopHapticFeedback(
  const XrHapticActionInfo* hapticActionInfo);
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_VERSION_1_1 is a preprocessor guard. Do not pass it to API calls.
 #define XR_VERSION_1_1 1
 // OpenXR 1.1 version number
@@ -1762,7 +1760,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrLocateSpaces(
  XrSpaceLocations* spaceLocations);
 #endif /* !XR_NO_PROTOTYPES */
 
-
 // XR_KHR_composition_layer_cube is a preprocessor guard. Do not pass it to API calls.
 #define XR_KHR_composition_layer_cube 1
 #define XR_KHR_composition_layer_cube_SPEC_VERSION 8
@@ -1778,8 +1775,6 @@ typedef struct XrCompositionLayerCubeKHR {
  XrQuaternionf orientation;
 } XrCompositionLayerCubeKHR;
 
-
-
 // XR_KHR_composition_layer_depth is a preprocessor guard. Do not pass it to API calls.
 #define XR_KHR_composition_layer_depth 1
 #define XR_KHR_composition_layer_depth_SPEC_VERSION 6
@@ -1794,8 +1789,6 @@ typedef struct XrCompositionLayerDepthInfoKHR {
  float nearZ;
  float farZ;
 } XrCompositionLayerDepthInfoKHR;
-
-
 
 // XR_KHR_composition_layer_cylinder is a preprocessor guard. Do not pass it to API calls.
 #define XR_KHR_composition_layer_cylinder 1
@@ -1814,8 +1807,6 @@ typedef struct XrCompositionLayerCylinderKHR {
  float aspectRatio;
 } XrCompositionLayerCylinderKHR;
 
-
-
 // XR_KHR_composition_layer_equirect is a preprocessor guard. Do not pass it to API calls.
 #define XR_KHR_composition_layer_equirect 1
 #define XR_KHR_composition_layer_equirect_SPEC_VERSION 3
@@ -1832,8 +1823,6 @@ typedef struct XrCompositionLayerEquirectKHR {
  XrVector2f scale;
  XrVector2f bias;
 } XrCompositionLayerEquirectKHR;
-
-
 
 // XR_KHR_visibility_mask is a preprocessor guard. Do not pass it to API calls.
 #define XR_KHR_visibility_mask 1
@@ -1877,7 +1866,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetVisibilityMaskKHR(
  XrVisibilityMaskKHR* visibilityMask);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
-
 
 // XR_KHR_composition_layer_color_scale_bias is a preprocessor guard. Do not pass it to API calls.
 #define XR_KHR_composition_layer_color_scale_bias 1
@@ -2438,7 +2426,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetSpatialGraphNodeBindingPropertiesMSFT(
 #define XR_MSFT_hand_interaction 1
 #define XR_MSFT_hand_interaction_SPEC_VERSION 1
 #define XR_MSFT_HAND_INTERACTION_EXTENSION_NAME "XR_MSFT_hand_interaction"
-
 
 // XR_EXT_hand_tracking is a preprocessor guard. Do not pass it to API calls.
 #define XR_EXT_hand_tracking 1
@@ -3720,7 +3707,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrSetColorSpaceFB(
  const XrColorSpaceFB colorSpace);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
-
 
 // XR_FB_hand_tracking_mesh is a preprocessor guard. Do not pass it to API calls.
 #define XR_FB_hand_tracking_mesh 1
