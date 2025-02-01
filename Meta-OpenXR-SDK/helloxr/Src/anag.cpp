@@ -1088,15 +1088,41 @@ try
         source->process(app, source);
     }
 
-    //OpenXrProgram_OpenXrProgramPollEvents( &exitRenderLoop, &requestRestart);
-
-    // void OpenXrProgram_OpenXrProgramPollEvents(bool* exitRenderLoop, bool* requestRestart)
+    // OpenXrProgramPollEvents
 
     exitRenderLoop = false;
     requestRestart = false;
 
-    for(XrEventDataBaseHeader* event = (XrEventDataBaseHeader*)OpenXrProgram_OpenXrProgramTryReadNextEvent(); !exitRenderLoop && event; event = (XrEventDataBaseHeader*)OpenXrProgram_OpenXrProgramTryReadNextEvent() )
+    while( !exitRenderLoop)
     {
+      XrEventDataBaseHeader* event = nullptr;
+
+      XrEventDataBaseHeader* baseHeader = reinterpret_cast<XrEventDataBaseHeader*>( &gOpenXrProgramXrEventDataBuffer);
+      *baseHeader = {XR_TYPE_EVENT_DATA_BUFFER};
+
+      XrResult xr = XR_ERROR_VALIDATION_FAILURE;
+
+      if(tableXr.PollEvent)
+        xr = tableXr.PollEvent(gXrInstance, &gOpenXrProgramXrEventDataBuffer);
+
+      if(xr == XR_SUCCESS)
+      {
+        if(baseHeader->type == XR_TYPE_EVENT_DATA_EVENTS_LOST)
+        {
+          const XrEventDataEventsLost* const eventsLost = reinterpret_cast<const XrEventDataEventsLost*>(baseHeader);
+          Log::Write(Log::Level::Warning, Fmt("%d events lost", eventsLost->lostEventCount) );
+        }
+
+        event = baseHeader;
+      }
+      else if(xr != XR_EVENT_UNAVAILABLE)
+      {
+        THROW_XR_CHECK(xr, "xrPollEvent");
+      }
+
+      if( !event)
+        break;
+
       switch(event->type)
       {
 
@@ -1148,9 +1174,7 @@ try
       continue;
     }
 
-    //OpenXrProgram_OpenXrProgramPollActions();
-
-    // void OpenXrProgram_OpenXrProgramPollActions()
+    // OpenXrProgramPollActions
 
     gOpenXrProgramInputState_InputState_handActive = {XR_FALSE, XR_FALSE};
 
@@ -1218,9 +1242,7 @@ try
     if(quitValue.isActive == XR_TRUE && quitValue.changedSinceLastSync == XR_TRUE && quitValue.currentState == XR_TRUE && tableXr.RequestExitSession)
       CHECK_XRCMD_CHECK(tableXr.RequestExitSession(gXrSession) );
 
-    //OpenXrProgram_OpenXrProgramRenderFrame();
-
-    // void OpenXrProgram_OpenXrProgramRenderFrame()
+    // OpenXrProgramRenderFrame
 
     CHECK_CHECK(gXrSession != XR_NULL_HANDLE);
 

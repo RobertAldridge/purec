@@ -135,10 +135,6 @@ void OpenXrProgram_OpenXrProgramInitializeDevice();
 //  std::array<XrBool32, Side_COUNT> handActive;
 //};
 
-const XrEventDataBaseHeader* OpenXrProgram_OpenXrProgramTryReadNextEvent();
-
-void OpenXrProgram_OpenXrProgramPollEvents(bool* exitRenderLoop, bool* requestRestart);
-
 void OpenXrProgram_OpenXrProgramHandleSessionStateChangedEvent(const XrEventDataSessionStateChanged& stateChangedEvent, bool* exitRenderLoop, bool* requestRestart);
 
 void OpenXrProgram_OpenXrProgramLogActionSourceName(XrAction action, const std::string& actionName);
@@ -147,14 +143,10 @@ bool OpenXrProgram_OpenXrProgramIsSessionRunning();
 
 bool OpenXrProgram_OpenXrProgramIsSessionFocused();
 
-void OpenXrProgram_OpenXrProgramPollActions();
-
 // Unreal UOculusXRFunctionLibrary::SetSuggestedCpuAndGpuPerformanceLevels (exposed in Blueprint)
 //
 // Unity OVRPlugin::suggestedCpuPerfLevel, OVRPlugin::suggestedGpuPerfLevel
 //
 // Native ovrp_SetSuggestedCpuPerformanceLevel, ovrp_GetSuggestedGpuPerformanceLevel
-
-void OpenXrProgram_OpenXrProgramRenderFrame();
 
 bool OpenXrProgram_OpenXrProgramRenderLayer(XrTime predictedDisplayTime, std::vector<XrCompositionLayerProjectionView>& projectionLayerViews, XrCompositionLayerProjection& layer);
