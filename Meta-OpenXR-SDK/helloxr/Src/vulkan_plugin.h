@@ -303,7 +303,9 @@ void ShaderProgram_ShaderProgramInit(VkDevice device);
 
 void SwapchainImageContext_SwapchainImageContext_Constructor(int index, XrStructureType swapchainImageType, VulkanDebugObjectNamer& namer);
 
+#if 0
 void SwapchainImageContext_SwapchainImageContext_PipelineDynamic(int index, VkDynamicState state);
+#endif
 
 #if 0
 void SwapchainImageContext_SwapchainImageContext_PipelineRelease(int index);
@@ -322,8 +324,6 @@ std::vector<uint32_t> VulkanGraphicsPlugin_VulkanGraphicsPluginCompileGlslShader
 int64_t VulkanGraphicsPlugin_VulkanGraphicsPluginSelectColorSwapchainFormat(const std::vector<int64_t>& runtimeFormats);
 
 const XrBaseInStructure* VulkanGraphicsPlugin_VulkanGraphicsPluginGetGraphicsBinding();
-
-std::vector<XrSwapchainImageBaseHeader*> VulkanGraphicsPlugin_VulkanGraphicsPluginAllocateSwapchainImageStructs(uint32_t capacity, const XrSwapchainCreateInfo& swapchainCreateInfo);
 
 uint32_t VulkanGraphicsPlugin_VulkanGraphicsPluginGetSupportedSwapchainSampleCount(const XrViewConfigurationView& );
 
