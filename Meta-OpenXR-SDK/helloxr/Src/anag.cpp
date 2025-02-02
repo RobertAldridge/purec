@@ -3,6 +3,11 @@
 
 #include "header.h"
 
+uint32_t gEnvironmentDepthSwapChainLength = 0;
+
+std::vector<XrSwapchainImageVulkanKHR> gEnvironmentDepthImages;
+std::vector<VkImage> gEnvironmentDepthTextures;
+
 void AnagShowHelpBlah()
 {
   Log::Write(Log::Level::Info, "adb shell setprop debug.xr.graphicsPlugin OpenGLES | Vulkan");
@@ -690,47 +695,6 @@ XR_YVR_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_YVR_controller_interaction"
     XrInstanceCreateInfo createInfo {XR_TYPE_INSTANCE_CREATE_INFO};
     createInfo.next = &instanceCreateInfoAndroid;
 
-#if 0
-    // passthrough
-    extensions.push_back(XR_FB_PASSTHROUGH_EXTENSION_NAME);
-    extensions.push_back(XR_FB_TRIANGLE_MESH_EXTENSION_NAME);
-
-    // depth
-    extensions.push_back(XR_META_ENVIRONMENT_DEPTH_EXTENSION_NAME);
-#endif
-
-#if 0
-VulkanLoader::LoadInstanceFunctions: Failed to load vkCreateDebugReportCallbackEXT, likely vkInstance created without xrGetVulkanInstanceExtensionsKHR/vrapi_GetInstanceExtensionsVulkan
-VulkanLoader::LoadInstanceFunctions: Failed to load vkDestroyDebugReportCallbackEXT, likely vkInstance created without xrGetVulkanInstanceExtensionsKHR/vrapi_GetInstanceExtensionsVulkan
-VK_KHR_swapchain
-VK_EXT_fragment_density_map
-VulkanLoader::LoadInstanceFunctions: Failed to load vkCreateDebugReportCallbackEXT, likely vkInstance created without xrGetVulkanInstanceExtensionsKHR/vrapi_GetInstanceExtensionsVulkan
-VulkanLoader::LoadInstanceFunctions: Failed to load vkDestroyDebugReportCallbackEXT, likely vkInstance created without xrGetVulkanInstanceExtensionsKHR/vrapi_GetInstanceExtensionsVulkan
-VulkanLoader::LoadDeviceFunctions: Failed to load vkCmdDebugMarkerInsertEXT, likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
-VulkanLoader::LoadDeviceFunctions: Failed to load vkCmdSetCullModeEXT, likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
-VulkanLoader::LoadDeviceFunctions: Failed to load vkCmdSetDepthCompareOpEXT, likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
-VulkanLoader::LoadDeviceFunctions: Failed to load vkCmdSetDepthTestEnableEXT, likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
-VulkanLoader::LoadDeviceFunctions: Failed to load vkCmdSetDepthWriteEnableEXT, likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
-VulkanLoader::LoadDeviceFunctions: Failed to load vkDebugMarkerSetObjectTagEXT, likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
-VulkanLoader::LoadDeviceFunctions: Failed to load vkGetMemoryFdKHR, likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
-#endif
-
-#if 0
-    extensions.push_back(XR_FB_COMPOSITION_LAYER_ALPHA_BLEND_EXTENSION_NAME);
-    extensions.push_back(XR_FB_COMPOSITION_LAYER_DEPTH_TEST_EXTENSION_NAME);
-    extensions.push_back(XR_FB_COMPOSITION_LAYER_IMAGE_LAYOUT_EXTENSION_NAME);
-    extensions.push_back(XR_FB_COMPOSITION_LAYER_SETTINGS_EXTENSION_NAME);
-
-    extensions.push_back(XR_EXT_PERFORMANCE_SETTINGS_EXTENSION_NAME);
-    //extensions.push_back(XR_EXT_VIEW_CONFIGURATION_DEPTH_RANGE_EXTENSION_NAME);
-    extensions.push_back(XR_FB_ANDROID_SURFACE_SWAPCHAIN_CREATE_EXTENSION_NAME);
-    extensions.push_back(XR_KHR_COMPOSITION_LAYER_DEPTH_EXTENSION_NAME);
-    extensions.push_back(XR_KHR_VULKAN_ENABLE_EXTENSION_NAME);
-    extensions.push_back(XR_KHR_VULKAN_ENABLE2_EXTENSION_NAME);
-    //extensions.push_back(XR_KHR_VULKAN_SWAPCHAIN_FORMAT_LIST_EXTENSION_NAME);
-    extensions.push_back(XR_META_VULKAN_SWAPCHAIN_CREATE_INFO_EXTENSION_NAME);
-#endif
-
     extensions.push_back("XR_KHR_android_create_instance"); // SpecVersion = 3
     extensions.push_back("XR_KHR_android_surface_swapchain"); // SpecVersion = 4
     extensions.push_back("XR_KHR_android_thread_settings"); // SpecVersion = 6
@@ -829,13 +793,6 @@ VulkanLoader::LoadDeviceFunctions: Failed to load vkGetMemoryFdKHR, likely vkDev
 
     for(int index = 0; index < extensions.size(); index++)
       Log::Write(Log::Level::Info, Fmt("blah %i %s", index, extensions[index] ) );
-
-    // available Layers: (0)
-    // blah 0 XR_KHR_android_create_instance
-    // blah 1 XR_KHR_vulkan_enable
-    // blah 2 XR_FB_passthrough
-    // blah 3 XR_FB_triangle_mesh
-    // blah 4 XR_META_environment_depth
 
     if(tableXr.CreateInstance)
       CHECK_XRCMD_CHECK(tableXr.CreateInstance(&createInfo, &gXrInstance) );
@@ -1038,29 +995,6 @@ VulkanLoader::LoadDeviceFunctions: Failed to load vkGetMemoryFdKHR, likely vkDev
     extensions.push_back("VK_KHR_device_group_creation"); // SpecVersion = 1
     extensions.push_back("VK_EXT_debug_utils"); // SpecVersion = 2
     extensions.push_back("VK_KHR_external_fence_capabilities"); // SpecVersion = 1
-
-#if 0
-VK_EXT_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME
-VK_EXT_MULTI_DRAW_EXTENSION_NAME
-VK_EXT_BLEND_OPERATION_ADVANCED_EXTENSION_NAME
-VK_ARM_SHADER_CORE_BUILTINS_EXTENSION_NAME
-VK_ARM_SHADER_CORE_PROPERTIES_EXTENSION_NAME
-VK_KHR_SURFACE_EXTENSION_NAME
-VK_KHR_SWAPCHAIN_EXTENSION_NAME
-VK_KHR_SWAPCHAIN_MUTABLE_FORMAT_EXTENSION_NAME
-VK_KHR_VULKAN_MEMORY_MODEL_EXTENSION_NAME
-VK_KHR_SPIRV_1_4_EXTENSION_NAME
-VK_KHR_GET_DISPLAY_PROPERTIES_2_EXTENSION_NAME
-VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME
-VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME
-VK_KHR_GET_SURFACE_CAPABILITIES_2_EXTENSION_NAME
-VK_KHR_DISPLAY_SWAPCHAIN_EXTENSION_NAME
-VK_EXT_POST_DEPTH_COVERAGE_EXTENSION_NAME
-VK_EXT_MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED_EXTENSION_NAME
-VK_EXT_NESTED_COMMAND_BUFFER_EXTENSION_NAME
-VK_EXT_MESH_SHADER_EXTENSION_NAME
-VK_EXT_DEPTH_RANGE_UNRESTRICTED_EXTENSION_NAME
-#endif
 
 #if 0
 VulkanLoader::LoadInstanceFunctions: Failed to load vkCreateDebugReportCallbackEXT, likely vkInstance created without xrGetVulkanInstanceExtensionsKHR/vrapi_GetInstanceExtensionsVulkan
@@ -1861,7 +1795,7 @@ typedef struct VkExtensionProperties
   CHECK_MSG(gOptions_XrViewConfigurationType == XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO, "Unsupported view configuration type");
 
   // Query and cache view configuration views.
-  uint32_t viewCount;
+  uint32_t viewCount = 0;
 
   if(tableXr.EnumerateViewConfigurationViews)
     CHECK_XRCMD_CHECK(tableXr.EnumerateViewConfigurationViews(gXrInstance, gXrSystemId, gOptions_XrViewConfigurationType, 0, &viewCount, nullptr) );
@@ -2414,7 +2348,7 @@ typedef struct VkExtensionProperties
         layers_vector.push_back(reinterpret_cast<XrCompositionLayerBaseHeader*>( &layer) );
     }
 
-    if(gPassthroughFeature == XR_NULL_HANDLE)
+    if(gPassthroughFeature == XR_NULL_HANDLE || !gCreatePassthroughFB)
     {
       XrFrameEndInfo frameEndInfo {XR_TYPE_FRAME_END_INFO};
       frameEndInfo.displayTime = frameState.predictedDisplayTime;
@@ -2427,6 +2361,38 @@ typedef struct VkExtensionProperties
     }
     else
     {
+      //std::vector<XrCompositionLayerProjectionView> projectionLayerViews;
+      //projectionLayerViews.resize(renderLayerViewCountOutput);
+      //projectionLayerViews[i] = {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW};
+      //projectionLayerViews[i].pose = gOpenXrProgramStdVector_XrView[i].pose;
+      //projectionLayerViews[i].fov = gOpenXrProgramStdVector_XrView[i].fov;
+      //projectionLayerViews[i].subImage.swapchain = viewSwapchain.handle;
+      //projectionLayerViews[i].subImage.imageRect.offset = {0, 0};
+      //projectionLayerViews[i].subImage.imageRect.extent = {viewSwapchain.width, viewSwapchain.height};
+
+      //VulkanGraphicsPlugin_VulkanGraphicsPluginRenderView(projectionLayerViews[i], swapchainImage, gOpenXrProgramColorSwapchainFormat, cubes);
+
+      //XrCompositionLayerProjection layer {XR_TYPE_COMPOSITION_LAYER_PROJECTION};
+      //layer.space = gOpenXrProgramXrSpace;
+      //layer.layerFlags = gOptions_XrEnvironmentBlendMode == XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND ? XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT : 0;
+      //layer.viewCount = (uint32_t)projectionLayerViews.size();
+      //layer.views = projectionLayerViews.data();
+      //layers_vector.push_back(reinterpret_cast<XrCompositionLayerBaseHeader*>( &layer) );
+
+#if 0
+      XrEnvironmentDepthImageAcquireInfoMETA environmentDepthImageAcquireInfoMETA {XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_ACQUIRE_INFO_META};
+      environmentDepthImageAcquireInfoMETA.next = 0;
+      environmentDepthImageAcquireInfoMETA.space = gOpenXrProgramXrSpace;
+      environmentDepthImageAcquireInfoMETA.displayTime = frameState.predictedDisplayTime;
+
+      XrEnvironmentDepthImageMETA environmentDepthImageMETA {XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_META};
+      environmentDepthImageMETA.next = 0;
+      environmentDepthImageMETA.views[0].type = XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_VIEW_META;
+      environmentDepthImageMETA.views[1].type = XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_VIEW_META;
+
+      gAcquireEnvironmentDepthImageMETA(gEnvironmentDepthProviderMETA, &environmentDepthImageAcquireInfoMETA, &environmentDepthImageMETA);
+#endif
+
       XrCompositionLayerPassthroughFB passthroughCompLayer = {XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_FB};
       passthroughCompLayer.layerHandle = gPassthroughLayer;
       passthroughCompLayer.flags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
@@ -2640,7 +2606,7 @@ typedef struct VkExtensionProperties
 
       // Depth maps are provided to the app through a special “readable swapchain” type XrEnvironmentDepthSwapchainMETA.
       // This type is similar to XrSwapchain but supports a different set of operations and is intended to be read
-      // instead of written to by the app.
+      // instead of written to by the app
 
       // Create the swapchain by calling xrCreateEnvironmentDepthSwapchainMETA:
 
@@ -2662,6 +2628,14 @@ typedef struct VkExtensionProperties
 
       // Currently createFlags must be zero, but it might be extended in the future.
 
+      XrEnvironmentDepthSwapchainCreateInfoMETA environmentDepthSwapchainCreateInfoMETA {XR_TYPE_ENVIRONMENT_DEPTH_SWAPCHAIN_CREATE_INFO_META};
+      environmentDepthSwapchainCreateInfoMETA.next = nullptr;
+      environmentDepthSwapchainCreateInfoMETA.createFlags = 0;
+
+      XrEnvironmentDepthSwapchainMETA environmentDepthSwapchainMETA {XR_NULL_HANDLE};
+
+      gCreateEnvironmentDepthSwapchainMETA(gEnvironmentDepthProviderMETA, &environmentDepthSwapchainCreateInfoMETA, &environmentDepthSwapchainMETA);
+
       // Once the swapchain is created the resolution can be queried by calling xrGetEnvironmentDepthSwapchainStateMETA:
 
       // XrResult xrGetEnvironmentDepthSwapchainStateMETA(
@@ -2679,6 +2653,13 @@ typedef struct VkExtensionProperties
       //   uint32_t height;
       // };
 
+      XrEnvironmentDepthSwapchainStateMETA environmentDepthSwapchainStateMETA {XR_TYPE_ENVIRONMENT_DEPTH_SWAPCHAIN_STATE_META};
+      environmentDepthSwapchainStateMETA.next = nullptr;
+      environmentDepthSwapchainStateMETA.width = 0;
+      environmentDepthSwapchainStateMETA.height = 0;
+
+      gGetEnvironmentDepthSwapchainStateMETA(environmentDepthSwapchainMETA, &environmentDepthSwapchainStateMETA);
+
       // In the same way as for a regular XrSwapchain, the XrEnvironmentDepthSwapchainMETA needs to be “enumerated” into
       // a graphics API specific array of texture handles. This is done by calling
       // xrEnumerateEnvironmentDepthSwapchainImagesMETA that has the same semantics as xrEnumerateSwapchainImages:
@@ -2689,6 +2670,38 @@ typedef struct VkExtensionProperties
       //   uint32_t* imageCountOutput,
       //   XrSwapchainImageBaseHeader* images
       // );
+
+      //struct XrSwapchainImageBaseHeader
+      //{
+      //  XrStructureType type;
+      //  void* XR_MAY_ALIAS next;
+      //};
+
+      gEnvironmentDepthSwapChainLength = 0;
+
+      gEnumerateEnvironmentDepthSwapchainImagesMETA(environmentDepthSwapchainMETA, 0, &gEnvironmentDepthSwapChainLength, nullptr);
+
+      //struct XrSwapchainImageVulkanKHR
+      //{
+      //  XrStructureType type;
+      //  void* XR_MAY_ALIAS next;
+      //  VkImage image;
+      //};
+
+      gEnvironmentDepthImages.empty();
+
+      for(int index = 0; index < gEnvironmentDepthSwapChainLength; index++)
+      {
+        XrSwapchainImageVulkanKHR swapchainImageVulkanKHR = {XR_TYPE_SWAPCHAIN_IMAGE_VULKAN_KHR, 0, VK_NULL_HANDLE};
+        gEnvironmentDepthImages.push_back(swapchainImageVulkanKHR);
+      }
+
+      gEnumerateEnvironmentDepthSwapchainImagesMETA(environmentDepthSwapchainMETA, gEnvironmentDepthSwapChainLength, &gEnvironmentDepthSwapChainLength, (XrSwapchainImageBaseHeader*)gEnvironmentDepthImages.data() );
+
+      gEnvironmentDepthTextures.empty();
+
+      for(int index = 0; index < gEnvironmentDepthSwapChainLength; index++)
+        gEnvironmentDepthTextures.push_back(gEnvironmentDepthImages[index].image);
 
       // To free up all the resources used by the swapchain, you can destroy it by calling
       // xrDestroyEnvironmentDepthSwapchainMETA:
@@ -2702,6 +2715,8 @@ typedef struct VkExtensionProperties
       // To start the asynchronous generation of depth maps, you need to call xrStartEnvironmentDepthProviderMETA:
 
       // XrResult xrStartEnvironmentDepthProviderMETA(XrEnvironmentDepthProviderMETA environmentDepthProvider);
+
+      gStartEnvironmentDepthProviderMETA(gEnvironmentDepthProviderMETA);
 
       // To stop the asynchronous generation of depth maps, call xrStopEnvironmentDepthProviderMETA:
 
@@ -2731,6 +2746,39 @@ typedef struct VkExtensionProperties
       //   XrSpace space;
       //   XrTime displayTime;
       // };
+      //
+      // struct XrEnvironmentDepthImageMETA
+      // {
+      //   XrStructureType type;
+      //   const void* XR_MAY_ALIAS next;
+      //   uint32_t swapchainIndex;
+      //   float nearZ;
+      //   float farZ;
+      //   XrEnvironmentDepthImageViewMETA views[2];
+      // };
+      //
+      // struct XrEnvironmentDepthImageViewMETA
+      // {
+      //   XrStructureType type;
+      //   const void* XR_MAY_ALIAS next;
+      //   XrFovf fov;
+      //   XrPosef pose;
+      // };
+
+#if 0
+      XrEnvironmentDepthImageAcquireInfoMETA environmentDepthImageAcquireInfoMETA {XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_ACQUIRE_INFO_META};
+      environmentDepthImageAcquireInfoMETA.next = 0;
+      environmentDepthImageAcquireInfoMETA.space = gOpenXrProgramXrSpace;
+      environmentDepthAcquireInfo.displayTime = predictedDisplayTime;
+
+      XrEnvironmentDepthImageMETA environmentDepthImageMETA {XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_META};
+      environmentDepthImageMETA.next = 0;
+
+      environmentDepthImage.views[0].type = XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_VIEW_META;
+      environmentDepthImage.views[1].type = XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_VIEW_META;
+
+      const XrResult acquireResult = gAcquireEnvironmentDepthImageMETA(gEnvironmentDepthProviderMETA, &environmentDepthAcquireInfo, &environmentDepthImage);
+#endif
 
       // The space field should be set to the XrSpace you want the space to be of the returned pose which the depth map
       // was rendered from. The displayTime field should be set to the displayTime of the current rendered frame as it’s

@@ -30,7 +30,10 @@ extern std::array<float, Side_COUNT> gOpenXrProgramInputState_InputState_handSca
 
 extern std::array<XrBool32, Side_COUNT> gOpenXrProgramInputState_InputState_handActive;
 
+// local space
 extern XrSpace gOpenXrProgramXrSpace;
+
+//extern XrSpace gOpenXrHeadXrSpace;
 
 extern std::vector<XrViewConfigurationView> gOpenXrProgramStdVector_XrViewConfigurationView;
 

@@ -27,7 +27,10 @@ std::array<float, Side_COUNT> gOpenXrProgramInputState_InputState_handScale = { 
 
 std::array<XrBool32, Side_COUNT> gOpenXrProgramInputState_InputState_handActive;
 
+// local space
 XrSpace gOpenXrProgramXrSpace {XR_NULL_HANDLE};
+
+//XrSpace gOpenXrHeadXrSpace {XR_NULL_HANDLE};
 
 std::vector<XrViewConfigurationView> gOpenXrProgramStdVector_XrViewConfigurationView;
 

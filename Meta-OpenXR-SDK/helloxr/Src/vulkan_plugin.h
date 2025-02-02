@@ -10,11 +10,11 @@
 #define CHECK_VULKANCMDBUFFERSTATE(s) \
 do \
 { \
-    if(gCmdBufferState != (s) ) \
-    { \
-        Log::Write(Log::Level::Error, std::string("Expecting state " #s " from ") + __FUNCTION__ + ", in " + CmdBuffer_CmdBufferStateString(gCmdBufferState) ); \
-        return false; \
-    } \
+  if(gCmdBufferState != (s) ) \
+  { \
+    Log::Write(Log::Level::Error, std::string("Expecting state " #s " from ") + __FUNCTION__ + ", in " + CmdBuffer_CmdBufferStateString(gCmdBufferState) ); \
+    return false; \
+  } \
 \
 }while(0)
 
@@ -37,10 +37,11 @@ struct VertexBufferBaseBlah
 {
   uint32_t idx;
   uint32_t vtx;
-
 };
 
 constexpr VkFlags MemoryAllocator_m_memoryAllocatorDefaultFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+
+extern VkPipelineLayout gVkPipelineLayout;
 
 extern VkPhysicalDeviceMemoryProperties gMemoryAllocatorMemoryProperties;
 
