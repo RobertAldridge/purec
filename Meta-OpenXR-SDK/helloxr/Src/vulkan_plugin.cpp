@@ -1100,11 +1100,6 @@ void VulkanGraphicsPlugin_VulkanGraphicsPlugin_Destructor()
   }
 }
 
-std::vector<std::string> VulkanGraphicsPlugin_VulkanGraphicsPluginGetInstanceExtensions()
-{
-  return {XR_KHR_VULKAN_ENABLE2_EXTENSION_NAME};
-}
-
 // note: The output must not outlive the input - this modifies the input and returns a collection of views into that modified input!
 std::vector<const char*> VulkanGraphicsPlugin_VulkanGraphicsPluginParseExtensionString(char* names)
 {

@@ -3150,32 +3150,6 @@ VKAPI_ATTR void VKAPI_CALL vkDebugReportMessageEXT(
 #define VK_IMG_FILTER_CUBIC_SPEC_VERSION 1
 #define VK_IMG_FILTER_CUBIC_EXTENSION_NAME "VK_IMG_filter_cubic"
 
-// VK_AMD_rasterization_order is a preprocessor guard. Do not pass it to API calls.
-#define VK_AMD_rasterization_order 1
-#define VK_AMD_RASTERIZATION_ORDER_SPEC_VERSION 1
-#define VK_AMD_RASTERIZATION_ORDER_EXTENSION_NAME "VK_AMD_rasterization_order"
-
-typedef enum VkRasterizationOrderAMD {
- VK_RASTERIZATION_ORDER_STRICT_AMD = 0,
- VK_RASTERIZATION_ORDER_RELAXED_AMD = 1,
- VK_RASTERIZATION_ORDER_MAX_ENUM_AMD = 0x7FFFFFFF
-} VkRasterizationOrderAMD;
-typedef struct VkPipelineRasterizationStateRasterizationOrderAMD {
- VkStructureType sType;
- const void* pNext;
- VkRasterizationOrderAMD rasterizationOrder;
-} VkPipelineRasterizationStateRasterizationOrderAMD;
-
-// VK_AMD_shader_trinary_minmax is a preprocessor guard. Do not pass it to API calls.
-#define VK_AMD_shader_trinary_minmax 1
-#define VK_AMD_SHADER_TRINARY_MINMAX_SPEC_VERSION 1
-#define VK_AMD_SHADER_TRINARY_MINMAX_EXTENSION_NAME "VK_AMD_shader_trinary_minmax"
-
-// VK_AMD_shader_explicit_vertex_parameter is a preprocessor guard. Do not pass it to API calls.
-#define VK_AMD_shader_explicit_vertex_parameter 1
-#define VK_AMD_SHADER_EXPLICIT_VERTEX_PARAMETER_SPEC_VERSION 1
-#define VK_AMD_SHADER_EXPLICIT_VERTEX_PARAMETER_EXTENSION_NAME "VK_AMD_shader_explicit_vertex_parameter"
-
 // VK_EXT_debug_marker is a preprocessor guard. Do not pass it to API calls.
 #define VK_EXT_debug_marker 1
 #define VK_EXT_DEBUG_MARKER_SPEC_VERSION 4
@@ -3231,11 +3205,6 @@ VKAPI_ATTR void VKAPI_CALL vkCmdDebugMarkerInsertEXT(
  VkCommandBuffer commandBuffer,
  const VkDebugMarkerMarkerInfoEXT* pMarkerInfo);
 #endif
-
-// VK_AMD_gcn_shader is a preprocessor guard. Do not pass it to API calls.
-#define VK_AMD_gcn_shader 1
-#define VK_AMD_GCN_SHADER_SPEC_VERSION 1
-#define VK_AMD_GCN_SHADER_EXTENSION_NAME "VK_AMD_gcn_shader"
 
 // VK_NV_dedicated_allocation is a preprocessor guard. Do not pass it to API calls.
 #define VK_NV_dedicated_allocation 1
@@ -3450,104 +3419,6 @@ VKAPI_ATTR VkResult VKAPI_CALL vkGetImageViewAddressNVX(
  VkImageView imageView,
  VkImageViewAddressPropertiesNVX* pProperties);
 #endif
-
-// VK_AMD_draw_indirect_count is a preprocessor guard. Do not pass it to API calls.
-#define VK_AMD_draw_indirect_count 1
-#define VK_AMD_DRAW_INDIRECT_COUNT_SPEC_VERSION 2
-#define VK_AMD_DRAW_INDIRECT_COUNT_EXTENSION_NAME "VK_AMD_draw_indirect_count"
-typedef void (VKAPI_PTR *PFN_vkCmdDrawIndirectCountAMD)(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset, VkBuffer countBuffer, VkDeviceSize countBufferOffset, uint32_t maxDrawCount, uint32_t stride);
-typedef void (VKAPI_PTR *PFN_vkCmdDrawIndexedIndirectCountAMD)(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset, VkBuffer countBuffer, VkDeviceSize countBufferOffset, uint32_t maxDrawCount, uint32_t stride);
-
-#ifndef VK_NO_PROTOTYPES
-VKAPI_ATTR void VKAPI_CALL vkCmdDrawIndirectCountAMD(
- VkCommandBuffer commandBuffer,
- VkBuffer buffer,
- VkDeviceSize offset,
- VkBuffer countBuffer,
- VkDeviceSize countBufferOffset,
- uint32_t maxDrawCount,
- uint32_t stride);
-
-VKAPI_ATTR void VKAPI_CALL vkCmdDrawIndexedIndirectCountAMD(
- VkCommandBuffer commandBuffer,
- VkBuffer buffer,
- VkDeviceSize offset,
- VkBuffer countBuffer,
- VkDeviceSize countBufferOffset,
- uint32_t maxDrawCount,
- uint32_t stride);
-#endif
-
-// VK_AMD_negative_viewport_height is a preprocessor guard. Do not pass it to API calls.
-#define VK_AMD_negative_viewport_height 1
-#define VK_AMD_NEGATIVE_VIEWPORT_HEIGHT_SPEC_VERSION 1
-#define VK_AMD_NEGATIVE_VIEWPORT_HEIGHT_EXTENSION_NAME "VK_AMD_negative_viewport_height"
-
-// VK_AMD_gpu_shader_half_float is a preprocessor guard. Do not pass it to API calls.
-#define VK_AMD_gpu_shader_half_float 1
-#define VK_AMD_GPU_SHADER_HALF_FLOAT_SPEC_VERSION 2
-#define VK_AMD_GPU_SHADER_HALF_FLOAT_EXTENSION_NAME "VK_AMD_gpu_shader_half_float"
-
-// VK_AMD_shader_ballot is a preprocessor guard. Do not pass it to API calls.
-#define VK_AMD_shader_ballot 1
-#define VK_AMD_SHADER_BALLOT_SPEC_VERSION 1
-#define VK_AMD_SHADER_BALLOT_EXTENSION_NAME "VK_AMD_shader_ballot"
-
-// VK_AMD_texture_gather_bias_lod is a preprocessor guard. Do not pass it to API calls.
-#define VK_AMD_texture_gather_bias_lod 1
-#define VK_AMD_TEXTURE_GATHER_BIAS_LOD_SPEC_VERSION 1
-#define VK_AMD_TEXTURE_GATHER_BIAS_LOD_EXTENSION_NAME "VK_AMD_texture_gather_bias_lod"
-typedef struct VkTextureLODGatherFormatPropertiesAMD {
- VkStructureType sType;
- void* pNext;
- VkBool32 supportsTextureGatherLODBiasAMD;
-} VkTextureLODGatherFormatPropertiesAMD;
-
-// VK_AMD_shader_info is a preprocessor guard. Do not pass it to API calls.
-#define VK_AMD_shader_info 1
-#define VK_AMD_SHADER_INFO_SPEC_VERSION 1
-#define VK_AMD_SHADER_INFO_EXTENSION_NAME "VK_AMD_shader_info"
-
-typedef enum VkShaderInfoTypeAMD {
- VK_SHADER_INFO_TYPE_STATISTICS_AMD = 0,
- VK_SHADER_INFO_TYPE_BINARY_AMD = 1,
- VK_SHADER_INFO_TYPE_DISASSEMBLY_AMD = 2,
- VK_SHADER_INFO_TYPE_MAX_ENUM_AMD = 0x7FFFFFFF
-} VkShaderInfoTypeAMD;
-typedef struct VkShaderResourceUsageAMD {
- uint32_t numUsedVgprs;
- uint32_t numUsedSgprs;
- uint32_t ldsSizePerLocalWorkGroup;
- size_t ldsUsageSizeInBytes;
- size_t scratchMemUsageInBytes;
-} VkShaderResourceUsageAMD;
-
-typedef struct VkShaderStatisticsInfoAMD {
- VkShaderStageFlags shaderStageMask;
- VkShaderResourceUsageAMD resourceUsage;
- uint32_t numPhysicalVgprs;
- uint32_t numPhysicalSgprs;
- uint32_t numAvailableVgprs;
- uint32_t numAvailableSgprs;
- uint32_t computeWorkGroupSize[3];
-} VkShaderStatisticsInfoAMD;
-
-typedef VkResult (VKAPI_PTR *PFN_vkGetShaderInfoAMD)(VkDevice device, VkPipeline pipeline, VkShaderStageFlagBits shaderStage, VkShaderInfoTypeAMD infoType, size_t* pInfoSize, void* pInfo);
-
-#ifndef VK_NO_PROTOTYPES
-VKAPI_ATTR VkResult VKAPI_CALL vkGetShaderInfoAMD(
- VkDevice device,
- VkPipeline pipeline,
- VkShaderStageFlagBits shaderStage,
- VkShaderInfoTypeAMD infoType,
- size_t* pInfoSize,
- void* pInfo);
-#endif
-
-// VK_AMD_shader_image_load_store_lod is a preprocessor guard. Do not pass it to API calls.
-#define VK_AMD_shader_image_load_store_lod 1
-#define VK_AMD_SHADER_IMAGE_LOAD_STORE_LOD_SPEC_VERSION 1
-#define VK_AMD_SHADER_IMAGE_LOAD_STORE_LOD_EXTENSION_NAME "VK_AMD_shader_image_load_store_lod"
 
 // VK_NV_corner_sampled_image is a preprocessor guard. Do not pass it to API calls.
 #define VK_NV_corner_sampled_image 1
@@ -4315,21 +4186,6 @@ typedef VkSamplerReductionMode VkSamplerReductionModeEXT;
 typedef VkSamplerReductionModeCreateInfo VkSamplerReductionModeCreateInfoEXT;
 
 typedef VkPhysicalDeviceSamplerFilterMinmaxProperties VkPhysicalDeviceSamplerFilterMinmaxPropertiesEXT;
-
-// VK_AMD_gpu_shader_int16 is a preprocessor guard. Do not pass it to API calls.
-#define VK_AMD_gpu_shader_int16 1
-#define VK_AMD_GPU_SHADER_INT16_SPEC_VERSION 2
-#define VK_AMD_GPU_SHADER_INT16_EXTENSION_NAME "VK_AMD_gpu_shader_int16"
-
-// VK_AMD_mixed_attachment_samples is a preprocessor guard. Do not pass it to API calls.
-#define VK_AMD_mixed_attachment_samples 1
-#define VK_AMD_MIXED_ATTACHMENT_SAMPLES_SPEC_VERSION 1
-#define VK_AMD_MIXED_ATTACHMENT_SAMPLES_EXTENSION_NAME "VK_AMD_mixed_attachment_samples"
-
-// VK_AMD_shader_fragment_mask is a preprocessor guard. Do not pass it to API calls.
-#define VK_AMD_shader_fragment_mask 1
-#define VK_AMD_SHADER_FRAGMENT_MASK_SPEC_VERSION 1
-#define VK_AMD_SHADER_FRAGMENT_MASK_EXTENSION_NAME "VK_AMD_shader_fragment_mask"
 
 // VK_EXT_inline_uniform_block is a preprocessor guard. Do not pass it to API calls.
 #define VK_EXT_inline_uniform_block 1
@@ -5235,36 +5091,6 @@ VKAPI_ATTR VkResult VKAPI_CALL vkGetMemoryHostPointerPropertiesEXT(
  VkMemoryHostPointerPropertiesEXT* pMemoryHostPointerProperties);
 #endif
 
-// VK_AMD_buffer_marker is a preprocessor guard. Do not pass it to API calls.
-#define VK_AMD_buffer_marker 1
-#define VK_AMD_BUFFER_MARKER_SPEC_VERSION 1
-#define VK_AMD_BUFFER_MARKER_EXTENSION_NAME "VK_AMD_buffer_marker"
-typedef void (VKAPI_PTR *PFN_vkCmdWriteBufferMarkerAMD)(VkCommandBuffer commandBuffer, VkPipelineStageFlagBits pipelineStage, VkBuffer dstBuffer, VkDeviceSize dstOffset, uint32_t marker);
-
-#ifndef VK_NO_PROTOTYPES
-VKAPI_ATTR void VKAPI_CALL vkCmdWriteBufferMarkerAMD(
- VkCommandBuffer commandBuffer,
- VkPipelineStageFlagBits pipelineStage,
- VkBuffer dstBuffer,
- VkDeviceSize dstOffset,
- uint32_t marker);
-#endif
-
-// VK_AMD_pipeline_compiler_control is a preprocessor guard. Do not pass it to API calls.
-#define VK_AMD_pipeline_compiler_control 1
-#define VK_AMD_PIPELINE_COMPILER_CONTROL_SPEC_VERSION 1
-#define VK_AMD_PIPELINE_COMPILER_CONTROL_EXTENSION_NAME "VK_AMD_pipeline_compiler_control"
-
-typedef enum VkPipelineCompilerControlFlagBitsAMD {
- VK_PIPELINE_COMPILER_CONTROL_FLAG_BITS_MAX_ENUM_AMD = 0x7FFFFFFF
-} VkPipelineCompilerControlFlagBitsAMD;
-typedef VkFlags VkPipelineCompilerControlFlagsAMD;
-typedef struct VkPipelineCompilerControlCreateInfoAMD {
- VkStructureType sType;
- const void* pNext;
- VkPipelineCompilerControlFlagsAMD compilerControlFlags;
-} VkPipelineCompilerControlCreateInfoAMD;
-
 // VK_EXT_calibrated_timestamps is a preprocessor guard. Do not pass it to API calls.
 #define VK_EXT_calibrated_timestamps 1
 #define VK_EXT_CALIBRATED_TIMESTAMPS_SPEC_VERSION 2
@@ -5289,46 +5115,6 @@ VKAPI_ATTR VkResult VKAPI_CALL vkGetCalibratedTimestampsEXT(
  uint64_t* pTimestamps,
  uint64_t* pMaxDeviation);
 #endif
-
-// VK_AMD_shader_core_properties is a preprocessor guard. Do not pass it to API calls.
-#define VK_AMD_shader_core_properties 1
-#define VK_AMD_SHADER_CORE_PROPERTIES_SPEC_VERSION 2
-#define VK_AMD_SHADER_CORE_PROPERTIES_EXTENSION_NAME "VK_AMD_shader_core_properties"
-typedef struct VkPhysicalDeviceShaderCorePropertiesAMD {
- VkStructureType sType;
- void* pNext;
- uint32_t shaderEngineCount;
- uint32_t shaderArraysPerEngineCount;
- uint32_t computeUnitsPerShaderArray;
- uint32_t simdPerComputeUnit;
- uint32_t wavefrontsPerSimd;
- uint32_t wavefrontSize;
- uint32_t sgprsPerSimd;
- uint32_t minSgprAllocation;
- uint32_t maxSgprAllocation;
- uint32_t sgprAllocationGranularity;
- uint32_t vgprsPerSimd;
- uint32_t minVgprAllocation;
- uint32_t maxVgprAllocation;
- uint32_t vgprAllocationGranularity;
-} VkPhysicalDeviceShaderCorePropertiesAMD;
-
-// VK_AMD_memory_overallocation_behavior is a preprocessor guard. Do not pass it to API calls.
-#define VK_AMD_memory_overallocation_behavior 1
-#define VK_AMD_MEMORY_OVERALLOCATION_BEHAVIOR_SPEC_VERSION 1
-#define VK_AMD_MEMORY_OVERALLOCATION_BEHAVIOR_EXTENSION_NAME "VK_AMD_memory_overallocation_behavior"
-
-typedef enum VkMemoryOverallocationBehaviorAMD {
- VK_MEMORY_OVERALLOCATION_BEHAVIOR_DEFAULT_AMD = 0,
- VK_MEMORY_OVERALLOCATION_BEHAVIOR_ALLOWED_AMD = 1,
- VK_MEMORY_OVERALLOCATION_BEHAVIOR_DISALLOWED_AMD = 2,
- VK_MEMORY_OVERALLOCATION_BEHAVIOR_MAX_ENUM_AMD = 0x7FFFFFFF
-} VkMemoryOverallocationBehaviorAMD;
-typedef struct VkDeviceMemoryOverallocationCreateInfoAMD {
- VkStructureType sType;
- const void* pNext;
- VkMemoryOverallocationBehaviorAMD overallocationBehavior;
-} VkDeviceMemoryOverallocationCreateInfoAMD;
 
 // VK_EXT_vertex_attribute_divisor is a preprocessor guard. Do not pass it to API calls.
 #define VK_EXT_vertex_attribute_divisor 1
@@ -5529,31 +5315,6 @@ typedef struct VkPhysicalDevicePCIBusInfoPropertiesEXT {
  uint32_t pciFunction;
 } VkPhysicalDevicePCIBusInfoPropertiesEXT;
 
-// VK_AMD_display_native_hdr is a preprocessor guard. Do not pass it to API calls.
-#define VK_AMD_display_native_hdr 1
-#define VK_AMD_DISPLAY_NATIVE_HDR_SPEC_VERSION 1
-#define VK_AMD_DISPLAY_NATIVE_HDR_EXTENSION_NAME "VK_AMD_display_native_hdr"
-typedef struct VkDisplayNativeHdrSurfaceCapabilitiesAMD {
- VkStructureType sType;
- void* pNext;
- VkBool32 localDimmingSupport;
-} VkDisplayNativeHdrSurfaceCapabilitiesAMD;
-
-typedef struct VkSwapchainDisplayNativeHdrCreateInfoAMD {
- VkStructureType sType;
- const void* pNext;
- VkBool32 localDimmingEnable;
-} VkSwapchainDisplayNativeHdrCreateInfoAMD;
-
-typedef void (VKAPI_PTR *PFN_vkSetLocalDimmingAMD)(VkDevice device, VkSwapchainKHR swapChain, VkBool32 localDimmingEnable);
-
-#ifndef VK_NO_PROTOTYPES
-VKAPI_ATTR void VKAPI_CALL vkSetLocalDimmingAMD(
- VkDevice device,
- VkSwapchainKHR swapChain,
- VkBool32 localDimmingEnable);
-#endif
-
 // VK_EXT_fragment_density_map is a preprocessor guard. Do not pass it to API calls.
 #define VK_EXT_fragment_density_map 1
 #define VK_EXT_FRAGMENT_DENSITY_MAP_SPEC_VERSION 2
@@ -5607,32 +5368,6 @@ typedef VkPhysicalDeviceSubgroupSizeControlFeatures VkPhysicalDeviceSubgroupSize
 typedef VkPhysicalDeviceSubgroupSizeControlProperties VkPhysicalDeviceSubgroupSizeControlPropertiesEXT;
 
 typedef VkPipelineShaderStageRequiredSubgroupSizeCreateInfo VkPipelineShaderStageRequiredSubgroupSizeCreateInfoEXT;
-
-// VK_AMD_shader_core_properties2 is a preprocessor guard. Do not pass it to API calls.
-#define VK_AMD_shader_core_properties2 1
-#define VK_AMD_SHADER_CORE_PROPERTIES_2_SPEC_VERSION 1
-#define VK_AMD_SHADER_CORE_PROPERTIES_2_EXTENSION_NAME "VK_AMD_shader_core_properties2"
-
-typedef enum VkShaderCorePropertiesFlagBitsAMD {
- VK_SHADER_CORE_PROPERTIES_FLAG_BITS_MAX_ENUM_AMD = 0x7FFFFFFF
-} VkShaderCorePropertiesFlagBitsAMD;
-typedef VkFlags VkShaderCorePropertiesFlagsAMD;
-typedef struct VkPhysicalDeviceShaderCoreProperties2AMD {
- VkStructureType sType;
- void* pNext;
- VkShaderCorePropertiesFlagsAMD shaderCoreFeatures;
- uint32_t activeComputeUnitCount;
-} VkPhysicalDeviceShaderCoreProperties2AMD;
-
-// VK_AMD_device_coherent_memory is a preprocessor guard. Do not pass it to API calls.
-#define VK_AMD_device_coherent_memory 1
-#define VK_AMD_DEVICE_COHERENT_MEMORY_SPEC_VERSION 1
-#define VK_AMD_DEVICE_COHERENT_MEMORY_EXTENSION_NAME "VK_AMD_device_coherent_memory"
-typedef struct VkPhysicalDeviceCoherentMemoryFeaturesAMD {
- VkStructureType sType;
- void* pNext;
- VkBool32 deviceCoherentMemory;
-} VkPhysicalDeviceCoherentMemoryFeaturesAMD;
 
 // VK_EXT_shader_image_atomic_int64 is a preprocessor guard. Do not pass it to API calls.
 #define VK_EXT_shader_image_atomic_int64 1
@@ -7211,16 +6946,6 @@ typedef struct VkGraphicsPipelineLibraryCreateInfoEXT {
  const void* pNext;
  VkGraphicsPipelineLibraryFlagsEXT flags;
 } VkGraphicsPipelineLibraryCreateInfoEXT;
-
-// VK_AMD_shader_early_and_late_fragment_tests is a preprocessor guard. Do not pass it to API calls.
-#define VK_AMD_shader_early_and_late_fragment_tests 1
-#define VK_AMD_SHADER_EARLY_AND_LATE_FRAGMENT_TESTS_SPEC_VERSION 1
-#define VK_AMD_SHADER_EARLY_AND_LATE_FRAGMENT_TESTS_EXTENSION_NAME "VK_AMD_shader_early_and_late_fragment_tests"
-typedef struct VkPhysicalDeviceShaderEarlyAndLateFragmentTestsFeaturesAMD {
- VkStructureType sType;
- void* pNext;
- VkBool32 shaderEarlyAndLateFragmentTests;
-} VkPhysicalDeviceShaderEarlyAndLateFragmentTestsFeaturesAMD;
 
 // VK_NV_fragment_shading_rate_enums is a preprocessor guard. Do not pass it to API calls.
 #define VK_NV_fragment_shading_rate_enums 1

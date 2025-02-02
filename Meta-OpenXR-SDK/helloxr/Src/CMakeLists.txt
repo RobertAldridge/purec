@@ -24,7 +24,6 @@ set(
   openxr_vtable.h
   options.h
   pch.h
-  platformplugin.h
   shaderc.h
   shaderc_build_info.h
   shaderc_env.h

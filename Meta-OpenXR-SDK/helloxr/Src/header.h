@@ -154,8 +154,6 @@ typedef _jobject* jobject;
 
 #define XR_ARCH_ABI "arm64-v8a"
 
-#include "platformplugin.h"
-
 #include <dlfcn.h>
 
 #include "vk_platform.h"
