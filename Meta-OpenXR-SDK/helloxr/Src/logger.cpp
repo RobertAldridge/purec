@@ -3,7 +3,7 @@
 
 #include "header.h"
 
-Log::Level gLogger_minSeverity {Log::Level::Info};
+Log::Level gLogger_minSeverity {Log::Level::Verbose};
 
 std::mutex gLogger_logLock;
 

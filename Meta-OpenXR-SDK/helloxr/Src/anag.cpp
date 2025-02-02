@@ -501,50 +501,60 @@ try
     initializeLoader( (const XrLoaderInitInfoBaseHeaderKHR*) &loaderInitInfoAndroid);
   }
 
-  // Write out extension properties for a given layer.
-  const auto logExtensions = [](const char* layerName, int indent = 0 )
   {
-    uint32_t instanceExtensionCount = 0;
+    // Write out extension properties for a given layer.
 
-    if(tableXr.EnumerateInstanceExtensionProperties)
-      CHECK_XRCMD_CHECK(tableXr.EnumerateInstanceExtensionProperties(layerName, 0, &instanceExtensionCount, nullptr) );
-
-    std::vector<XrExtensionProperties> extensions(instanceExtensionCount, {XR_TYPE_EXTENSION_PROPERTIES} );
-
-    if(tableXr.EnumerateInstanceExtensionProperties)
-      CHECK_XRCMD_CHECK(tableXr.EnumerateInstanceExtensionProperties(layerName, (uint32_t)extensions.size(), &instanceExtensionCount, extensions.data() ) );
-
-    const std::string indentStr(indent, ' ');
-
-    Log::Write(Log::Level::Verbose, Fmt("%sAvailable Extensions: (%d)", indentStr.c_str(), instanceExtensionCount) );
-
-    for(const XrExtensionProperties& extension : extensions)
-      Log::Write(Log::Level::Verbose, Fmt("%s  Name=%s SpecVersion=%d", indentStr.c_str(), extension.extensionName, extension.extensionVersion) );
-  };
-
-  // Log non-layer extensions (layerName==nullptr).
-  logExtensions(nullptr);
-
-  // Log layers and any of their extensions.
-  {
-    uint32_t layerCount = 0;
-
-    if(tableXr.EnumerateApiLayerProperties)
-      CHECK_XRCMD_CHECK(tableXr.EnumerateApiLayerProperties(0, &layerCount, nullptr) );
-
-    std::vector<XrApiLayerProperties> layers(layerCount, {XR_TYPE_API_LAYER_PROPERTIES} );
-
-    if(tableXr.EnumerateApiLayerProperties)
-      CHECK_XRCMD_CHECK(tableXr.EnumerateApiLayerProperties( (uint32_t)layers.size(), &layerCount, layers.data() ) );
-
-    Log::Write(Log::Level::Info, Fmt("Available Layers: (%d)", layerCount) );
-
-    for(const XrApiLayerProperties& layer : layers)
     {
-      Log::Write(Log::Level::Verbose, Fmt("  Name=%s SpecVersion=%s LayerVersion=%d Description=%s", layer.layerName, GetXrVersionString(layer.specVersion).c_str(), layer.layerVersion, layer.description) );
+      const char* layerName = nullptr;
+      int indent = 0;
 
-      logExtensions(layer.layerName, 4);
+      uint32_t instanceExtensionCount = 0;
+
+      if(tableXr.EnumerateInstanceExtensionProperties)
+        CHECK_XRCMD_CHECK(tableXr.EnumerateInstanceExtensionProperties(layerName, 0, &instanceExtensionCount, nullptr) );
+
+      std::vector<XrExtensionProperties> extensions(instanceExtensionCount, {XR_TYPE_EXTENSION_PROPERTIES} );
+
+      if(tableXr.EnumerateInstanceExtensionProperties)
+        CHECK_XRCMD_CHECK(tableXr.EnumerateInstanceExtensionProperties(layerName, (uint32_t)extensions.size(), &instanceExtensionCount, extensions.data() ) );
+
+      const std::string indentStr(indent, ' ');
+
+      Log::Write(Log::Level::Verbose, Fmt("%sAvailable Extensions: (%d)", indentStr.c_str(), instanceExtensionCount) );
+
+      for(const XrExtensionProperties& extension : extensions)
+        Log::Write(Log::Level::Verbose, Fmt("%s  Name=%s SpecVersion=%d", indentStr.c_str(), extension.extensionName, extension.extensionVersion) );
     }
+
+    // Log non-layer extensions (layerName==nullptr).
+
+#if 0
+    const auto logExtensions = [](const char* layerName, int indent = 0 )
+
+    //logExtensions(nullptr);
+
+    // Log layers and any of their extensions.
+    {
+      uint32_t layerCount = 0;
+
+      if(tableXr.EnumerateApiLayerProperties)
+        CHECK_XRCMD_CHECK(tableXr.EnumerateApiLayerProperties(0, &layerCount, nullptr) );
+
+      std::vector<XrApiLayerProperties> layers(layerCount, {XR_TYPE_API_LAYER_PROPERTIES} );
+
+      if(tableXr.EnumerateApiLayerProperties)
+        CHECK_XRCMD_CHECK(tableXr.EnumerateApiLayerProperties( (uint32_t)layers.size(), &layerCount, layers.data() ) );
+
+      Log::Write(Log::Level::Info, Fmt("Available Layers: (%d)", layerCount) );
+
+      for(const XrApiLayerProperties& layer : layers)
+      {
+        Log::Write(Log::Level::Verbose, Fmt("  Name=%s SpecVersion=%s LayerVersion=%d Description=%s", layer.layerName, GetXrVersionString(layer.specVersion).c_str(), layer.layerVersion, layer.description) );
+
+        logExtensions(layer.layerName, 4);
+      }
+    }
+#endif
   }
 
 #if 0
@@ -680,12 +690,14 @@ XR_YVR_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_YVR_controller_interaction"
     XrInstanceCreateInfo createInfo {XR_TYPE_INSTANCE_CREATE_INFO};
     createInfo.next = &instanceCreateInfoAndroid;
 
+#if 0
     // passthrough
     extensions.push_back(XR_FB_PASSTHROUGH_EXTENSION_NAME);
     extensions.push_back(XR_FB_TRIANGLE_MESH_EXTENSION_NAME);
 
     // depth
     extensions.push_back(XR_META_ENVIRONMENT_DEPTH_EXTENSION_NAME);
+#endif
 
 #if 0
 VulkanLoader::LoadInstanceFunctions: Failed to load vkCreateDebugReportCallbackEXT, likely vkInstance created without xrGetVulkanInstanceExtensionsKHR/vrapi_GetInstanceExtensionsVulkan
@@ -703,6 +715,7 @@ VulkanLoader::LoadDeviceFunctions: Failed to load vkDebugMarkerSetObjectTagEXT, 
 VulkanLoader::LoadDeviceFunctions: Failed to load vkGetMemoryFdKHR, likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
 #endif
 
+#if 0
     extensions.push_back(XR_FB_COMPOSITION_LAYER_ALPHA_BLEND_EXTENSION_NAME);
     extensions.push_back(XR_FB_COMPOSITION_LAYER_DEPTH_TEST_EXTENSION_NAME);
     extensions.push_back(XR_FB_COMPOSITION_LAYER_IMAGE_LAYOUT_EXTENSION_NAME);
@@ -712,10 +725,100 @@ VulkanLoader::LoadDeviceFunctions: Failed to load vkGetMemoryFdKHR, likely vkDev
     //extensions.push_back(XR_EXT_VIEW_CONFIGURATION_DEPTH_RANGE_EXTENSION_NAME);
     extensions.push_back(XR_FB_ANDROID_SURFACE_SWAPCHAIN_CREATE_EXTENSION_NAME);
     extensions.push_back(XR_KHR_COMPOSITION_LAYER_DEPTH_EXTENSION_NAME);
-    //extensions.push_back(XR_KHR_VULKAN_ENABLE_EXTENSION_NAME);
+    extensions.push_back(XR_KHR_VULKAN_ENABLE_EXTENSION_NAME);
     extensions.push_back(XR_KHR_VULKAN_ENABLE2_EXTENSION_NAME);
     //extensions.push_back(XR_KHR_VULKAN_SWAPCHAIN_FORMAT_LIST_EXTENSION_NAME);
     extensions.push_back(XR_META_VULKAN_SWAPCHAIN_CREATE_INFO_EXTENSION_NAME);
+#endif
+
+    extensions.push_back("XR_KHR_android_create_instance"); // SpecVersion = 3
+    extensions.push_back("XR_KHR_android_surface_swapchain"); // SpecVersion = 4
+    extensions.push_back("XR_KHR_android_thread_settings"); // SpecVersion = 6
+    extensions.push_back("XR_FB_android_surface_swapchain_create"); // SpecVersion = 1
+    extensions.push_back("XR_KHR_opengl_es_enable"); // SpecVersion = 8
+    extensions.push_back("XR_KHR_vulkan_enable"); // SpecVersion = 8
+    extensions.push_back("XR_KHR_vulkan_enable2"); // SpecVersion = 2
+    extensions.push_back("XR_KHR_composition_layer_cube"); // SpecVersion = 8
+    extensions.push_back("XR_KHR_composition_layer_cylinder"); // SpecVersion = 4
+    extensions.push_back("XR_KHR_composition_layer_equirect2"); // SpecVersion = 1
+    extensions.push_back("XR_KHR_composition_layer_color_scale_bias"); // SpecVersion = 5
+    extensions.push_back("XR_KHR_composition_layer_depth"); // SpecVersion = 6
+    extensions.push_back("XR_FB_color_space"); // SpecVersion = 3
+    extensions.push_back("XR_EXT_performance_settings"); // SpecVersion = 4
+    extensions.push_back("XR_EXT_hand_tracking"); // SpecVersion = 4
+    extensions.push_back("XR_EXT_debug_utils"); // SpecVersion = 5
+    extensions.push_back("XR_FB_display_refresh_rate"); // SpecVersion = 1
+    extensions.push_back("XR_FB_swapchain_update_state"); // SpecVersion = 3
+    extensions.push_back("XR_FB_swapchain_update_state_opengl_es"); // SpecVersion = 1
+    extensions.push_back("XR_FB_swapchain_update_state_vulkan"); // SpecVersion = 1
+    extensions.push_back("XR_FB_swapchain_update_state_android_surface"); // SpecVersion = 1
+    extensions.push_back("XR_OCULUS_common_reference_spaces"); // SpecVersion = 1
+    extensions.push_back("XR_FB_composition_layer_image_layout"); // SpecVersion = 1
+    extensions.push_back("XR_FB_composition_layer_alpha_blend"); // SpecVersion = 3
+    extensions.push_back("XR_FB_common_events"); // SpecVersion = 2
+    extensions.push_back("XR_FB_hand_tracking_mesh"); // SpecVersion = 3
+    extensions.push_back("XR_FB_hand_tracking_aim"); // SpecVersion = 2
+    extensions.push_back("XR_FB_hand_tracking_capsules"); // SpecVersion = 3
+    extensions.push_back("XR_FB_foveation"); // SpecVersion = 1
+    extensions.push_back("XR_FB_foveation_configuration"); // SpecVersion = 1
+    extensions.push_back("XR_FB_foveation_vulkan"); // SpecVersion = 1
+    extensions.push_back("XR_FB_composition_layer_secure_content"); // SpecVersion = 1
+    extensions.push_back("XR_KHR_convert_timespec_time"); // SpecVersion = 1
+    extensions.push_back("XR_META_body_tracking_full_body"); // SpecVersion = 1
+    extensions.push_back("XR_FB_body_tracking"); // SpecVersion = 1
+    extensions.push_back("XR_FB_spatial_entity"); // SpecVersion = 1
+    extensions.push_back("XR_FB_triangle_mesh"); // SpecVersion = 2
+    extensions.push_back("XR_FB_passthrough"); // SpecVersion = 4
+    extensions.push_back("XR_META_passthrough_color_lut"); // SpecVersion = 1
+    extensions.push_back("XR_META_passthrough_layer_resumed_event"); // SpecVersion = 1
+    extensions.push_back("XR_META_passthrough_preferences"); // SpecVersion = 1
+    extensions.push_back("XR_FB_spatial_entity_query"); // SpecVersion = 1
+    extensions.push_back("XR_META_spatial_entity_persistence"); // SpecVersion = 1
+    extensions.push_back("XR_META_spatial_entity_discovery"); // SpecVersion = 1
+    extensions.push_back("XR_FB_touch_controller_proximity"); // SpecVersion = 1
+    extensions.push_back("XR_FB_touch_controller_pro"); // SpecVersion = 1
+    extensions.push_back("XR_META_touch_controller_plus"); // SpecVersion = 1
+    extensions.push_back("XR_FB_haptic_amplitude_envelope"); // SpecVersion = 1
+    extensions.push_back("XR_FB_haptic_pcm"); // SpecVersion = 1
+    extensions.push_back("XR_FB_spatial_entity_storage"); // SpecVersion = 1
+    extensions.push_back("XR_FB_spatial_entity_storage_batch"); // SpecVersion = 1
+    extensions.push_back("XR_FB_spatial_entity_sharing"); // SpecVersion = 1
+    extensions.push_back("XR_META_spatial_entity_sharing"); // SpecVersion = 1
+    extensions.push_back("XR_META_spatial_entity_group_sharing"); // SpecVersion = 1
+    extensions.push_back("XR_FB_spatial_entity_user"); // SpecVersion = 1
+    extensions.push_back("XR_FB_space_warp"); // SpecVersion = 2
+    extensions.push_back("XR_FB_spatial_entity_container"); // SpecVersion = 1
+    extensions.push_back("XR_META_colocation_discovery"); // SpecVersion = 1
+    extensions.push_back("XR_FB_scene"); // SpecVersion = 1
+    extensions.push_back("XR_FB_scene_capture"); // SpecVersion = 1
+    extensions.push_back("XR_META_spatial_entity_mesh"); // SpecVersion = 1
+    extensions.push_back("XR_FB_face_tracking2"); // SpecVersion = 1
+    extensions.push_back("XR_META_vulkan_swapchain_create_info"); // SpecVersion = 1
+    extensions.push_back("XR_FB_passthrough_keyboard_hands"); // SpecVersion = 2
+    extensions.push_back("XR_FB_composition_layer_settings"); // SpecVersion = 1
+    extensions.push_back("XR_META_feature_fidelity"); // SpecVersion = 1
+    extensions.push_back("XR_FB_composition_layer_depth_test"); // SpecVersion = 1
+    extensions.push_back("XR_EXT_hand_joints_motion_range"); // SpecVersion = 1
+    extensions.push_back("XR_EXT_hand_tracking_data_source"); // SpecVersion = 1
+    extensions.push_back("XR_META_hand_tracking_wide_motion_mode"); // SpecVersion = 1
+    extensions.push_back("XR_META_performance_metrics"); // SpecVersion = 2
+    extensions.push_back("XR_META_virtual_keyboard"); // SpecVersion = 1
+    extensions.push_back("XR_META_detached_controllers"); // SpecVersion = 1
+    extensions.push_back("XR_MSFT_hand_interaction"); // SpecVersion = 1
+    extensions.push_back("XR_META_headset_id"); // SpecVersion = 2
+    extensions.push_back("XR_META_recommended_layer_resolution"); // SpecVersion = 1
+    extensions.push_back("XR_META_environment_depth"); // SpecVersion = 1
+    extensions.push_back("XR_EXT_active_action_set_priority"); // SpecVersion = 1
+    extensions.push_back("XR_META_automatic_layer_filter"); // SpecVersion = 1
+    extensions.push_back("XR_META_body_tracking_fidelity"); // SpecVersion = 1
+    extensions.push_back("XR_META_simultaneous_hands_and_controllers"); // SpecVersion = 1
+    extensions.push_back("XR_EXT_local_floor"); // SpecVersion = 1
+    extensions.push_back("XR_META_body_tracking_calibration"); // SpecVersion = 1
+    extensions.push_back("XR_EXT_hand_interaction"); // SpecVersion = 1
+    extensions.push_back("XR_META_boundary_visibility"); // SpecVersion = 1
+    extensions.push_back("XR_EXT_user_presence"); // SpecVersion = 1
+    extensions.push_back("XR_KHR_visibility_mask"); // SpecVersion = 2
+    extensions.push_back("XR_LOGITECH_mx_ink_stylus_interaction"); // SpecVersion = 1
 
     createInfo.enabledExtensionCount = (uint32_t)extensions.size();
     createInfo.enabledExtensionNames = extensions.data();
@@ -924,24 +1027,17 @@ VulkanLoader::LoadDeviceFunctions: Failed to load vkGetMemoryFdKHR, likely vkDev
       return (it != e);
     };
 
-    // Debug utils is optional and not always available
-    //if(isExtSupported(VK_EXT_DEBUG_UTILS_EXTENSION_NAME) )
-
-    //extensions.push_back(VK_EXT_DEBUG_MARKER_EXTENSION_NAME);
-    extensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
-    extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-
-    //extensions.push_back(VK_EXT_EXTENDED_DYNAMIC_STATE_EXTENSION_NAME);
-    //extensions.push_back(VK_EXT_EXTENDED_DYNAMIC_STATE_2_EXTENSION_NAME);
-    //extensions.push_back(VK_EXT_EXTENDED_DYNAMIC_STATE_3_EXTENSION_NAME);
-
-    extensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
-
-    //extensions.push_back(VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME);
-
-    //extensions.push_back(VK_EXT_SHADER_OBJECT_EXTENSION_NAME);
-
-    //extensions.push_back(VK_KHR_CREATE_RENDERPASS_2_EXTENSION_NAME);
+    extensions.push_back("VK_KHR_surface"); // SpecVersion = 25
+    extensions.push_back("VK_KHR_android_surface"); // SpecVersion = 6
+    extensions.push_back("VK_EXT_swapchain_colorspace"); // SpecVersion = 4
+    extensions.push_back("VK_KHR_get_surface_capabilities2"); // SpecVersion = 1
+    extensions.push_back("VK_EXT_debug_report"); // SpecVersion = 9
+    extensions.push_back("VK_KHR_get_physical_device_properties2"); // SpecVersion = 2
+    extensions.push_back("VK_KHR_external_semaphore_capabilities"); // SpecVersion = 1
+    extensions.push_back("VK_KHR_external_memory_capabilities"); // SpecVersion = 1
+    extensions.push_back("VK_KHR_device_group_creation"); // SpecVersion = 1
+    extensions.push_back("VK_EXT_debug_utils"); // SpecVersion = 2
+    extensions.push_back("VK_KHR_external_fence_capabilities"); // SpecVersion = 1
 
 #if 0
 VK_EXT_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME
@@ -1270,6 +1366,52 @@ VK_VALVE_MUTABLE_DESCRIPTOR_TYPE_EXTENSION_NAME "VK_VALVE_mutable_descriptor_typ
 
     CHECK_XRCMD_CHECK(VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanInstanceKHR(gXrInstance, &createInfo, &gVkInstance, &err) );
     CHECK_VULKANCMD(err);
+  }
+
+  {
+    // typedef VkResult (VKAPI_PTR *PFN_vkEnumerateInstanceExtensionProperties)(const char* pLayerName, uint32_t* pPropertyCount, VkExtensionProperties* pProperties)
+
+    //const auto logExtensions = [](const char* layerName, int indent = 0 )
+    {
+      const char* layerName = nullptr;
+      int indent = 0;
+
+      uint32_t instanceExtensionCount = 0;
+
+      if(tableVk.EnumerateInstanceExtensionProperties)
+        CHECK_VULKANCMD(tableVk.EnumerateInstanceExtensionProperties(layerName, &instanceExtensionCount, nullptr) );
+
+#if 0
+typedef struct XrExtensionProperties
+{
+  XrStructureType type;
+  void* XR_MAY_ALIAS next;
+  char extensionName[XR_MAX_EXTENSION_NAME_SIZE];
+  uint32_t extensionVersion;
+
+}XrExtensionProperties;
+
+typedef struct VkExtensionProperties
+{
+  char extensionName[VK_MAX_EXTENSION_NAME_SIZE];
+  uint32_t specVersion;
+
+}VkExtensionProperties;
+#endif
+
+      //std::vector<XrExtensionProperties> extensions(instanceExtensionCount, {XR_TYPE_EXTENSION_PROPERTIES} );
+      std::vector<VkExtensionProperties> extensions(instanceExtensionCount, { {0}, 0} );
+
+      if(tableVk.EnumerateInstanceExtensionProperties)
+        CHECK_VULKANCMD(tableVk.EnumerateInstanceExtensionProperties(layerName, &instanceExtensionCount, extensions.data() ) );
+
+      const std::string indentStr(indent, ' ');
+
+      Log::Write(Log::Level::Verbose, Fmt("%sAvailable Extensions: (%d)", indentStr.c_str(), instanceExtensionCount) );
+
+      for(const VkExtensionProperties& extension : extensions)
+        Log::Write(Log::Level::Verbose, Fmt("%s  Name=%s SpecVersion=%d", indentStr.c_str(), extension.extensionName, extension.specVersion) );
+    };
   }
 
   if(tableVk.GetInstanceProcAddr)
