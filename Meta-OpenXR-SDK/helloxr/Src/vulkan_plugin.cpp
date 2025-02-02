@@ -461,26 +461,6 @@ std::vector<const char*> VulkanGraphicsPlugin_VulkanGraphicsPluginParseExtension
   return list;
 }
 
-// compile a shader to a SPIR-V binary
-std::vector<uint32_t> VulkanGraphicsPlugin_VulkanGraphicsPluginCompileGlslShader(const std::string& name, shaderc_shader_kind kind, const std::string& source)
-{
-  shaderc::Compiler compiler;
-  shaderc::CompileOptions options;
-
-  options.SetOptimizationLevel(shaderc_optimization_level_size);
-
-  shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(source, kind, name.c_str(), options);
-
-  if(module.GetCompilationStatus() != shaderc_compilation_status_success)
-  {
-    Log::Write(Log::Level::Error, Fmt("Shader %s compilation failed: %s", name.c_str(), module.GetErrorMessage().c_str() ) );
-
-    return std::vector<uint32_t>();
-  }
-
-  return {module.cbegin(), module.cend() };
-}
-
 int64_t VulkanGraphicsPlugin_VulkanGraphicsPluginSelectColorSwapchainFormat(const std::vector<int64_t>& runtimeFormats)
 {
   // List of supported color swapchain formats.
@@ -587,25 +567,6 @@ XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanInstanceKHR(XrInst
 
   if(pfnCreateVulkanInstanceKHR)
     result = pfnCreateVulkanInstanceKHR(instance, createInfo, vulkanInstance, vulkanResult);
-
-  return result;
-}
-
-XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanDeviceKHR(XrInstance instance, const XrVulkanDeviceCreateInfoKHR* createInfo, VkDevice* vulkanDevice, VkResult* vulkanResult)
-{
-  PFN_xrCreateVulkanDeviceKHR pfnCreateVulkanDeviceKHR = nullptr;
-  XrResult result = XR_ERROR_VALIDATION_FAILURE;
-
-  InitOpenXr();
-
-  if(tableXr.GetInstanceProcAddr)
-  {
-    result = tableXr.GetInstanceProcAddr(instance, "xrCreateVulkanDeviceKHR", reinterpret_cast<PFN_xrVoidFunction*>( &pfnCreateVulkanDeviceKHR) );
-    CHECK_XRCMD_CHECK(result);
-  }
-
-  if(pfnCreateVulkanDeviceKHR)
-    result = pfnCreateVulkanDeviceKHR(instance, createInfo, vulkanDevice, vulkanResult);
 
   return result;
 }

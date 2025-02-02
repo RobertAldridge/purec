@@ -294,9 +294,6 @@ void VulkanGraphicsPlugin_VulkanGraphicsPlugin_Destructor();
 // note: The output must not outlive the input - this modifies the input and returns a collection of views into that modified input!
 std::vector<const char*> VulkanGraphicsPlugin_VulkanGraphicsPluginParseExtensionString(char* names);
 
-// compile a shader to a SPIR-V binary
-std::vector<uint32_t> VulkanGraphicsPlugin_VulkanGraphicsPluginCompileGlslShader(const std::string& name, shaderc_shader_kind kind, const std::string& source);
-
 int64_t VulkanGraphicsPlugin_VulkanGraphicsPluginSelectColorSwapchainFormat(const std::vector<int64_t>& runtimeFormats);
 
 const XrBaseInStructure* VulkanGraphicsPlugin_VulkanGraphicsPluginGetGraphicsBinding();
@@ -310,7 +307,5 @@ VKAPI_ATTR VkBool32 VKAPI_CALL VulkanGraphicsPlugin_debugMessageThunk(VkDebugUti
 XrStructureType VulkanGraphicsPlugin_VulkanGraphicsPluginGetSwapchainImageType();
 
 XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanInstanceKHR(XrInstance instance, const XrVulkanInstanceCreateInfoKHR* createInfo, VkInstance* vulkanInstance, VkResult* vulkanResult);
-
-XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanDeviceKHR(XrInstance instance, const XrVulkanDeviceCreateInfoKHR* createInfo, VkDevice* vulkanDevice, VkResult* vulkanResult);
 
 std::string VulkanGraphicsPlugin_BlahVkObjectTypeToString(VkObjectType objectType);

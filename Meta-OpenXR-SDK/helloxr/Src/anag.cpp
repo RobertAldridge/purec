@@ -1492,8 +1492,28 @@ typedef struct VkExtensionProperties
   deviceCreateInfo.vulkanPhysicalDevice = gVkPhysicalDevice;
   deviceCreateInfo.vulkanAllocator = nullptr;
 
-  CHECK_XRCMD_CHECK(VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanDeviceKHR(gXrInstance, &deviceCreateInfo, &gVkDevice, &err) );
-  CHECK_VULKANCMD(err);
+  //CHECK_XRCMD_CHECK(VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanDeviceKHR(gXrInstance, &deviceCreateInfo, &gVkDevice, &err) );
+  //CHECK_VULKANCMD(err);
+
+  //XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanDeviceKHR(XrInstance instance, const XrVulkanDeviceCreateInfoKHR* createInfo, VkDevice* vulkanDevice, VkResult* vulkanResult)
+  {
+    PFN_xrCreateVulkanDeviceKHR pfnCreateVulkanDeviceKHR = nullptr;
+    XrResult result = XR_ERROR_VALIDATION_FAILURE;
+
+    InitOpenXr();
+
+    if(tableXr.GetInstanceProcAddr)
+    {
+      result = tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateVulkanDeviceKHR", reinterpret_cast<PFN_xrVoidFunction*>( &pfnCreateVulkanDeviceKHR) );
+      CHECK_XRCMD_CHECK(result);
+    }
+
+    if(pfnCreateVulkanDeviceKHR)
+      result = pfnCreateVulkanDeviceKHR(gXrInstance, &deviceCreateInfo, &gVkDevice, &err);
+
+    CHECK_XRCMD_CHECK(result);
+    CHECK_VULKANCMD(err);
+  }
 
   gVulkanGraphicsPluginVulkanDebugObjectNamer.Init(gVkInstance, gVkDevice);
 
@@ -1504,8 +1524,55 @@ typedef struct VkExtensionProperties
   if(tableVk.GetPhysicalDeviceMemoryProperties)
     tableVk.GetPhysicalDeviceMemoryProperties(gVkPhysicalDevice, &gMemoryAllocatorMemoryProperties);
 
-  auto vertexSPIRV = VulkanGraphicsPlugin_VulkanGraphicsPluginCompileGlslShader("vertex", shaderc_glsl_default_vertex_shader, VertexShaderGlsl);
-  auto fragmentSPIRV = VulkanGraphicsPlugin_VulkanGraphicsPluginCompileGlslShader("fragment", shaderc_glsl_default_fragment_shader, FragmentShaderGlsl);
+  std::vector<uint32_t> vertexSPIRV;
+  // compile a shader to a SPIR-V binary
+  //auto vertexSPIRV = VulkanGraphicsPlugin_VulkanGraphicsPluginCompileGlslShader("vertex", shaderc_glsl_default_vertex_shader, VertexShaderGlsl);
+  //std::vector<uint32_t> VulkanGraphicsPlugin_VulkanGraphicsPluginCompileGlslShader(const std::string& name, shaderc_shader_kind kind, const std::string& source)
+  {
+    const std::string name("vertex");
+    shaderc::Compiler compiler;
+    shaderc::CompileOptions options;
+
+    options.SetOptimizationLevel(shaderc_optimization_level_size);
+
+    shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(VertexShaderGlsl, shaderc_glsl_default_vertex_shader, name.c_str(), options);
+
+    if(module.GetCompilationStatus() != shaderc_compilation_status_success)
+    {
+      Log::Write(Log::Level::Error, Fmt("Shader %s compilation failed: %s", name.c_str(), module.GetErrorMessage().c_str() ) );
+
+      vertexSPIRV = std::vector<uint32_t>();
+    }
+    else
+    {
+      vertexSPIRV = {module.cbegin(), module.cend() };
+    }
+  }
+
+  std::vector<uint32_t> fragmentSPIRV;
+  // compile a shader to a SPIR-V binary
+  //auto fragmentSPIRV = VulkanGraphicsPlugin_VulkanGraphicsPluginCompileGlslShader("fragment", shaderc_glsl_default_fragment_shader, FragmentShaderGlsl);
+  //std::vector<uint32_t> VulkanGraphicsPlugin_VulkanGraphicsPluginCompileGlslShader(const std::string& name, shaderc_shader_kind kind, const std::string& source)
+  {
+    const std::string name("fragment");
+    shaderc::Compiler compiler;
+    shaderc::CompileOptions options;
+
+    options.SetOptimizationLevel(shaderc_optimization_level_size);
+
+    shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(FragmentShaderGlsl, shaderc_glsl_default_fragment_shader, name.c_str(), options);
+
+    if(module.GetCompilationStatus() != shaderc_compilation_status_success)
+    {
+      Log::Write(Log::Level::Error, Fmt("Shader %s compilation failed: %s", name.c_str(), module.GetErrorMessage().c_str() ) );
+
+      fragmentSPIRV = std::vector<uint32_t>();
+    }
+    else
+    {
+      fragmentSPIRV = {module.cbegin(), module.cend() };
+    }
+  }
 
   if(vertexSPIRV.empty() ) THROW_CHECK("Failed to compile vertex shader");
 
