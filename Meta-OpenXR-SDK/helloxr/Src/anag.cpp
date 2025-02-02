@@ -977,7 +977,39 @@ XR_YVR_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_YVR_controller_interaction"
   std::vector<const char*> layers;
 
 #if !defined(NDEBUG)
-  const char* const validationLayerName = VulkanGraphicsPlugin_VulkanGraphicsPluginGetValidationLayerName();
+  char* const validationLayerName = nullptr;
+  //const char* const validationLayerName = VulkanGraphicsPlugin_VulkanGraphicsPluginGetValidationLayerName();
+  //const char* VulkanGraphicsPlugin_VulkanGraphicsPluginGetValidationLayerName()
+  {
+    uint32_t layerCount = 0;
+
+    if(tableVk.EnumerateInstanceLayerProperties)
+      tableVk.EnumerateInstanceLayerProperties( &layerCount, nullptr);
+
+    std::vector<VkLayerProperties> availableLayers(layerCount);
+
+    if(tableVk.EnumerateInstanceLayerProperties)
+      tableVk.EnumerateInstanceLayerProperties( &layerCount, availableLayers.data() );
+
+    std::vector<const char*> validationLayerNames;
+    validationLayerNames.push_back("VK_LAYER_KHRONOS_validation");
+    validationLayerNames.push_back("VK_LAYER_LUNARG_standard_validation");
+
+    // Enable only one validation layer from the list above. Prefer KHRONOS.
+    for(auto& validationLayerName : validationLayerNames)
+    {
+      for(const auto& layerProperties : availableLayers)
+      {
+        if(0 == strcmp(validationLayerName, layerProperties.layerName) )
+        {
+          validationLayerName = validationLayerName;
+          goto label_return;
+        }
+      }
+    }
+
+label_return:
+  }
 
   if(validationLayerName)
     layers.push_back(validationLayerName);

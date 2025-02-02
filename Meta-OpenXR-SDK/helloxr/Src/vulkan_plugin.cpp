@@ -290,16 +290,6 @@ void VertexBufferBase_VertexBufferBaseInit(const std::vector<VkVertexInputAttrib
   gVertexBufferBaseAttrDesc = attr;
 }
 
-void VertexBufferBase_VertexBufferBaseAllocateBufferMemory(VkBuffer buf, VkDeviceMemory* mem)
-{
-  VkMemoryRequirements memReq = {};
-
-  if(tableVk.GetBufferMemoryRequirements)
-    tableVk.GetBufferMemoryRequirements(gVkDevice, buf, &memReq);
-
-  MemoryAllocator_MemoryAllocatorAllocate(memReq, mem);
-}
-
 #if 0
 void ShaderProgram_ShaderProgramDestructor()
 {
@@ -469,35 +459,6 @@ std::vector<const char*> VulkanGraphicsPlugin_VulkanGraphicsPluginParseExtension
   }
 
   return list;
-}
-
-const char* VulkanGraphicsPlugin_VulkanGraphicsPluginGetValidationLayerName()
-{
-  uint32_t layerCount;
-
-  if(tableVk.EnumerateInstanceLayerProperties)
-    tableVk.EnumerateInstanceLayerProperties( &layerCount, nullptr);
-
-  std::vector<VkLayerProperties> availableLayers(layerCount);
-
-  if(tableVk.EnumerateInstanceLayerProperties)
-    tableVk.EnumerateInstanceLayerProperties( &layerCount, availableLayers.data() );
-
-  std::vector<const char*> validationLayerNames;
-  validationLayerNames.push_back("VK_LAYER_KHRONOS_validation");
-  validationLayerNames.push_back("VK_LAYER_LUNARG_standard_validation");
-
-  // Enable only one validation layer from the list above. Prefer KHRONOS.
-  for(auto& validationLayerName : validationLayerNames)
-  {
-    for(const auto& layerProperties : availableLayers)
-    {
-      if(0 == strcmp(validationLayerName, layerProperties.layerName) )
-        return validationLayerName;
-    }
-  }
-
-  return nullptr;
 }
 
 // compile a shader to a SPIR-V binary
