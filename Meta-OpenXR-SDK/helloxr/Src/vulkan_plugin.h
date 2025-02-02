@@ -273,8 +273,6 @@ inline VkResult CheckVkResult(VkResult res, const char* originator = nullptr, co
   return res;
 }
 
-void PipelineLayout_PipelineLayoutCreate(VkDevice device);
-
 void MemoryAllocator_MemoryAllocatorInit(VkPhysicalDevice physicalDevice);
 
 void MemoryAllocator_MemoryAllocatorAllocate(VkMemoryRequirements const& memReqs, VkDeviceMemory* mem, VkFlags flags = MemoryAllocator_m_memoryAllocatorDefaultFlags, void* pNext = nullptr);
@@ -292,14 +290,6 @@ bool VertexBuffer_VertexBufferCreate(uint32_t idxCount, uint32_t vtxCount);
 void VertexBuffer_VertexBufferUpdateIndices(const uint16_t* data, uint32_t elements, uint32_t offset);
 
 void VertexBuffer_VertexBufferUpdateVertices(const Geometry::Vertex* data, uint32_t elements, uint32_t offset);
-
-void ShaderProgram_ShaderProgramLoad(uint32_t whichShaderInfo, const std::vector<uint32_t>& code);
-
-void ShaderProgram_ShaderProgramLoadVertexShader(const std::vector<uint32_t>& code);
-
-void ShaderProgram_ShaderProgramLoadFragmentShader(const std::vector<uint32_t>& code);
-
-void ShaderProgram_ShaderProgramInit(VkDevice device);
 
 #if 0
 void SwapchainImageContext_SwapchainImageContext_PipelineDynamic(int index, VkDynamicState state);
@@ -334,7 +324,5 @@ XrStructureType VulkanGraphicsPlugin_VulkanGraphicsPluginGetSwapchainImageType()
 XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanInstanceKHR(XrInstance instance, const XrVulkanInstanceCreateInfoKHR* createInfo, VkInstance* vulkanInstance, VkResult* vulkanResult);
 
 XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanDeviceKHR(XrInstance instance, const XrVulkanDeviceCreateInfoKHR* createInfo, VkDevice* vulkanDevice, VkResult* vulkanResult);
-
-XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsDevice2KHR(XrInstance instance, const XrVulkanGraphicsDeviceGetInfoKHR* getInfo, VkPhysicalDevice* vulkanPhysicalDevice);
 
 std::string VulkanGraphicsPlugin_BlahVkObjectTypeToString(VkObjectType objectType);

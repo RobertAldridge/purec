@@ -167,23 +167,6 @@ std::string BlahVkResultString(VkResult res)
   }
 }
 
-void PipelineLayout_PipelineLayoutCreate(VkDevice device)
-{
-  // MVP matrix is a push_constant
-  VkPushConstantRange pcr = {};
-  pcr.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-  pcr.offset = 0;
-  pcr.size = 4 * 4 * sizeof(float);
-
-  VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo {VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO};
-
-  pipelineLayoutCreateInfo.pushConstantRangeCount = 1;
-  pipelineLayoutCreateInfo.pPushConstantRanges = &pcr;
-
-  if(tableVk.CreatePipelineLayout)
-    CHECK_VULKANCMD(tableVk.CreatePipelineLayout(gVkDevice, &pipelineLayoutCreateInfo, nullptr, &gVkPipelineLayout) );
-}
-
 void MemoryAllocator_MemoryAllocatorInit(VkPhysicalDevice physicalDevice)
 {
   if(tableVk.GetPhysicalDeviceMemoryProperties)
@@ -403,56 +386,6 @@ void ShaderProgram_ShaderProgramDestructor()
   gShaderProgramShaderInfo = {};
 }
 #endif
-
-void ShaderProgram_ShaderProgramLoad(uint32_t whichShaderInfo, const std::vector<uint32_t>& code)
-{
-  VkShaderModuleCreateInfo modInfo {VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO};
-
-  auto& si = gShaderProgramShaderInfo[whichShaderInfo];
-  si.pName = "main";
-  std::string name;
-
-  switch(whichShaderInfo)
-  {
-
-  case 0:
-      si.stage = VK_SHADER_STAGE_VERTEX_BIT;
-      name = "vertex";
-      break;
-
-  case 1:
-      si.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-      name = "fragment";
-      break;
-
-  default:
-      THROW_CHECK(Fmt("Unknown code whichShaderInfo %d", whichShaderInfo) );
-
-  }
-
-  modInfo.codeSize = code.size() * sizeof(code[0] );
-  modInfo.pCode = &code[0];
-  CHECK_MSG( (modInfo.codeSize > 0) && modInfo.pCode, Fmt("Invalid %s shader ", name.c_str() ) );
-
-  if(tableVk.CreateShaderModule)
-    CHECK_VULKANCMD(tableVk.CreateShaderModule(gVkDevice, &modInfo, nullptr, &si.module) );
-
-  Log::Write(Log::Level::Info, Fmt("Loaded %s shader", name.c_str() ) );
-}
-
-void ShaderProgram_ShaderProgramLoadVertexShader(const std::vector<uint32_t>& code)
-{
-  ShaderProgram_ShaderProgramLoad(0, code);
-}
-
-void ShaderProgram_ShaderProgramLoadFragmentShader(const std::vector<uint32_t>& code)
-{
-  ShaderProgram_ShaderProgramLoad(1, code);
-}
-
-void ShaderProgram_ShaderProgramInit(VkDevice device)
-{
-}
 
 #if 0
 void SwapchainImageContext_SwapchainImageContext_Destructor(int index)
@@ -779,25 +712,6 @@ XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanDeviceKHR(XrInstan
 
   if(pfnCreateVulkanDeviceKHR)
     result = pfnCreateVulkanDeviceKHR(instance, createInfo, vulkanDevice, vulkanResult);
-
-  return result;
-}
-
-XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsDevice2KHR(XrInstance instance, const XrVulkanGraphicsDeviceGetInfoKHR* getInfo, VkPhysicalDevice* vulkanPhysicalDevice)
-{
-  PFN_xrGetVulkanGraphicsDevice2KHR pfnGetVulkanGraphicsDevice2KHR = nullptr;
-  XrResult result = XR_ERROR_VALIDATION_FAILURE;
-
-  InitOpenXr();
-
-  if(tableXr.GetInstanceProcAddr)
-  {
-    result = tableXr.GetInstanceProcAddr(instance, "xrGetVulkanGraphicsDevice2KHR", reinterpret_cast<PFN_xrVoidFunction*>( &pfnGetVulkanGraphicsDevice2KHR) );
-    CHECK_XRCMD_CHECK(result);
-  }
-
-  if(pfnGetVulkanGraphicsDevice2KHR)
-    result = pfnGetVulkanGraphicsDevice2KHR(instance, getInfo, vulkanPhysicalDevice);
 
   return result;
 }

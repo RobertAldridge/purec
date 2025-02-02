@@ -1387,7 +1387,27 @@ typedef struct VkExtensionProperties
     deviceGetInfo.systemId = gXrSystemId;
     deviceGetInfo.vulkanInstance = gVkInstance;
 
-    CHECK_XRCMD_CHECK(VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsDevice2KHR(gXrInstance, &deviceGetInfo, &gVkPhysicalDevice) );
+    //CHECK_XRCMD_CHECK(VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsDevice2KHR(gXrInstance, &deviceGetInfo, &gVkPhysicalDevice) );
+    //XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsDevice2KHR(XrInstance instance, const XrVulkanGraphicsDeviceGetInfoKHR* getInfo, VkPhysicalDevice* vulkanPhysicalDevice)
+    {
+      PFN_xrGetVulkanGraphicsDevice2KHR pfnGetVulkanGraphicsDevice2KHR = nullptr;
+      XrResult result = XR_ERROR_VALIDATION_FAILURE;
+
+      InitOpenXr();
+
+      if(tableXr.GetInstanceProcAddr)
+      {
+        result = tableXr.GetInstanceProcAddr(gXrInstance, "xrGetVulkanGraphicsDevice2KHR", reinterpret_cast<PFN_xrVoidFunction*>( &pfnGetVulkanGraphicsDevice2KHR) );
+        CHECK_XRCMD_CHECK(result);
+      }
+
+      if(pfnGetVulkanGraphicsDevice2KHR)
+        result = pfnGetVulkanGraphicsDevice2KHR(gXrInstance, &deviceGetInfo, &gVkPhysicalDevice);
+
+      CHECK_XRCMD_CHECK(result);
+
+      //return result;
+    }
   }
 
   VkDeviceQueueCreateInfo queueInfo {VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO};
@@ -1457,9 +1477,56 @@ typedef struct VkExtensionProperties
 
   if(fragmentSPIRV.empty() ) THROW_CHECK("Failed to compile fragment shader");
 
-  ShaderProgram_ShaderProgramInit(gVkDevice);
-  ShaderProgram_ShaderProgramLoadVertexShader(vertexSPIRV);
-  ShaderProgram_ShaderProgramLoadFragmentShader(fragmentSPIRV);
+  //ShaderProgram_ShaderProgramInit(gVkDevice);
+  //nop
+
+  //ShaderProgram_ShaderProgramLoadVertexShader(vertexSPIRV);
+  //ShaderProgram_ShaderProgramLoad(0, vertexSPIRV);
+
+  //ShaderProgram_ShaderProgramLoadFragmentShader(fragmentSPIRV);
+  //ShaderProgram_ShaderProgramLoad(1, fragmentSPIRV);
+
+  //void ShaderProgram_ShaderProgramLoad(uint32_t whichShaderInfo, const std::vector<uint32_t>& code)
+
+  {
+    VkShaderModuleCreateInfo modInfo {VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO};
+
+    auto& si = gShaderProgramShaderInfo[0];
+    si.pName = "main";
+    std::string name;
+
+    si.stage = VK_SHADER_STAGE_VERTEX_BIT;
+    name = "vertex";
+
+    modInfo.codeSize = vertexSPIRV.size() * sizeof(vertexSPIRV[0] );
+    modInfo.pCode = &vertexSPIRV[0];
+    CHECK_MSG( (modInfo.codeSize > 0) && modInfo.pCode, Fmt("Invalid %s shader ", name.c_str() ) );
+
+    if(tableVk.CreateShaderModule)
+      CHECK_VULKANCMD(tableVk.CreateShaderModule(gVkDevice, &modInfo, nullptr, &si.module) );
+
+    Log::Write(Log::Level::Info, Fmt("Loaded %s shader", name.c_str() ) );
+  }
+
+  {
+    VkShaderModuleCreateInfo modInfo {VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO};
+
+    auto& si = gShaderProgramShaderInfo[1];
+    si.pName = "main";
+    std::string name;
+
+    si.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+    name = "fragment";
+
+    modInfo.codeSize = fragmentSPIRV.size() * sizeof(fragmentSPIRV[0] );
+    modInfo.pCode = &fragmentSPIRV[0];
+    CHECK_MSG( (modInfo.codeSize > 0) && modInfo.pCode, Fmt("Invalid %s shader ", name.c_str() ) );
+
+    if(tableVk.CreateShaderModule)
+      CHECK_VULKANCMD(tableVk.CreateShaderModule(gVkDevice, &modInfo, nullptr, &si.module) );
+
+    Log::Write(Log::Level::Info, Fmt("Loaded %s shader", name.c_str() ) );
+  }
 
   // Semaphore to block on draw complete
   VkSemaphoreCreateInfo semInfo {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
@@ -1519,7 +1586,23 @@ typedef struct VkExtensionProperties
     THROW_CHECK("Failed to create command buffer");
 
   //gVkPipelineLayout.PipelineLayoutCreate(gVkDevice);
-  PipelineLayout_PipelineLayoutCreate(gVkDevice);
+  //PipelineLayout_PipelineLayoutCreate(gVkDevice);
+  //void PipelineLayout_PipelineLayoutCreate(VkDevice device)
+  {
+    // MVP matrix is a push_constant
+    VkPushConstantRange pcr = {};
+    pcr.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    pcr.offset = 0;
+    pcr.size = 4 * 4 * sizeof(float);
+
+    VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo {VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO};
+
+    pipelineLayoutCreateInfo.pushConstantRangeCount = 1;
+    pipelineLayoutCreateInfo.pPushConstantRanges = &pcr;
+
+    if(tableVk.CreatePipelineLayout)
+      CHECK_VULKANCMD(tableVk.CreatePipelineLayout(gVkDevice, &pipelineLayoutCreateInfo, nullptr, &gVkPipelineLayout) );
+  }
 
   static_assert(sizeof(Geometry::Vertex) == 24, "Unexpected Vertex size");
 
