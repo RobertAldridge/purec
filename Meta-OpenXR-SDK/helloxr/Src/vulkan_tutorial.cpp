@@ -777,7 +777,7 @@ std::vector<const char*> VulkanTutorialGetRequiredExtensions()
   const char** glfwExtensions = 0;
 
   // todo
-  //glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+  //glfwExtensions = glfwGetRequiredInstanceExtensions( &glfwExtensionCount);
 
   std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
@@ -1023,7 +1023,7 @@ void createInstance()
     createInfo.pNext = nullptr;
   }
 
-  if(vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS)
+  if(vkCreateInstance( &createInfo, nullptr, &instance) != VK_SUCCESS)
     throw std::runtime_error("failed to create instance!");
 }
 

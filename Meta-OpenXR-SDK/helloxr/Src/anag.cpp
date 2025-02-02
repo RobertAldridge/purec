@@ -455,7 +455,7 @@ try
 {
   JNIEnv* Env = 0;
 
-  app->activity->vm->AttachCurrentThread(&Env, nullptr);
+  app->activity->vm->AttachCurrentThread( &Env, nullptr);
 
   AndroidAppState appState = {};
 
@@ -802,7 +802,7 @@ XR_YVR_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_YVR_controller_interaction"
       Log::Write(Log::Level::Info, Fmt("blah %i %s", index, extensions[index] ) );
 
     if(tableXr.CreateInstance)
-      CHECK_XRCMD_CHECK(tableXr.CreateInstance(&createInfo, &gXrInstance) );
+      CHECK_XRCMD_CHECK(tableXr.CreateInstance( &createInfo, &gXrInstance) );
   }
 
   CHECK_CHECK(gXrInstance != XR_NULL_HANDLE);
@@ -1449,7 +1449,54 @@ typedef struct VkExtensionProperties
 
   CHECK_VULKANCMD(gVulkanGraphicsPluginVulkanDebugObjectNamer.SetName(VK_OBJECT_TYPE_SEMAPHORE, (uint64_t)gVulkanGraphicsPluginVkSemaphoreDrawDone, "helloxr draw done semaphore") );
 
-  if(!CmdBuffer_CmdBufferInit(gVulkanGraphicsPluginVulkanDebugObjectNamer, gVkDevice, gVulkanGraphicsPluginQueueFamilyIndex) ) THROW_CHECK("Failed to create command buffer");
+  bool CmdBuffer_CmdBufferInit_Result = false;
+  //CmdBuffer_CmdBufferInit(gVulkanGraphicsPluginVulkanDebugObjectNamer, gVkDevice, gVulkanGraphicsPluginQueueFamilyIndex)
+  //bool CmdBuffer_CmdBufferInit(const VulkanDebugObjectNamer& namer, VkDevice device, uint32_t queueFamilyIndex)
+  do
+  {
+    //CHECK_VULKANCMDBUFFERSTATE(CmdBufferStateEnum::Undefined);
+    if(gCmdBufferState != CmdBufferStateEnum::Undefined)
+    {
+      Log::Write(Log::Level::Error, std::string("Expecting state CmdBufferStateEnum::Undefined from ") + __FUNCTION__ + ", in " + CmdBuffer_CmdBufferStateString(gCmdBufferState) );
+      break;
+    }
+
+    // Create a command pool to allocate our command buffer from
+    VkCommandPoolCreateInfo cmdPoolInfo {VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO};
+    cmdPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+    cmdPoolInfo.queueFamilyIndex = gVulkanGraphicsPluginQueueFamilyIndex;
+
+    if(tableVk.CreateCommandPool)
+      CHECK_VULKANCMD(tableVk.CreateCommandPool(gVkDevice, &cmdPoolInfo, nullptr, &gCmdBufferPool) );
+
+    CHECK_VULKANCMD(gVulkanGraphicsPluginVulkanDebugObjectNamer.SetName(VK_OBJECT_TYPE_COMMAND_POOL, (uint64_t)gCmdBufferPool, "helloxr command pool") );
+
+    // Create the command buffer from the command pool
+    VkCommandBufferAllocateInfo cmd {VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO};
+    cmd.commandPool = gCmdBufferPool;
+    cmd.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    cmd.commandBufferCount = 1;
+
+    if(tableVk.AllocateCommandBuffers)
+      CHECK_VULKANCMD(tableVk.AllocateCommandBuffers(gVkDevice, &cmd, &gCmdBufferBuffer) );
+
+    CHECK_VULKANCMD(gVulkanGraphicsPluginVulkanDebugObjectNamer.SetName(VK_OBJECT_TYPE_COMMAND_BUFFER, (uint64_t)gCmdBufferBuffer, "helloxr command buffer") );
+
+    VkFenceCreateInfo fenceInfo {VK_STRUCTURE_TYPE_FENCE_CREATE_INFO};
+
+    if(tableVk.CreateFence)
+      CHECK_VULKANCMD(tableVk.CreateFence(gVkDevice, &fenceInfo, nullptr, &gCmdBufferExecFence) );
+
+    CHECK_VULKANCMD(gVulkanGraphicsPluginVulkanDebugObjectNamer.SetName(VK_OBJECT_TYPE_FENCE, (uint64_t)gCmdBufferExecFence, "helloxr fence") );
+
+    CmdBuffer_CmdBufferSetState(CmdBufferStateEnum::Initialized);
+
+    CmdBuffer_CmdBufferInit_Result = true;
+
+  }while(0);
+
+  if( !CmdBuffer_CmdBufferInit_Result)
+    THROW_CHECK("Failed to create command buffer");
 
   //gVkPipelineLayout.PipelineLayoutCreate(gVkDevice);
   PipelineLayout_PipelineLayoutCreate(gVkDevice);
@@ -2341,12 +2388,99 @@ typedef struct VkExtensionProperties
             CHECK_CHECK(projectionLayerViews[i].subImage.imageArrayIndex == 0);  // Texture arrays not supported.
 
             int swapchainContextIndex = gVulkanGraphicsPluginStdMap_XrSwapchainImageBaseHeader_SwapchainImageContext[swapchainImage];
-            uint32_t renderTarget = SwapchainImageContext_SwapchainImageContextImageIndex(swapchainContextIndex, swapchainImage);
+
+            uint32_t renderTarget = 0;
+            //uint32_t renderTarget = SwapchainImageContext_SwapchainImageContextImageIndex(swapchainContextIndex, swapchainImage);
+            //uint32_t SwapchainImageContext_SwapchainImageContextImageIndex(int index, const XrSwapchainImageBaseHeader* swapchainImageHeader)
+            {
+              auto p = reinterpret_cast<const XrSwapchainImageVulkan2KHR*>(swapchainImage);
+              renderTarget = (uint32_t)(p - &m_swapchainImageContextSwapchainImages[swapchainContextIndex][0] );
+            }
 
             // XXX Should double-buffer the command buffers, for now just flush
-            CmdBuffer_CmdBufferWait();
-            CmdBuffer_CmdBufferReset();
-            CmdBuffer_CmdBufferBegin();
+            //CmdBuffer_CmdBufferWait();
+            //bool CmdBuffer_CmdBufferWait()
+            do
+            {
+              // Waiting on a not-in-flight command buffer is a no-op
+              if(gCmdBufferState == CmdBufferStateEnum::Initialized)
+                break;
+
+              //CHECK_VULKANCMDBUFFERSTATE(CmdBufferStateEnum::Executing);
+              if(gCmdBufferState != CmdBufferStateEnum::Executing)
+              {
+                Log::Write(Log::Level::Error, std::string("Expecting state CmdBufferStateEnum::Executing from ") + __FUNCTION__ + ", in " + CmdBuffer_CmdBufferStateString(gCmdBufferState) );
+                break;
+              }
+
+              const uint32_t timeoutNs = 1 * 1000 * 1000 * 1000;
+
+              for(int wompa = 0; wompa < 5; ++wompa)
+              {
+                VkResult res = VK_ERROR_OUT_OF_HOST_MEMORY;
+
+                if(tableVk.WaitForFences)
+                  res = tableVk.WaitForFences(gVkDevice, 1, &gCmdBufferExecFence, VK_TRUE, timeoutNs);
+
+                if(res == VK_SUCCESS)
+                {
+                  // Buffer can be executed multiple times...
+                  CmdBuffer_CmdBufferSetState(CmdBufferStateEnum::Executable);
+                  break;
+                }
+
+                Log::Write(Log::Level::Info, "Waiting for CmdBuffer fence timed out, retrying...");
+              }
+
+              //return false;
+
+            }while(0);
+
+            //CmdBuffer_CmdBufferReset();
+            //bool CmdBuffer_CmdBufferReset()
+            do
+            {
+              if(gCmdBufferState != CmdBufferStateEnum::Initialized)
+              {
+                //CHECK_VULKANCMDBUFFERSTATE(CmdBufferStateEnum::Executable);
+                if(gCmdBufferState != CmdBufferStateEnum::Executable)
+                {
+                  Log::Write(Log::Level::Error, std::string("Expecting state CmdBufferStateEnum::Executable from ") + __FUNCTION__ + ", in " + CmdBuffer_CmdBufferStateString(gCmdBufferState) );
+                  break;
+                }
+
+                if(tableVk.ResetFences)
+                  CHECK_VULKANCMD(tableVk.ResetFences(gVkDevice, 1, &gCmdBufferExecFence) );
+
+                if(tableVk.ResetCommandBuffer)
+                  CHECK_VULKANCMD(tableVk.ResetCommandBuffer(gCmdBufferBuffer, 0) );
+
+                CmdBuffer_CmdBufferSetState(CmdBufferStateEnum::Initialized);
+              }
+
+            }while(0);
+
+            //CmdBuffer_CmdBufferBegin();
+            //bool CmdBuffer_CmdBufferBegin()
+            do
+            {
+              //CHECK_VULKANCMDBUFFERSTATE(CmdBufferStateEnum::Initialized);
+              if(gCmdBufferState != CmdBufferStateEnum::Initialized)
+              {
+                Log::Write(Log::Level::Error, std::string("Expecting state CmdBufferStateEnum::Initialized from ") + __FUNCTION__ + ", in " + CmdBuffer_CmdBufferStateString(gCmdBufferState) );
+                break;
+              }
+
+              VkCommandBufferBeginInfo cmdBeginInfo {VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
+
+              if(tableVk.BeginCommandBuffer)
+                CHECK_VULKANCMD(tableVk.BeginCommandBuffer(gCmdBufferBuffer, &cmdBeginInfo) );
+
+              CmdBuffer_CmdBufferSetState(CmdBufferStateEnum::Recording);
+
+              //return true;
+
+            }while(0);
 
             // Ensure depth is in the right layout
             //SwapchainImageContext_SwapchainImageContext_DepthBufferTransitionImageLayout(swapchainContextIndex, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
@@ -2386,7 +2520,107 @@ typedef struct VkExtensionProperties
             renderPassBeginInfo.clearValueCount = (uint32_t)clearValues.size();
             renderPassBeginInfo.pClearValues = clearValues.data();
 
-            SwapchainImageContext_SwapchainImageContextBindRenderTarget(swapchainContextIndex, renderTarget, &renderPassBeginInfo);
+            //SwapchainImageContext_SwapchainImageContextBindRenderTarget(swapchainContextIndex, renderTarget, &renderPassBeginInfo);
+            //void SwapchainImageContext_SwapchainImageContextBindRenderTarget(int index, uint32_t renderTarget, VkRenderPassBeginInfo* renderPassBeginInfo)
+            {
+              if(m_swapchainImageContextStdVector_renderTargetFrameBuffer[swapchainContextIndex][renderTarget] == VK_NULL_HANDLE)
+              //SwapchainImageContext_SwapchainImageContext_RenderTargetCreate(swapchainContextIndex, renderTarget, m_swapchainImageContextNamer[swapchainContextIndex], gVkDevice, m_swapchainImageContextSwapchainImages[swapchainContextIndex][renderTarget].image, m_swapchainImageContext_depthBufferDepthImage[swapchainContextIndex], m_swapchainImageContextSize[swapchainContextIndex] );
+              //void SwapchainImageContext_SwapchainImageContext_RenderTargetCreate(int index, int renderTarget, const VulkanDebugObjectNamer& namer, VkDevice device, VkImage aColorImage, VkImage aDepthImage, VkExtent2D size)
+              do
+              {
+                m_swapchainImageContextStdVector_renderTargetColorImage[swapchainContextIndex][renderTarget] = m_swapchainImageContextSwapchainImages[swapchainContextIndex][renderTarget].image;
+                m_swapchainImageContextStdVector_renderTargetDepthImage[swapchainContextIndex][renderTarget] = m_swapchainImageContext_depthBufferDepthImage[swapchainContextIndex];
+
+                std::array<VkImageView, 2> attachments {};
+
+                uint32_t attachmentCount = 0;
+
+                // Create color image view
+                if(m_swapchainImageContextStdVector_renderTargetColorImage[swapchainContextIndex][renderTarget] != VK_NULL_HANDLE)
+                {
+                  VkImageViewCreateInfo colorViewInfo {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
+
+                  colorViewInfo.image = m_swapchainImageContextStdVector_renderTargetColorImage[swapchainContextIndex][renderTarget];
+                  colorViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+                  colorViewInfo.format = m_swapchainImageContext_renderPassColorFmt[swapchainContextIndex];
+                  colorViewInfo.components.r = VK_COMPONENT_SWIZZLE_R;
+                  colorViewInfo.components.g = VK_COMPONENT_SWIZZLE_G;
+                  colorViewInfo.components.b = VK_COMPONENT_SWIZZLE_B;
+                  colorViewInfo.components.a = VK_COMPONENT_SWIZZLE_A;
+                  colorViewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+                  colorViewInfo.subresourceRange.baseMipLevel = 0;
+                  colorViewInfo.subresourceRange.levelCount = 1;
+                  colorViewInfo.subresourceRange.baseArrayLayer = 0;
+                  colorViewInfo.subresourceRange.layerCount = 1;
+
+                  if(tableVk.CreateImageView)
+                  {
+                    VkImageView renderTargetColorView {VK_NULL_HANDLE};
+                    CHECK_VULKANCMD(tableVk.CreateImageView(gVkDevice, &colorViewInfo, nullptr, &renderTargetColorView) );
+                    m_swapchainImageContextStdVector_renderTargetColorView[swapchainContextIndex][renderTarget] = renderTargetColorView;
+                  }
+
+                  CHECK_VULKANCMD(m_swapchainImageContextNamer[swapchainContextIndex].SetName(VK_OBJECT_TYPE_IMAGE_VIEW, (uint64_t)m_swapchainImageContextStdVector_renderTargetColorView[swapchainContextIndex][renderTarget], "helloxr color image view") );
+                  attachments[attachmentCount++] = m_swapchainImageContextStdVector_renderTargetColorView[swapchainContextIndex][renderTarget];
+                }
+
+                // Create depth image view
+                if(m_swapchainImageContextStdVector_renderTargetDepthImage[swapchainContextIndex][renderTarget] != VK_NULL_HANDLE)
+                {
+                  VkImageViewCreateInfo depthViewInfo {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
+
+                  depthViewInfo.image = m_swapchainImageContextStdVector_renderTargetDepthImage[swapchainContextIndex][renderTarget];
+                  depthViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+                  depthViewInfo.format = m_swapchainImageContext_renderPassDepthFmt[swapchainContextIndex];
+                  depthViewInfo.components.r = VK_COMPONENT_SWIZZLE_R;
+                  depthViewInfo.components.g = VK_COMPONENT_SWIZZLE_G;
+                  depthViewInfo.components.b = VK_COMPONENT_SWIZZLE_B;
+                  depthViewInfo.components.a = VK_COMPONENT_SWIZZLE_A;
+                  depthViewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+                  depthViewInfo.subresourceRange.baseMipLevel = 0;
+                  depthViewInfo.subresourceRange.levelCount = 1;
+                  depthViewInfo.subresourceRange.baseArrayLayer = 0;
+                  depthViewInfo.subresourceRange.layerCount = 1;
+
+                  if(tableVk.CreateImageView)
+                  {
+                    VkImageView renderTargetDepthView {VK_NULL_HANDLE};
+                    CHECK_VULKANCMD(tableVk.CreateImageView(gVkDevice, &depthViewInfo, nullptr, &renderTargetDepthView) );
+                    m_swapchainImageContextStdVector_renderTargetDepthView[swapchainContextIndex][renderTarget] = renderTargetDepthView;
+                  }
+
+                  CHECK_VULKANCMD(m_swapchainImageContextNamer[swapchainContextIndex].SetName(VK_OBJECT_TYPE_IMAGE_VIEW, (uint64_t)m_swapchainImageContextStdVector_renderTargetDepthView[swapchainContextIndex][renderTarget], "helloxr depth image view") );
+                  attachments[attachmentCount++] = m_swapchainImageContextStdVector_renderTargetDepthView[swapchainContextIndex][renderTarget];
+                }
+
+                VkFramebufferCreateInfo fbInfo {VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO};
+
+                fbInfo.renderPass = m_swapchainImageContext_renderPassPass[swapchainContextIndex];
+                fbInfo.attachmentCount = attachmentCount;
+                fbInfo.pAttachments = attachments.data();
+                fbInfo.width = m_swapchainImageContextSize[swapchainContextIndex].width;
+                fbInfo.height = m_swapchainImageContextSize[swapchainContextIndex].height;
+                fbInfo.layers = 1;
+
+                if(tableVk.CreateFramebuffer)
+                {
+                  VkFramebuffer renderTargetFrameBuffer {VK_NULL_HANDLE};
+                  CHECK_VULKANCMD(tableVk.CreateFramebuffer(gVkDevice, &fbInfo, nullptr, &renderTargetFrameBuffer) );
+                  m_swapchainImageContextStdVector_renderTargetFrameBuffer[swapchainContextIndex][renderTarget] = renderTargetFrameBuffer;
+                }
+
+                CHECK_VULKANCMD(m_swapchainImageContextNamer[swapchainContextIndex].SetName(VK_OBJECT_TYPE_FRAMEBUFFER, (uint64_t)m_swapchainImageContextStdVector_renderTargetFrameBuffer[swapchainContextIndex][renderTarget], "helloxr framebuffer") );
+
+              }while(0);
+
+              renderPassBeginInfo.renderPass = m_swapchainImageContext_renderPassPass[swapchainContextIndex];
+
+              renderPassBeginInfo.framebuffer = m_swapchainImageContextStdVector_renderTargetFrameBuffer[swapchainContextIndex][renderTarget];
+
+              renderPassBeginInfo.renderArea.offset = {0, 0};
+
+              renderPassBeginInfo.renderArea.extent = m_swapchainImageContextSize[swapchainContextIndex];
+            }
 
             if(tableVk.CmdBeginRenderPass)
               tableVk.CmdBeginRenderPass(gCmdBufferBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
@@ -2408,26 +2642,26 @@ typedef struct VkExtensionProperties
             const auto& pose = projectionLayerViews[i].pose;
 
             XrMatrix4x4f proj;
-            XrMatrix4x4f_CreateProjectionFov(&proj, GRAPHICS_VULKAN, projectionLayerViews[i].fov, 0.05f, 100.0f);
+            XrMatrix4x4f_CreateProjectionFov( &proj, GRAPHICS_VULKAN, projectionLayerViews[i].fov, 0.05f, 100.0f);
 
             XrMatrix4x4f toView;
-            XrMatrix4x4f_CreateFromRigidTransform(&toView, &pose);
+            XrMatrix4x4f_CreateFromRigidTransform( &toView, &pose);
 
             XrMatrix4x4f view;
-            XrMatrix4x4f_InvertRigidBody(&view, &toView);
+            XrMatrix4x4f_InvertRigidBody( &view, &toView);
 
             XrMatrix4x4f vp;
-            XrMatrix4x4f_Multiply(&vp, &proj, &view);
+            XrMatrix4x4f_Multiply( &vp, &proj, &view);
 
             // Render each cube
             for(const Cube& cube : cubes)
             {
               // Compute the model-view-projection transform and push it.
               XrMatrix4x4f model;
-              XrMatrix4x4f_CreateTranslationRotationScale(&model, &cube.Pose.position, &cube.Pose.orientation, &cube.Scale);
+              XrMatrix4x4f_CreateTranslationRotationScale( &model, &cube.Pose.position, &cube.Pose.orientation, &cube.Scale);
 
               XrMatrix4x4f mvp;
-              XrMatrix4x4f_Multiply(&mvp, &vp, &model);
+              XrMatrix4x4f_Multiply( &mvp, &vp, &model);
 
               if(tableVk.CmdPushConstants)
                 tableVk.CmdPushConstants(gCmdBufferBuffer, gVkPipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(mvp.m), &mvp.m[0] );
@@ -2440,8 +2674,48 @@ typedef struct VkExtensionProperties
             if(tableVk.CmdEndRenderPass)
               tableVk.CmdEndRenderPass(gCmdBufferBuffer);
 
-            CmdBuffer_CmdBufferEnd();
-            CmdBuffer_CmdBufferExec(gVulkanGraphicsPluginVkQueue);
+            //CmdBuffer_CmdBufferEnd();
+            //bool CmdBuffer_CmdBufferEnd()
+            do
+            {
+              //CHECK_VULKANCMDBUFFERSTATE(CmdBufferStateEnum::Recording);
+              if(gCmdBufferState != CmdBufferStateEnum::Recording)
+              {
+                Log::Write(Log::Level::Error, std::string("Expecting state CmdBufferStateEnum::Recording from ") + __FUNCTION__ + ", in " + CmdBuffer_CmdBufferStateString(gCmdBufferState) );
+                break;
+              }
+
+              if(tableVk.EndCommandBuffer)
+                CHECK_VULKANCMD(tableVk.EndCommandBuffer(gCmdBufferBuffer) );
+
+              CmdBuffer_CmdBufferSetState(CmdBufferStateEnum::Executable);
+
+            }while(0);
+
+            //CmdBuffer_CmdBufferExec(gVulkanGraphicsPluginVkQueue);
+            //bool CmdBuffer_CmdBufferExec(VkQueue queue)
+            do
+            {
+              //CHECK_VULKANCMDBUFFERSTATE(CmdBufferStateEnum::Executable);
+              if(gCmdBufferState != CmdBufferStateEnum::Executable)
+              {
+                Log::Write(Log::Level::Error, std::string("Expecting state CmdBufferStateEnum::Executable from ") + __FUNCTION__ + ", in " + CmdBuffer_CmdBufferStateString(gCmdBufferState) );
+                break;
+              }
+
+              VkSubmitInfo submitInfo {VK_STRUCTURE_TYPE_SUBMIT_INFO};
+
+              submitInfo.commandBufferCount = 1;
+              submitInfo.pCommandBuffers = &gCmdBufferBuffer;
+
+              if(tableVk.QueueSubmit)
+                CHECK_VULKANCMD(tableVk.QueueSubmit(gVulkanGraphicsPluginVkQueue, 1, &submitInfo, gCmdBufferExecFence) );
+
+              CmdBuffer_CmdBufferSetState(CmdBufferStateEnum::Executing);
+
+              //return true;
+
+            }while(0);
           }
 
           XrSwapchainImageReleaseInfo releaseInfo {XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
@@ -2451,8 +2725,11 @@ typedef struct VkExtensionProperties
         }
 
         layer.space = gOpenXrProgramXrSpace;
+
         layer.layerFlags = gOptions_XrEnvironmentBlendMode == XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND ? XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT : 0;
+
         layer.viewCount = (uint32_t)projectionLayerViews.size();
+
         layer.views = projectionLayerViews.data();
 
         renderLayerResult = true;
@@ -2845,7 +3122,7 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
       // instanceCreateInfo.enabledExtensionNames = extensions.data();
       //
       // XrInstance instance = XR_NULL_HANDLE;
-      // xrCreateInstance(&instanceCreateInfo, &instance);
+      // xrCreateInstance( &instanceCreateInfo, &instance);
 
       // For more details, see SampleXrFramework/Src/XrApp.cpp.
 
@@ -3454,7 +3731,7 @@ void anagOnContentRectChanged(ANativeActivity* activity, const ARect* r)
   if( !app)
     return;
 
-  pthread_mutex_lock(&app->mutex);
+  pthread_mutex_lock( &app->mutex);
 
   if(r)
     app->contentRect = *r;

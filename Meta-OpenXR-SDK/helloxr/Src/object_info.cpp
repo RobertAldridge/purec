@@ -281,7 +281,7 @@ void DebugUtilsData::WrapCallbackData(AugmentedCallbackData* aug_data, const XrD
   if( !name_found && aug_data->labels.empty() )
     return;
 
-  memcpy(&aug_data->modified_data, callback_data, sizeof(XrDebugUtilsMessengerCallbackDataEXT) );
+  memcpy( &aug_data->modified_data, callback_data, sizeof(XrDebugUtilsMessengerCallbackDataEXT) );
   aug_data->new_objects.assign(callback_data->objects, callback_data->objects + callback_data->objectCount);
 
   for(auto& obj : aug_data->new_objects)

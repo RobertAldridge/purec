@@ -211,13 +211,13 @@ inline static void XrQuaternionf_RotateVector3f(XrVector3f* result, const XrQuat
   XrQuaternionf q = {v->x, v->y, v->z, 0.0f};
 
   XrQuaternionf aq;
-  XrQuaternionf_Multiply(&aq, &q, a);
+  XrQuaternionf_Multiply( &aq, &q, a);
 
   XrQuaternionf aInv;
-  XrQuaternionf_Invert(&aInv, a);
+  XrQuaternionf_Invert( &aInv, a);
 
   XrQuaternionf aqaInv;
-  XrQuaternionf_Multiply(&aqaInv, &aInv, &aq);
+  XrQuaternionf_Multiply( &aqaInv, &aInv, &aq);
 
   result->x = aqaInv.x;
   result->y = aqaInv.y;
@@ -442,7 +442,7 @@ inline static void XrMatrix4x4f_CreateRotationRadians(
   const XrMatrix4x4f rotationZ = { {cosZ, sinZ, 0, 0, -sinZ, cosZ, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1} };
 
   XrMatrix4x4f rotationXY;
-  XrMatrix4x4f_Multiply(&rotationXY, &rotationY, &rotationX);
+  XrMatrix4x4f_Multiply( &rotationXY, &rotationY, &rotationX);
   XrMatrix4x4f_Multiply(result, &rotationZ, &rotationXY);
 }
 
@@ -536,16 +536,16 @@ inline static void XrMatrix4x4f_CreateTranslationRotationScale(
 )
 {
   XrMatrix4x4f scaleMatrix;
-  XrMatrix4x4f_CreateScale(&scaleMatrix, scale->x, scale->y, scale->z);
+  XrMatrix4x4f_CreateScale( &scaleMatrix, scale->x, scale->y, scale->z);
 
   XrMatrix4x4f rotationMatrix;
-  XrMatrix4x4f_CreateFromQuaternion(&rotationMatrix, rotation);
+  XrMatrix4x4f_CreateFromQuaternion( &rotationMatrix, rotation);
 
   XrMatrix4x4f translationMatrix;
-  XrMatrix4x4f_CreateTranslation(&translationMatrix, translation->x, translation->y, translation->z);
+  XrMatrix4x4f_CreateTranslation( &translationMatrix, translation->x, translation->y, translation->z);
 
   XrMatrix4x4f combinedMatrix;
-  XrMatrix4x4f_Multiply(&combinedMatrix, &rotationMatrix, &scaleMatrix);
+  XrMatrix4x4f_Multiply( &combinedMatrix, &rotationMatrix, &scaleMatrix);
   XrMatrix4x4f_Multiply(result, &translationMatrix, &combinedMatrix);
 }
 
@@ -903,7 +903,7 @@ inline static bool XrMatrix4x4f_CullBounds(const XrMatrix4x4f* mvp, const XrVect
       1.0f
     };
 
-    XrMatrix4x4f_TransformVector4f(&c[i], mvp, &corner);
+    XrMatrix4x4f_TransformVector4f( &c[i], mvp, &corner);
   }
 
   int i = 0;

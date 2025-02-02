@@ -90,7 +90,7 @@ inline std::string Fmt(const char* fmt, ...)
   throw std::runtime_error("Unexpected vsnprintf failure");
 }
 
-template <typename T, size_t Size> constexpr size_t ArraySize(const T (&unused)[Size] )
+template <typename T, size_t Size> constexpr size_t ArraySize(const T ( &unused)[Size] )
 {
   (void)unused;
 

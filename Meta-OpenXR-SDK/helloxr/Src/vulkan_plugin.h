@@ -7,16 +7,16 @@
 
 #define CHECK_VULKANRESULT(res, cmdStr) CheckVkResult(res, cmdStr, FILE_AND_LINE_CHECK)
 
-#define CHECK_VULKANCMDBUFFERSTATE(s) \
-do \
-{ \
-  if(gCmdBufferState != (s) ) \
-  { \
-    Log::Write(Log::Level::Error, std::string("Expecting state " #s " from ") + __FUNCTION__ + ", in " + CmdBuffer_CmdBufferStateString(gCmdBufferState) ); \
-    return false; \
-  } \
-\
-}while(0)
+//#define CHECK_VULKANCMDBUFFERSTATE(s) \
+//do \
+//{ \
+//  if(gCmdBufferState != (s) ) \
+//  { \
+//    Log::Write(Log::Level::Error, std::string("Expecting state " #s " from ") + __FUNCTION__ + ", in " + CmdBuffer_CmdBufferStateString(gCmdBufferState) ); \
+//    return false; \
+//  } \
+// \
+//}while(0)
 
 enum class CmdBufferStateEnum
 {
@@ -283,18 +283,6 @@ void CmdBuffer_CmdBufferSetState(CmdBufferStateEnum newState);
 
 std::string CmdBuffer_CmdBufferStateString(CmdBufferStateEnum s);
 
-bool CmdBuffer_CmdBufferInit(const VulkanDebugObjectNamer& namer, VkDevice device, uint32_t queueFamilyIndex);
-
-bool CmdBuffer_CmdBufferBegin();
-
-bool CmdBuffer_CmdBufferEnd();
-
-bool CmdBuffer_CmdBufferExec(VkQueue queue);
-
-bool CmdBuffer_CmdBufferWait();
-
-bool CmdBuffer_CmdBufferReset();
-
 void VertexBufferBase_VertexBufferBaseInit(const std::vector<VkVertexInputAttributeDescription>& attr);
 
 void VertexBufferBase_VertexBufferBaseAllocateBufferMemory(VkBuffer buf, VkDeviceMemory* mem);
@@ -315,8 +303,6 @@ void ShaderProgram_ShaderProgramInit(VkDevice device);
 
 void SwapchainImageContext_SwapchainImageContext_Constructor(int index, XrStructureType swapchainImageType, VulkanDebugObjectNamer& namer);
 
-void SwapchainImageContext_SwapchainImageContext_RenderTargetCreate(int index, int renderTarget, const VulkanDebugObjectNamer& namer, VkDevice device, VkImage aColorImage, VkImage aDepthImage, VkExtent2D size);
-
 void SwapchainImageContext_SwapchainImageContext_DepthBufferCreate(int index, const VulkanDebugObjectNamer& namer, VkDevice device, VkFormat depthFormat, const XrSwapchainCreateInfo& swapchainCreateInfo);
 
 bool SwapchainImageContext_SwapchainImageContext_RenderPassCreate(int index, const VulkanDebugObjectNamer& namer, VkDevice device, VkFormat aColorFmt, VkFormat aDepthFmt);
@@ -328,10 +314,6 @@ void SwapchainImageContext_SwapchainImageContext_PipelineCreate(int index, VkDev
 void SwapchainImageContext_SwapchainImageContext_PipelineRelease(int index);
 
 std::vector<XrSwapchainImageBaseHeader*> SwapchainImageContext_SwapchainImageContextCreate(int index, const VulkanDebugObjectNamer& namer, VkDevice device, uint32_t capacity, const XrSwapchainCreateInfo& swapchainCreateInfo);
-
-uint32_t SwapchainImageContext_SwapchainImageContextImageIndex(int index, const XrSwapchainImageBaseHeader* swapchainImageHeader);
-
-void SwapchainImageContext_SwapchainImageContextBindRenderTarget(int index, uint32_t renderTarget, VkRenderPassBeginInfo* renderPassBeginInfo);
 
 void VulkanGraphicsPlugin_VulkanGraphicsPlugin_Destructor();
 

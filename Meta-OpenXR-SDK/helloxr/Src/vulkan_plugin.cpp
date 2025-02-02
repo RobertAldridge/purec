@@ -279,134 +279,6 @@ std::string CmdBuffer_CmdBufferStateString(CmdBufferStateEnum s)
   return "(Unknown)";
 }
 
-bool CmdBuffer_CmdBufferInit(const VulkanDebugObjectNamer& namer, VkDevice device, uint32_t queueFamilyIndex)
-{
-  CHECK_VULKANCMDBUFFERSTATE(CmdBufferStateEnum::Undefined);
-
-  // Create a command pool to allocate our command buffer from
-  VkCommandPoolCreateInfo cmdPoolInfo {VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO};
-  cmdPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-  cmdPoolInfo.queueFamilyIndex = queueFamilyIndex;
-
-  if(tableVk.CreateCommandPool)
-    CHECK_VULKANCMD(tableVk.CreateCommandPool(gVkDevice, &cmdPoolInfo, nullptr, &gCmdBufferPool) );
-
-  CHECK_VULKANCMD(namer.SetName(VK_OBJECT_TYPE_COMMAND_POOL, (uint64_t)gCmdBufferPool, "helloxr command pool") );
-
-  // Create the command buffer from the command pool
-  VkCommandBufferAllocateInfo cmd {VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO};
-  cmd.commandPool = gCmdBufferPool;
-  cmd.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-  cmd.commandBufferCount = 1;
-
-  if(tableVk.AllocateCommandBuffers)
-    CHECK_VULKANCMD(tableVk.AllocateCommandBuffers(gVkDevice, &cmd, &gCmdBufferBuffer) );
-
-  CHECK_VULKANCMD(namer.SetName(VK_OBJECT_TYPE_COMMAND_BUFFER, (uint64_t)gCmdBufferBuffer, "helloxr command buffer") );
-
-  VkFenceCreateInfo fenceInfo {VK_STRUCTURE_TYPE_FENCE_CREATE_INFO};
-
-  if(tableVk.CreateFence)
-    CHECK_VULKANCMD(tableVk.CreateFence(gVkDevice, &fenceInfo, nullptr, &gCmdBufferExecFence) );
-
-  CHECK_VULKANCMD(namer.SetName(VK_OBJECT_TYPE_FENCE, (uint64_t)gCmdBufferExecFence, "helloxr fence") );
-
-  CmdBuffer_CmdBufferSetState(CmdBufferStateEnum::Initialized);
-
-  return true;
-}
-
-bool CmdBuffer_CmdBufferBegin()
-{
-  CHECK_VULKANCMDBUFFERSTATE(CmdBufferStateEnum::Initialized);
-
-  VkCommandBufferBeginInfo cmdBeginInfo {VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
-
-  if(tableVk.BeginCommandBuffer)
-    CHECK_VULKANCMD(tableVk.BeginCommandBuffer(gCmdBufferBuffer, &cmdBeginInfo) );
-
-  CmdBuffer_CmdBufferSetState(CmdBufferStateEnum::Recording);
-
-  return true;
-}
-
-bool CmdBuffer_CmdBufferEnd()
-{
-  CHECK_VULKANCMDBUFFERSTATE(CmdBufferStateEnum::Recording);
-
-  if(tableVk.EndCommandBuffer)
-    CHECK_VULKANCMD(tableVk.EndCommandBuffer(gCmdBufferBuffer) );
-
-  CmdBuffer_CmdBufferSetState(CmdBufferStateEnum::Executable);
-
-  return true;
-}
-
-bool CmdBuffer_CmdBufferExec(VkQueue queue)
-{
-  CHECK_VULKANCMDBUFFERSTATE(CmdBufferStateEnum::Executable);
-
-  VkSubmitInfo submitInfo {VK_STRUCTURE_TYPE_SUBMIT_INFO};
-
-  submitInfo.commandBufferCount = 1;
-  submitInfo.pCommandBuffers = &gCmdBufferBuffer;
-
-  if(tableVk.QueueSubmit)
-    CHECK_VULKANCMD(tableVk.QueueSubmit(queue, 1, &submitInfo, gCmdBufferExecFence) );
-
-  CmdBuffer_CmdBufferSetState(CmdBufferStateEnum::Executing);
-
-  return true;
-}
-
-bool CmdBuffer_CmdBufferWait()
-{
-  // Waiting on a not-in-flight command buffer is a no-op
-  if(gCmdBufferState == CmdBufferStateEnum::Initialized)
-    return true;
-
-  CHECK_VULKANCMDBUFFERSTATE(CmdBufferStateEnum::Executing);
-
-  const uint32_t timeoutNs = 1 * 1000 * 1000 * 1000;
-
-  for(int i = 0; i < 5; ++i)
-  {
-    VkResult res = VK_ERROR_OUT_OF_HOST_MEMORY;
-
-    if(tableVk.WaitForFences)
-      res = tableVk.WaitForFences(gVkDevice, 1, &gCmdBufferExecFence, VK_TRUE, timeoutNs);
-
-    if(res == VK_SUCCESS)
-    {
-      // Buffer can be executed multiple times...
-      CmdBuffer_CmdBufferSetState(CmdBufferStateEnum::Executable);
-      return true;
-    }
-
-    Log::Write(Log::Level::Info, "Waiting for CmdBuffer fence timed out, retrying...");
-  }
-
-  return false;
-}
-
-bool CmdBuffer_CmdBufferReset()
-{
-  if(gCmdBufferState != CmdBufferStateEnum::Initialized)
-  {
-    CHECK_VULKANCMDBUFFERSTATE(CmdBufferStateEnum::Executable);
-
-    if(tableVk.ResetFences)
-      CHECK_VULKANCMD(tableVk.ResetFences(gVkDevice, 1, &gCmdBufferExecFence) );
-
-    if(tableVk.ResetCommandBuffer)
-      CHECK_VULKANCMD(tableVk.ResetCommandBuffer(gCmdBufferBuffer, 0) );
-
-    CmdBuffer_CmdBufferSetState(CmdBufferStateEnum::Initialized);
-  }
-
-  return true;
-}
-
 #if 0
 void VertexBufferBase_VertexBufferBase_Destructor()
 {
@@ -666,92 +538,6 @@ void SwapchainImageContext_SwapchainImageContext_Destructor(int index)
 }
 #endif
 
-void SwapchainImageContext_SwapchainImageContext_RenderTargetCreate(int index, int renderTarget, const VulkanDebugObjectNamer& namer, VkDevice device, VkImage aColorImage, VkImage aDepthImage, VkExtent2D size)
-{
-  m_swapchainImageContextStdVector_renderTargetColorImage[index][renderTarget] = aColorImage;
-  m_swapchainImageContextStdVector_renderTargetDepthImage[index][renderTarget] = aDepthImage;
-
-  std::array<VkImageView, 2> attachments {};
-
-  uint32_t attachmentCount = 0;
-
-  // Create color image view
-  if(m_swapchainImageContextStdVector_renderTargetColorImage[index][renderTarget] != VK_NULL_HANDLE)
-  {
-    VkImageViewCreateInfo colorViewInfo {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
-
-    colorViewInfo.image = m_swapchainImageContextStdVector_renderTargetColorImage[index][renderTarget];
-    colorViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-    colorViewInfo.format = m_swapchainImageContext_renderPassColorFmt[index];
-    colorViewInfo.components.r = VK_COMPONENT_SWIZZLE_R;
-    colorViewInfo.components.g = VK_COMPONENT_SWIZZLE_G;
-    colorViewInfo.components.b = VK_COMPONENT_SWIZZLE_B;
-    colorViewInfo.components.a = VK_COMPONENT_SWIZZLE_A;
-    colorViewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-    colorViewInfo.subresourceRange.baseMipLevel = 0;
-    colorViewInfo.subresourceRange.levelCount = 1;
-    colorViewInfo.subresourceRange.baseArrayLayer = 0;
-    colorViewInfo.subresourceRange.layerCount = 1;
-
-    if(tableVk.CreateImageView)
-    {
-      VkImageView renderTargetColorView {VK_NULL_HANDLE};
-      CHECK_VULKANCMD(tableVk.CreateImageView(gVkDevice, &colorViewInfo, nullptr, &renderTargetColorView) );
-      m_swapchainImageContextStdVector_renderTargetColorView[index][renderTarget] = renderTargetColorView;
-    }
-
-    CHECK_VULKANCMD(namer.SetName(VK_OBJECT_TYPE_IMAGE_VIEW, (uint64_t)m_swapchainImageContextStdVector_renderTargetColorView[index][renderTarget], "helloxr color image view") );
-    attachments[attachmentCount++] = m_swapchainImageContextStdVector_renderTargetColorView[index][renderTarget];
-  }
-
-  // Create depth image view
-  if(m_swapchainImageContextStdVector_renderTargetDepthImage[index][renderTarget] != VK_NULL_HANDLE)
-  {
-    VkImageViewCreateInfo depthViewInfo {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
-
-    depthViewInfo.image = m_swapchainImageContextStdVector_renderTargetDepthImage[index][renderTarget];
-    depthViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-    depthViewInfo.format = m_swapchainImageContext_renderPassDepthFmt[index];
-    depthViewInfo.components.r = VK_COMPONENT_SWIZZLE_R;
-    depthViewInfo.components.g = VK_COMPONENT_SWIZZLE_G;
-    depthViewInfo.components.b = VK_COMPONENT_SWIZZLE_B;
-    depthViewInfo.components.a = VK_COMPONENT_SWIZZLE_A;
-    depthViewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
-    depthViewInfo.subresourceRange.baseMipLevel = 0;
-    depthViewInfo.subresourceRange.levelCount = 1;
-    depthViewInfo.subresourceRange.baseArrayLayer = 0;
-    depthViewInfo.subresourceRange.layerCount = 1;
-
-    if(tableVk.CreateImageView)
-    {
-      VkImageView renderTargetDepthView {VK_NULL_HANDLE};
-      CHECK_VULKANCMD(tableVk.CreateImageView(gVkDevice, &depthViewInfo, nullptr, &renderTargetDepthView) );
-      m_swapchainImageContextStdVector_renderTargetDepthView[index][renderTarget] = renderTargetDepthView;
-    }
-
-    CHECK_VULKANCMD(namer.SetName(VK_OBJECT_TYPE_IMAGE_VIEW, (uint64_t)m_swapchainImageContextStdVector_renderTargetDepthView[index][renderTarget], "helloxr depth image view") );
-    attachments[attachmentCount++] = m_swapchainImageContextStdVector_renderTargetDepthView[index][renderTarget];
-  }
-
-  VkFramebufferCreateInfo fbInfo {VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO};
-
-  fbInfo.renderPass = m_swapchainImageContext_renderPassPass[index];
-  fbInfo.attachmentCount = attachmentCount;
-  fbInfo.pAttachments = attachments.data();
-  fbInfo.width = size.width;
-  fbInfo.height = size.height;
-  fbInfo.layers = 1;
-
-  if(tableVk.CreateFramebuffer)
-  {
-    VkFramebuffer renderTargetFrameBuffer {VK_NULL_HANDLE};
-    CHECK_VULKANCMD(tableVk.CreateFramebuffer(gVkDevice, &fbInfo, nullptr, &renderTargetFrameBuffer) );
-    m_swapchainImageContextStdVector_renderTargetFrameBuffer[index][renderTarget] = renderTargetFrameBuffer;
-  }
-
-  CHECK_VULKANCMD(namer.SetName(VK_OBJECT_TYPE_FRAMEBUFFER, (uint64_t)m_swapchainImageContextStdVector_renderTargetFrameBuffer[index][renderTarget], "helloxr framebuffer") );
-}
-
 void SwapchainImageContext_SwapchainImageContext_DepthBufferCreate(int index, const VulkanDebugObjectNamer& namer, VkDevice device, VkFormat depthFormat, const XrSwapchainCreateInfo& swapchainCreateInfo)
 {
   VkExtent2D size = {swapchainCreateInfo.width, swapchainCreateInfo.height};
@@ -998,23 +784,6 @@ std::vector<XrSwapchainImageBaseHeader*> SwapchainImageContext_SwapchainImageCon
   return bases;
 }
 
-uint32_t SwapchainImageContext_SwapchainImageContextImageIndex(int index, const XrSwapchainImageBaseHeader* swapchainImageHeader)
-{
-  auto p = reinterpret_cast<const XrSwapchainImageVulkan2KHR*>(swapchainImageHeader);
-  return (uint32_t)(p - &m_swapchainImageContextSwapchainImages[index][0] );
-}
-
-void SwapchainImageContext_SwapchainImageContextBindRenderTarget(int index, uint32_t renderTarget, VkRenderPassBeginInfo* renderPassBeginInfo)
-{
-  if(m_swapchainImageContextStdVector_renderTargetFrameBuffer[index][renderTarget] == VK_NULL_HANDLE)
-    SwapchainImageContext_SwapchainImageContext_RenderTargetCreate(index, renderTarget, m_swapchainImageContextNamer[index], gVkDevice, m_swapchainImageContextSwapchainImages[index][renderTarget].image, m_swapchainImageContext_depthBufferDepthImage[index], m_swapchainImageContextSize[index] );
-
-  renderPassBeginInfo->renderPass = m_swapchainImageContext_renderPassPass[index];
-  renderPassBeginInfo->framebuffer = m_swapchainImageContextStdVector_renderTargetFrameBuffer[index][renderTarget];
-  renderPassBeginInfo->renderArea.offset = {0, 0};
-  renderPassBeginInfo->renderArea.extent = m_swapchainImageContextSize[index];
-}
-
 std::string VulkanGraphicsPlugin_BlahVkObjectTypeToString(VkObjectType objectType)
 {
   std::string objName;
@@ -1107,12 +876,12 @@ const char* VulkanGraphicsPlugin_VulkanGraphicsPluginGetValidationLayerName()
   uint32_t layerCount;
 
   if(tableVk.EnumerateInstanceLayerProperties)
-    tableVk.EnumerateInstanceLayerProperties(&layerCount, nullptr);
+    tableVk.EnumerateInstanceLayerProperties( &layerCount, nullptr);
 
   std::vector<VkLayerProperties> availableLayers(layerCount);
 
   if(tableVk.EnumerateInstanceLayerProperties)
-    tableVk.EnumerateInstanceLayerProperties(&layerCount, availableLayers.data() );
+    tableVk.EnumerateInstanceLayerProperties( &layerCount, availableLayers.data() );
 
   std::vector<const char*> validationLayerNames;
   validationLayerNames.push_back("VK_LAYER_KHRONOS_validation");
@@ -1166,7 +935,7 @@ int64_t VulkanGraphicsPlugin_VulkanGraphicsPluginSelectColorSwapchainFormat(cons
 
 const XrBaseInStructure* VulkanGraphicsPlugin_VulkanGraphicsPluginGetGraphicsBinding()
 {
-  return reinterpret_cast<const XrBaseInStructure*>(&gVulkanGraphicsPluginXrGraphicsBindingVulkan2KHR);
+  return reinterpret_cast<const XrBaseInStructure*>( &gVulkanGraphicsPluginXrGraphicsBindingVulkan2KHR);
 }
 
 std::vector<XrSwapchainImageBaseHeader*> VulkanGraphicsPlugin_VulkanGraphicsPluginAllocateSwapchainImageStructs(uint32_t capacity, const XrSwapchainCreateInfo& swapchainCreateInfo)
