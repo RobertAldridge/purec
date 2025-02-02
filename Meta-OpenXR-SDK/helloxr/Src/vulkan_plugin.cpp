@@ -167,12 +167,6 @@ std::string BlahVkResultString(VkResult res)
   }
 }
 
-void MemoryAllocator_MemoryAllocatorInit(VkPhysicalDevice physicalDevice)
-{
-  if(tableVk.GetPhysicalDeviceMemoryProperties)
-    tableVk.GetPhysicalDeviceMemoryProperties(physicalDevice, &gMemoryAllocatorMemoryProperties);
-}
-
 void MemoryAllocator_MemoryAllocatorAllocate(VkMemoryRequirements const& memReqs, VkDeviceMemory* mem, VkFlags flags, void* pNext)
 {
   // Search memtypes to find first offset with those properties
@@ -304,69 +298,6 @@ void VertexBufferBase_VertexBufferBaseAllocateBufferMemory(VkBuffer buf, VkDevic
     tableVk.GetBufferMemoryRequirements(gVkDevice, buf, &memReq);
 
   MemoryAllocator_MemoryAllocatorAllocate(memReq, mem);
-}
-
-bool VertexBuffer_VertexBufferCreate(uint32_t idxCount, uint32_t vtxCount)
-{
-  VkBufferCreateInfo bufInfo {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
-
-  bufInfo.usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
-  bufInfo.size = sizeof(uint16_t) * idxCount;
-
-  if(tableVk.CreateBuffer)
-    CHECK_VULKANCMD(tableVk.CreateBuffer(gVkDevice, &bufInfo, nullptr, &gVertexBufferBaseIdxBuf) );
-
-  VertexBufferBase_VertexBufferBaseAllocateBufferMemory(gVertexBufferBaseIdxBuf, &gVertexBufferBaseIdxMem);
-
-  if(tableVk.BindBufferMemory)
-    CHECK_VULKANCMD(tableVk.BindBufferMemory(gVkDevice, gVertexBufferBaseIdxBuf, gVertexBufferBaseIdxMem, 0) );
-
-  bufInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-  bufInfo.size = sizeof(Geometry::Vertex) * vtxCount;
-
-  if(tableVk.CreateBuffer)
-    CHECK_VULKANCMD(tableVk.CreateBuffer(gVkDevice, &bufInfo, nullptr, &gVertexBufferBaseVtxBuf) );
-
-  VertexBufferBase_VertexBufferBaseAllocateBufferMemory(gVertexBufferBaseVtxBuf, &gVertexBufferBaseVtxMem);
-
-  if(tableVk.BindBufferMemory)
-    CHECK_VULKANCMD(tableVk.BindBufferMemory(gVkDevice, gVertexBufferBaseVtxBuf, gVertexBufferBaseVtxMem, 0) );
-
-  gVertexBufferBaseBindDesc.binding = 0;
-  gVertexBufferBaseBindDesc.stride = sizeof(Geometry::Vertex);
-  gVertexBufferBaseBindDesc.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-  gVertexBufferBaseCount = {idxCount, vtxCount};
-
-  return true;
-}
-
-void VertexBuffer_VertexBufferUpdateIndices(const uint16_t* data, uint32_t elements, uint32_t offset)
-{
-  uint16_t* map = nullptr;
-
-  if(tableVk.MapMemory)
-    CHECK_VULKANCMD(tableVk.MapMemory(gVkDevice, gVertexBufferBaseIdxMem, sizeof(map[0] ) * offset, sizeof(map[0] ) * elements, 0, (void**)&map) );
-
-  for(size_t i = 0; i < elements; ++i)
-    map[i] = data[i];
-
-  if(tableVk.UnmapMemory)
-    tableVk.UnmapMemory(gVkDevice, gVertexBufferBaseIdxMem);
-}
-
-void VertexBuffer_VertexBufferUpdateVertices(const Geometry::Vertex* data, uint32_t elements, uint32_t offset)
-{
-  Geometry::Vertex* map = nullptr;
-
-  if(tableVk.MapMemory)
-    CHECK_VULKANCMD(tableVk.MapMemory(gVkDevice, gVertexBufferBaseVtxMem, sizeof(map[0] ) * offset, sizeof(map[0] ) * elements, 0, (void**) &map) );
-
-  for(size_t i = 0; i < elements; ++i)
-    map[i] = data[i];
-
-  if(tableVk.UnmapMemory)
-    tableVk.UnmapMemory(gVkDevice, gVertexBufferBaseVtxMem);
 }
 
 #if 0
@@ -505,6 +436,7 @@ _(DEBUG_UTILS_MESSENGER_EXT)
   return objName;
 }
 
+#if 0
 void VulkanGraphicsPlugin_VulkanGraphicsPlugin_Destructor()
 {
   if(gVkDevice)
@@ -515,6 +447,7 @@ void VulkanGraphicsPlugin_VulkanGraphicsPlugin_Destructor()
     gVkPipelineLayout = VK_NULL_HANDLE;
   }
 }
+#endif
 
 // note: The output must not outlive the input - this modifies the input and returns a collection of views into that modified input!
 std::vector<const char*> VulkanGraphicsPlugin_VulkanGraphicsPluginParseExtensionString(char* names)
@@ -525,7 +458,7 @@ std::vector<const char*> VulkanGraphicsPlugin_VulkanGraphicsPluginParseExtension
   {
     list.push_back(names);
 
-    while(*(++names) != 0)
+    while( *(++names) != 0)
     {
       if(*names == ' ')
       {

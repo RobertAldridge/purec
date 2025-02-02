@@ -1468,7 +1468,9 @@ typedef struct VkExtensionProperties
   if(tableVk.GetDeviceQueue)
     tableVk.GetDeviceQueue(gVkDevice, queueInfo.queueFamilyIndex, 0, &gVulkanGraphicsPluginVkQueue);
 
-  MemoryAllocator_MemoryAllocatorInit(gVkPhysicalDevice);
+  //MemoryAllocator_MemoryAllocatorInit(gVkPhysicalDevice);
+  if(tableVk.GetPhysicalDeviceMemoryProperties)
+    tableVk.GetPhysicalDeviceMemoryProperties(gVkPhysicalDevice, &gMemoryAllocatorMemoryProperties);
 
   auto vertexSPIRV = VulkanGraphicsPlugin_VulkanGraphicsPluginCompileGlslShader("vertex", shaderc_glsl_default_vertex_shader, VertexShaderGlsl);
   auto fragmentSPIRV = VulkanGraphicsPlugin_VulkanGraphicsPluginCompileGlslShader("fragment", shaderc_glsl_default_fragment_shader, FragmentShaderGlsl);
@@ -1611,9 +1613,91 @@ typedef struct VkExtensionProperties
   uint32_t numCubeIdicies = sizeof(Geometry::c_cubeIndices) / sizeof(Geometry::c_cubeIndices[0] );
   uint32_t numCubeVerticies = sizeof(Geometry::c_cubeVertices) / sizeof(Geometry::c_cubeVertices[0] );
 
-  VertexBuffer_VertexBufferCreate(numCubeIdicies, numCubeVerticies);
-  VertexBuffer_VertexBufferUpdateIndices(Geometry::c_cubeIndices, numCubeIdicies, 0);
-  VertexBuffer_VertexBufferUpdateVertices(Geometry::c_cubeVertices, numCubeVerticies, 0);
+  //VertexBuffer_VertexBufferCreate(numCubeIdicies, numCubeVerticies);
+  //bool VertexBuffer_VertexBufferCreate(uint32_t idxCount, uint32_t vtxCount)
+  {
+    VkBufferCreateInfo bufInfo {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
+
+    bufInfo.usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+    bufInfo.size = sizeof(uint16_t) * numCubeIdicies;
+
+    if(tableVk.CreateBuffer)
+      CHECK_VULKANCMD(tableVk.CreateBuffer(gVkDevice, &bufInfo, nullptr, &gVertexBufferBaseIdxBuf) );
+
+    //VertexBufferBase_VertexBufferBaseAllocateBufferMemory(gVertexBufferBaseIdxBuf, &gVertexBufferBaseIdxMem);
+    //void VertexBufferBase_VertexBufferBaseAllocateBufferMemory(VkBuffer buf, VkDeviceMemory* mem)
+    {
+      VkMemoryRequirements memReq = {};
+
+      if(tableVk.GetBufferMemoryRequirements)
+        tableVk.GetBufferMemoryRequirements(gVkDevice, gVertexBufferBaseIdxBuf, &memReq);
+
+      MemoryAllocator_MemoryAllocatorAllocate(memReq, &gVertexBufferBaseIdxMem);
+    }
+
+    if(tableVk.BindBufferMemory)
+      CHECK_VULKANCMD(tableVk.BindBufferMemory(gVkDevice, gVertexBufferBaseIdxBuf, gVertexBufferBaseIdxMem, 0) );
+
+    bufInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+    bufInfo.size = sizeof(Geometry::Vertex) * numCubeVerticies;
+
+    if(tableVk.CreateBuffer)
+      CHECK_VULKANCMD(tableVk.CreateBuffer(gVkDevice, &bufInfo, nullptr, &gVertexBufferBaseVtxBuf) );
+
+    //VertexBufferBase_VertexBufferBaseAllocateBufferMemory(gVertexBufferBaseVtxBuf, &gVertexBufferBaseVtxMem);
+    //void VertexBufferBase_VertexBufferBaseAllocateBufferMemory(VkBuffer buf, VkDeviceMemory* mem)
+    {
+      VkMemoryRequirements memReq = {};
+
+      if(tableVk.GetBufferMemoryRequirements)
+        tableVk.GetBufferMemoryRequirements(gVkDevice, gVertexBufferBaseVtxBuf, &memReq);
+
+      MemoryAllocator_MemoryAllocatorAllocate(memReq, &gVertexBufferBaseVtxMem);
+    }
+
+    if(tableVk.BindBufferMemory)
+      CHECK_VULKANCMD(tableVk.BindBufferMemory(gVkDevice, gVertexBufferBaseVtxBuf, gVertexBufferBaseVtxMem, 0) );
+
+    gVertexBufferBaseBindDesc.binding = 0;
+    gVertexBufferBaseBindDesc.stride = sizeof(Geometry::Vertex);
+    gVertexBufferBaseBindDesc.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+    gVertexBufferBaseCount = {numCubeIdicies, numCubeVerticies};
+
+    //return true;
+  }
+
+  //VertexBuffer_VertexBufferUpdateIndices(Geometry::c_cubeIndices, numCubeIdicies, 0);
+  //void VertexBuffer_VertexBufferUpdateIndices(const uint16_t* data, uint32_t elements, uint32_t offset)
+  {
+    uint32_t offset = 0;
+    uint16_t* map = nullptr;
+
+    if(tableVk.MapMemory)
+      CHECK_VULKANCMD(tableVk.MapMemory(gVkDevice, gVertexBufferBaseIdxMem, sizeof(map[0] ) * offset, sizeof(map[0] ) * numCubeIdicies, 0, (void**) &map) );
+
+    for(size_t i = 0; i < numCubeIdicies; ++i)
+      map[i] = Geometry::c_cubeIndices[i];
+
+    if(tableVk.UnmapMemory)
+      tableVk.UnmapMemory(gVkDevice, gVertexBufferBaseIdxMem);
+  }
+
+  //VertexBuffer_VertexBufferUpdateVertices(Geometry::c_cubeVertices, numCubeVerticies, 0);
+  //void VertexBuffer_VertexBufferUpdateVertices(const Geometry::Vertex* data, uint32_t elements, uint32_t offset)
+  {
+    uint32_t offset = 0;
+    Geometry::Vertex* map = nullptr;
+
+    if(tableVk.MapMemory)
+      CHECK_VULKANCMD(tableVk.MapMemory(gVkDevice, gVertexBufferBaseVtxMem, sizeof(map[0] ) * offset, sizeof(map[0] ) * numCubeVerticies, 0, (void**) &map) );
+
+    for(size_t i = 0; i < numCubeVerticies; ++i)
+      map[i] = Geometry::c_cubeVertices[i];
+
+    if(tableVk.UnmapMemory)
+      tableVk.UnmapMemory(gVkDevice, gVertexBufferBaseVtxMem);
+  }
 
   gVulkanGraphicsPluginXrGraphicsBindingVulkan2KHR.instance = gVkInstance;
   gVulkanGraphicsPluginXrGraphicsBindingVulkan2KHR.physicalDevice = gVkPhysicalDevice;

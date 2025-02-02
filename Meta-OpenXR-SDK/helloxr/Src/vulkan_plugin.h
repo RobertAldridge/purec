@@ -273,8 +273,6 @@ inline VkResult CheckVkResult(VkResult res, const char* originator = nullptr, co
   return res;
 }
 
-void MemoryAllocator_MemoryAllocatorInit(VkPhysicalDevice physicalDevice);
-
 void MemoryAllocator_MemoryAllocatorAllocate(VkMemoryRequirements const& memReqs, VkDeviceMemory* mem, VkFlags flags = MemoryAllocator_m_memoryAllocatorDefaultFlags, void* pNext = nullptr);
 
 void CmdBuffer_CmdBufferSetState(CmdBufferStateEnum newState);
@@ -282,14 +280,6 @@ void CmdBuffer_CmdBufferSetState(CmdBufferStateEnum newState);
 std::string CmdBuffer_CmdBufferStateString(CmdBufferStateEnum s);
 
 void VertexBufferBase_VertexBufferBaseInit(const std::vector<VkVertexInputAttributeDescription>& attr);
-
-void VertexBufferBase_VertexBufferBaseAllocateBufferMemory(VkBuffer buf, VkDeviceMemory* mem);
-
-bool VertexBuffer_VertexBufferCreate(uint32_t idxCount, uint32_t vtxCount);
-
-void VertexBuffer_VertexBufferUpdateIndices(const uint16_t* data, uint32_t elements, uint32_t offset);
-
-void VertexBuffer_VertexBufferUpdateVertices(const Geometry::Vertex* data, uint32_t elements, uint32_t offset);
 
 #if 0
 void SwapchainImageContext_SwapchainImageContext_PipelineDynamic(int index, VkDynamicState state);
