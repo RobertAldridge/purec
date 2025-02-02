@@ -2327,7 +2327,92 @@ typedef struct VkExtensionProperties
           projectionLayerViews[i].subImage.imageRect.extent = {viewSwapchain.width, viewSwapchain.height};
 
           const XrSwapchainImageBaseHeader* const swapchainImage = gOpenXrProgramStdMap_XrSwapchain_StdVectorXrSwapchainImageBaseHeader[viewSwapchain.handle][swapchainImageIndex];
-          VulkanGraphicsPlugin_VulkanGraphicsPluginRenderView(projectionLayerViews[i], swapchainImage, gOpenXrProgramColorSwapchainFormat, cubes);
+
+          //void VulkanGraphicsPlugin_VulkanGraphicsPluginRenderView(const XrCompositionLayerProjectionView& layerView, const XrSwapchainImageBaseHeader* swapchainImage, int64_t /*swapchainFormat*/, const std::vector<Cube>& cubes)
+          //VulkanGraphicsPlugin_VulkanGraphicsPluginRenderView(projectionLayerViews[i], swapchainImage, gOpenXrProgramColorSwapchainFormat, cubes);
+          {
+            CHECK_CHECK(projectionLayerViews[i].subImage.imageArrayIndex == 0);  // Texture arrays not supported.
+
+            int swapchainContextIndex = gVulkanGraphicsPluginStdMap_XrSwapchainImageBaseHeader_SwapchainImageContext[swapchainImage];
+            uint32_t renderTarget = SwapchainImageContext_SwapchainImageContextImageIndex(swapchainContextIndex, swapchainImage);
+
+            // XXX Should double-buffer the command buffers, for now just flush
+            CmdBuffer_CmdBufferWait();
+            CmdBuffer_CmdBufferReset();
+            CmdBuffer_CmdBufferBegin();
+
+            // Ensure depth is in the right layout
+            SwapchainImageContext_SwapchainImageContext_DepthBufferTransitionImageLayout(swapchainContextIndex, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+
+            // Bind and clear eye render target
+            static std::array<VkClearValue, 2> clearValues;
+
+            _operator_assign(clearValues[0].color.float32, gVulkanGraphicsPluginStdArray_float_4_clearColor);
+            clearValues[1].depthStencil.depth = 1.0f;
+            clearValues[1].depthStencil.stencil = 0;
+
+            VkRenderPassBeginInfo renderPassBeginInfo {VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO};
+
+            renderPassBeginInfo.clearValueCount = (uint32_t)clearValues.size();
+            renderPassBeginInfo.pClearValues = clearValues.data();
+
+            SwapchainImageContext_SwapchainImageContextBindRenderTarget(swapchainContextIndex, renderTarget, &renderPassBeginInfo);
+
+            if(tableVk.CmdBeginRenderPass)
+              tableVk.CmdBeginRenderPass(gCmdBufferBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+            if(tableVk.CmdBindPipeline)
+              tableVk.CmdBindPipeline(gCmdBufferBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_swapchainImageContextPipe_pipelinePipe[swapchainContextIndex] );
+
+            // Bind indice and vertex buffers
+            if(tableVk.CmdBindIndexBuffer)
+              tableVk.CmdBindIndexBuffer(gCmdBufferBuffer, gVertexBufferBaseIdxBuf, 0, VK_INDEX_TYPE_UINT16);
+
+            VkDeviceSize offset = 0;
+
+            if(tableVk.CmdBindVertexBuffers)
+              tableVk.CmdBindVertexBuffers(gCmdBufferBuffer, 0, 1, &gVertexBufferBaseVtxBuf, &offset);
+
+            // Compute the view-projection transform.
+            // Note all matrixes (including OpenXR's) are column-major, right-handed.
+            const auto& pose = projectionLayerViews[i].pose;
+
+            XrMatrix4x4f proj;
+            XrMatrix4x4f_CreateProjectionFov(&proj, GRAPHICS_VULKAN, projectionLayerViews[i].fov, 0.05f, 100.0f);
+
+            XrMatrix4x4f toView;
+            XrMatrix4x4f_CreateFromRigidTransform(&toView, &pose);
+
+            XrMatrix4x4f view;
+            XrMatrix4x4f_InvertRigidBody(&view, &toView);
+
+            XrMatrix4x4f vp;
+            XrMatrix4x4f_Multiply(&vp, &proj, &view);
+
+            // Render each cube
+            for(const Cube& cube : cubes)
+            {
+              // Compute the model-view-projection transform and push it.
+              XrMatrix4x4f model;
+              XrMatrix4x4f_CreateTranslationRotationScale(&model, &cube.Pose.position, &cube.Pose.orientation, &cube.Scale);
+
+              XrMatrix4x4f mvp;
+              XrMatrix4x4f_Multiply(&mvp, &vp, &model);
+
+              if(tableVk.CmdPushConstants)
+                tableVk.CmdPushConstants(gCmdBufferBuffer, gVkPipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(mvp.m), &mvp.m[0] );
+
+              // draw the cube
+              if(tableVk.CmdDrawIndexed)
+                tableVk.CmdDrawIndexed(gCmdBufferBuffer, gVertexBufferBaseCount.idx, 1, 0, 0, 0);
+            }
+
+            if(tableVk.CmdEndRenderPass)
+              tableVk.CmdEndRenderPass(gCmdBufferBuffer);
+
+            CmdBuffer_CmdBufferEnd();
+            CmdBuffer_CmdBufferExec(gVulkanGraphicsPluginVkQueue);
+          }
 
           XrSwapchainImageReleaseInfo releaseInfo {XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
 
@@ -2379,7 +2464,6 @@ typedef struct VkExtensionProperties
       //layer.views = projectionLayerViews.data();
       //layers_vector.push_back(reinterpret_cast<XrCompositionLayerBaseHeader*>( &layer) );
 
-#if 0
       XrEnvironmentDepthImageAcquireInfoMETA environmentDepthImageAcquireInfoMETA {XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_ACQUIRE_INFO_META};
       environmentDepthImageAcquireInfoMETA.next = 0;
       environmentDepthImageAcquireInfoMETA.space = gOpenXrProgramXrSpace;
@@ -2387,11 +2471,66 @@ typedef struct VkExtensionProperties
 
       XrEnvironmentDepthImageMETA environmentDepthImageMETA {XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_META};
       environmentDepthImageMETA.next = 0;
+
       environmentDepthImageMETA.views[0].type = XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_VIEW_META;
       environmentDepthImageMETA.views[1].type = XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_VIEW_META;
 
+      // XrResult xrAcquireEnvironmentDepthImageMETA(
+      //   XrEnvironmentDepthProviderMETA environmentDepthProvider,
+      //   const XrEnvironmentDepthImageAcquireInfoMETA* acquireInfo,
+      //   XrEnvironmentDepthImageMETA* environmentDepthImage
+      // );
+
       gAcquireEnvironmentDepthImageMETA(gEnvironmentDepthProviderMETA, &environmentDepthImageAcquireInfoMETA, &environmentDepthImageMETA);
-#endif
+
+      // struct XrEnvironmentDepthImageAcquireInfoMETA
+      // {
+      //   XrStructureType type;
+      //   const void* XR_MAY_ALIAS next;
+      //   XrSpace space;
+      //   XrTime displayTime;
+      // };
+
+      // struct XrEnvironmentDepthImageMETA
+      // {
+      //   XrStructureType type;
+      //   const void* XR_MAY_ALIAS next;
+      //   uint32_t swapchainIndex;
+      //   float nearZ;
+      //   float farZ;
+      //   XrEnvironmentDepthImageViewMETA views[2];
+      // };
+
+      // struct XrEnvironmentDepthImageViewMETA
+      // {
+      //   XrStructureType type;
+      //   const void* XR_MAY_ALIAS next;
+      //   XrFovf fov;
+      //   XrPosef pose;
+      // };
+
+      // The nearZ and farZ are the near and far planes defined in an OpenGL projection matrix, and are needed to
+      // convert the depth map’s pixel values into metric distances. The format and convention is the same as for
+      // regular OpenGL depth textures.
+
+      // There is a special case you should be aware of: when farZ = inf, you can use an infinite projection matrix as
+      // described in Tightening the Precision of Perspective Rendering (see section 3.2: Infinite projection).
+
+      // When farZ == inf, the bottom-right 2x2 quadrant of the 4x4 projection matrix is defined as:
+
+      // [ -1   -2 * nearZ ]
+      // [ -1    0         ]
+
+      // zNear zFar infinity
+
+      // Building a projection matrix using common OpenGL helpers and ignoring this special case will introduce NaN
+      // values on its coefficients.
+
+      // Note that the display time and pose of the acquired depth map is likely not the same as the estimated display
+      // time and pose for the your app’s frame. To compute the depth of your rendered fragments, you must therefore
+      // project the fragments 3D coordinates into the depth map using the provided pose and field-of-view (fov). For an
+      // example, see the XrSamples / XrPassthroughOcclusion sample where this method is used to render a scene with
+      // Depth API based occlusions.
 
       XrCompositionLayerPassthroughFB passthroughCompLayer = {XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_FB};
       passthroughCompLayer.layerHandle = gPassthroughLayer;
@@ -2746,38 +2885,20 @@ typedef struct VkExtensionProperties
       //   XrSpace space;
       //   XrTime displayTime;
       // };
-      //
-      // struct XrEnvironmentDepthImageMETA
-      // {
-      //   XrStructureType type;
-      //   const void* XR_MAY_ALIAS next;
-      //   uint32_t swapchainIndex;
-      //   float nearZ;
-      //   float farZ;
-      //   XrEnvironmentDepthImageViewMETA views[2];
-      // };
-      //
-      // struct XrEnvironmentDepthImageViewMETA
-      // {
-      //   XrStructureType type;
-      //   const void* XR_MAY_ALIAS next;
-      //   XrFovf fov;
-      //   XrPosef pose;
-      // };
 
 #if 0
       XrEnvironmentDepthImageAcquireInfoMETA environmentDepthImageAcquireInfoMETA {XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_ACQUIRE_INFO_META};
       environmentDepthImageAcquireInfoMETA.next = 0;
       environmentDepthImageAcquireInfoMETA.space = gOpenXrProgramXrSpace;
-      environmentDepthAcquireInfo.displayTime = predictedDisplayTime;
+      environmentDepthImageAcquireInfoMETA.displayTime = frameState.predictedDisplayTime;
 
       XrEnvironmentDepthImageMETA environmentDepthImageMETA {XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_META};
       environmentDepthImageMETA.next = 0;
 
-      environmentDepthImage.views[0].type = XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_VIEW_META;
-      environmentDepthImage.views[1].type = XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_VIEW_META;
+      environmentDepthImageMETA.views[0].type = XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_VIEW_META;
+      environmentDepthImageMETA.views[1].type = XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_VIEW_META;
 
-      const XrResult acquireResult = gAcquireEnvironmentDepthImageMETA(gEnvironmentDepthProviderMETA, &environmentDepthAcquireInfo, &environmentDepthImage);
+      gAcquireEnvironmentDepthImageMETA(gEnvironmentDepthProviderMETA, &environmentDepthImageAcquireInfoMETA, &environmentDepthImageMETA);
 #endif
 
       // The space field should be set to the XrSpace you want the space to be of the returned pose which the depth map
