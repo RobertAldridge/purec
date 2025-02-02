@@ -1945,7 +1945,49 @@ typedef struct VkExtensionProperties
         // Return back an array of pointers to each swapchain image struct so the consumer doesn't need to know the type/size.
         // Keep the buffer alive by adding it into the list of buffers.
 
-        SwapchainImageContext_SwapchainImageContext_Constructor(indice, VulkanGraphicsPlugin_VulkanGraphicsPluginGetSwapchainImageType(), gVulkanGraphicsPluginVulkanDebugObjectNamer);
+        //SwapchainImageContext_SwapchainImageContext_Constructor(indice, VulkanGraphicsPlugin_VulkanGraphicsPluginGetSwapchainImageType(), gVulkanGraphicsPluginVulkanDebugObjectNamer);
+        //void SwapchainImageContext_SwapchainImageContext_Constructor(int index, XrStructureType swapchainImageType, VulkanDebugObjectNamer& namer)
+        {
+          XrStructureType swapchainImageType = VulkanGraphicsPlugin_VulkanGraphicsPluginGetSwapchainImageType();
+
+          m_swapchainImageContextSwapchainImages.resize(indice + 1);
+          m_swapchainImageContextStdVector_renderTargetColorImage.resize(indice + 1);
+          m_swapchainImageContextStdVector_renderTargetDepthImage.resize(indice + 1);
+          m_swapchainImageContextStdVector_renderTargetColorView.resize(indice + 1);
+          m_swapchainImageContextStdVector_renderTargetDepthView.resize(indice + 1);
+          m_swapchainImageContextStdVector_renderTargetFrameBuffer.resize(indice + 1);
+          m_swapchainImageContextSize.resize(indice + 1);
+          m_swapchainImageContext_depthBufferDepthMemory.resize(indice + 1);
+          m_swapchainImageContext_depthBufferDepthImage.resize(indice + 1);
+          m_swapchainImageContext_depthBufferVkImageLayout.resize(indice + 1);
+          m_swapchainImageContext_renderPassColorFmt.resize(indice + 1);
+          m_swapchainImageContext_renderPassDepthFmt.resize(indice + 1);
+          m_swapchainImageContext_renderPassPass.resize(indice + 1);
+          m_swapchainImageContextPipe_pipelinePipe.resize(indice + 1);
+          m_swapchainImageContextPipe_pipelineTopology.resize(indice + 1);
+          m_swapchainImageContextPipe_pipelineDynamicStateEnables.resize(indice + 1);
+          m_swapchainImageContextSwapchainImageType.resize(indice + 1);
+          m_swapchainImageContextNamer.resize(indice + 1);
+
+          //m_swapchainImageContextSwapchainImages[indice].push_back( {swapchainImageType, 0, 0} );
+          //m_swapchainImageContextStdVector_renderTargetColorImage[indice].push_back(VK_NULL_HANDLE);
+          //m_swapchainImageContextStdVector_renderTargetDepthImage[indice].push_back(VK_NULL_HANDLE);
+          //m_swapchainImageContextStdVector_renderTargetColorView[indice].push_back(VK_NULL_HANDLE);
+          //m_swapchainImageContextStdVector_renderTargetDepthView[indice].push_back(VK_NULL_HANDLE);
+          //m_swapchainImageContextStdVector_renderTargetFrameBuffer[indice].push_back(VK_NULL_HANDLE);
+          m_swapchainImageContextSize[indice] = {640, 480};
+          m_swapchainImageContext_depthBufferDepthMemory[indice] = VK_NULL_HANDLE;
+          m_swapchainImageContext_depthBufferDepthImage[indice] = VK_NULL_HANDLE;
+          m_swapchainImageContext_depthBufferVkImageLayout[indice] = VK_IMAGE_LAYOUT_UNDEFINED;
+          m_swapchainImageContext_renderPassColorFmt[indice] = VK_FORMAT_B8G8R8A8_SRGB;
+          m_swapchainImageContext_renderPassDepthFmt[indice] = VK_FORMAT_D32_SFLOAT;
+          m_swapchainImageContext_renderPassPass[indice] = VK_NULL_HANDLE;
+          m_swapchainImageContextPipe_pipelinePipe[indice] = VK_NULL_HANDLE;
+          m_swapchainImageContextPipe_pipelineTopology[indice] = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+          //m_swapchainImageContextPipe_pipelineDynamicStateEnables[indice].push_back(VK_DYNAMIC_STATE_MAX_ENUM);
+          m_swapchainImageContextSwapchainImageType[indice] = swapchainImageType;
+          m_swapchainImageContextNamer[indice] = gVulkanGraphicsPluginVulkanDebugObjectNamer;
+        }
 
         //gVulkanGraphicsPluginStdList_SwapchainImageContext.push_back(new SwapchainImageContext(VulkanGraphicsPluginGetSwapchainImageType() ) );
         gVulkanGraphicsPluginStdList_SwapchainImageContext.push_back(indice);

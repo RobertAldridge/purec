@@ -301,8 +301,6 @@ void ShaderProgram_ShaderProgramLoadFragmentShader(const std::vector<uint32_t>& 
 
 void ShaderProgram_ShaderProgramInit(VkDevice device);
 
-void SwapchainImageContext_SwapchainImageContext_Constructor(int index, XrStructureType swapchainImageType, VulkanDebugObjectNamer& namer);
-
 #if 0
 void SwapchainImageContext_SwapchainImageContext_PipelineDynamic(int index, VkDynamicState state);
 #endif

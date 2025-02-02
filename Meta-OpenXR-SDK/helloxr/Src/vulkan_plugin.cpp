@@ -454,47 +454,6 @@ void ShaderProgram_ShaderProgramInit(VkDevice device)
 {
 }
 
-void SwapchainImageContext_SwapchainImageContext_Constructor(int index, XrStructureType swapchainImageType, VulkanDebugObjectNamer& namer)
-{
-  m_swapchainImageContextSwapchainImages.resize(index + 1);
-  m_swapchainImageContextStdVector_renderTargetColorImage.resize(index + 1);
-  m_swapchainImageContextStdVector_renderTargetDepthImage.resize(index + 1);
-  m_swapchainImageContextStdVector_renderTargetColorView.resize(index + 1);
-  m_swapchainImageContextStdVector_renderTargetDepthView.resize(index + 1);
-  m_swapchainImageContextStdVector_renderTargetFrameBuffer.resize(index + 1);
-  m_swapchainImageContextSize.resize(index + 1);
-  m_swapchainImageContext_depthBufferDepthMemory.resize(index + 1);
-  m_swapchainImageContext_depthBufferDepthImage.resize(index + 1);
-  m_swapchainImageContext_depthBufferVkImageLayout.resize(index + 1);
-  m_swapchainImageContext_renderPassColorFmt.resize(index + 1);
-  m_swapchainImageContext_renderPassDepthFmt.resize(index + 1);
-  m_swapchainImageContext_renderPassPass.resize(index + 1);
-  m_swapchainImageContextPipe_pipelinePipe.resize(index + 1);
-  m_swapchainImageContextPipe_pipelineTopology.resize(index + 1);
-  m_swapchainImageContextPipe_pipelineDynamicStateEnables.resize(index + 1);
-  m_swapchainImageContextSwapchainImageType.resize(index + 1);
-  m_swapchainImageContextNamer.resize(index + 1);
-
-  //m_swapchainImageContextSwapchainImages[index].push_back( {swapchainImageType, 0, 0} );
-  //m_swapchainImageContextStdVector_renderTargetColorImage[index].push_back(VK_NULL_HANDLE);
-  //m_swapchainImageContextStdVector_renderTargetDepthImage[index].push_back(VK_NULL_HANDLE);
-  //m_swapchainImageContextStdVector_renderTargetColorView[index].push_back(VK_NULL_HANDLE);
-  //m_swapchainImageContextStdVector_renderTargetDepthView[index].push_back(VK_NULL_HANDLE);
-  //m_swapchainImageContextStdVector_renderTargetFrameBuffer[index].push_back(VK_NULL_HANDLE);
-  m_swapchainImageContextSize[index] = {640, 480};
-  m_swapchainImageContext_depthBufferDepthMemory[index] = VK_NULL_HANDLE;
-  m_swapchainImageContext_depthBufferDepthImage[index] = VK_NULL_HANDLE;
-  m_swapchainImageContext_depthBufferVkImageLayout[index] = VK_IMAGE_LAYOUT_UNDEFINED;
-  m_swapchainImageContext_renderPassColorFmt[index] = VK_FORMAT_B8G8R8A8_SRGB;
-  m_swapchainImageContext_renderPassDepthFmt[index] = VK_FORMAT_D32_SFLOAT;
-  m_swapchainImageContext_renderPassPass[index] = VK_NULL_HANDLE;
-  m_swapchainImageContextPipe_pipelinePipe[index] = VK_NULL_HANDLE;
-  m_swapchainImageContextPipe_pipelineTopology[index] = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-  //m_swapchainImageContextPipe_pipelineDynamicStateEnables[index].push_back(VK_DYNAMIC_STATE_MAX_ENUM);
-  m_swapchainImageContextSwapchainImageType[index] = swapchainImageType;
-  m_swapchainImageContextNamer[index] = namer;
-}
-
 #if 0
 void SwapchainImageContext_SwapchainImageContext_Destructor(int index)
 {
