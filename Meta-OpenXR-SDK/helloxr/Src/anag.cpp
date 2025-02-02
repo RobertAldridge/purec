@@ -3,6 +3,13 @@
 
 #include "header.h"
 
+XrEnvironmentDepthSwapchainMETA gEnvironmentDepthSwapchainMETA = XR_NULL_HANDLE;
+
+XrEnvironmentDepthProviderCreateInfoMETA gEnvironmentDepthProviderCreateInfoMETA {XR_TYPE_ENVIRONMENT_DEPTH_PROVIDER_CREATE_INFO_META};
+XrEnvironmentDepthHandRemovalSetInfoMETA gEnvironmentDepthHandRemovalSetInfoMETA {XR_TYPE_ENVIRONMENT_DEPTH_HAND_REMOVAL_SET_INFO_META};
+XrEnvironmentDepthSwapchainCreateInfoMETA gEnvironmentDepthSwapchainCreateInfoMETA {XR_TYPE_ENVIRONMENT_DEPTH_SWAPCHAIN_CREATE_INFO_META};
+XrEnvironmentDepthSwapchainStateMETA gEnvironmentDepthSwapchainStateMETA {XR_TYPE_ENVIRONMENT_DEPTH_SWAPCHAIN_STATE_META};
+
 uint32_t gEnvironmentDepthSwapChainLength = 0;
 
 std::vector<XrSwapchainImageVulkanKHR> gEnvironmentDepthImages;
@@ -2433,6 +2440,28 @@ typedef struct VkExtensionProperties
         layers_vector.push_back(reinterpret_cast<XrCompositionLayerBaseHeader*>( &layer) );
     }
 
+#if 0
+XR_TYPE_COMPOSITION_LAYER_PROJECTION = 35,
+XR_TYPE_COMPOSITION_LAYER_QUAD = 36,
+XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW = 48,
+XR_TYPE_COMPOSITION_LAYER_CUBE_KHR = 1000006000,
+XR_TYPE_COMPOSITION_LAYER_DEPTH_INFO_KHR = 1000010000,
+XR_TYPE_COMPOSITION_LAYER_CYLINDER_KHR = 1000017000,
+XR_TYPE_COMPOSITION_LAYER_EQUIRECT_KHR = 1000018000,
+XR_TYPE_COMPOSITION_LAYER_COLOR_SCALE_BIAS_KHR = 1000034000,
+XR_TYPE_COMPOSITION_LAYER_IMAGE_LAYOUT_FB = 1000040000,
+XR_TYPE_COMPOSITION_LAYER_ALPHA_BLEND_FB = 1000041001,
+XR_TYPE_COMPOSITION_LAYER_REPROJECTION_INFO_MSFT = 1000066000,
+XR_TYPE_COMPOSITION_LAYER_REPROJECTION_PLANE_OVERRIDE_MSFT = 1000066001,
+XR_TYPE_COMPOSITION_LAYER_SECURE_CONTENT_FB = 1000072000,
+XR_TYPE_COMPOSITION_LAYER_EQUIRECT2_KHR = 1000091000,
+XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_FB = 1000118003,
+XR_TYPE_COMPOSITION_LAYER_SPACE_WARP_INFO_FB = 1000171000,
+XR_TYPE_COMPOSITION_LAYER_SETTINGS_FB = 1000204000,
+XR_TYPE_COMPOSITION_LAYER_DEPTH_TEST_FB = 1000212000,
+XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
+#endif
+
     if(gPassthroughFeature == XR_NULL_HANDLE || !gCreatePassthroughFB)
     {
       XrFrameEndInfo frameEndInfo {XR_TYPE_FRAME_END_INFO};
@@ -2532,6 +2561,127 @@ typedef struct VkExtensionProperties
       // example, see the XrSamples / XrPassthroughOcclusion sample where this method is used to render a scene with
       // Depth API based occlusions.
 
+      // struct XrOffset2Di
+      // {
+      //   int32_t x;
+      //   int32_t y;
+      // };
+
+      // struct XrExtent2Di
+      // {
+      //   int32_t width;
+      //   int32_t height;
+      // };
+
+      // struct XrExtent2Df
+      // {
+      //   float width;
+      //   float height;
+      // };
+
+      // struct XrQuaternionf
+      // {
+      //   float x;
+      //   float y;
+      //   float z;
+      //   float w;
+      // };
+
+      // struct XrVector3f
+      // {
+      //   float x;
+      //   float y;
+      //   float z;
+      // };
+
+      // struct XrFovf
+      // {
+      //   float angleLeft;
+      //   float angleRight;
+      //   float angleUp;
+      //   float angleDown;
+      // };
+
+      // struct XrRect2Di
+      // {
+      //   XrOffset2Di offset;
+      //   XrExtent2Di extent;
+      // };
+
+      // struct XrPosef
+      // {
+      //   XrQuaternionf orientation;
+      //   XrVector3f position;
+      // };
+
+      // struct XrSwapchainSubImage
+      // {
+      //   XrSwapchain swapchain; // void*
+      //   XrRect2Di imageRect;
+      //   uint32_t imageArrayIndex;
+      // };
+
+      // struct XrCompositionLayerProjectionView
+      // {
+      //   XrStructureType type; // int
+      //   const void* next;
+      //   XrPosef pose;
+      //   XrFovf fov;
+      //   XrSwapchainSubImage subImage;
+      // };
+
+      // struct XrCompositionLayerProjection
+      // {
+      //   XrStructureType type; // int
+      //   const void* next;
+      //   XrCompositionLayerFlags layerFlags; // uint64_t
+      //   XrSpace space; // void*
+      //   uint32_t viewCount;
+      //   const XrCompositionLayerProjectionView* views;
+      // };
+
+      // struct XrCompositionLayerQuad
+      // {
+      //   XrStructureType type; // int
+      //   const void* XR_MAY_ALIAS next;
+      //   XrCompositionLayerFlags layerFlags; // uint64_t
+      //   XrSpace space; // void*
+      //   XrEyeVisibility eyeVisibility; // int
+      //   XrSwapchainSubImage subImage;
+      //   XrPosef pose;
+      //   XrExtent2Df size;
+      // };
+
+      XrCompositionLayerProjectionView environmentDepthXrCompositionLayerProjectionView[2] = {};
+
+      XrCompositionLayerProjection environmentDepthXrCompositionLayerProjection = {XR_TYPE_COMPOSITION_LAYER_PROJECTION};
+      environmentDepthXrCompositionLayerProjection.next = 0;
+      environmentDepthXrCompositionLayerProjection.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT | XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT;
+      environmentDepthXrCompositionLayerProjection.space = gOpenXrProgramXrSpace;
+      environmentDepthXrCompositionLayerProjection.viewCount = 2;
+      environmentDepthXrCompositionLayerProjection.views = environmentDepthXrCompositionLayerProjectionView;
+
+      for(int index = 0; index < 2; index++)
+      {
+        environmentDepthXrCompositionLayerProjectionView[index].type = XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW;
+        environmentDepthXrCompositionLayerProjectionView[index].next = 0;
+        environmentDepthXrCompositionLayerProjectionView[index].pose = environmentDepthImageMETA.views[index].pose;
+        environmentDepthXrCompositionLayerProjectionView[index].fov = environmentDepthImageMETA.views[index].fov;
+
+        environmentDepthXrCompositionLayerProjectionView[index].subImage.swapchain = (XrSwapchain)gEnvironmentDepthSwapchainMETA/*environmentDepthImageMETA.swapchainIndex*/;
+        environmentDepthXrCompositionLayerProjectionView[index].subImage.imageRect.offset.x = 0;
+        environmentDepthXrCompositionLayerProjectionView[index].subImage.imageRect.offset.y = 0;
+        environmentDepthXrCompositionLayerProjectionView[index].subImage.imageRect.extent.width = gEnvironmentDepthSwapchainStateMETA.width;
+        environmentDepthXrCompositionLayerProjectionView[index].subImage.imageRect.extent.height = gEnvironmentDepthSwapchainStateMETA.height;
+        environmentDepthXrCompositionLayerProjectionView[index].subImage.imageArrayIndex = index;
+      }
+
+#if 0
+      XrCompositionLayerQuad environmentDepth {XR_TYPE_COMPOSITION_LAYER_QUAD};
+      environmentDepth.next = 0;
+      environmentDepth.layerFlags =
+#endif
+
       XrCompositionLayerPassthroughFB passthroughCompLayer = {XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_FB};
       passthroughCompLayer.layerHandle = gPassthroughLayer;
       passthroughCompLayer.flags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
@@ -2539,9 +2689,45 @@ typedef struct VkExtensionProperties
 
       layer.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
 
+      // XrResult xrAcquireEnvironmentDepthImageMETA(
+      //   XrEnvironmentDepthProviderMETA environmentDepthProvider,
+      //   const XrEnvironmentDepthImageAcquireInfoMETA* acquireInfo,
+      //   XrEnvironmentDepthImageMETA* environmentDepthImage
+      // );
+
+      //gAcquireEnvironmentDepthImageMETA(gEnvironmentDepthProviderMETA, &environmentDepthImageAcquireInfoMETA, &environmentDepthImageMETA);
+
+      // struct XrEnvironmentDepthImageAcquireInfoMETA
+      // {
+      //   XrStructureType type;
+      //   const void* XR_MAY_ALIAS next;
+      //   XrSpace space;
+      //   XrTime displayTime;
+      // };
+
+      // struct XrEnvironmentDepthImageMETA
+      // {
+      //   XrStructureType type;
+      //   const void* XR_MAY_ALIAS next;
+      //   uint32_t swapchainIndex;
+      //   float nearZ;
+      //   float farZ;
+      //   XrEnvironmentDepthImageViewMETA views[2];
+      // };
+
+      // struct XrEnvironmentDepthImageViewMETA
+      // {
+      //   XrStructureType type;
+      //   const void* XR_MAY_ALIAS next;
+      //   XrFovf fov;
+      //   XrPosef pose;
+      // };
+
       const int kLayerCount = 2;
+
       const XrCompositionLayerBaseHeader* layers_array[kLayerCount] = {
         (const XrCompositionLayerBaseHeader*) &passthroughCompLayer,
+        //(const XrCompositionLayerBaseHeader*) &environmentDepthXrCompositionLayerProjection,
         (const XrCompositionLayerBaseHeader*) &layer/*applicationCompLayer*/
       };
 
@@ -2691,11 +2877,13 @@ typedef struct VkExtensionProperties
       //   XrEnvironmentDepthProviderCreateFlagsMETA createFlags;
       // };
 
-      XrEnvironmentDepthProviderCreateInfoMETA environmentDepthProviderCreateInfoMETA {XR_TYPE_ENVIRONMENT_DEPTH_PROVIDER_CREATE_INFO_META};
-      environmentDepthProviderCreateInfoMETA.next = nullptr;
-      environmentDepthProviderCreateInfoMETA.createFlags = 0;
+      gEnvironmentDepthProviderCreateInfoMETA.type = XR_TYPE_ENVIRONMENT_DEPTH_PROVIDER_CREATE_INFO_META;
+      gEnvironmentDepthProviderCreateInfoMETA.next = nullptr;
+      gEnvironmentDepthProviderCreateInfoMETA.createFlags = 0;
 
-      XrResult result = gCreateEnvironmentDepthProviderMETA(gXrSession, &environmentDepthProviderCreateInfoMETA, &gEnvironmentDepthProviderMETA);
+      gEnvironmentDepthProviderMETA = XR_NULL_HANDLE;
+
+      XrResult result = gCreateEnvironmentDepthProviderMETA(gXrSession, &gEnvironmentDepthProviderCreateInfoMETA, &gEnvironmentDepthProviderMETA);
       if(XR_FAILED(result) )
         Log::Write(Log::Level::Info, Fmt("failed CreateEnvironmentDepthProviderMETA") );
       else
@@ -2734,11 +2922,11 @@ typedef struct VkExtensionProperties
       //   XrBool32 enabled;
       // };
 
-      XrEnvironmentDepthHandRemovalSetInfoMETA environmentDepthHandRemovalSetInfoMETA {XR_TYPE_ENVIRONMENT_DEPTH_HAND_REMOVAL_SET_INFO_META};
-      environmentDepthHandRemovalSetInfoMETA.next = nullptr;
-      environmentDepthHandRemovalSetInfoMETA.enabled = true;
+      gEnvironmentDepthHandRemovalSetInfoMETA.type = XR_TYPE_ENVIRONMENT_DEPTH_HAND_REMOVAL_SET_INFO_META;
+      gEnvironmentDepthHandRemovalSetInfoMETA.next = nullptr;
+      gEnvironmentDepthHandRemovalSetInfoMETA.enabled = true;
 
-      result = gSetEnvironmentDepthHandRemovalMETA(gEnvironmentDepthProviderMETA, &environmentDepthHandRemovalSetInfoMETA);
+      result = gSetEnvironmentDepthHandRemovalMETA(gEnvironmentDepthProviderMETA, &gEnvironmentDepthHandRemovalSetInfoMETA);
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // Creating and enumerating a depth swapchain
@@ -2767,13 +2955,13 @@ typedef struct VkExtensionProperties
 
       // Currently createFlags must be zero, but it might be extended in the future.
 
-      XrEnvironmentDepthSwapchainCreateInfoMETA environmentDepthSwapchainCreateInfoMETA {XR_TYPE_ENVIRONMENT_DEPTH_SWAPCHAIN_CREATE_INFO_META};
-      environmentDepthSwapchainCreateInfoMETA.next = nullptr;
-      environmentDepthSwapchainCreateInfoMETA.createFlags = 0;
+      gEnvironmentDepthSwapchainCreateInfoMETA.type = XR_TYPE_ENVIRONMENT_DEPTH_SWAPCHAIN_CREATE_INFO_META;
+      gEnvironmentDepthSwapchainCreateInfoMETA.next = nullptr;
+      gEnvironmentDepthSwapchainCreateInfoMETA.createFlags = 0;
 
-      XrEnvironmentDepthSwapchainMETA environmentDepthSwapchainMETA {XR_NULL_HANDLE};
+      gEnvironmentDepthSwapchainMETA = XR_NULL_HANDLE;
 
-      gCreateEnvironmentDepthSwapchainMETA(gEnvironmentDepthProviderMETA, &environmentDepthSwapchainCreateInfoMETA, &environmentDepthSwapchainMETA);
+      gCreateEnvironmentDepthSwapchainMETA(gEnvironmentDepthProviderMETA, &gEnvironmentDepthSwapchainCreateInfoMETA, &gEnvironmentDepthSwapchainMETA);
 
       // Once the swapchain is created the resolution can be queried by calling xrGetEnvironmentDepthSwapchainStateMETA:
 
@@ -2792,12 +2980,12 @@ typedef struct VkExtensionProperties
       //   uint32_t height;
       // };
 
-      XrEnvironmentDepthSwapchainStateMETA environmentDepthSwapchainStateMETA {XR_TYPE_ENVIRONMENT_DEPTH_SWAPCHAIN_STATE_META};
-      environmentDepthSwapchainStateMETA.next = nullptr;
-      environmentDepthSwapchainStateMETA.width = 0;
-      environmentDepthSwapchainStateMETA.height = 0;
+      gEnvironmentDepthSwapchainStateMETA.type = XR_TYPE_ENVIRONMENT_DEPTH_SWAPCHAIN_STATE_META;
+      gEnvironmentDepthSwapchainStateMETA.next = nullptr;
+      gEnvironmentDepthSwapchainStateMETA.width = 0;
+      gEnvironmentDepthSwapchainStateMETA.height = 0;
 
-      gGetEnvironmentDepthSwapchainStateMETA(environmentDepthSwapchainMETA, &environmentDepthSwapchainStateMETA);
+      gGetEnvironmentDepthSwapchainStateMETA(gEnvironmentDepthSwapchainMETA, &gEnvironmentDepthSwapchainStateMETA);
 
       // In the same way as for a regular XrSwapchain, the XrEnvironmentDepthSwapchainMETA needs to be “enumerated” into
       // a graphics API specific array of texture handles. This is done by calling
@@ -2818,7 +3006,7 @@ typedef struct VkExtensionProperties
 
       gEnvironmentDepthSwapChainLength = 0;
 
-      gEnumerateEnvironmentDepthSwapchainImagesMETA(environmentDepthSwapchainMETA, 0, &gEnvironmentDepthSwapChainLength, nullptr);
+      gEnumerateEnvironmentDepthSwapchainImagesMETA(gEnvironmentDepthSwapchainMETA, 0, &gEnvironmentDepthSwapChainLength, nullptr);
 
       //struct XrSwapchainImageVulkanKHR
       //{
@@ -2835,7 +3023,7 @@ typedef struct VkExtensionProperties
         gEnvironmentDepthImages.push_back(swapchainImageVulkanKHR);
       }
 
-      gEnumerateEnvironmentDepthSwapchainImagesMETA(environmentDepthSwapchainMETA, gEnvironmentDepthSwapChainLength, &gEnvironmentDepthSwapChainLength, (XrSwapchainImageBaseHeader*)gEnvironmentDepthImages.data() );
+      gEnumerateEnvironmentDepthSwapchainImagesMETA(gEnvironmentDepthSwapchainMETA, gEnvironmentDepthSwapChainLength, &gEnvironmentDepthSwapChainLength, (XrSwapchainImageBaseHeader*)gEnvironmentDepthImages.data() );
 
       gEnvironmentDepthTextures.empty();
 
