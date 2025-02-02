@@ -2315,7 +2315,7 @@ typedef struct VkExtensionProperties
 
           XrSwapchainImageAcquireInfo acquireInfo {XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO};
 
-          uint32_t swapchainImageIndex;
+          uint32_t swapchainImageIndex = 0;
 
           if(tableXr.AcquireSwapchainImage)
             CHECK_XRCMD_CHECK(tableXr.AcquireSwapchainImage(viewSwapchain.handle, &acquireInfo, &swapchainImageIndex) );
@@ -2349,7 +2349,30 @@ typedef struct VkExtensionProperties
             CmdBuffer_CmdBufferBegin();
 
             // Ensure depth is in the right layout
-            SwapchainImageContext_SwapchainImageContext_DepthBufferTransitionImageLayout(swapchainContextIndex, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+            //SwapchainImageContext_SwapchainImageContext_DepthBufferTransitionImageLayout(swapchainContextIndex, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+            //void SwapchainImageContext_SwapchainImageContext_DepthBufferTransitionImageLayout(int index, VkImageLayout newLayout)
+            do
+            {
+              VkImageLayout newLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+              if(newLayout == m_swapchainImageContext_depthBufferVkImageLayout[swapchainContextIndex] )
+                break;
+
+              VkImageMemoryBarrier depthBarrier {VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER};
+              depthBarrier.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+              depthBarrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
+              depthBarrier.oldLayout = m_swapchainImageContext_depthBufferVkImageLayout[swapchainContextIndex];
+              depthBarrier.newLayout = newLayout;
+              depthBarrier.image = m_swapchainImageContext_depthBufferDepthImage[swapchainContextIndex];
+
+              depthBarrier.subresourceRange = {VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1};
+
+              if(tableVk.CmdPipelineBarrier)
+                tableVk.CmdPipelineBarrier(gCmdBufferBuffer, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, 0, 0, nullptr, 0, nullptr, 1, &depthBarrier);
+
+              m_swapchainImageContext_depthBufferVkImageLayout[swapchainContextIndex] = newLayout;
+
+            }while(0);
 
             // Bind and clear eye render target
             static std::array<VkClearValue, 2> clearValues;
@@ -2652,6 +2675,7 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
       //   XrExtent2Df size;
       // };
 
+#if 0
       XrCompositionLayerProjectionView environmentDepthXrCompositionLayerProjectionView[2] = {};
 
       XrCompositionLayerProjection environmentDepthXrCompositionLayerProjection = {XR_TYPE_COMPOSITION_LAYER_PROJECTION};
@@ -2668,18 +2692,13 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
         environmentDepthXrCompositionLayerProjectionView[index].pose = environmentDepthImageMETA.views[index].pose;
         environmentDepthXrCompositionLayerProjectionView[index].fov = environmentDepthImageMETA.views[index].fov;
 
-        environmentDepthXrCompositionLayerProjectionView[index].subImage.swapchain = (XrSwapchain)gEnvironmentDepthSwapchainMETA/*environmentDepthImageMETA.swapchainIndex*/;
+        environmentDepthXrCompositionLayerProjectionView[index].subImage.swapchain = (XrSwapchain)gEnvironmentDepthImages[index];
         environmentDepthXrCompositionLayerProjectionView[index].subImage.imageRect.offset.x = 0;
         environmentDepthXrCompositionLayerProjectionView[index].subImage.imageRect.offset.y = 0;
         environmentDepthXrCompositionLayerProjectionView[index].subImage.imageRect.extent.width = gEnvironmentDepthSwapchainStateMETA.width;
         environmentDepthXrCompositionLayerProjectionView[index].subImage.imageRect.extent.height = gEnvironmentDepthSwapchainStateMETA.height;
         environmentDepthXrCompositionLayerProjectionView[index].subImage.imageArrayIndex = index;
       }
-
-#if 0
-      XrCompositionLayerQuad environmentDepth {XR_TYPE_COMPOSITION_LAYER_QUAD};
-      environmentDepth.next = 0;
-      environmentDepth.layerFlags =
 #endif
 
       XrCompositionLayerPassthroughFB passthroughCompLayer = {XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_FB};

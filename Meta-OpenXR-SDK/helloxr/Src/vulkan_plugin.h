@@ -319,8 +319,6 @@ void SwapchainImageContext_SwapchainImageContext_RenderTargetCreate(int index, i
 
 void SwapchainImageContext_SwapchainImageContext_DepthBufferCreate(int index, const VulkanDebugObjectNamer& namer, VkDevice device, VkFormat depthFormat, const XrSwapchainCreateInfo& swapchainCreateInfo);
 
-void SwapchainImageContext_SwapchainImageContext_DepthBufferTransitionImageLayout(int index, VkImageLayout newLayout);
-
 bool SwapchainImageContext_SwapchainImageContext_RenderPassCreate(int index, const VulkanDebugObjectNamer& namer, VkDevice device, VkFormat aColorFmt, VkFormat aDepthFmt);
 
 void SwapchainImageContext_SwapchainImageContext_PipelineDynamic(int index, VkDynamicState state);
