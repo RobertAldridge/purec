@@ -275,11 +275,7 @@ inline VkResult CheckVkResult(VkResult res, const char* originator = nullptr, co
 
 void MemoryAllocator_MemoryAllocatorAllocate(VkMemoryRequirements const& memReqs, VkDeviceMemory* mem, VkFlags flags = MemoryAllocator_m_memoryAllocatorDefaultFlags, void* pNext = nullptr);
 
-void CmdBuffer_CmdBufferSetState(CmdBufferStateEnum newState);
-
 std::string CmdBuffer_CmdBufferStateString(CmdBufferStateEnum s);
-
-void VertexBufferBase_VertexBufferBaseInit(const std::vector<VkVertexInputAttributeDescription>& attr);
 
 #if 0
 void SwapchainImageContext_SwapchainImageContext_PipelineDynamic(int index, VkDynamicState state);
@@ -291,21 +287,13 @@ void SwapchainImageContext_SwapchainImageContext_PipelineRelease(int index);
 
 void VulkanGraphicsPlugin_VulkanGraphicsPlugin_Destructor();
 
+#if 0
 // note: The output must not outlive the input - this modifies the input and returns a collection of views into that modified input!
 std::vector<const char*> VulkanGraphicsPlugin_VulkanGraphicsPluginParseExtensionString(char* names);
-
-int64_t VulkanGraphicsPlugin_VulkanGraphicsPluginSelectColorSwapchainFormat(const std::vector<int64_t>& runtimeFormats);
-
-const XrBaseInStructure* VulkanGraphicsPlugin_VulkanGraphicsPluginGetGraphicsBinding();
-
-uint32_t VulkanGraphicsPlugin_VulkanGraphicsPluginGetSupportedSwapchainSampleCount(const XrViewConfigurationView& );
+#endif
 
 VkBool32 VulkanGraphicsPlugin_VulkanGraphicsPluginDebugMessage(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData);
 
 VKAPI_ATTR VkBool32 VKAPI_CALL VulkanGraphicsPlugin_debugMessageThunk(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* /*pUserData*/);
-
-XrStructureType VulkanGraphicsPlugin_VulkanGraphicsPluginGetSwapchainImageType();
-
-XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanInstanceKHR(XrInstance instance, const XrVulkanInstanceCreateInfoKHR* createInfo, VkInstance* vulkanInstance, VkResult* vulkanResult);
 
 std::string VulkanGraphicsPlugin_BlahVkObjectTypeToString(VkObjectType objectType);

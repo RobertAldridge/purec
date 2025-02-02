@@ -229,15 +229,12 @@ void OpenXrProgram_OpenXrProgram_Destructor()
 //  std::array<XrBool32, Side_COUNT> handActive;
 //};
 
-bool OpenXrProgram_OpenXrProgramIsSessionRunning()
-{
-  return gOpenXrProgramSessionRunning;
-}
-
+#if 0
 bool OpenXrProgram_OpenXrProgramIsSessionFocused()
 {
   return gOpenXrProgramXrSessionState == XR_SESSION_STATE_FOCUSED;
 }
+#endif
 
 // Unreal UOculusXRFunctionLibrary::SetSuggestedCpuAndGpuPerformanceLevels (exposed in Blueprint)
 //

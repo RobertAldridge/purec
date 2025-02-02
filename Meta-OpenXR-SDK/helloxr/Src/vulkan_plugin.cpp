@@ -193,15 +193,10 @@ void MemoryAllocator_MemoryAllocatorAllocate(VkMemoryRequirements const& memReqs
   THROW_CHECK("Memory format not supported");
 }
 
-void CmdBuffer_CmdBufferSetState(CmdBufferStateEnum newState)
-{
-  gCmdBufferState = newState;
-}
-
 #if 0
 void CmdBuffer_CmdBuffer_Destructor()
 {
-  CmdBuffer_CmdBufferSetState(CmdBufferStateEnum::Undefined);
+  gCmdBufferState = CmdBufferStateEnum::Undefined;
 
   if(gVkDevice)
   {
@@ -284,11 +279,6 @@ void VertexBufferBase_VertexBufferBase_Destructor()
   gVertexBufferBaseCount = {0, 0};
 }
 #endif
-
-void VertexBufferBase_VertexBufferBaseInit(const std::vector<VkVertexInputAttributeDescription>& attr)
-{
-  gVertexBufferBaseAttrDesc = attr;
-}
 
 #if 0
 void ShaderProgram_ShaderProgramDestructor()
@@ -439,6 +429,7 @@ void VulkanGraphicsPlugin_VulkanGraphicsPlugin_Destructor()
 }
 #endif
 
+#if 0
 // note: The output must not outlive the input - this modifies the input and returns a collection of views into that modified input!
 std::vector<const char*> VulkanGraphicsPlugin_VulkanGraphicsPluginParseExtensionString(char* names)
 {
@@ -460,29 +451,7 @@ std::vector<const char*> VulkanGraphicsPlugin_VulkanGraphicsPluginParseExtension
 
   return list;
 }
-
-int64_t VulkanGraphicsPlugin_VulkanGraphicsPluginSelectColorSwapchainFormat(const std::vector<int64_t>& runtimeFormats)
-{
-  // List of supported color swapchain formats.
-  constexpr int64_t SupportedColorSwapchainFormats[] = {VK_FORMAT_B8G8R8A8_SRGB, VK_FORMAT_R8G8B8A8_SRGB, VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_R8G8B8A8_UNORM};
-
-  auto swapchainFormatIt = std::find_first_of(runtimeFormats.begin(), runtimeFormats.end(), std::begin(SupportedColorSwapchainFormats), std::end(SupportedColorSwapchainFormats) );
-
-  if(swapchainFormatIt == runtimeFormats.end() )
-    THROW_CHECK("No runtime swapchain format supported for color swapchain");
-
-  return *swapchainFormatIt;
-}
-
-const XrBaseInStructure* VulkanGraphicsPlugin_VulkanGraphicsPluginGetGraphicsBinding()
-{
-  return reinterpret_cast<const XrBaseInStructure*>( &gVulkanGraphicsPluginXrGraphicsBindingVulkan2KHR);
-}
-
-uint32_t VulkanGraphicsPlugin_VulkanGraphicsPluginGetSupportedSwapchainSampleCount(const XrViewConfigurationView&)
-{
-  return VK_SAMPLE_COUNT_1_BIT;
-}
+#endif
 
 VkBool32 VulkanGraphicsPlugin_VulkanGraphicsPluginDebugMessage(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData)
 {
@@ -545,28 +514,4 @@ VkBool32 VulkanGraphicsPlugin_VulkanGraphicsPluginDebugMessage(VkDebugUtilsMessa
 VKAPI_ATTR VkBool32 VKAPI_CALL VulkanGraphicsPlugin_debugMessageThunk(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* /*pUserData*/)
 {
   return VulkanGraphicsPlugin_VulkanGraphicsPluginDebugMessage(messageSeverity, messageTypes, pCallbackData);
-}
-
-XrStructureType VulkanGraphicsPlugin_VulkanGraphicsPluginGetSwapchainImageType()
-{
-  return XR_TYPE_SWAPCHAIN_IMAGE_VULKAN2_KHR;
-}
-
-XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanInstanceKHR(XrInstance instance, const XrVulkanInstanceCreateInfoKHR* createInfo, VkInstance* vulkanInstance, VkResult* vulkanResult)
-{
-  PFN_xrCreateVulkanInstanceKHR pfnCreateVulkanInstanceKHR = nullptr;
-  XrResult result = XR_ERROR_VALIDATION_FAILURE;
-
-  InitOpenXr();
-
-  if(tableXr.GetInstanceProcAddr)
-  {
-    result = tableXr.GetInstanceProcAddr(instance, "xrCreateVulkanInstanceKHR", reinterpret_cast<PFN_xrVoidFunction*>( &pfnCreateVulkanInstanceKHR) );
-    CHECK_XRCMD_CHECK(result);
-  }
-
-  if(pfnCreateVulkanInstanceKHR)
-    result = pfnCreateVulkanInstanceKHR(instance, createInfo, vulkanInstance, vulkanResult);
-
-  return result;
 }

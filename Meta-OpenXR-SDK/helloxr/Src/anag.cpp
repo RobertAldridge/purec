@@ -1357,8 +1357,28 @@ VK_VALVE_MUTABLE_DESCRIPTOR_TYPE_EXTENSION_NAME "VK_VALVE_mutable_descriptor_typ
     createInfo.vulkanCreateInfo = &instInfo;
     createInfo.vulkanAllocator = nullptr;
 
-    CHECK_XRCMD_CHECK(VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanInstanceKHR(gXrInstance, &createInfo, &gVkInstance, &err) );
-    CHECK_VULKANCMD(err);
+    //CHECK_XRCMD_CHECK(VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanInstanceKHR(gXrInstance, &createInfo, &gVkInstance, &err) );
+    //CHECK_VULKANCMD(err);
+
+    //XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanInstanceKHR(XrInstance instance, const XrVulkanInstanceCreateInfoKHR* createInfo, VkInstance* vulkanInstance, VkResult* vulkanResult)
+    {
+      PFN_xrCreateVulkanInstanceKHR pfnCreateVulkanInstanceKHR = nullptr;
+      XrResult result = XR_ERROR_VALIDATION_FAILURE;
+
+      InitOpenXr();
+
+      if(tableXr.GetInstanceProcAddr)
+      {
+        result = tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateVulkanInstanceKHR", reinterpret_cast<PFN_xrVoidFunction*>( &pfnCreateVulkanInstanceKHR) );
+        CHECK_XRCMD_CHECK(result);
+      }
+
+      if(pfnCreateVulkanInstanceKHR)
+        result = pfnCreateVulkanInstanceKHR(gXrInstance, &createInfo, &gVkInstance, &err);
+
+      CHECK_XRCMD_CHECK(result);
+      CHECK_VULKANCMD(err);
+    }
   }
 
   {
@@ -1677,7 +1697,7 @@ typedef struct VkExtensionProperties
 
     CHECK_VULKANCMD(gVulkanGraphicsPluginVulkanDebugObjectNamer.SetName(VK_OBJECT_TYPE_FENCE, (uint64_t)gCmdBufferExecFence, "helloxr fence") );
 
-    CmdBuffer_CmdBufferSetState(CmdBufferStateEnum::Initialized);
+    gCmdBufferState = CmdBufferStateEnum::Initialized;
 
     CmdBuffer_CmdBufferInit_Result = true;
 
@@ -1707,7 +1727,7 @@ typedef struct VkExtensionProperties
 
   static_assert(sizeof(Geometry::Vertex) == 24, "Unexpected Vertex size");
 
-  VertexBufferBase_VertexBufferBaseInit( { {0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Position) }, {1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Color) } } );
+  gVertexBufferBaseAttrDesc = { {0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Position) }, {1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Color) } };
 
   uint32_t numCubeIdicies = sizeof(Geometry::c_cubeIndices) / sizeof(Geometry::c_cubeIndices[0] );
   uint32_t numCubeVerticies = sizeof(Geometry::c_cubeVertices) / sizeof(Geometry::c_cubeVertices[0] );
@@ -1812,7 +1832,7 @@ typedef struct VkExtensionProperties
 
     XrSessionCreateInfo createInfo {XR_TYPE_SESSION_CREATE_INFO};
 
-    createInfo.next = VulkanGraphicsPlugin_VulkanGraphicsPluginGetGraphicsBinding();
+    createInfo.next = reinterpret_cast<const XrBaseInStructure*>( &gVulkanGraphicsPluginXrGraphicsBindingVulkan2KHR);
     createInfo.systemId = gXrSystemId;
 
     if(tableXr.CreateSession)
@@ -2163,7 +2183,20 @@ typedef struct VkExtensionProperties
       CHECK_XRCMD_CHECK(tableXr.EnumerateSwapchainFormats(gXrSession, (uint32_t)swapchainFormats.size(), &swapchainFormatCount, swapchainFormats.data() ) );
 
     CHECK_CHECK(swapchainFormatCount == swapchainFormats.size() );
-    gOpenXrProgramColorSwapchainFormat = VulkanGraphicsPlugin_VulkanGraphicsPluginSelectColorSwapchainFormat(swapchainFormats);
+
+    //gOpenXrProgramColorSwapchainFormat = VulkanGraphicsPlugin_VulkanGraphicsPluginSelectColorSwapchainFormat(swapchainFormats);
+    //int64_t VulkanGraphicsPlugin_VulkanGraphicsPluginSelectColorSwapchainFormat(const std::vector<int64_t>& runtimeFormats)
+    {
+      // List of supported color swapchain formats.
+      constexpr int64_t SupportedColorSwapchainFormats[] = {VK_FORMAT_B8G8R8A8_SRGB, VK_FORMAT_R8G8B8A8_SRGB, VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_R8G8B8A8_UNORM};
+
+      auto swapchainFormatIt = std::find_first_of(swapchainFormats.begin(), swapchainFormats.end(), std::begin(SupportedColorSwapchainFormats), std::end(SupportedColorSwapchainFormats) );
+
+      if(swapchainFormatIt == swapchainFormats.end() )
+        THROW_CHECK("No runtime swapchain format supported for color swapchain");
+
+      gOpenXrProgramColorSwapchainFormat = *swapchainFormatIt;
+    }
 
     // Print swapchain formats and the selected one
     {
@@ -2202,7 +2235,7 @@ typedef struct VkExtensionProperties
       swapchainCreateInfo.height = vp.recommendedImageRectHeight;
       swapchainCreateInfo.mipCount = 1;
       swapchainCreateInfo.faceCount = 1;
-      swapchainCreateInfo.sampleCount = VulkanGraphicsPlugin_VulkanGraphicsPluginGetSupportedSwapchainSampleCount(vp);
+      swapchainCreateInfo.sampleCount = VK_SAMPLE_COUNT_1_BIT;
       swapchainCreateInfo.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
       Swapchain swapchain;
       swapchain.width = swapchainCreateInfo.width;
@@ -2234,7 +2267,7 @@ typedef struct VkExtensionProperties
         //SwapchainImageContext_SwapchainImageContext_Constructor(indice, VulkanGraphicsPlugin_VulkanGraphicsPluginGetSwapchainImageType(), gVulkanGraphicsPluginVulkanDebugObjectNamer);
         //void SwapchainImageContext_SwapchainImageContext_Constructor(int index, XrStructureType swapchainImageType, VulkanDebugObjectNamer& namer)
         {
-          XrStructureType swapchainImageType = VulkanGraphicsPlugin_VulkanGraphicsPluginGetSwapchainImageType();
+          XrStructureType swapchainImageType = XR_TYPE_SWAPCHAIN_IMAGE_VULKAN2_KHR;
 
           m_swapchainImageContextSwapchainImages.resize(indice + 1);
           m_swapchainImageContextStdVector_renderTargetColorImage.resize(indice + 1);
@@ -3009,7 +3042,7 @@ typedef struct VkExtensionProperties
                 if(res == VK_SUCCESS)
                 {
                   // Buffer can be executed multiple times...
-                  CmdBuffer_CmdBufferSetState(CmdBufferStateEnum::Executable);
+                  gCmdBufferState = CmdBufferStateEnum::Executable;
                   break;
                 }
 
@@ -3039,7 +3072,7 @@ typedef struct VkExtensionProperties
                 if(tableVk.ResetCommandBuffer)
                   CHECK_VULKANCMD(tableVk.ResetCommandBuffer(gCmdBufferBuffer, 0) );
 
-                CmdBuffer_CmdBufferSetState(CmdBufferStateEnum::Initialized);
+                gCmdBufferState = CmdBufferStateEnum::Initialized;
               }
 
             }while(0);
@@ -3060,7 +3093,7 @@ typedef struct VkExtensionProperties
               if(tableVk.BeginCommandBuffer)
                 CHECK_VULKANCMD(tableVk.BeginCommandBuffer(gCmdBufferBuffer, &cmdBeginInfo) );
 
-              CmdBuffer_CmdBufferSetState(CmdBufferStateEnum::Recording);
+              gCmdBufferState = CmdBufferStateEnum::Recording;
 
               //return true;
 
@@ -3272,7 +3305,7 @@ typedef struct VkExtensionProperties
               if(tableVk.EndCommandBuffer)
                 CHECK_VULKANCMD(tableVk.EndCommandBuffer(gCmdBufferBuffer) );
 
-              CmdBuffer_CmdBufferSetState(CmdBufferStateEnum::Executable);
+              gCmdBufferState = CmdBufferStateEnum::Executable;
 
             }while(0);
 
@@ -3295,7 +3328,7 @@ typedef struct VkExtensionProperties
               if(tableVk.QueueSubmit)
                 CHECK_VULKANCMD(tableVk.QueueSubmit(gVulkanGraphicsPluginVkQueue, 1, &submitInfo, gCmdBufferExecFence) );
 
-              CmdBuffer_CmdBufferSetState(CmdBufferStateEnum::Executing);
+              gCmdBufferState = CmdBufferStateEnum::Executing;
 
               //return true;
 
