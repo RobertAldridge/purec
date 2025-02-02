@@ -3095,16 +3095,10 @@ typedef enum VkDebugReportFlagBitsEXT {
  VK_DEBUG_REPORT_DEBUG_BIT_EXT = 0x00000010,
  VK_DEBUG_REPORT_FLAG_BITS_MAX_ENUM_EXT = 0x7FFFFFFF
 } VkDebugReportFlagBitsEXT;
+
 typedef VkFlags VkDebugReportFlagsEXT;
-typedef VkBool32 (VKAPI_PTR *PFN_vkDebugReportCallbackEXT)(
- VkDebugReportFlagsEXT flags,
- VkDebugReportObjectTypeEXT objectType,
- uint64_t object,
- size_t location,
- int32_t messageCode,
- const char* pLayerPrefix,
- const char* pMessage,
- void* pUserData);
+
+typedef VkBool32 (VKAPI_PTR *PFN_vkDebugReportCallbackEXT)(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType, uint64_t object, size_t location, int32_t messageCode, const char* pLayerPrefix, const char* pMessage, void* pUserData);
 
 typedef struct VkDebugReportCallbackCreateInfoEXT {
  VkStructureType sType;
@@ -4229,11 +4223,7 @@ typedef struct VkDebugUtilsMessengerCallbackDataEXT {
  const VkDebugUtilsObjectNameInfoEXT* pObjects;
 } VkDebugUtilsMessengerCallbackDataEXT;
 
-typedef VkBool32 (VKAPI_PTR *PFN_vkDebugUtilsMessengerCallbackEXT)(
- VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
- VkDebugUtilsMessageTypeFlagsEXT messageTypes,
- const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
- void* pUserData);
+typedef VkBool32 (VKAPI_PTR *PFN_vkDebugUtilsMessengerCallbackEXT)(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData);
 
 typedef struct VkDebugUtilsMessengerCreateInfoEXT {
  VkStructureType sType;
@@ -6695,9 +6685,7 @@ typedef struct VkDeviceMemoryReportCallbackDataEXT {
  uint32_t heapIndex;
 } VkDeviceMemoryReportCallbackDataEXT;
 
-typedef void (VKAPI_PTR *PFN_vkDeviceMemoryReportCallbackEXT)(
- const VkDeviceMemoryReportCallbackDataEXT* pCallbackData,
- void* pUserData);
+typedef void (VKAPI_PTR *PFN_vkDeviceMemoryReportCallbackEXT)(const VkDeviceMemoryReportCallbackDataEXT* pCallbackData, void* pUserData);
 
 typedef struct VkDeviceDeviceMemoryReportCreateInfoEXT {
  VkStructureType sType;
@@ -9161,8 +9149,8 @@ typedef enum VkDirectDriverLoadingModeLUNARG {
  VK_DIRECT_DRIVER_LOADING_MODE_MAX_ENUM_LUNARG = 0x7FFFFFFF
 } VkDirectDriverLoadingModeLUNARG;
 typedef VkFlags VkDirectDriverLoadingFlagsLUNARG;
-typedef PFN_vkVoidFunction (VKAPI_PTR *PFN_vkGetInstanceProcAddrLUNARG)(
- VkInstance instance, const char* pName);
+
+typedef PFN_vkVoidFunction (VKAPI_PTR *PFN_vkGetInstanceProcAddrLUNARG)(VkInstance instance, const char* pName);
 
 typedef struct VkDirectDriverLoadingInfoLUNARG {
  VkStructureType sType;

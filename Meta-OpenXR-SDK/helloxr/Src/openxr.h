@@ -2071,11 +2071,7 @@ typedef struct XrDebugUtilsMessengerCallbackDataEXT {
  XrDebugUtilsLabelEXT* sessionLabels;
 } XrDebugUtilsMessengerCallbackDataEXT;
 
-typedef XrBool32 (XRAPI_PTR *PFN_xrDebugUtilsMessengerCallbackEXT)(
- XrDebugUtilsMessageSeverityFlagsEXT messageSeverity,
- XrDebugUtilsMessageTypeFlagsEXT messageTypes,
- const XrDebugUtilsMessengerCallbackDataEXT* callbackData,
- void* userData);
+typedef XrBool32 (XRAPI_PTR *PFN_xrDebugUtilsMessengerCallbackEXT)(XrDebugUtilsMessageSeverityFlagsEXT messageSeverity, XrDebugUtilsMessageTypeFlagsEXT messageTypes, const XrDebugUtilsMessengerCallbackDataEXT* callbackData, void* userData);
 
 // XrDebugUtilsMessengerCreateInfoEXT extends XrInstanceCreateInfo
 typedef struct XrDebugUtilsMessengerCreateInfoEXT {

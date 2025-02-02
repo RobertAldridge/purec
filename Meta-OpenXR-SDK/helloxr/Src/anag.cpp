@@ -1679,35 +1679,164 @@ try
     if(tableXr.BeginFrame)
       CHECK_XRCMD_CHECK(tableXr.BeginFrame(gXrSession, &frameBeginInfo) );
 
+    std::vector<XrCompositionLayerBaseHeader*> layers_vector;
+    XrCompositionLayerProjection layer {XR_TYPE_COMPOSITION_LAYER_PROJECTION};
+    std::vector<XrCompositionLayerProjectionView> projectionLayerViews;
+
+    if(frameState.shouldRender == XR_TRUE)
+    {
+      XrTime predictedDisplayTime = frameState.predictedDisplayTime;
+
+      //bool renderLayerResult = OpenXrProgram_OpenXrProgramRenderLayer(frameState.predictedDisplayTime, projectionLayerViews, layer);
+      bool renderLayerResult = false;
+
+      //bool OpenXrProgram_OpenXrProgramRenderLayer(XrTime predictedDisplayTime, std::vector<XrCompositionLayerProjectionView>& projectionLayerViews, XrCompositionLayerProjection& layer)
+
+      do
+      {
+        XrResult renderLayerXrResult = XR_ERROR_VALIDATION_FAILURE;
+
+        XrViewState renderLayerViewState {XR_TYPE_VIEW_STATE};
+        uint32_t renderLayerViewCapacityInput = (uint32_t)gOpenXrProgramStdVector_XrView.size();
+        uint32_t renderLayerViewCountOutput = 0;
+
+        XrViewLocateInfo viewLocateInfo {XR_TYPE_VIEW_LOCATE_INFO};
+        viewLocateInfo.viewConfigurationType = gOptions_XrViewConfigurationType;
+        viewLocateInfo.displayTime = predictedDisplayTime;
+        viewLocateInfo.space = gOpenXrProgramXrSpace;
+
+        if(tableXr.LocateViews)
+        {
+          renderLayerXrResult = tableXr.LocateViews(gXrSession, &viewLocateInfo, &renderLayerViewState, renderLayerViewCapacityInput, &renderLayerViewCountOutput, gOpenXrProgramStdVector_XrView.data() );
+          CHECK_XRRESULT(renderLayerXrResult, "xrLocateViews");
+        }
+
+        if( (renderLayerViewState.viewStateFlags & XR_VIEW_STATE_POSITION_VALID_BIT) == 0 || (renderLayerViewState.viewStateFlags & XR_VIEW_STATE_ORIENTATION_VALID_BIT) == 0)
+          break;  // There is no valid tracking poses for the views.
+
+        CHECK_CHECK(renderLayerViewCountOutput == renderLayerViewCapacityInput);
+        CHECK_CHECK(renderLayerViewCountOutput == gOpenXrProgramStdVector_XrViewConfigurationView.size() );
+        CHECK_CHECK(renderLayerViewCountOutput == gOpenXrProgramStdVector_Swapchain.size() );
+
+        projectionLayerViews.resize(renderLayerViewCountOutput);
+
+        // For each locatable space that we want to visualize, render a 25cm cube.
+        std::vector<Cube> cubes;
+
+        for(XrSpace visualizedSpace : gOpenXrProgramStdVector_XrSpace)
+        {
+          XrSpaceLocation spaceLocation {XR_TYPE_SPACE_LOCATION};
+
+          if(tableXr.LocateSpace)
+          {
+            renderLayerXrResult = tableXr.LocateSpace(visualizedSpace, gOpenXrProgramXrSpace, predictedDisplayTime, &spaceLocation);
+            CHECK_XRRESULT(renderLayerXrResult, "xrLocateSpace");
+          }
+
+          if(XR_UNQUALIFIED_SUCCESS(renderLayerXrResult) )
+          {
+            if( (spaceLocation.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) != 0 && (spaceLocation.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0)
+              cubes.push_back(Cube {spaceLocation.pose, {0.25f, 0.25f, 0.25f} } );
+          }
+          else
+          {
+            Log::Write(Log::Level::Verbose, Fmt("Unable to locate a visualized reference space in app space: %d", renderLayerXrResult) );
+          }
+        }
+
+        // Render a 10cm cube scaled by grabAction for each hand. Note renderHand will only be
+        // true when the application has focus.
+        for(auto hand : {Side_LEFT, Side_RIGHT} )
+        {
+          XrSpaceLocation spaceLocation {XR_TYPE_SPACE_LOCATION};
+
+          if(tableXr.LocateSpace)
+          {
+            renderLayerXrResult = tableXr.LocateSpace(gOpenXrProgramInputState_InputState_handSpace[hand], gOpenXrProgramXrSpace, predictedDisplayTime, &spaceLocation);
+            CHECK_XRRESULT(renderLayerXrResult, "xrLocateSpace");
+          }
+
+          if(XR_UNQUALIFIED_SUCCESS(renderLayerXrResult) )
+          {
+            if( (spaceLocation.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) != 0 && (spaceLocation.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0)
+            {
+              float scale = 0.1f * gOpenXrProgramInputState_InputState_handScale[hand];
+              cubes.push_back(Cube {spaceLocation.pose, {scale, scale, scale} } );
+            }
+          }
+          else
+          {
+            // Tracking loss is expected when the hand is not active so only log a message
+            // if the hand is active.
+            if(gOpenXrProgramInputState_InputState_handActive[hand] == XR_TRUE)
+            {
+              const char* handName[] = {"left", "right"};
+              Log::Write(Log::Level::Verbose, Fmt("Unable to locate %s hand action space in app space: %d", handName[hand], renderLayerXrResult) );
+            }
+          }
+        }
+
+        // Render view to the appropriate part of the swapchain image.
+        for(uint32_t i = 0; i < renderLayerViewCountOutput; i++)
+        {
+          // Each view has a separate swapchain which is acquired, rendered to, and released.
+          const Swapchain viewSwapchain = gOpenXrProgramStdVector_Swapchain[i];
+
+          XrSwapchainImageAcquireInfo acquireInfo {XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO};
+
+          uint32_t swapchainImageIndex;
+
+          if(tableXr.AcquireSwapchainImage)
+            CHECK_XRCMD_CHECK(tableXr.AcquireSwapchainImage(viewSwapchain.handle, &acquireInfo, &swapchainImageIndex) );
+
+          XrSwapchainImageWaitInfo waitInfo {XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO};
+          waitInfo.timeout = XR_INFINITE_DURATION;
+
+          if(tableXr.WaitSwapchainImage)
+            CHECK_XRCMD_CHECK(tableXr.WaitSwapchainImage(viewSwapchain.handle, &waitInfo) );
+
+          projectionLayerViews[i] = {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW};
+          projectionLayerViews[i].pose = gOpenXrProgramStdVector_XrView[i].pose;
+          projectionLayerViews[i].fov = gOpenXrProgramStdVector_XrView[i].fov;
+          projectionLayerViews[i].subImage.swapchain = viewSwapchain.handle;
+          projectionLayerViews[i].subImage.imageRect.offset = {0, 0};
+          projectionLayerViews[i].subImage.imageRect.extent = {viewSwapchain.width, viewSwapchain.height};
+
+          const XrSwapchainImageBaseHeader* const swapchainImage = gOpenXrProgramStdMap_XrSwapchain_StdVectorXrSwapchainImageBaseHeader[viewSwapchain.handle][swapchainImageIndex];
+          VulkanGraphicsPlugin_VulkanGraphicsPluginRenderView(projectionLayerViews[i], swapchainImage, gOpenXrProgramColorSwapchainFormat, cubes);
+
+          XrSwapchainImageReleaseInfo releaseInfo {XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
+
+          if(tableXr.ReleaseSwapchainImage)
+            CHECK_XRCMD_CHECK(tableXr.ReleaseSwapchainImage(viewSwapchain.handle, &releaseInfo) );
+        }
+
+        layer.space = gOpenXrProgramXrSpace;
+        layer.layerFlags = gOptions_XrEnvironmentBlendMode == XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND ? XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT : 0;
+        layer.viewCount = (uint32_t)projectionLayerViews.size();
+        layer.views = projectionLayerViews.data();
+
+        renderLayerResult = true;
+
+      }while(0);
+
+      if(gPassthroughFeature == XR_NULL_HANDLE && renderLayerResult)
+        layers_vector.push_back(reinterpret_cast<XrCompositionLayerBaseHeader*>( &layer) );
+    }
+
     if(gPassthroughFeature == XR_NULL_HANDLE)
     {
-      std::vector<XrCompositionLayerBaseHeader*> layers;
-      XrCompositionLayerProjection layer {XR_TYPE_COMPOSITION_LAYER_PROJECTION};
-      std::vector<XrCompositionLayerProjectionView> projectionLayerViews;
-
-      if(frameState.shouldRender == XR_TRUE)
-      {
-        if(OpenXrProgram_OpenXrProgramRenderLayer(frameState.predictedDisplayTime, projectionLayerViews, layer) )
-          layers.push_back(reinterpret_cast<XrCompositionLayerBaseHeader*>(&layer) );
-      }
-
       XrFrameEndInfo frameEndInfo {XR_TYPE_FRAME_END_INFO};
       frameEndInfo.displayTime = frameState.predictedDisplayTime;
       frameEndInfo.environmentBlendMode = gOptions_XrEnvironmentBlendMode;
-      frameEndInfo.layerCount = (uint32_t)layers.size();
-      frameEndInfo.layers = layers.data();
+      frameEndInfo.layerCount = (uint32_t)layers_vector.size();
+      frameEndInfo.layers = layers_vector.data();
 
       if(tableXr.EndFrame)
         CHECK_XRCMD_CHECK(tableXr.EndFrame(gXrSession, &frameEndInfo) );
     }
     else
     {
-      XrCompositionLayerProjection layer {XR_TYPE_COMPOSITION_LAYER_PROJECTION};
-      std::vector<XrCompositionLayerProjectionView> projectionLayerViews;
-
-      if(frameState.shouldRender == XR_TRUE)
-        OpenXrProgram_OpenXrProgramRenderLayer(frameState.predictedDisplayTime, projectionLayerViews, layer);
-
       XrCompositionLayerPassthroughFB passthroughCompLayer = {XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_FB};
       passthroughCompLayer.layerHandle = gPassthroughLayer;
       passthroughCompLayer.flags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
@@ -1716,16 +1845,16 @@ try
       layer.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
 
       const int kLayerCount = 2;
-      const XrCompositionLayerBaseHeader* layers[kLayerCount] = {
-        (const XrCompositionLayerBaseHeader*)&passthroughCompLayer,
-        (const XrCompositionLayerBaseHeader*)&layer/*applicationCompLayer*/
+      const XrCompositionLayerBaseHeader* layers_array[kLayerCount] = {
+        (const XrCompositionLayerBaseHeader*) &passthroughCompLayer,
+        (const XrCompositionLayerBaseHeader*) &layer/*applicationCompLayer*/
       };
 
       XrFrameEndInfo frameEndInfo = {XR_TYPE_FRAME_END_INFO};
       frameEndInfo.displayTime = frameState.predictedDisplayTime;
       frameEndInfo.environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
       frameEndInfo.layerCount = kLayerCount;
-      frameEndInfo.layers = layers;
+      frameEndInfo.layers = layers_array;
 
       if(tableXr.EndFrame)
         CHECK_XRCMD_CHECK(tableXr.EndFrame(gXrSession, &frameEndInfo) );
