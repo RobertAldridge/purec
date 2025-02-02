@@ -950,7 +950,27 @@ XR_YVR_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_YVR_controller_interaction"
   // Extension function must be loaded by name
   XrGraphicsRequirementsVulkan2KHR graphicsRequirements {XR_TYPE_GRAPHICS_REQUIREMENTS_VULKAN2_KHR};
 
-  CHECK_XRCMD_CHECK(VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsRequirements2KHR(gXrInstance, gXrSystemId, &graphicsRequirements) );
+  //CHECK_XRCMD_CHECK(VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsRequirements2KHR(gXrInstance, gXrSystemId, &graphicsRequirements) );
+  //XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsRequirements2KHR(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsVulkan2KHR* graphicsRequirements)
+  {
+    PFN_xrGetVulkanGraphicsRequirements2KHR pfnGetVulkanGraphicsRequirements2KHR = nullptr;
+    XrResult resultGraphicsRequirements = XR_ERROR_VALIDATION_FAILURE;
+
+    InitOpenXr();
+
+    if(tableXr.GetInstanceProcAddr)
+    {
+      resultGraphicsRequirements = tableXr.GetInstanceProcAddr(gXrInstance, "xrGetVulkanGraphicsRequirements2KHR", reinterpret_cast<PFN_xrVoidFunction*>( &pfnGetVulkanGraphicsRequirements2KHR) );
+      CHECK_XRCMD_CHECK(resultGraphicsRequirements);
+    }
+
+    if(pfnGetVulkanGraphicsRequirements2KHR)
+      resultGraphicsRequirements = pfnGetVulkanGraphicsRequirements2KHR(gXrInstance, gXrSystemId, &graphicsRequirements);
+
+    CHECK_XRCMD_CHECK(resultGraphicsRequirements);
+
+    //return resultGraphicsRequirements;
+  }
 
   VkResult err = VK_ERROR_OUT_OF_HOST_MEMORY;
 

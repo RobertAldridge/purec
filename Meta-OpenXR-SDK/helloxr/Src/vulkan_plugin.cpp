@@ -801,22 +801,3 @@ XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsDevice2KHR(Xr
 
   return result;
 }
-
-XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsRequirements2KHR(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsVulkan2KHR* graphicsRequirements)
-{
-  PFN_xrGetVulkanGraphicsRequirements2KHR pfnGetVulkanGraphicsRequirements2KHR = nullptr;
-  XrResult result = XR_ERROR_VALIDATION_FAILURE;
-
-  InitOpenXr();
-
-  if(tableXr.GetInstanceProcAddr)
-  {
-    result = tableXr.GetInstanceProcAddr(instance, "xrGetVulkanGraphicsRequirements2KHR", reinterpret_cast<PFN_xrVoidFunction*>( &pfnGetVulkanGraphicsRequirements2KHR) );
-    CHECK_XRCMD_CHECK(result);
-  }
-
-  if(pfnGetVulkanGraphicsRequirements2KHR)
-    result = pfnGetVulkanGraphicsRequirements2KHR(instance, systemId, graphicsRequirements);
-
-  return result;
-}
