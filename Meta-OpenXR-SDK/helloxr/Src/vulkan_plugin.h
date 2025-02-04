@@ -116,6 +116,62 @@ extern PFN_vkCreateDebugUtilsMessengerEXT gVulkanGraphicsPluginVkCreateDebugUtil
 
 extern VkDebugUtilsMessengerEXT gVulkanGraphicsPluginVkDebugUtilsMessenger;
 
+constexpr char VertexShaderGlsl2[] =
+R"_(
+
+  #version 450
+
+  layout(location = 0) out vec4 fragColor;
+
+  vec2 positions[3] = vec2[](
+      vec2(0.0, -0.5),
+      vec2(0.5, 0.5),
+      vec2(-0.5, 0.5)
+  );
+
+  vec4 colors[18] = vec4[](
+      vec4(1.0, 0.0, 0.0, 1.0),
+      vec4(0.0, 1.0, 0.0, 1.0),
+      vec4(0.0, 0.0, 1.0, 1.0),
+      vec4(1.0, 0.0, 0.0, 1.0),
+      vec4(0.0, 1.0, 0.0, 1.0),
+      vec4(0.0, 0.0, 1.0, 1.0),
+      vec4(1.0, 0.0, 0.0, 1.0),
+      vec4(0.0, 1.0, 0.0, 1.0),
+      vec4(0.0, 0.0, 1.0, 1.0),
+      vec4(1.0, 0.0, 0.0, 1.0),
+      vec4(0.0, 1.0, 0.0, 1.0),
+      vec4(0.0, 0.0, 1.0, 1.0),
+      vec4(1.0, 0.0, 0.0, 1.0),
+      vec4(0.0, 1.0, 0.0, 1.0),
+      vec4(0.0, 0.0, 1.0, 1.0),
+      vec4(1.0, 0.0, 0.0, 1.0),
+      vec4(0.0, 1.0, 0.0, 1.0),
+      vec4(0.0, 0.0, 1.0, 1.0)
+  );
+
+  void main() {
+      gl_Position = vec4(positions[gl_VertexIndex], 0.0, 1.0);
+      fragColor = colors[gl_VertexIndex];
+  }
+
+)_";
+
+constexpr char FragmentShaderGlsl2[] =
+R"_(
+
+  #version 450
+
+  layout(location = 0) in vec3 fragColor;
+
+  layout(location = 0) out vec4 outColor;
+
+  void main() {
+      outColor = vec4(fragColor, 1.0);
+  }
+
+)_";
+
 constexpr char VertexShaderGlsl[] =
 R"_(
 
@@ -133,6 +189,27 @@ R"_(
 
   layout (location = 0) out vec4 oColor;
 
+  vec4 colors[18] = vec4[](
+      vec4(1.0, 0.0, 0.0, 1.0),
+      vec4(0.0, 1.0, 0.0, 1.0),
+      vec4(0.0, 0.0, 1.0, 1.0),
+      vec4(1.0, 0.0, 0.0, 1.0),
+      vec4(0.0, 1.0, 0.0, 1.0),
+      vec4(0.0, 0.0, 1.0, 1.0),
+      vec4(1.0, 0.0, 0.0, 1.0),
+      vec4(0.0, 1.0, 0.0, 1.0),
+      vec4(0.0, 0.0, 1.0, 1.0),
+      vec4(1.0, 0.0, 0.0, 1.0),
+      vec4(0.0, 1.0, 0.0, 1.0),
+      vec4(0.0, 0.0, 1.0, 1.0),
+      vec4(1.0, 0.0, 0.0, 1.0),
+      vec4(0.0, 1.0, 0.0, 1.0),
+      vec4(0.0, 0.0, 1.0, 1.0),
+      vec4(1.0, 0.0, 0.0, 1.0),
+      vec4(0.0, 1.0, 0.0, 1.0),
+      vec4(0.0, 0.0, 1.0, 1.0)
+  );
+
   out gl_PerVertex
   {
     vec4 gl_Position;
@@ -140,7 +217,8 @@ R"_(
 
   void main()
   {
-    oColor = vec4(Color, 1.0);
+    //oColor = vec4(Color, 1.0);
+    oColor = colors[gl_VertexIndex];
 
     gl_Position = ubuf.mvp * vec4(Position, 1.0);
   }

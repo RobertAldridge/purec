@@ -3427,7 +3427,54 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
       //   XrEnvironmentDepthImageMETA* environmentDepthImage
       // );
 
-      gAcquireEnvironmentDepthImageMETA(gEnvironmentDepthProviderMETA, &environmentDepthImageAcquireInfoMETA, &environmentDepthImageMETA);
+//gAcquireEnvironmentDepthImageMETA(gEnvironmentDepthProviderMETA, &environmentDepthImageAcquireInfoMETA, &environmentDepthImageMETA);
+
+#if 0
+      XrEnvironmentDepthImageAcquireInfoMETA environmentDepthAcquireInfo {XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_ACQUIRE_INFO_META};
+
+      environmentDepthAcquireInfo.space = app.LocalSpace;
+      environmentDepthAcquireInfo.displayTime = frameState.predictedDisplayTime;
+
+      XrEnvironmentDepthImageMETA environmentDepthImage {XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_META};
+      environmentDepthImage.views[0].type = XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_VIEW_META;
+      environmentDepthImage.views[1].type = XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_VIEW_META;
+
+      const XrResult acquireResult = xrAcquireEnvironmentDepthImageMETA(app.EnvironmentDepthProvider, &environmentDepthAcquireInfo, &environmentDepthImage);
+
+      if(acquireResult == XR_SUCCESS)
+      {
+        frameIn.HasDepth = true;
+
+        frameIn.DepthTexture = environmentDepthTextures.at(environmentDepthImage.swapchainIndex);
+
+        frameIn.DepthNearZ = environmentDepthImage.nearZ;
+        frameIn.DepthFarZ = environmentDepthImage.farZ;
+
+        for(int eye = 0; eye < kNumEyes; ++eye)
+        {
+          const XrPosef xfLocalFromDepthEye = environmentDepthImage.views[eye].pose;
+
+          XrPosef xfDepthEyeFromLocal;
+          XrPosef_Invert(&xfDepthEyeFromLocal, &xfLocalFromDepthEye);
+
+          XrMatrix4x4f viewMat;
+          XrMatrix4x4f_CreateFromRigidTransform(&viewMat, &xfDepthEyeFromLocal);
+
+          XrMatrix4x4f projectionMat;
+          XrMatrix4x4f_CreateProjectionFov(&projectionMat, GRAPHICS_OPENGL_ES, environmentDepthImage.views[eye].fov, environmentDepthImage.nearZ, std::isfinite(environmentDepthImage.farZ) ? environmentDepthImage.farZ : 0);
+
+          frameIn.DepthViewMatrices[eye] = OvrFromXr(viewMat);
+          frameIn.DepthProjectionMatrices[eye] = OvrFromXr(projectionMat);
+        }
+      }
+      else
+      {
+        ALOGE("No depth image received. Result = %d", acquireResult);
+        frameIn.HasDepth = false;
+      }
+
+      app.appRenderer.RenderFrame(frameIn);
+#endif
 
       // struct XrEnvironmentDepthImageAcquireInfoMETA
       // {
