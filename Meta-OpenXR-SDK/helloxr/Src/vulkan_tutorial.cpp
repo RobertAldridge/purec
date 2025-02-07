@@ -718,7 +718,7 @@ void VulkanTutorialCreateSwapChain(
 
   tableVk.GetSwapchainImagesKHR(device, swapChain, &imageCount, nullptr);
   swapChainImages.resize(imageCount);
-  tableVk.GetSwapchainImagesKHR(device, swapChain, &imageCount, swapChainImages.data());
+  tableVk.GetSwapchainImagesKHR(device, swapChain, &imageCount, swapChainImages.data() );
 
   swapChainImageFormat = surfaceFormat.format;
   swapChainExtent = extent;
@@ -863,7 +863,7 @@ VkShaderModule VulkanTutorialCreateShaderModule(const std::vector<char>& code)
   VkShaderModuleCreateInfo createInfo {};
   createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
   createInfo.codeSize = code.size();
-  createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
+  createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data() );
 
   VkShaderModule shaderModule;
   if(tableVk.CreateShaderModule(device, &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
@@ -893,7 +893,7 @@ void initWindow()
 
 void framebufferResizeCallback(GLFWwindow* window, int width, int height)
 {
-  auto app = reinterpret_cast<HelloTriangleApplication*>(glfwGetWindowUserPointer(window));
+  auto app = reinterpret_cast<HelloTriangleApplication*>(glfwGetWindowUserPointer(window) );
   app->framebufferResized = true;
 }
 
@@ -1063,7 +1063,7 @@ void pickPhysicalDevice()
     throw std::runtime_error("failed to find GPUs with Vulkan support!");
 
   std::vector<VkPhysicalDevice> devices(deviceCount);
-  vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+  vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data() );
 
   for(const auto& device : devices)
   {
@@ -1147,7 +1147,7 @@ void createDescriptorSetLayout()
   std::array<VkDescriptorSetLayoutBinding, 2> bindings = {uboLayoutBinding, samplerLayoutBinding};
   VkDescriptorSetLayoutCreateInfo layoutInfo{};
   layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-  layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+  layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size() );
   layoutInfo.pBindings = bindings.data();
 
   if(vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS)
@@ -1183,7 +1183,7 @@ void createGraphicsPipeline()
   auto attributeDescriptions = Vertex::getAttributeDescriptions();
 
   vertexInputInfo.vertexBindingDescriptionCount = 1;
-  vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+  vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size() );
   vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
   vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 
@@ -1236,7 +1236,7 @@ void createGraphicsPipeline()
 
   VkPipelineDynamicStateCreateInfo dynamicState{};
   dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-  dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
+  dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size() );
   dynamicState.pDynamicStates = dynamicStates.data();
 
   VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
@@ -1438,7 +1438,7 @@ void createDescriptorPool()
 
   VkDescriptorPoolCreateInfo poolInfo {};
   poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-  poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+  poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size() );
   poolInfo.pPoolSizes = poolSizes.data();
   poolInfo.maxSets = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
 
@@ -1456,7 +1456,7 @@ void createDescriptorSets()
   allocInfo.pSetLayouts = layouts.data();
 
   descriptorSets.resize(MAX_FRAMES_IN_FLIGHT);
-  if(vkAllocateDescriptorSets(device, &allocInfo, descriptorSets.data()) != VK_SUCCESS)
+  if(vkAllocateDescriptorSets(device, &allocInfo, descriptorSets.data() ) != VK_SUCCESS)
     throw std::runtime_error("failed to allocate descriptor sets!");
 
   for(size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
@@ -1574,8 +1574,8 @@ void updateUniformBuffer(uint32_t currentImage)
   float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
   UniformBufferObject ubo {};
-  ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-  ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+  ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f) );
+  ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f) );
   ubo.proj = glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float) swapChainExtent.height, 0.1f, 10.0f);
   ubo.proj[1][1] *= -1;
 
@@ -1601,7 +1601,7 @@ void drawFrame()
 
   updateUniformBuffer(currentFrame);
 
-  vkResetFences(device, 1, &inFlightFences[currentFrame]);
+  vkResetFences(device, 1, &inFlightFences[currentFrame] );
 
   vkResetCommandBuffer(commandBuffers[currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
   recordCommandBuffer(commandBuffers[currentFrame], imageIndex);
@@ -1609,7 +1609,7 @@ void drawFrame()
   VkSubmitInfo submitInfo {};
   submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-  VkSemaphore waitSemaphores[] = {imageAvailableSemaphores[currentFrame]};
+  VkSemaphore waitSemaphores[] = {imageAvailableSemaphores[currentFrame] };
   VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
   submitInfo.waitSemaphoreCount = 1;
   submitInfo.pWaitSemaphores = waitSemaphores;
@@ -1618,11 +1618,11 @@ void drawFrame()
   submitInfo.commandBufferCount = 1;
   submitInfo.pCommandBuffers = &commandBuffers[currentFrame];
 
-  VkSemaphore signalSemaphores[] = {renderFinishedSemaphores[currentFrame]};
+  VkSemaphore signalSemaphores[] = {renderFinishedSemaphores[currentFrame] };
   submitInfo.signalSemaphoreCount = 1;
   submitInfo.pSignalSemaphores = signalSemaphores;
 
-  if(vkQueueSubmit(graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS)
+  if(vkQueueSubmit(graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame] ) != VK_SUCCESS)
     throw std::runtime_error("failed to submit draw command buffer!");
 
   VkPresentInfoKHR presentInfo{};

@@ -1819,7 +1819,7 @@ typedef struct VkPhysicalDeviceFragmentShadingRateKHR {
 } VkPhysicalDeviceFragmentShadingRateKHR;
 
 typedef VkResult (VKAPI_PTR *PFN_vkGetPhysicalDeviceFragmentShadingRatesKHR)(VkPhysicalDevice physicalDevice, uint32_t* pFragmentShadingRateCount, VkPhysicalDeviceFragmentShadingRateKHR* pFragmentShadingRates);
-typedef void (VKAPI_PTR *PFN_vkCmdSetFragmentShadingRateKHR)(VkCommandBuffer commandBuffer, const VkExtent2D* pFragmentSize, const VkFragmentShadingRateCombinerOpKHR combinerOps[2]);
+typedef void (VKAPI_PTR *PFN_vkCmdSetFragmentShadingRateKHR)(VkCommandBuffer commandBuffer, const VkExtent2D* pFragmentSize, const VkFragmentShadingRateCombinerOpKHR combinerOps[2] );
 
 #ifndef VK_NO_PROTOTYPES
 VKAPI_ATTR VkResult VKAPI_CALL vkGetPhysicalDeviceFragmentShadingRatesKHR(
@@ -1830,7 +1830,7 @@ VKAPI_ATTR VkResult VKAPI_CALL vkGetPhysicalDeviceFragmentShadingRatesKHR(
 VKAPI_ATTR void VKAPI_CALL vkCmdSetFragmentShadingRateKHR(
  VkCommandBuffer commandBuffer,
  const VkExtent2D* pFragmentSize,
- const VkFragmentShadingRateCombinerOpKHR combinerOps[2]);
+ const VkFragmentShadingRateCombinerOpKHR combinerOps[2] );
 #endif
 
 // VK_KHR_spirv_1_4 is a preprocessor guard. Do not pass it to API calls.
@@ -6995,13 +6995,13 @@ typedef struct VkPipelineFragmentShadingRateEnumStateCreateInfoNV {
  VkFragmentShadingRateCombinerOpKHR combinerOps[2];
 } VkPipelineFragmentShadingRateEnumStateCreateInfoNV;
 
-typedef void (VKAPI_PTR *PFN_vkCmdSetFragmentShadingRateEnumNV)(VkCommandBuffer commandBuffer, VkFragmentShadingRateNV shadingRate, const VkFragmentShadingRateCombinerOpKHR combinerOps[2]);
+typedef void (VKAPI_PTR *PFN_vkCmdSetFragmentShadingRateEnumNV)(VkCommandBuffer commandBuffer, VkFragmentShadingRateNV shadingRate, const VkFragmentShadingRateCombinerOpKHR combinerOps[2] );
 
 #ifndef VK_NO_PROTOTYPES
 VKAPI_ATTR void VKAPI_CALL vkCmdSetFragmentShadingRateEnumNV(
  VkCommandBuffer commandBuffer,
  VkFragmentShadingRateNV shadingRate,
- const VkFragmentShadingRateCombinerOpKHR combinerOps[2]);
+ const VkFragmentShadingRateCombinerOpKHR combinerOps[2] );
 #endif
 
 // VK_NV_ray_tracing_motion_blur is a preprocessor guard. Do not pass it to API calls.

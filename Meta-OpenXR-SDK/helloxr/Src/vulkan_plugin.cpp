@@ -458,7 +458,6 @@ VKAPI_ATTR VkBool32 VKAPI_CALL VulkanGraphicsPlugin_debugMessageThunk(VkDebugUti
   VkBool32 result = VK_FALSE;
 
   //return VulkanGraphicsPlugin_VulkanGraphicsPluginDebugMessage(messageSeverity, messageTypes, pCallbackData);
-
   //VkBool32 VulkanGraphicsPlugin_VulkanGraphicsPluginDebugMessage(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData)
   do
   {
@@ -504,10 +503,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL VulkanGraphicsPlugin_debugMessageThunk(VkDebugUti
       auto objectType = pCallbackData->pObjects[0].objectType;
 
       if( (objectType == VK_OBJECT_TYPE_INSTANCE) && (strncmp(pCallbackData->pMessage, "Device Extension:", 17) == 0) )
-	  {
-        //return VK_FALSE;
-		break;
-	  }
+		    break;
 
       objName = VulkanGraphicsPlugin_BlahVkObjectTypeToString(objectType);
       object = pCallbackData->pObjects[0].objectHandle;
@@ -518,10 +514,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL VulkanGraphicsPlugin_debugMessageThunk(VkDebugUti
 
     Log::Write(level, Fmt("%s (%s 0x%llx) %s", flagNames.c_str(), objName.c_str(), object, pCallbackData->pMessage) );
 
-    //return VK_FALSE;
-	break;
-
   }while(0);
-  
+
   return result;
 }

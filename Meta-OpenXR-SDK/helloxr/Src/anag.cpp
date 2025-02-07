@@ -694,10 +694,10 @@ XR_YVR_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_YVR_controller_interaction"
 
     const std::vector<std::string> platformExtensions = {XR_KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME};
 
-    std::transform(platformExtensions.begin(), platformExtensions.end(), std::back_inserter(extensions), [] (const std::string& ext) { return ext.c_str(); } );
+    std::transform(platformExtensions.begin(), platformExtensions.end(), std::back_inserter(extensions), [](const std::string& ext) { return ext.c_str(); } );
 
     const std::vector<std::string> graphicsExtensions = {XR_KHR_VULKAN_ENABLE2_EXTENSION_NAME};
-    std::transform(graphicsExtensions.begin(), graphicsExtensions.end(), std::back_inserter(extensions), [] (const std::string& ext) { return ext.c_str(); } );
+    std::transform(graphicsExtensions.begin(), graphicsExtensions.end(), std::back_inserter(extensions), [](const std::string& ext) { return ext.c_str(); } );
 
     XrInstanceCreateInfo createInfo {XR_TYPE_INSTANCE_CREATE_INFO};
     createInfo.next = &instanceCreateInfoAndroid;
@@ -1870,10 +1870,10 @@ typedef struct VkExtensionProperties
   // Get the XrPath for the left and right hands - we will use them as subaction paths.
 
   if(tableXr.StringToPath)
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left", &gOpenXrProgramInputState_InputState_handSubactionPath[ Side_LEFT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left", &gOpenXrProgramInputState_InputState_handSubactionPath[Side_LEFT] ) );
 
   if(tableXr.StringToPath)
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right", &gOpenXrProgramInputState_InputState_handSubactionPath[ Side_RIGHT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right", &gOpenXrProgramInputState_InputState_handSubactionPath[Side_RIGHT] ) );
 
   // Create actions.
   {
@@ -1933,24 +1933,24 @@ typedef struct VkExtensionProperties
 
   if(tableXr.StringToPath)
   {
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/select/click", &selectPath[ Side_LEFT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/select/click", &selectPath[ Side_RIGHT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/squeeze/value", &squeezeValuePath[ Side_LEFT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/squeeze/value", &squeezeValuePath[ Side_RIGHT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/squeeze/force", &squeezeForcePath[ Side_LEFT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/squeeze/force", &squeezeForcePath[ Side_RIGHT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/squeeze/click", &squeezeClickPath[ Side_LEFT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/squeeze/click", &squeezeClickPath[ Side_RIGHT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/grip/pose", &posePath[ Side_LEFT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/grip/pose", &posePath[ Side_RIGHT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/output/haptic", &hapticPath[ Side_LEFT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/output/haptic", &hapticPath[ Side_RIGHT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/menu/click", &menuClickPath[ Side_LEFT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/menu/click", &menuClickPath[ Side_RIGHT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/b/click", &bClickPath[ Side_LEFT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/b/click", &bClickPath[ Side_RIGHT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/trigger/value", &triggerValuePath[ Side_LEFT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/trigger/value", &triggerValuePath[ Side_RIGHT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/select/click", &selectPath[Side_LEFT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/select/click", &selectPath[Side_RIGHT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/squeeze/value", &squeezeValuePath[Side_LEFT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/squeeze/value", &squeezeValuePath[Side_RIGHT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/squeeze/force", &squeezeForcePath[Side_LEFT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/squeeze/force", &squeezeForcePath[Side_RIGHT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/squeeze/click", &squeezeClickPath[Side_LEFT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/squeeze/click", &squeezeClickPath[Side_RIGHT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/grip/pose", &posePath[Side_LEFT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/grip/pose", &posePath[Side_RIGHT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/output/haptic", &hapticPath[Side_LEFT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/output/haptic", &hapticPath[Side_RIGHT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/menu/click", &menuClickPath[Side_LEFT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/menu/click", &menuClickPath[Side_RIGHT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/b/click", &bClickPath[Side_LEFT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/b/click", &bClickPath[Side_RIGHT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/trigger/value", &triggerValuePath[Side_LEFT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/trigger/value", &triggerValuePath[Side_RIGHT] ) );
   }
 
   // Suggest bindings for KHR Simple.
@@ -1961,14 +1961,14 @@ typedef struct VkExtensionProperties
       CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/interaction_profiles/khr/simple_controller", &khrSimpleInteractionProfilePath) );
 
     std::vector<XrActionSuggestedBinding> bindings { {// Fall back to a click input for the grab action.
-                                                    {gOpenXrProgramInputState_InputState_grabAction, selectPath[ Side_LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_grabAction, selectPath[ Side_RIGHT]},
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_RIGHT]},
-                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[ Side_LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[ Side_RIGHT]},
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_RIGHT]} } };
+                                                    {gOpenXrProgramInputState_InputState_grabAction, selectPath[Side_LEFT] },
+                                                    {gOpenXrProgramInputState_InputState_grabAction, selectPath[Side_RIGHT] },
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_LEFT] },
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_RIGHT] },
+                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[Side_LEFT] },
+                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[Side_RIGHT] },
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_LEFT] },
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_RIGHT] } } };
 
     XrInteractionProfileSuggestedBinding suggestedBindings {XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
 
@@ -1987,13 +1987,13 @@ typedef struct VkExtensionProperties
     if(tableXr.StringToPath)
       CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/interaction_profiles/oculus/touch_controller", &oculusTouchInteractionProfilePath) );
 
-    std::vector<XrActionSuggestedBinding> bindings { { {gOpenXrProgramInputState_InputState_grabAction, squeezeValuePath[ Side_LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_grabAction, squeezeValuePath[ Side_RIGHT]},
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_RIGHT]},
-                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[ Side_LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_RIGHT]} } };
+    std::vector<XrActionSuggestedBinding> bindings { { {gOpenXrProgramInputState_InputState_grabAction, squeezeValuePath[Side_LEFT] },
+                                                    {gOpenXrProgramInputState_InputState_grabAction, squeezeValuePath[Side_RIGHT] },
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_LEFT] },
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_RIGHT] },
+                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[Side_LEFT] },
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_LEFT] },
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_RIGHT] } } };
 
     XrInteractionProfileSuggestedBinding suggestedBindings {XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
 
@@ -2012,14 +2012,14 @@ typedef struct VkExtensionProperties
     if(tableXr.StringToPath)
       CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/interaction_profiles/htc/vive_controller", &viveControllerInteractionProfilePath) );
 
-    std::vector<XrActionSuggestedBinding> bindings { { {gOpenXrProgramInputState_InputState_grabAction, triggerValuePath[ Side_LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_grabAction, triggerValuePath[ Side_RIGHT]},
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_RIGHT]},
-                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[ Side_LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[ Side_RIGHT]},
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_RIGHT]} } };
+    std::vector<XrActionSuggestedBinding> bindings { { {gOpenXrProgramInputState_InputState_grabAction, triggerValuePath[Side_LEFT] },
+                                                    {gOpenXrProgramInputState_InputState_grabAction, triggerValuePath[Side_RIGHT] },
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_LEFT] },
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_RIGHT] },
+                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[Side_LEFT] },
+                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[Side_RIGHT] },
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_LEFT] },
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_RIGHT] } } };
 
     XrInteractionProfileSuggestedBinding suggestedBindings {XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
 
@@ -2038,14 +2038,14 @@ typedef struct VkExtensionProperties
     if(tableXr.StringToPath)
       CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/interaction_profiles/valve/index_controller", &indexControllerInteractionProfilePath) );
 
-    std::vector<XrActionSuggestedBinding> bindings { { {gOpenXrProgramInputState_InputState_grabAction, squeezeForcePath[ Side_LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_grabAction, squeezeForcePath[ Side_RIGHT]},
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_RIGHT]},
-                                                    {gOpenXrProgramInputState_InputState_quitAction, bClickPath[ Side_LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_quitAction, bClickPath[ Side_RIGHT]},
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_RIGHT]} } };
+    std::vector<XrActionSuggestedBinding> bindings { { {gOpenXrProgramInputState_InputState_grabAction, squeezeForcePath[Side_LEFT] },
+                                                    {gOpenXrProgramInputState_InputState_grabAction, squeezeForcePath[Side_RIGHT] },
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_LEFT] },
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_RIGHT] },
+                                                    {gOpenXrProgramInputState_InputState_quitAction, bClickPath[Side_LEFT] },
+                                                    {gOpenXrProgramInputState_InputState_quitAction, bClickPath[Side_RIGHT] },
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_LEFT] },
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_RIGHT] } } };
 
     XrInteractionProfileSuggestedBinding suggestedBindings {XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
 
@@ -2064,14 +2064,14 @@ typedef struct VkExtensionProperties
     if(tableXr.StringToPath)
       CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/interaction_profiles/microsoft/motion_controller", &microsoftMixedRealityInteractionProfilePath) );
 
-    std::vector<XrActionSuggestedBinding> bindings { { {gOpenXrProgramInputState_InputState_grabAction, squeezeClickPath[ Side_LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_grabAction, squeezeClickPath[ Side_RIGHT]},
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[ Side_RIGHT]},
-                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[ Side_LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[ Side_RIGHT]},
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_LEFT]},
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[ Side_RIGHT]} } };
+    std::vector<XrActionSuggestedBinding> bindings { { {gOpenXrProgramInputState_InputState_grabAction, squeezeClickPath[Side_LEFT] },
+                                                    {gOpenXrProgramInputState_InputState_grabAction, squeezeClickPath[Side_RIGHT] },
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_LEFT] },
+                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_RIGHT] },
+                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[Side_LEFT] },
+                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[Side_RIGHT] },
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_LEFT] },
+                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_RIGHT] } } };
 
     XrInteractionProfileSuggestedBinding suggestedBindings {XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
 
@@ -2087,15 +2087,15 @@ typedef struct VkExtensionProperties
 
   actionSpaceInfo.action = gOpenXrProgramInputState_InputState_poseAction;
   actionSpaceInfo.poseInActionSpace.orientation.w = 1.f;
-  actionSpaceInfo.subactionPath = gOpenXrProgramInputState_InputState_handSubactionPath[ Side_LEFT];
+  actionSpaceInfo.subactionPath = gOpenXrProgramInputState_InputState_handSubactionPath[Side_LEFT];
 
   if(tableXr.CreateActionSpace)
-    CHECK_XRCMD_CHECK(tableXr.CreateActionSpace(gXrSession, &actionSpaceInfo, &gOpenXrProgramInputState_InputState_handSpace[ Side_LEFT] ) );
+    CHECK_XRCMD_CHECK(tableXr.CreateActionSpace(gXrSession, &actionSpaceInfo, &gOpenXrProgramInputState_InputState_handSpace[Side_LEFT] ) );
 
-  actionSpaceInfo.subactionPath = gOpenXrProgramInputState_InputState_handSubactionPath[ Side_RIGHT];
+  actionSpaceInfo.subactionPath = gOpenXrProgramInputState_InputState_handSubactionPath[Side_RIGHT];
 
   if(tableXr.CreateActionSpace)
-    CHECK_XRCMD_CHECK(tableXr.CreateActionSpace(gXrSession, &actionSpaceInfo, &gOpenXrProgramInputState_InputState_handSpace[ Side_RIGHT] ) );
+    CHECK_XRCMD_CHECK(tableXr.CreateActionSpace(gXrSession, &actionSpaceInfo, &gOpenXrProgramInputState_InputState_handSpace[Side_RIGHT] ) );
 
   XrSessionActionSetsAttachInfo attachInfo {XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO};
   attachInfo.countActionSets = 1;

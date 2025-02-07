@@ -36,7 +36,7 @@ extern "C" {
 #endif
 
 #define VK_MAKE_API_VERSION(variant, major, minor, patch) \
- ((((uint32_t)(variant)) << 29U) | (((uint32_t)(major)) << 22U) | (((uint32_t)(minor)) << 12U) | ((uint32_t)(patch)))
+  ( ( ( (uint32_t)(variant) ) << 29U) | ( ( (uint32_t)(major) ) << 22U) | ( ( (uint32_t)(minor) ) << 12U) | ( (uint32_t)(patch) ) )
 
 // DEPRECATED: This define has been removed. Specific version defines (e.g. VK_API_VERSION_1_0), or the VK_MAKE_VERSION macro, should be used instead.
 //#define VK_API_VERSION VK_MAKE_API_VERSION(0, 1, 0, 0) // Patch version should always be set to 0
@@ -52,34 +52,40 @@ extern "C" {
 
 // DEPRECATED: This define is deprecated. VK_MAKE_API_VERSION should be used instead.
 #define VK_MAKE_VERSION(major, minor, patch) \
- ((((uint32_t)(major)) << 22U) | (((uint32_t)(minor)) << 12U) | ((uint32_t)(patch)))
+  ( ( ( (uint32_t)(major) ) << 22U) | ( ( (uint32_t)(minor) ) << 12U) | ( (uint32_t)(patch) ) )
 
 // DEPRECATED: This define is deprecated. VK_API_VERSION_MAJOR should be used instead.
-#define VK_VERSION_MAJOR(version) ((uint32_t)(version) >> 22U)
+#define VK_VERSION_MAJOR(version) ( (uint32_t)(version) >> 22U)
 
 // DEPRECATED: This define is deprecated. VK_API_VERSION_MINOR should be used instead.
-#define VK_VERSION_MINOR(version) (((uint32_t)(version) >> 12U) & 0x3FFU)
+#define VK_VERSION_MINOR(version) ( ( (uint32_t)(version) >> 12U) & 0x3FFU)
 
 // DEPRECATED: This define is deprecated. VK_API_VERSION_PATCH should be used instead.
-#define VK_VERSION_PATCH(version) ((uint32_t)(version) & 0xFFFU)
+#define VK_VERSION_PATCH(version) ( (uint32_t)(version) & 0xFFFU)
 
-#define VK_API_VERSION_VARIANT(version) ((uint32_t)(version) >> 29U)
-#define VK_API_VERSION_MAJOR(version) (((uint32_t)(version) >> 22U) & 0x7FU)
-#define VK_API_VERSION_MINOR(version) (((uint32_t)(version) >> 12U) & 0x3FFU)
-#define VK_API_VERSION_PATCH(version) ((uint32_t)(version) & 0xFFFU)
+#define VK_API_VERSION_VARIANT(version) ( (uint32_t)(version) >> 29U)
+#define VK_API_VERSION_MAJOR(version) ( ( (uint32_t)(version) >> 22U) & 0x7FU)
+#define VK_API_VERSION_MINOR(version) ( ( (uint32_t)(version) >> 12U) & 0x3FFU)
+#define VK_API_VERSION_PATCH(version) ( (uint32_t)(version) & 0xFFFU)
+
 typedef uint32_t VkBool32;
 typedef uint64_t VkDeviceAddress;
 typedef uint64_t VkDeviceSize;
 typedef uint32_t VkFlags;
 typedef uint32_t VkSampleMask;
+
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkBuffer)
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkImage)
+
 VK_DEFINE_HANDLE(VkInstance)
 VK_DEFINE_HANDLE(VkPhysicalDevice)
 VK_DEFINE_HANDLE(VkDevice)
 VK_DEFINE_HANDLE(VkQueue)
+
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkSemaphore)
+
 VK_DEFINE_HANDLE(VkCommandBuffer)
+
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkFence)
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDeviceMemory)
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkEvent)
@@ -97,6 +103,7 @@ VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDescriptorSet)
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDescriptorPool)
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkFramebuffer)
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkCommandPool)
+
 #define VK_ATTACHMENT_UNUSED (~0U)
 #define VK_FALSE 0U
 #define VK_LOD_CLAMP_NONE 1000.0F
@@ -3919,7 +3926,7 @@ typedef void (VKAPI_PTR *PFN_vkCmdSetViewport)(VkCommandBuffer commandBuffer, ui
 typedef void (VKAPI_PTR *PFN_vkCmdSetScissor)(VkCommandBuffer commandBuffer, uint32_t firstScissor, uint32_t scissorCount, const VkRect2D* pScissors);
 typedef void (VKAPI_PTR *PFN_vkCmdSetLineWidth)(VkCommandBuffer commandBuffer, float lineWidth);
 typedef void (VKAPI_PTR *PFN_vkCmdSetDepthBias)(VkCommandBuffer commandBuffer, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor);
-typedef void (VKAPI_PTR *PFN_vkCmdSetBlendConstants)(VkCommandBuffer commandBuffer, const float blendConstants[4]);
+typedef void (VKAPI_PTR *PFN_vkCmdSetBlendConstants)(VkCommandBuffer commandBuffer, const float blendConstants[4] );
 typedef void (VKAPI_PTR *PFN_vkCmdSetDepthBounds)(VkCommandBuffer commandBuffer, float minDepthBounds, float maxDepthBounds);
 typedef void (VKAPI_PTR *PFN_vkCmdSetStencilCompareMask)(VkCommandBuffer commandBuffer, VkStencilFaceFlags faceMask, uint32_t compareMask);
 typedef void (VKAPI_PTR *PFN_vkCmdSetStencilWriteMask)(VkCommandBuffer commandBuffer, VkStencilFaceFlags faceMask, uint32_t writeMask);
@@ -4491,7 +4498,7 @@ VKAPI_ATTR void VKAPI_CALL vkCmdSetDepthBias(
 
 VKAPI_ATTR void VKAPI_CALL vkCmdSetBlendConstants(
  VkCommandBuffer commandBuffer,
- const float blendConstants[4]);
+ const float blendConstants[4] );
 
 VKAPI_ATTR void VKAPI_CALL vkCmdSetDepthBounds(
  VkCommandBuffer commandBuffer,

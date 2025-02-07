@@ -62,14 +62,16 @@ class CompilationResult {
  return shaderc_result_get_compilation_status(compilation_result_);
  }
 
- // Returns a random access (contiguous) iterator pointing to the start
- // of the compilation output. It is valid for the lifetime of this object.
- // If there is no compilation result, then returns nullptr.
- const_iterator cbegin() const {
- if (!compilation_result_) return nullptr;
- return reinterpret_cast<const_iterator>(
- shaderc_result_get_bytes(compilation_result_));
- }
+// Returns a random access (contiguous) iterator pointing to the start
+// of the compilation output. It is valid for the lifetime of this object.
+// If there is no compilation result, then returns nullptr.
+const_iterator cbegin() const
+{
+  if( !compilation_result_)
+    return nullptr;
+
+  return reinterpret_cast<const_iterator>(shaderc_result_get_bytes(compilation_result_) );
+}
 
  // Returns a random access (contiguous) iterator pointing to the end of
  // the compilation output. It is valid for the lifetime of this object.
@@ -143,10 +145,11 @@ class CompileOptions {
  AddMacroDefinition(name.c_str(), name.size(), nullptr, 0u);
  }
 
- // Adds a predefined macro to the compilation options.
- void AddMacroDefinition(const std::string& name, const std::string& value) {
- AddMacroDefinition(name.c_str(), name.size(), value.c_str(), value.size());
- }
+// Adds a predefined macro to the compilation options.
+void AddMacroDefinition(const std::string& name, const std::string& value)
+{
+  AddMacroDefinition(name.c_str(), name.size(), value.c_str(), value.size() );
+}
 
  // Sets the compiler mode to generate debug information in the output.
  void SetGenerateDebugInfo() {
@@ -174,26 +177,29 @@ class CompileOptions {
  virtual ~IncluderInterface() = default;
  };
 
- // Sets the includer instance for libshaderc to call during compilation, as
- // described in shaderc_compile_options_set_include_callbacks(). Callbacks
- // are routed to this includer's methods.
- void SetIncluder(std::unique_ptr<IncluderInterface>&& includer) {
- includer_ = std::move(includer);
- shaderc_compile_options_set_include_callbacks(
- options_,
- [](void* user_data, const char* requested_source, int type,
- const char* requesting_source, size_t include_depth) {
- auto* sub_includer = static_cast<IncluderInterface*>(user_data);
- return sub_includer->GetInclude(
- requested_source, static_cast<shaderc_include_type>(type),
- requesting_source, include_depth);
- },
- [](void* user_data, shaderc_include_result* include_result) {
- auto* sub_includer = static_cast<IncluderInterface*>(user_data);
- return sub_includer->ReleaseInclude(include_result);
- },
- includer_.get());
- }
+// Sets the includer instance for libshaderc to call during compilation, as
+// described in shaderc_compile_options_set_include_callbacks(). Callbacks
+// are routed to this includer's methods.
+void SetIncluder(std::unique_ptr<IncluderInterface>&& includer)
+{
+  includer_ = std::move(includer);
+
+  shaderc_compile_options_set_include_callbacks(options_,
+
+  [](void* user_data, const char* requested_source, int type, const char* requesting_source, size_t include_depth)
+  {
+    auto* sub_includer = static_cast<IncluderInterface*>(user_data);
+    return sub_includer->GetInclude(requested_source, static_cast<shaderc_include_type>(type), requesting_source, include_depth);
+  },
+
+  [](void* user_data, shaderc_include_result* include_result)
+  {
+    auto* sub_includer = static_cast<IncluderInterface*>(user_data);
+    return sub_includer->ReleaseInclude(include_result);
+  },
+
+  includer_.get() );
+}
 
  // Forces the GLSL language version and profile to a given pair. The version
  // number is the same as would appear in the #version annotation in the
@@ -298,24 +304,28 @@ class CompileOptions {
  shaderc_compile_options_set_auto_map_locations(options_, auto_map);
  }
 
- // Sets a descriptor set and binding for an HLSL register in the given stage.
- // Copies the parameter strings.
- void SetHlslRegisterSetAndBindingForStage(shaderc_shader_kind shader_kind,
- const std::string& reg,
- const std::string& set,
- const std::string& binding) {
- shaderc_compile_options_set_hlsl_register_set_and_binding_for_stage(
- options_, shader_kind, reg.c_str(), set.c_str(), binding.c_str());
- }
+// Sets a descriptor set and binding for an HLSL register in the given stage.
+// Copies the parameter strings.
+void SetHlslRegisterSetAndBindingForStage(
+  shaderc_shader_kind shader_kind,
+  const std::string& reg,
+  const std::string& set,
+  const std::string& binding
+)
+{
+  shaderc_compile_options_set_hlsl_register_set_and_binding_for_stage(options_, shader_kind, reg.c_str(), set.c_str(), binding.c_str() );
+}
 
- // Sets a descriptor set and binding for an HLSL register in any stage.
- // Copies the parameter strings.
- void SetHlslRegisterSetAndBinding(const std::string& reg,
- const std::string& set,
- const std::string& binding) {
- shaderc_compile_options_set_hlsl_register_set_and_binding(
- options_, reg.c_str(), set.c_str(), binding.c_str());
- }
+// Sets a descriptor set and binding for an HLSL register in any stage.
+// Copies the parameter strings.
+void SetHlslRegisterSetAndBinding(
+  const std::string& reg,
+  const std::string& set,
+  const std::string& binding
+)
+{
+  shaderc_compile_options_set_hlsl_register_set_and_binding(options_, reg.c_str(), set.c_str(), binding.c_str() );
+}
 
  // Sets whether the compiler should enable extension
  // SPV_GOOGLE_hlsl_functionality1.
@@ -350,17 +360,31 @@ class CompileOptions {
 };
 
 // The compilation context for compiling source to SPIR-V.
-class Compiler {
- public:
- Compiler() : compiler_(shaderc_compiler_initialize()) {}
- ~Compiler() { shaderc_compiler_release(compiler_); }
+class Compiler
+{
 
- Compiler(Compiler&& other) {
- compiler_ = other.compiler_;
- other.compiler_ = nullptr;
- }
+public:
 
- bool IsValid() const { return compiler_ != nullptr; }
+Compiler()
+  : compiler_(shaderc_compiler_initialize() )
+{
+}
+
+~Compiler()
+{
+  shaderc_compiler_release(compiler_);
+}
+
+Compiler(Compiler&& other)
+{
+  compiler_ = other.compiler_;
+  other.compiler_ = nullptr;
+}
+
+bool IsValid() const
+{
+  return compiler_ != nullptr;
+}
 
  // Compiles the given source GLSL and returns a SPIR-V binary module
  // compilation result.
@@ -461,49 +485,44 @@ class Compiler {
  input_file_name);
  }
 
- // Assembles the given SPIR-V assembly and returns a SPIR-V binary module
- // compilation result.
- // The assembly should follow the syntax defined in the SPIRV-Tools project
- // (https://github.com/KhronosGroup/SPIRV-Tools/blob/master/syntax.md).
- // It is valid for the returned CompilationResult object to outlive this
- // compiler object.
- // The assembling will pick options suitable for assembling specified in the
- // CompileOptions parameter.
- SpvCompilationResult AssembleToSpv(const char* source_assembly,
- size_t source_assembly_size,
- const CompileOptions& options) const {
- return SpvCompilationResult(shaderc_assemble_into_spv(
- compiler_, source_assembly, source_assembly_size, options.options_));
- }
+// Assembles the given SPIR-V assembly and returns a SPIR-V binary module
+// compilation result.
+// The assembly should follow the syntax defined in the SPIRV-Tools project
+// (https://github.com/KhronosGroup/SPIRV-Tools/blob/master/syntax.md).
+// It is valid for the returned CompilationResult object to outlive this
+// compiler object.
+// The assembling will pick options suitable for assembling specified in the
+// CompileOptions parameter.
+SpvCompilationResult AssembleToSpv(const char* source_assembly, size_t source_assembly_size, const CompileOptions& options) const
+{
+  return SpvCompilationResult(shaderc_assemble_into_spv(compiler_, source_assembly, source_assembly_size, options.options_) );
+}
 
- // Assembles the given SPIR-V assembly and returns a SPIR-V binary module
- // compilation result.
- // Like the first AssembleToSpv method but uses the default compiler options.
- SpvCompilationResult AssembleToSpv(const char* source_assembly,
- size_t source_assembly_size) const {
- return SpvCompilationResult(shaderc_assemble_into_spv(
- compiler_, source_assembly, source_assembly_size, nullptr));
- }
+// Assembles the given SPIR-V assembly and returns a SPIR-V binary module
+// compilation result.
+// Like the first AssembleToSpv method but uses the default compiler options.
+SpvCompilationResult AssembleToSpv(const char* source_assembly, size_t source_assembly_size) const
+{
+  return SpvCompilationResult(shaderc_assemble_into_spv(compiler_, source_assembly, source_assembly_size, nullptr) );
+}
 
- // Assembles the given SPIR-V assembly and returns a SPIR-V binary module
- // compilation result.
- // Like the first AssembleToSpv method but the source is provided as a
- // std::string.
- SpvCompilationResult AssembleToSpv(const std::string& source_assembly,
- const CompileOptions& options) const {
- return SpvCompilationResult(
- shaderc_assemble_into_spv(compiler_, source_assembly.data(),
- source_assembly.size(), options.options_));
- }
+// Assembles the given SPIR-V assembly and returns a SPIR-V binary module
+// compilation result.
+// Like the first AssembleToSpv method but the source is provided as a
+// std::string.
+SpvCompilationResult AssembleToSpv(const std::string& source_assembly, const CompileOptions& options) const
+{
+  return SpvCompilationResult(shaderc_assemble_into_spv(compiler_, source_assembly.data(), source_assembly.size(), options.options_) );
+}
 
- // Assembles the given SPIR-V assembly and returns a SPIR-V binary module
- // compilation result.
- // Like the first AssembleToSpv method but the source is provided as a
- // std::string and also uses default compiler options.
- SpvCompilationResult AssembleToSpv(const std::string& source_assembly) const {
- return SpvCompilationResult(shaderc_assemble_into_spv(
- compiler_, source_assembly.data(), source_assembly.size(), nullptr));
- }
+// Assembles the given SPIR-V assembly and returns a SPIR-V binary module
+// compilation result.
+// Like the first AssembleToSpv method but the source is provided as a
+// std::string and also uses default compiler options.
+SpvCompilationResult AssembleToSpv(const std::string& source_assembly) const
+{
+  return SpvCompilationResult(shaderc_assemble_into_spv(compiler_, source_assembly.data(), source_assembly.size(), nullptr) );
+}
 
  // Compiles the given source GLSL and returns the SPIR-V assembly text
  // compilation result.

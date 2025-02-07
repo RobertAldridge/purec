@@ -4,17 +4,17 @@
 #define XR_VERSION_1_0 1
 
 #define XR_MAKE_VERSION(major, minor, patch) \
- ((((major) & 0xffffULL) << 48) | (((minor) & 0xffffULL) << 32) | ((patch) & 0xffffffffULL))
+  ( ( ( (major) & 0xffffULL) << 48) | ( ( (minor) & 0xffffULL) << 32) | ( (patch) & 0xffffffffULL) )
 
 // OpenXR current version number.
 #define XR_CURRENT_API_VERSION XR_MAKE_VERSION(1, 1, 43)
 
 // OpenXR 1.0 version number
-#define XR_API_VERSION_1_0 XR_MAKE_VERSION(1, 0, XR_VERSION_PATCH(XR_CURRENT_API_VERSION))
+#define XR_API_VERSION_1_0 XR_MAKE_VERSION(1, 0, XR_VERSION_PATCH(XR_CURRENT_API_VERSION) )
 
-#define XR_VERSION_MAJOR(version) (uint16_t)(((uint64_t)(version) >> 48)& 0xffffULL)
-#define XR_VERSION_MINOR(version) (uint16_t)(((uint64_t)(version) >> 32) & 0xffffULL)
-#define XR_VERSION_PATCH(version) (uint32_t)((uint64_t)(version) & 0xffffffffULL)
+#define XR_VERSION_MAJOR(version) (uint16_t)( ( (uint64_t)(version) >> 48) & 0xffffULL)
+#define XR_VERSION_MINOR(version) (uint16_t)( ( (uint64_t)(version) >> 32) & 0xffffULL)
+#define XR_VERSION_PATCH(version) (uint32_t)( (uint64_t)(version) & 0xffffffffULL)
 
 #define XR_MIN_COMPOSITION_LAYERS_SUPPORTED 16
 
@@ -30,11 +30,11 @@
 
 #define XR_NULL_PATH 0
 
-#define XR_SUCCEEDED(result) ((result) >= 0)
+#define XR_SUCCEEDED(result) ( (result) >= 0)
 
-#define XR_FAILED(result) ((result) < 0)
+#define XR_FAILED(result) ( (result) < 0)
 
-#define XR_UNQUALIFIED_SUCCESS(result) ((result) == 0)
+#define XR_UNQUALIFIED_SUCCESS(result) ( (result) == 0)
 
 #define XR_NO_DURATION 0
 
@@ -51,8 +51,8 @@
 #define XR_EXTENSION_ENUM_STRIDE 1000
 
 #if !defined(XR_MAY_ALIAS)
-#if defined(__clang__) || (defined(__GNUC__) && (__GNUC__ > 4))
-#define XR_MAY_ALIAS __attribute__((__may_alias__))
+#if defined(__clang__) || (defined(__GNUC__) && (__GNUC__ > 4) )
+#define XR_MAY_ALIAS __attribute__ ( (__may_alias__) )
 #else
 #define XR_MAY_ALIAS
 #endif
@@ -1335,8 +1335,8 @@ typedef XrResult (XRAPI_PTR *PFN_xrCreateInstance)(const XrInstanceCreateInfo* c
 typedef XrResult (XRAPI_PTR *PFN_xrDestroyInstance)(XrInstance instance);
 typedef XrResult (XRAPI_PTR *PFN_xrGetInstanceProperties)(XrInstance instance, XrInstanceProperties* instanceProperties);
 typedef XrResult (XRAPI_PTR *PFN_xrPollEvent)(XrInstance instance, XrEventDataBuffer* eventData);
-typedef XrResult (XRAPI_PTR *PFN_xrResultToString)(XrInstance instance, XrResult value, char buffer[XR_MAX_RESULT_STRING_SIZE]);
-typedef XrResult (XRAPI_PTR *PFN_xrStructureTypeToString)(XrInstance instance, XrStructureType value, char buffer[XR_MAX_STRUCTURE_NAME_SIZE]);
+typedef XrResult (XRAPI_PTR *PFN_xrResultToString)(XrInstance instance, XrResult value, char buffer[XR_MAX_RESULT_STRING_SIZE] );
+typedef XrResult (XRAPI_PTR *PFN_xrStructureTypeToString)(XrInstance instance, XrStructureType value, char buffer[XR_MAX_STRUCTURE_NAME_SIZE] );
 typedef XrResult (XRAPI_PTR *PFN_xrGetSystem)(XrInstance instance, const XrSystemGetInfo* getInfo, XrSystemId* systemId);
 typedef XrResult (XRAPI_PTR *PFN_xrGetSystemProperties)(XrInstance instance, XrSystemId systemId, XrSystemProperties* properties);
 typedef XrResult (XRAPI_PTR *PFN_xrEnumerateEnvironmentBlendModes)(XrInstance instance, XrSystemId systemId, XrViewConfigurationType viewConfigurationType, uint32_t environmentBlendModeCapacityInput, uint32_t* environmentBlendModeCountOutput, XrEnvironmentBlendMode* environmentBlendModes);
@@ -1419,12 +1419,12 @@ XRAPI_ATTR XrResult XRAPI_CALL xrPollEvent(
 XRAPI_ATTR XrResult XRAPI_CALL xrResultToString(
  XrInstance instance,
  XrResult value,
- char buffer[XR_MAX_RESULT_STRING_SIZE]);
+ char buffer[XR_MAX_RESULT_STRING_SIZE] );
 
 XRAPI_ATTR XrResult XRAPI_CALL xrStructureTypeToString(
  XrInstance instance,
  XrStructureType value,
- char buffer[XR_MAX_STRUCTURE_NAME_SIZE]);
+ char buffer[XR_MAX_STRUCTURE_NAME_SIZE] );
 
 XRAPI_ATTR XrResult XRAPI_CALL xrGetSystem(
  XrInstance instance,
@@ -1659,7 +1659,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrStopHapticFeedback(
 // XR_VERSION_1_1 is a preprocessor guard. Do not pass it to API calls.
 #define XR_VERSION_1_1 1
 // OpenXR 1.1 version number
-#define XR_API_VERSION_1_1 XR_MAKE_VERSION(1, 1, XR_VERSION_PATCH(XR_CURRENT_API_VERSION))
+#define XR_API_VERSION_1_1 XR_MAKE_VERSION(1, 1, XR_VERSION_PATCH(XR_CURRENT_API_VERSION) )
 
 #define XR_UUID_SIZE 16
 typedef struct XrColor3f {

@@ -311,7 +311,7 @@ R"_(
     // Transform from world space to depth camera space using 6-DOF matrix
     highp vec4 cubeDepthCameraPosition = DepthProjectionMatrix[VIEW_ID] * DepthViewMatrix[VIEW_ID] * cubeWorldPosition;
 
-    // 3D point --> Homogeneous Coordinates --> Normalized Coordinates in [0,1]
+    // 3D point --> Homogeneous Coordinates --> Normalized Coordinates in [0, 1]
     highp vec2 cubeDepthCameraPositionHC = cubeDepthCameraPosition.xy / cubeDepthCameraPosition.w;
     cubeDepthCameraPositionHC = cubeDepthCameraPositionHC * 0.5f + 0.5f;
 
