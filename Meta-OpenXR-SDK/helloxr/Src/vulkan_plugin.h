@@ -129,22 +129,7 @@ R"_(
       vec2(-0.5, 0.5)
   );
 
-  vec4 colors[18] = vec4[](
-      vec4(1.0, 0.0, 0.0, 1.0),
-      vec4(0.0, 1.0, 0.0, 1.0),
-      vec4(0.0, 0.0, 1.0, 1.0),
-      vec4(1.0, 0.0, 0.0, 1.0),
-      vec4(0.0, 1.0, 0.0, 1.0),
-      vec4(0.0, 0.0, 1.0, 1.0),
-      vec4(1.0, 0.0, 0.0, 1.0),
-      vec4(0.0, 1.0, 0.0, 1.0),
-      vec4(0.0, 0.0, 1.0, 1.0),
-      vec4(1.0, 0.0, 0.0, 1.0),
-      vec4(0.0, 1.0, 0.0, 1.0),
-      vec4(0.0, 0.0, 1.0, 1.0),
-      vec4(1.0, 0.0, 0.0, 1.0),
-      vec4(0.0, 1.0, 0.0, 1.0),
-      vec4(0.0, 0.0, 1.0, 1.0),
+  vec4 colors[3] = vec4[](
       vec4(1.0, 0.0, 0.0, 1.0),
       vec4(0.0, 1.0, 0.0, 1.0),
       vec4(0.0, 0.0, 1.0, 1.0)
@@ -152,7 +137,7 @@ R"_(
 
   void main() {
       gl_Position = vec4(positions[gl_VertexIndex], 0.0, 1.0);
-      fragColor = colors[gl_VertexIndex];
+      fragColor = colors[gl_VertexIndex % 3];
   }
 
 )_";
@@ -187,38 +172,61 @@ R"_(
   layout (location = 0) in vec3 Position;
   layout (location = 1) in vec3 Color;
 
-  layout (location = 0) out vec4 oColor;
-
-  vec4 colors[18] = vec4[](
-      vec4(1.0, 0.0, 0.0, 1.0),
-      vec4(0.0, 1.0, 0.0, 1.0),
-      vec4(0.0, 0.0, 1.0, 1.0),
-      vec4(1.0, 0.0, 0.0, 1.0),
-      vec4(0.0, 1.0, 0.0, 1.0),
-      vec4(0.0, 0.0, 1.0, 1.0),
-      vec4(1.0, 0.0, 0.0, 1.0),
-      vec4(0.0, 1.0, 0.0, 1.0),
-      vec4(0.0, 0.0, 1.0, 1.0),
-      vec4(1.0, 0.0, 0.0, 1.0),
-      vec4(0.0, 1.0, 0.0, 1.0),
-      vec4(0.0, 0.0, 1.0, 1.0),
-      vec4(1.0, 0.0, 0.0, 1.0),
-      vec4(0.0, 1.0, 0.0, 1.0),
-      vec4(0.0, 0.0, 1.0, 1.0),
-      vec4(1.0, 0.0, 0.0, 1.0),
-      vec4(0.0, 1.0, 0.0, 1.0),
-      vec4(0.0, 0.0, 1.0, 1.0)
-  );
+  layout (location = 0) out vec4 fragColor;
 
   out gl_PerVertex
   {
     vec4 gl_Position;
   };
 
+  vec4 colors[36] = vec4[](
+      vec4(0.0, 0.0, 0.0, 1.0),
+      vec4(0.0, 0.0, 0.0, 1.0),
+      vec4(1.0, 1.0, 1.0, 1.0),
+      vec4(0.0, 0.0, 0.0, 1.0),
+      vec4(1.0, 1.0, 1.0, 1.0),
+      vec4(0.0, 0.0, 0.0, 1.0),
+
+      vec4(0.79, 0.79, 0.79, 1.0),
+      vec4(0.25, 0.25, 0.25, 1.0),
+      vec4(0.25, 0.25, 0.25, 1.0),
+      vec4(0.79, 0.79, 0.79, 1.0),
+      vec4(0.25, 0.25, 0.25, 1.0),
+      vec4(0.25, 0.25, 0.25, 1.0),
+
+      vec4(0.0, 1.0, 0.0, 1.0),
+      vec4(1.0, 0.0, 0.0, 1.0),
+      vec4(0.0, 1.0, 0.0, 1.0),
+      vec4(0.0, 1.0, 0.0, 1.0),
+      vec4(0.0, 1.0, 0.0, 1.0),
+      vec4(0.0, 0.0, 1.0, 1.0),
+
+      vec4(1.0, 0.0, 0.0, 1.0),
+      vec4(0.0, 1.0, 0.0, 1.0),
+      vec4(0.0, 0.0, 1.0, 1.0),
+      vec4(1.0, 0.0, 0.0, 1.0),
+      vec4(0.0, 0.0, 1.0, 1.0),
+      vec4(0.0, 1.0, 0.0, 1.0),
+
+      vec4(0.0, 0.54, 0.54, 1.0),
+      vec4(0.0, 0.54, 0.54, 1.0),
+      vec4(0.54, 0.54, 0.54, 1.0),
+      vec4(0.0, 0.54, 0.54, 1.0),
+      vec4(0.54, 0.54, 0.54, 1.0),
+      vec4(0.0, 0.54, 0.54, 1.0),
+
+      vec4(0.54, 0.54, 0.0, 1.0),
+      vec4(0.54, 0.54, 0.0, 1.0),
+      vec4(0.54, 0.54, 0.54, 1.0),
+      vec4(0.54, 0.54, 0.0, 1.0),
+      vec4(0.54, 0.54, 0.54, 1.0),
+      vec4(0.54, 0.54, 0.0, 1.0)
+  );
+
   void main()
   {
-    //oColor = vec4(Color, 1.0);
-    oColor = colors[gl_VertexIndex];
+    //fragColor = vec4(Color, 1.0);
+    fragColor = colors[gl_VertexIndex];
 
     gl_Position = ubuf.mvp * vec4(Position, 1.0);
   }
@@ -369,8 +377,6 @@ void VulkanGraphicsPlugin_VulkanGraphicsPlugin_Destructor();
 // note: The output must not outlive the input - this modifies the input and returns a collection of views into that modified input!
 std::vector<const char*> VulkanGraphicsPlugin_VulkanGraphicsPluginParseExtensionString(char* names);
 #endif
-
-VkBool32 VulkanGraphicsPlugin_VulkanGraphicsPluginDebugMessage(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData);
 
 VKAPI_ATTR VkBool32 VKAPI_CALL VulkanGraphicsPlugin_debugMessageThunk(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* /*pUserData*/);
 

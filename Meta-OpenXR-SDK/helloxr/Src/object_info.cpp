@@ -18,81 +18,104 @@ std::string XrSdkLogObjectInfo::ToString() const
 
 void ObjectInfoCollection::AddObjectName(uint64_t object_handle, XrObjectType object_type, const std::string& object_name)
 {
-  // If name is empty, we should erase it
-  if(object_name.empty() )
+  do
   {
-    RemoveObject(object_handle, object_type);
-    return;
-  }
+    // If name is empty, we should erase it
+    if(object_name.empty() )
+    {
+      RemoveObject(object_handle, object_type);
+      break;
+    }
 
-  // Otherwise, add it or update the name
-  XrSdkLogObjectInfo new_obj = {object_handle, object_type};
+    // Otherwise, add it or update the name
+    XrSdkLogObjectInfo new_obj = {object_handle, object_type};
 
-  // If it already exists, update the name
-  auto lookup_info = LookUpStoredObjectInfo(new_obj);
+    // If it already exists, update the name
+    auto lookup_info = LookUpStoredObjectInfo(new_obj);
 
-  if(lookup_info != nullptr)
-  {
-    lookup_info->name = object_name;
-    return;
-  }
+    if(lookup_info != nullptr)
+    {
+      lookup_info->name = object_name;
+      break;
+    }
 
-  // It doesn't exist, so add a new info block
-  new_obj.name = object_name;
-  object_info_.push_back(new_obj);
+    // It doesn't exist, so add a new info block
+    new_obj.name = object_name;
+    object_info_.push_back(new_obj);
+
+  }while(0);
 }
 
 void ObjectInfoCollection::RemoveObject(uint64_t object_handle, XrObjectType object_type)
 {
-  vector_remove_if_and_erase(object_info_, [=](XrSdkLogObjectInfo const& info) { return info.handle == object_handle && info.type == object_type; } );
+  vector_remove_if_and_erase(object_info_, [=](XrSdkLogObjectInfo const& info)
+  {
+    return (info.handle == object_handle && info.type == object_type);
+  } );
 }
 
 XrSdkLogObjectInfo const* ObjectInfoCollection::LookUpStoredObjectInfo(XrSdkLogObjectInfo const& info) const
 {
+  XrSdkLogObjectInfo const* result = nullptr;
+
   auto e = object_info_.end();
-  auto it = std::find_if(object_info_.begin(), e, [&](XrSdkLogObjectInfo const& stored) { return Equivalent(stored, info); } );
+
+  auto it = std::find_if(object_info_.begin(), e, [&](XrSdkLogObjectInfo const& stored)
+  {
+    return Equivalent(stored, info);
+  } );
 
   if(it != e)
-    return &(*it);
+    result = &(*it);
 
-  return nullptr;
+  return result;
 }
 
 XrSdkLogObjectInfo* ObjectInfoCollection::LookUpStoredObjectInfo(XrSdkLogObjectInfo const& info)
 {
+  XrSdkLogObjectInfo* result = nullptr;
+
   auto e = object_info_.end();
-  auto it = std::find_if(object_info_.begin(), e, [&](XrSdkLogObjectInfo const& stored) { return Equivalent(stored, info); } );
+
+  auto it = std::find_if(object_info_.begin(), e, [&](XrSdkLogObjectInfo const& stored)
+  {
+    return Equivalent(stored, info);
+  } );
 
   if(it != e)
-    return &(*it);
+    result = &(*it);
 
-  return nullptr;
+  return result;
 }
 
 bool ObjectInfoCollection::LookUpObjectName(XrDebugUtilsObjectNameInfoEXT& info) const
 {
+  bool result = false;
+
   auto info_lookup = LookUpStoredObjectInfo(info.objectHandle, info.objectType);
 
   if(info_lookup != nullptr)
   {
     info.objectName = info_lookup->name.c_str();
-    return true;
+    result = true;
   }
 
-  return false;
+  return result;
 }
 
 bool ObjectInfoCollection::LookUpObjectName(XrSdkLogObjectInfo& info) const
 {
+  bool result = false;
+
   auto info_lookup = LookUpStoredObjectInfo(info);
 
   if(info_lookup != nullptr)
   {
     info.name = info_lookup->name;
-    return true;
+    result = true;
   }
 
-  return false;
+  return result;
 }
 
 std::vector<XrDebugUtilsObjectNameInfoEXT> PopulateObjectNameInfo(std::vector<XrSdkLogObjectInfo> const& obj)
@@ -109,7 +132,9 @@ std::vector<XrDebugUtilsObjectNameInfoEXT> PopulateObjectNameInfo(std::vector<Xr
 }
 
 NamesAndLabels::NamesAndLabels(std::vector<XrSdkLogObjectInfo> obj, std::vector<XrDebugUtilsLabelEXT> lab)
-  : sdk_objects(std::move(obj) ), objects(PopulateObjectNameInfo(sdk_objects) ), labels(std::move(lab) )
+  : sdk_objects(std::move(obj) ),
+  objects(PopulateObjectNameInfo(sdk_objects) ),
+  labels(std::move(lab) )
 {
 }
 
@@ -170,12 +195,14 @@ void DebugUtilsData::RemoveIndividualLabel(XrSdkSessionLabelList& label_vec)
 
 XrSdkSessionLabelList* DebugUtilsData::GetSessionLabelList(XrSession session)
 {
+  XrSdkSessionLabelList* result = nullptr;
+
   auto session_label_iterator = session_labels_.find(session);
 
-  if(session_label_iterator == session_labels_.end() )
-    return nullptr;
+  if(session_label_iterator != session_labels_.end() )
+    result = session_label_iterator->second.get();
 
-  return session_label_iterator->second.get();
+  return result;
 }
 
 XrSdkSessionLabelList& DebugUtilsData::GetOrCreateSessionLabelList(XrSession session)
@@ -203,15 +230,19 @@ void DebugUtilsData::BeginLabelRegion(XrSession session, const XrDebugUtilsLabel
 
 void DebugUtilsData::EndLabelRegion(XrSession session)
 {
-  XrSdkSessionLabelList* vec_ptr = GetSessionLabelList(session);
+  do
+  {
+    XrSdkSessionLabelList* vec_ptr = GetSessionLabelList(session);
 
-  if( !vec_ptr)
-    return;
+    if( !vec_ptr)
+      break;
 
-  RemoveIndividualLabel( *vec_ptr);
+    RemoveIndividualLabel( *vec_ptr);
 
-  if( !vec_ptr->empty() )
-    vec_ptr->pop_back();
+    if( !vec_ptr->empty() )
+      vec_ptr->pop_back();
+
+  }while(0);
 }
 
 void DebugUtilsData::InsertLabel(XrSession session, const XrDebugUtilsLabelEXT& label_info)
@@ -230,6 +261,7 @@ void DebugUtilsData::DeleteObject(uint64_t object_handle, XrObjectType object_ty
   if(object_type == XR_OBJECT_TYPE_SESSION)
   {
     auto session = TreatIntegerAsHandle<XrSession>(object_handle);
+
     XrSdkSessionLabelList* vec_ptr = GetSessionLabelList(session);
 
     if(vec_ptr)
@@ -259,36 +291,41 @@ NamesAndLabels DebugUtilsData::PopulateNamesAndLabels(std::vector<XrSdkLogObject
 
 void DebugUtilsData::WrapCallbackData(AugmentedCallbackData* aug_data, const XrDebugUtilsMessengerCallbackDataEXT* callback_data) const
 {
-  aug_data->exported_data = callback_data;
-
-  if(object_info_.Empty() || callback_data->objectCount == 0)
-    return;
-
-  bool name_found = false;
-
-  for(uint32_t obj = 0; obj < callback_data->objectCount; ++obj)
+  do
   {
-    auto& current_obj = callback_data->objects[obj];
-    name_found |= (nullptr != object_info_.LookUpStoredObjectInfo(current_obj.objectHandle, current_obj.objectType) );
+    aug_data->exported_data = callback_data;
 
-    if(XR_OBJECT_TYPE_SESSION == current_obj.objectType)
+    if(object_info_.Empty() || callback_data->objectCount == 0)
+      break;
+
+    bool name_found = false;
+
+    for(uint32_t obj = 0; obj < callback_data->objectCount; ++obj)
     {
-      XrSession session = TreatIntegerAsHandle<XrSession>(current_obj.objectHandle);
-      LookUpSessionLabels(session, aug_data->labels);
+      auto& current_obj = callback_data->objects[obj];
+
+      name_found |= (nullptr != object_info_.LookUpStoredObjectInfo(current_obj.objectHandle, current_obj.objectType) );
+
+      if(XR_OBJECT_TYPE_SESSION == current_obj.objectType)
+      {
+        XrSession session = TreatIntegerAsHandle<XrSession>(current_obj.objectHandle);
+        LookUpSessionLabels(session, aug_data->labels);
+      }
     }
-  }
 
-  if( !name_found && aug_data->labels.empty() )
-    return;
+    if( !name_found && aug_data->labels.empty() )
+      break;
 
-  memcpy( &aug_data->modified_data, callback_data, sizeof(XrDebugUtilsMessengerCallbackDataEXT) );
-  aug_data->new_objects.assign(callback_data->objects, callback_data->objects + callback_data->objectCount);
+    memcpy( &aug_data->modified_data, callback_data, sizeof(XrDebugUtilsMessengerCallbackDataEXT) );
+    aug_data->new_objects.assign(callback_data->objects, callback_data->objects + callback_data->objectCount);
 
-  for(auto& obj : aug_data->new_objects)
-    object_info_.LookUpObjectName(obj);
+    for(auto& obj : aug_data->new_objects)
+      object_info_.LookUpObjectName(obj);
 
-  aug_data->modified_data.objects = aug_data->new_objects.data();
-  aug_data->modified_data.sessionLabelCount = static_cast<uint32_t>(aug_data->labels.size() );
-  aug_data->modified_data.sessionLabels = aug_data->labels.empty() ? nullptr : aug_data->labels.data();
-  aug_data->exported_data = &aug_data->modified_data;
+    aug_data->modified_data.objects = aug_data->new_objects.data();
+    aug_data->modified_data.sessionLabelCount = static_cast<uint32_t>(aug_data->labels.size() );
+    aug_data->modified_data.sessionLabels = aug_data->labels.empty() ? nullptr : aug_data->labels.data();
+    aug_data->exported_data = &aug_data->modified_data;
+
+  }while(0);
 }

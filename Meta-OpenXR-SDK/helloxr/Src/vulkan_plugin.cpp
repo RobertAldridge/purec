@@ -453,65 +453,75 @@ std::vector<const char*> VulkanGraphicsPlugin_VulkanGraphicsPluginParseExtension
 }
 #endif
 
-VkBool32 VulkanGraphicsPlugin_VulkanGraphicsPluginDebugMessage(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData)
-{
-  std::string flagNames;
-  std::string objName;
-  Log::Level level = Log::Level::Error;
-
-  if( (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT) != 0u)
-  {
-    flagNames += "DEBUG:";
-    level = Log::Level::Verbose;
-  }
-
-  if( (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT) != 0u)
-  {
-    flagNames += "INFO:";
-    level = Log::Level::Info;
-  }
-
-  if( (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) != 0u)
-  {
-    flagNames += "WARN:";
-    level = Log::Level::Warning;
-  }
-
-  if( (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) != 0u)
-  {
-    flagNames += "ERROR:";
-    level = Log::Level::Error;
-  }
-
-  if( (messageTypes & VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT) != 0u)
-  {
-    flagNames += "PERF:";
-    level = Log::Level::Warning;
-  }
-
-  uint64_t object = 0;
-
-  // skip loader messages about device extensions
-  if(pCallbackData->objectCount > 0)
-  {
-    auto objectType = pCallbackData->pObjects[0].objectType;
-
-    if( (objectType == VK_OBJECT_TYPE_INSTANCE) && (strncmp(pCallbackData->pMessage, "Device Extension:", 17) == 0) )
-      return VK_FALSE;
-
-    objName = VulkanGraphicsPlugin_BlahVkObjectTypeToString(objectType);
-    object = pCallbackData->pObjects[0].objectHandle;
-
-    if(pCallbackData->pObjects[0].pObjectName != nullptr)
-      objName += " " + std::string(pCallbackData->pObjects[0].pObjectName);
-  }
-
-  Log::Write(level, Fmt("%s (%s 0x%llx) %s", flagNames.c_str(), objName.c_str(), object, pCallbackData->pMessage) );
-
-  return VK_FALSE;
-}
-
 VKAPI_ATTR VkBool32 VKAPI_CALL VulkanGraphicsPlugin_debugMessageThunk(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* /*pUserData*/)
 {
-  return VulkanGraphicsPlugin_VulkanGraphicsPluginDebugMessage(messageSeverity, messageTypes, pCallbackData);
+  VkBool32 result = VK_FALSE;
+
+  //return VulkanGraphicsPlugin_VulkanGraphicsPluginDebugMessage(messageSeverity, messageTypes, pCallbackData);
+
+  //VkBool32 VulkanGraphicsPlugin_VulkanGraphicsPluginDebugMessage(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData)
+  do
+  {
+    std::string flagNames;
+    std::string objName;
+    Log::Level level = Log::Level::Error;
+
+    if( (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT) != 0u)
+    {
+      flagNames += "DEBUG:";
+      level = Log::Level::Verbose;
+    }
+
+    if( (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT) != 0u)
+    {
+      flagNames += "INFO:";
+      level = Log::Level::Info;
+    }
+
+    if( (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) != 0u)
+    {
+      flagNames += "WARN:";
+      level = Log::Level::Warning;
+    }
+
+    if( (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) != 0u)
+    {
+      flagNames += "ERROR:";
+      level = Log::Level::Error;
+    }
+
+    if( (messageTypes & VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT) != 0u)
+    {
+      flagNames += "PERF:";
+      level = Log::Level::Warning;
+    }
+
+    uint64_t object = 0;
+
+    // skip loader messages about device extensions
+    if(pCallbackData->objectCount > 0)
+    {
+      auto objectType = pCallbackData->pObjects[0].objectType;
+
+      if( (objectType == VK_OBJECT_TYPE_INSTANCE) && (strncmp(pCallbackData->pMessage, "Device Extension:", 17) == 0) )
+	  {
+        //return VK_FALSE;
+		break;
+	  }
+
+      objName = VulkanGraphicsPlugin_BlahVkObjectTypeToString(objectType);
+      object = pCallbackData->pObjects[0].objectHandle;
+
+      if(pCallbackData->pObjects[0].pObjectName != nullptr)
+        objName += " " + std::string(pCallbackData->pObjects[0].pObjectName);
+    }
+
+    Log::Write(level, Fmt("%s (%s 0x%llx) %s", flagNames.c_str(), objName.c_str(), object, pCallbackData->pMessage) );
+
+    //return VK_FALSE;
+	break;
+
+  }while(0);
+  
+  return result;
 }

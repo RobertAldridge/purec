@@ -1,6 +1,9 @@
 
 // header.h
 
+// todo
+#undef NDEBUG
+
 #include <cassert>
 //#include <ccomplex>
 #include <cctype>
