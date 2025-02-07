@@ -27,16 +27,28 @@ class CompilationResult {
  // shaderc_compilation_result instance. During destruction of the
  // CompilationResult, the shaderc_compilation_result will be released.
  explicit CompilationResult(shaderc_compilation_result_t compilation_result)
- : compilation_result_(compilation_result) {}
- CompilationResult() : compilation_result_(nullptr) {}
- ~CompilationResult() { shaderc_result_release(compilation_result_); }
-
- CompilationResult(CompilationResult&& other) : compilation_result_(nullptr) {
- *this = std::move(other);
+ : compilation_result_(compilation_result)
+ {
  }
 
- CompilationResult& operator=(CompilationResult&& other) {
- if (compilation_result_) {
+ CompilationResult() : compilation_result_(nullptr)
+ {
+ }
+
+ ~CompilationResult()
+ {
+   shaderc_result_release(compilation_result_);
+ }
+
+ CompilationResult(CompilationResult&& other) : compilation_result_(nullptr)
+ {
+   *this = std::move(other);
+ }
+
+ CompilationResult& operator=(CompilationResult&& other)
+ {
+ if(compilation_result_)
+ {
  shaderc_result_release(compilation_result_);
  }
  compilation_result_ = other.compilation_result_;
@@ -45,8 +57,10 @@ class CompilationResult {
  }
 
  // Returns any error message found during compilation.
- std::string GetErrorMessage() const {
- if (!compilation_result_) {
+ std::string GetErrorMessage() const
+ {
+ if( !compilation_result_)
+ {
  return "";
  }
  return shaderc_result_get_error_message(compilation_result_);
@@ -55,8 +69,10 @@ class CompilationResult {
  // Returns the compilation status, indicating whether the compilation
  // succeeded, or failed due to some reasons, like invalid shader stage or
  // compilation errors.
- shaderc_compilation_status GetCompilationStatus() const {
- if (!compilation_result_) {
+ shaderc_compilation_status GetCompilationStatus() const
+ {
+ if( !compilation_result_)
+ {
  return shaderc_compilation_status_null_result_object;
  }
  return shaderc_result_get_compilation_status(compilation_result_);
@@ -76,29 +92,42 @@ const_iterator cbegin() const
  // Returns a random access (contiguous) iterator pointing to the end of
  // the compilation output. It is valid for the lifetime of this object.
  // If there is no compilation result, then returns nullptr.
- const_iterator cend() const {
- if (!compilation_result_) return nullptr;
- return cbegin() +
- shaderc_result_get_length(compilation_result_) /
- sizeof(OutputElementType);
+ const_iterator cend() const
+ {
+ if( !compilation_result_)
+   return nullptr;
+
+ return cbegin() + shaderc_result_get_length(compilation_result_) / sizeof(OutputElementType);
  }
 
  // Returns the same iterator as cbegin().
- const_iterator begin() const { return cbegin(); }
+ const_iterator begin() const
+ {
+   return cbegin();
+ }
+
  // Returns the same iterator as cend().
- const_iterator end() const { return cend(); }
+ const_iterator end() const
+ {
+   return cend();
+ }
 
  // Returns the number of warnings generated during the compilation.
- size_t GetNumWarnings() const {
- if (!compilation_result_) {
- return 0;
- }
- return shaderc_result_get_num_warnings(compilation_result_);
+ size_t GetNumWarnings() const
+ {
+   if( !compilation_result_)
+   {
+     return 0;
+   }
+
+   return shaderc_result_get_num_warnings(compilation_result_);
  }
 
  // Returns the number of errors generated during the compilation.
- size_t GetNumErrors() const {
- if (!compilation_result_) {
+ size_t GetNumErrors() const
+ {
+ if( !compilation_result_)
+ {
  return 0;
  }
  return shaderc_result_get_num_errors(compilation_result_);
@@ -120,28 +149,42 @@ using AssemblyCompilationResult = CompilationResult<char>;
 using PreprocessedSourceCompilationResult = CompilationResult<char>;
 
 // Contains any options that can have default values for a compilation.
-class CompileOptions {
+class CompileOptions
+{
+
  public:
- CompileOptions() { options_ = shaderc_compile_options_initialize(); }
- ~CompileOptions() { shaderc_compile_options_release(options_); }
- CompileOptions(const CompileOptions& other) {
+
+ CompileOptions()
+ {
+   options_ = shaderc_compile_options_initialize();
+ }
+
+ ~CompileOptions()
+ {
+   shaderc_compile_options_release(options_);
+ }
+
+ CompileOptions(const CompileOptions& other)
+ {
  options_ = shaderc_compile_options_clone(other.options_);
  }
- CompileOptions(CompileOptions&& other) {
+
+ CompileOptions(CompileOptions&& other)
+ {
  options_ = other.options_;
  other.options_ = nullptr;
  }
 
  // Adds a predefined macro to the compilation options. It behaves the same as
  // shaderc_compile_options_add_macro_definition in shaderc.h.
- void AddMacroDefinition(const char* name, size_t name_length,
- const char* value, size_t value_length) {
- shaderc_compile_options_add_macro_definition(options_, name, name_length,
- value, value_length);
+ void AddMacroDefinition(const char* name, size_t name_length, const char* value, size_t value_length)
+ {
+ shaderc_compile_options_add_macro_definition(options_, name, name_length, value, value_length);
  }
 
  // Adds a valueless predefined macro to the compilation options.
- void AddMacroDefinition(const std::string& name) {
+ void AddMacroDefinition(const std::string& name)
+ {
  AddMacroDefinition(name.c_str(), name.size(), nullptr, 0u);
  }
 
@@ -152,29 +195,37 @@ void AddMacroDefinition(const std::string& name, const std::string& value)
 }
 
  // Sets the compiler mode to generate debug information in the output.
- void SetGenerateDebugInfo() {
+ void SetGenerateDebugInfo()
+ {
  shaderc_compile_options_set_generate_debug_info(options_);
  }
 
  // Sets the compiler optimization level to the given level. Only the last one
  // takes effect if multiple calls of this function exist.
- void SetOptimizationLevel(shaderc_optimization_level level) {
+ void SetOptimizationLevel(shaderc_optimization_level level)
+ {
  shaderc_compile_options_set_optimization_level(options_, level);
  }
 
  // A C++ version of the libshaderc includer interface.
- class IncluderInterface {
+ class IncluderInterface
+ {
+
  public:
+
  // Handles shaderc_include_resolver_fn callbacks.
- virtual shaderc_include_result* GetInclude(const char* requested_source,
- shaderc_include_type type,
- const char* requesting_source,
- size_t include_depth) = 0;
+ virtual shaderc_include_result* GetInclude(
+   const char* requested_source,
+   shaderc_include_type type,
+   const char* requesting_source,
+   size_t include_depth
+ ) = 0;
 
  // Handles shaderc_include_result_release_fn callbacks.
  virtual void ReleaseInclude(shaderc_include_result* data) = 0;
 
  virtual ~IncluderInterface() = default;
+
  };
 
 // Sets the includer instance for libshaderc to call during compilation, as
@@ -206,21 +257,23 @@ void SetIncluder(std::unique_ptr<IncluderInterface>&& includer)
  // source. Version and profile specified here overrides the #version
  // annotation in the source. Use profile: 'shaderc_profile_none' for GLSL
  // versions that do not define profiles, e.g. versions below 150.
- void SetForcedVersionProfile(int version, shaderc_profile profile) {
- shaderc_compile_options_set_forced_version_profile(options_, version,
- profile);
+ void SetForcedVersionProfile(int version, shaderc_profile profile)
+ {
+ shaderc_compile_options_set_forced_version_profile(options_, version, profile);
  }
 
  // Sets the compiler mode to suppress warnings. Note this option overrides
  // warnings-as-errors mode. When both suppress-warnings and warnings-as-errors
  // modes are turned on, warning messages will be inhibited, and will not be
  // emitted as error message.
- void SetSuppressWarnings() {
+ void SetSuppressWarnings()
+ {
  shaderc_compile_options_set_suppress_warnings(options_);
  }
 
  // Sets the source language. The default is GLSL.
- void SetSourceLanguage(shaderc_source_language lang) {
+ void SetSourceLanguage(shaderc_source_language lang)
+ {
  shaderc_compile_options_set_source_language(options_, lang);
  }
 
@@ -229,7 +282,8 @@ void SetIncluder(std::unique_ptr<IncluderInterface>&& includer)
  // versions of the target environment. The version value should be either 0
  // or a value listed in shaderc_env_version. The 0 value maps to Vulkan 1.0
  // if |target| is Vulkan, and it maps to OpenGL 4.5 if |target| is OpenGL.
- void SetTargetEnvironment(shaderc_target_env target, uint32_t version) {
+ void SetTargetEnvironment(shaderc_target_env target, uint32_t version)
+ {
  shaderc_compile_options_set_target_env(options_, target, version);
  }
 
@@ -238,7 +292,8 @@ void SetIncluder(std::unique_ptr<IncluderInterface>&& includer)
  // it can consume. Defaults to the highest version of SPIR-V 1.0 which is
  // required to be supported by the target environment. E.g. Default to SPIR-V
  // 1.0 for Vulkan 1.0 and SPIR-V 1.3 for Vulkan 1.1.
- void SetTargetSpirv(shaderc_spirv_version version) {
+ void SetTargetSpirv(shaderc_spirv_version version)
+ {
  shaderc_compile_options_set_target_spirv(options_, version);
  }
 
@@ -246,38 +301,43 @@ void SetIncluder(std::unique_ptr<IncluderInterface>&& includer)
  // suppress-warnings mode overrides this option, i.e. if both
  // warning-as-errors and suppress-warnings modes are set on, warnings will not
  // be emitted as error message.
- void SetWarningsAsErrors() {
+ void SetWarningsAsErrors()
+ {
  shaderc_compile_options_set_warnings_as_errors(options_);
  }
 
  // Sets a resource limit.
- void SetLimit(shaderc_limit limit, int value) {
+ void SetLimit(shaderc_limit limit, int value)
+ {
  shaderc_compile_options_set_limit(options_, limit, value);
  }
 
  // Sets whether the compiler should automatically assign bindings to uniforms
  // that aren't already explicitly bound in the shader source.
- void SetAutoBindUniforms(bool auto_bind) {
+ void SetAutoBindUniforms(bool auto_bind)
+ {
  shaderc_compile_options_set_auto_bind_uniforms(options_, auto_bind);
  }
 
  // Sets whether the compiler should automatically remove sampler variables
  // and convert image variables to combined image sampler variables.
- void SetAutoSampledTextures(bool auto_sampled) {
- shaderc_compile_options_set_auto_combined_image_sampler(options_,
- auto_sampled);
+ void SetAutoSampledTextures(bool auto_sampled)
+ {
+ shaderc_compile_options_set_auto_combined_image_sampler(options_, auto_sampled);
  }
 
  // Sets whether the compiler should use HLSL IO mapping rules for bindings.
  // Defaults to false.
- void SetHlslIoMapping(bool hlsl_iomap) {
+ void SetHlslIoMapping(bool hlsl_iomap)
+ {
  shaderc_compile_options_set_hlsl_io_mapping(options_, hlsl_iomap);
  }
 
  // Sets whether the compiler should determine block member offsets using HLSL
  // packing rules instead of standard GLSL rules. Defaults to false. Only
  // affects GLSL compilation. HLSL rules are always used when compiling HLSL.
- void SetHlslOffsets(bool hlsl_offsets) {
+ void SetHlslOffsets(bool hlsl_offsets)
+ {
  shaderc_compile_options_set_hlsl_offsets(options_, hlsl_offsets);
  }
 
@@ -285,22 +345,23 @@ void SetIncluder(std::unique_ptr<IncluderInterface>&& includer)
  // automatically assigning bindings. For GLSL compilation, sets the lowest
  // automatically assigned number. For HLSL compilation, the regsiter number
  // assigned to the resource is added to this specified base.
- void SetBindingBase(shaderc_uniform_kind kind, uint32_t base) {
+ void SetBindingBase(shaderc_uniform_kind kind, uint32_t base)
+ {
  shaderc_compile_options_set_binding_base(options_, kind, base);
  }
 
  // Like SetBindingBase, but only takes effect when compiling a given shader
  // stage. The stage is assumed to be one of vertex, fragment, tessellation
  // evaluation, tesselation control, geometry, or compute.
- void SetBindingBaseForStage(shaderc_shader_kind shader_kind,
- shaderc_uniform_kind kind, uint32_t base) {
- shaderc_compile_options_set_binding_base_for_stage(options_, shader_kind,
- kind, base);
+ void SetBindingBaseForStage(shaderc_shader_kind shader_kind, shaderc_uniform_kind kind, uint32_t base)
+ {
+ shaderc_compile_options_set_binding_base_for_stage(options_, shader_kind, kind, base);
  }
 
  // Sets whether the compiler automatically assigns locations to
  // uniform variables that don't have explicit locations.
- void SetAutoMapLocations(bool auto_map) {
+ void SetAutoMapLocations(bool auto_map)
+ {
  shaderc_compile_options_set_auto_map_locations(options_, auto_map);
  }
 
@@ -329,17 +390,20 @@ void SetHlslRegisterSetAndBinding(
 
  // Sets whether the compiler should enable extension
  // SPV_GOOGLE_hlsl_functionality1.
- void SetHlslFunctionality1(bool enable) {
+ void SetHlslFunctionality1(bool enable)
+ {
  shaderc_compile_options_set_hlsl_functionality1(options_, enable);
  }
 
  // Sets whether 16-bit types are supported in HLSL or not.
- void SetHlsl16BitTypes(bool enable) {
+ void SetHlsl16BitTypes(bool enable)
+ {
  shaderc_compile_options_set_hlsl_16bit_types(options_, enable);
  }
 
  // Sets whether the compiler should invert position.Y output in vertex shader.
- void SetInvertY(bool enable) {
+ void SetInvertY(bool enable)
+ {
  shaderc_compile_options_set_invert_y(options_, enable);
  }
 
@@ -347,7 +411,8 @@ void SetHlslRegisterSetAndBinding(
  // if given a NaN operand, will return the other operand. Similarly, the
  // clamp builtin will favour the non-NaN operands, as if clamp were
  // implemented as a composition of max and min.
- void SetNanClamp(bool enable) {
+ void SetNanClamp(bool enable)
+ {
  shaderc_compile_options_set_nan_clamp(options_, enable);
  }
 
@@ -597,7 +662,7 @@ SpvCompilationResult AssembleToSpv(const std::string& source_assembly) const
  }
 
  private:
- Compiler(const Compiler&) = delete;
+ Compiler(const Compiler& ) = delete;
  Compiler& operator=(const Compiler& other) = delete;
 
  shaderc_compiler_t compiler_;

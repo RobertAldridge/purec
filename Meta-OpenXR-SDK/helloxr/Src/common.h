@@ -24,7 +24,10 @@ inline bool EqualsIgnoreCase(const std::string& s1, const std::string& s2, const
 {
   const std::ctype<char>& ctype = std::use_facet<std::ctype<char>>(loc);
 
-  const auto compareCharLower = [&](char c1, char c2) { return ctype.tolower(c1) == ctype.tolower(c2); };
+  const auto compareCharLower = [&](char c1, char c2)
+  {
+    return ctype.tolower(c1) == ctype.tolower(c2);
+  };
 
   return s1.size() == s2.size() && std::equal(s1.begin(), s1.end(), s2.begin(), compareCharLower);
 }
@@ -35,7 +38,10 @@ struct IgnoreCaseStringLess
   {
     const std::ctype<char>& ctype = std::use_facet<std::ctype<char>>(loc);
 
-    const auto ignoreCaseCharLess = [&](char c1, char c2) { return ctype.tolower(c1) < ctype.tolower(c2); };
+    const auto ignoreCaseCharLess = [&](char c1, char c2)
+    {
+      return ctype.tolower(c1) < ctype.tolower(c2);
+    };
 
     return std::lexicographical_compare(a.begin(), a.end(), b.begin(), b.end(), ignoreCaseCharLess);
   }
@@ -43,7 +49,9 @@ struct IgnoreCaseStringLess
 
 template <typename T> struct ScopeGuard
 {
-  ScopeGuard(T&& guard) : m_guard(std::move(guard) ) {}
+  ScopeGuard(T&& guard) : m_guard(std::move(guard) )
+  {
+  }
 
   ScopeGuard(ScopeGuard&& ) = default;
   ScopeGuard& operator=(ScopeGuard&& ) = default;
@@ -51,7 +59,10 @@ template <typename T> struct ScopeGuard
   ScopeGuard(ScopeGuard& ) = delete;
   ScopeGuard& operator=(ScopeGuard& ) = delete;
 
-  ~ScopeGuard() { m_guard(); }
+  ~ScopeGuard()
+  {
+    m_guard();
+  }
 
 private:
 

@@ -1,13 +1,13 @@
 
 // anag.h
 
-#define ANAG_LOGI(...) do{ __android_log_print(ANDROID_LOG_INFO, "threaded_app", __VA_ARGS__); } while(0)
-#define ANAG_LOGE(...) do{ __android_log_print(ANDROID_LOG_ERROR, "threaded_app", __VA_ARGS__); } while(0)
+#define ANAG_LOGI(...) do{ __android_log_print(ANDROID_LOG_INFO, "threaded_app", __VA_ARGS__); }while(0)
+#define ANAG_LOGE(...) do{ __android_log_print(ANDROID_LOG_ERROR, "threaded_app", __VA_ARGS__); }while(0)
 
 #ifndef NDEBUG
-#define ANAG_LOGV(...) do{ __android_log_print(ANDROID_LOG_VERBOSE, "threaded_app", __VA_ARGS__); } while(0)
+#define ANAG_LOGV(...) do{ __android_log_print(ANDROID_LOG_VERBOSE, "threaded_app", __VA_ARGS__); }while(0)
 #else
-#define ANAG_LOGV(...) do{ 0; } while(0)
+#define ANAG_LOGV(...) do{ /*nop*/; }while(0)
 #endif
 
 //struct XrInstanceCreateInfoAndroidKHR

@@ -694,10 +694,17 @@ XR_YVR_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_YVR_controller_interaction"
 
     const std::vector<std::string> platformExtensions = {XR_KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME};
 
-    std::transform(platformExtensions.begin(), platformExtensions.end(), std::back_inserter(extensions), [](const std::string& ext) { return ext.c_str(); } );
+    std::transform(platformExtensions.begin(), platformExtensions.end(), std::back_inserter(extensions), [](const std::string& ext)
+    {
+      return ext.c_str();
+    } );
 
     const std::vector<std::string> graphicsExtensions = {XR_KHR_VULKAN_ENABLE2_EXTENSION_NAME};
-    std::transform(graphicsExtensions.begin(), graphicsExtensions.end(), std::back_inserter(extensions), [](const std::string& ext) { return ext.c_str(); } );
+
+    std::transform(graphicsExtensions.begin(), graphicsExtensions.end(), std::back_inserter(extensions), [](const std::string& ext)
+    {
+      return ext.c_str();
+    } );
 
     XrInstanceCreateInfo createInfo {XR_TYPE_INSTANCE_CREATE_INFO};
     createInfo.next = &instanceCreateInfoAndroid;
@@ -1413,7 +1420,11 @@ typedef struct VkExtensionProperties
 #endif
 
       //std::vector<XrExtensionProperties> extensions(instanceExtensionCount, {XR_TYPE_EXTENSION_PROPERTIES} );
-      std::vector<VkExtensionProperties> extensions(instanceExtensionCount, { {0}, 0} );
+      std::vector<VkExtensionProperties> extensions(instanceExtensionCount,
+      {
+        {0},
+        0
+      } );
 
       if(tableVk.EnumerateInstanceExtensionProperties)
         CHECK_VULKANCMD(tableVk.EnumerateInstanceExtensionProperties(layerName, &instanceExtensionCount, extensions.data() ) );
@@ -1727,9 +1738,15 @@ typedef struct VkExtensionProperties
 
   static_assert(sizeof(Geometry::Vertex) == 24, "Unexpected Vertex size");
 
-  gVertexBufferBaseAttrDesc = { {0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Position) }, {1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Color) } };
+  gVertexBufferBaseAttrDesc =
+  {
+    {0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Position) },
+
+    {1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Color) }
+  };
 
   uint32_t numCubeIdicies = sizeof(Geometry::c_cubeIndices) / sizeof(Geometry::c_cubeIndices[0] );
+
   uint32_t numCubeVerticies = sizeof(Geometry::c_cubeVertices) / sizeof(Geometry::c_cubeVertices[0] );
 
   //VertexBuffer_VertexBufferCreate(numCubeIdicies, numCubeVerticies);
@@ -1960,15 +1977,20 @@ typedef struct VkExtensionProperties
     if(tableXr.StringToPath)
       CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/interaction_profiles/khr/simple_controller", &khrSimpleInteractionProfilePath) );
 
-    std::vector<XrActionSuggestedBinding> bindings { {// Fall back to a click input for the grab action.
-                                                    {gOpenXrProgramInputState_InputState_grabAction, selectPath[Side_LEFT] },
-                                                    {gOpenXrProgramInputState_InputState_grabAction, selectPath[Side_RIGHT] },
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_LEFT] },
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_RIGHT] },
-                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[Side_LEFT] },
-                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[Side_RIGHT] },
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_LEFT] },
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_RIGHT] } } };
+    // fall back to a click input for the grab action
+    std::vector<XrActionSuggestedBinding> bindings
+    {
+      {
+        {gOpenXrProgramInputState_InputState_grabAction, selectPath[Side_LEFT] },
+        {gOpenXrProgramInputState_InputState_grabAction, selectPath[Side_RIGHT] },
+        {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_LEFT] },
+        {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_RIGHT] },
+        {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[Side_LEFT] },
+        {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[Side_RIGHT] },
+        {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_LEFT] },
+        {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_RIGHT] }
+      }
+    };
 
     XrInteractionProfileSuggestedBinding suggestedBindings {XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
 
@@ -1987,13 +2009,18 @@ typedef struct VkExtensionProperties
     if(tableXr.StringToPath)
       CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/interaction_profiles/oculus/touch_controller", &oculusTouchInteractionProfilePath) );
 
-    std::vector<XrActionSuggestedBinding> bindings { { {gOpenXrProgramInputState_InputState_grabAction, squeezeValuePath[Side_LEFT] },
-                                                    {gOpenXrProgramInputState_InputState_grabAction, squeezeValuePath[Side_RIGHT] },
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_LEFT] },
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_RIGHT] },
-                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[Side_LEFT] },
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_LEFT] },
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_RIGHT] } } };
+    std::vector<XrActionSuggestedBinding> bindings
+    {
+      {
+        {gOpenXrProgramInputState_InputState_grabAction, squeezeValuePath[Side_LEFT] },
+        {gOpenXrProgramInputState_InputState_grabAction, squeezeValuePath[Side_RIGHT] },
+        {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_LEFT] },
+        {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_RIGHT] },
+        {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[Side_LEFT] },
+        {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_LEFT] },
+        {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_RIGHT] }
+      }
+    };
 
     XrInteractionProfileSuggestedBinding suggestedBindings {XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
 
@@ -2012,14 +2039,19 @@ typedef struct VkExtensionProperties
     if(tableXr.StringToPath)
       CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/interaction_profiles/htc/vive_controller", &viveControllerInteractionProfilePath) );
 
-    std::vector<XrActionSuggestedBinding> bindings { { {gOpenXrProgramInputState_InputState_grabAction, triggerValuePath[Side_LEFT] },
-                                                    {gOpenXrProgramInputState_InputState_grabAction, triggerValuePath[Side_RIGHT] },
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_LEFT] },
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_RIGHT] },
-                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[Side_LEFT] },
-                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[Side_RIGHT] },
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_LEFT] },
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_RIGHT] } } };
+    std::vector<XrActionSuggestedBinding> bindings
+    {
+      {
+        {gOpenXrProgramInputState_InputState_grabAction, triggerValuePath[Side_LEFT] },
+        {gOpenXrProgramInputState_InputState_grabAction, triggerValuePath[Side_RIGHT] },
+        {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_LEFT] },
+        {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_RIGHT] },
+        {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[Side_LEFT] },
+        {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[Side_RIGHT] },
+        {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_LEFT] },
+        {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_RIGHT] }
+      }
+    };
 
     XrInteractionProfileSuggestedBinding suggestedBindings {XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
 
@@ -2038,14 +2070,19 @@ typedef struct VkExtensionProperties
     if(tableXr.StringToPath)
       CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/interaction_profiles/valve/index_controller", &indexControllerInteractionProfilePath) );
 
-    std::vector<XrActionSuggestedBinding> bindings { { {gOpenXrProgramInputState_InputState_grabAction, squeezeForcePath[Side_LEFT] },
-                                                    {gOpenXrProgramInputState_InputState_grabAction, squeezeForcePath[Side_RIGHT] },
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_LEFT] },
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_RIGHT] },
-                                                    {gOpenXrProgramInputState_InputState_quitAction, bClickPath[Side_LEFT] },
-                                                    {gOpenXrProgramInputState_InputState_quitAction, bClickPath[Side_RIGHT] },
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_LEFT] },
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_RIGHT] } } };
+    std::vector<XrActionSuggestedBinding> bindings
+    {
+      {
+        {gOpenXrProgramInputState_InputState_grabAction, squeezeForcePath[Side_LEFT] },
+        {gOpenXrProgramInputState_InputState_grabAction, squeezeForcePath[Side_RIGHT] },
+        {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_LEFT] },
+        {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_RIGHT] },
+        {gOpenXrProgramInputState_InputState_quitAction, bClickPath[Side_LEFT] },
+        {gOpenXrProgramInputState_InputState_quitAction, bClickPath[Side_RIGHT] },
+        {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_LEFT] },
+        {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_RIGHT] }
+      }
+    };
 
     XrInteractionProfileSuggestedBinding suggestedBindings {XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
 
@@ -2064,14 +2101,19 @@ typedef struct VkExtensionProperties
     if(tableXr.StringToPath)
       CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/interaction_profiles/microsoft/motion_controller", &microsoftMixedRealityInteractionProfilePath) );
 
-    std::vector<XrActionSuggestedBinding> bindings { { {gOpenXrProgramInputState_InputState_grabAction, squeezeClickPath[Side_LEFT] },
-                                                    {gOpenXrProgramInputState_InputState_grabAction, squeezeClickPath[Side_RIGHT] },
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_LEFT] },
-                                                    {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_RIGHT] },
-                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[Side_LEFT] },
-                                                    {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[Side_RIGHT] },
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_LEFT] },
-                                                    {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_RIGHT] } } };
+    std::vector<XrActionSuggestedBinding> bindings
+    {
+      {
+        {gOpenXrProgramInputState_InputState_grabAction, squeezeClickPath[Side_LEFT] },
+        {gOpenXrProgramInputState_InputState_grabAction, squeezeClickPath[Side_RIGHT] },
+        {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_LEFT] },
+        {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_RIGHT] },
+        {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[Side_LEFT] },
+        {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[Side_RIGHT] },
+        {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_LEFT] },
+        {gOpenXrProgramInputState_InputState_vibrateAction, hapticPath[Side_RIGHT] }
+      }
+    };
 
     XrInteractionProfileSuggestedBinding suggestedBindings {XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
 
@@ -2469,14 +2511,34 @@ typedef struct VkExtensionProperties
             cb.logicOp = VK_LOGIC_OP_NO_OP;
             _operator_assign(cb.blendConstants, 1.0f);
 
-            VkRect2D scissor = { {0, 0}, m_swapchainImageContextSize[indice] };
+            VkRect2D scissor =
+            {
+              {0, 0},
+              m_swapchainImageContextSize[indice]
+            };
 
 #if defined(ORIGIN_BOTTOM_LEFT)
             // Flipped view so origin is bottom-left like GL (requires VK_KHR_maintenance1)
-            VkViewport viewport = {0.0f, (float)m_swapchainImageContextSize[indice].height, (float)m_swapchainImageContextSize[indice].width, -(float)m_swapchainImageContextSize[indice].height, 0.0f, 1.0f};
+            VkViewport viewport =
+            {
+              0.0f,
+              (float)m_swapchainImageContextSize[indice].height,
+              (float)m_swapchainImageContextSize[indice].width,
+              -(float)m_swapchainImageContextSize[indice].height,
+              0.0f,
+              1.0f
+            };
 #else
             // Will invert y after projection
-            VkViewport viewport = {0.0f, 0.0f, (float)m_swapchainImageContextSize[indice].width, (float)m_swapchainImageContextSize[indice].height, 0.0f, 1.0f};
+            VkViewport viewport =
+            {
+              0.0f,
+              0.0f,
+              (float)m_swapchainImageContextSize[indice].width,
+              (float)m_swapchainImageContextSize[indice].height,
+              0.0f,
+              1.0f
+            };
 #endif
 
             VkPipelineViewportStateCreateInfo vp {VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO};
@@ -2571,7 +2633,7 @@ typedef struct VkExtensionProperties
 
       // If the timeout is zero, returns immediately without blocking.
       // If the timeout is negative, waits indefinitely until an event appears.
-      const int timeoutMilliseconds = (!appState.Resumed && !gOpenXrProgramSessionRunning && app->destroyRequested == 0) ? -1 : 0;
+      const int timeoutMilliseconds = ( !appState.Resumed && !gOpenXrProgramSessionRunning && app->destroyRequested == 0) ? -1 : 0;
 
       if(ALooper_pollOnce(timeoutMilliseconds, nullptr, &events, (void**)&source) < 0)
         break;
@@ -2754,7 +2816,7 @@ typedef struct VkExtensionProperties
             if(tableXr.GetInputSourceLocalizedName)
               CHECK_XRCMD_CHECK(tableXr.GetInputSourceLocalizedName(gXrSession, &nameInfo, uint32_t(grabSource.size() ), &size, grabSource.data() ) );
 
-            if(!sourceName.empty() )
+            if( !sourceName.empty() )
               sourceName += " and ";
 
             sourceName += "'";
@@ -2763,7 +2825,7 @@ typedef struct VkExtensionProperties
             sourceName += "'";
           }
 
-          Log::Write(Log::Level::Info, Fmt("%s action is bound to %s", actionName[index].c_str(), ( (!sourceName.empty() ) ? sourceName.c_str() : "nothing") ) );
+          Log::Write(Log::Level::Info, Fmt("%s action is bound to %s", actionName[index].c_str(), ( ( !sourceName.empty() ) ? sourceName.c_str() : "nothing") ) );
         }
       }
       break;

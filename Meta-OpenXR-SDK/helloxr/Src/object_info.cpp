@@ -189,7 +189,7 @@ void DebugUtilsData::AddObjectName(uint64_t object_handle, XrObjectType object_t
 // So, do that in its own method
 void DebugUtilsData::RemoveIndividualLabel(XrSdkSessionLabelList& label_vec)
 {
-  if(!label_vec.empty() && label_vec.back()->is_individual_label)
+  if( !label_vec.empty() && label_vec.back()->is_individual_label)
     label_vec.pop_back();
 }
 

@@ -30,7 +30,13 @@ void Write(Level severity, const std::string& msg)
   const auto secondRemainder = now - std::chrono::system_clock::from_time_t(now_time);
   const int64_t milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(secondRemainder).count();
 
-  static std::map<Level, const char*> severityName = { {Level::Verbose, "Verbose"}, {Level::Info, "Info   "}, {Level::Warning, "Warning"}, {Level::Error, "Error  "} };
+  static std::map<Level, const char*> severityName =
+  {
+    {Level::Verbose, "Verbose"},
+    {Level::Info, "Info   "},
+    {Level::Warning, "Warning"},
+    {Level::Error, "Error  "}
+  };
 
   std::ostringstream out;
 
@@ -40,7 +46,8 @@ void Write(Level severity, const std::string& msg)
     << "." << std::setw(3) << milliseconds << "]"
     << "[" << severityName[severity] << "] " << msg << std::endl;
 
-  std::lock_guard<std::mutex> lock(gLogger_logLock); // Ensure output is serialized
+  // Ensure output is serialized
+  std::lock_guard<std::mutex> lock(gLogger_logLock);
 
   ( (severity == Level::Error) ? std::clog : std::cout) << out.str();
 

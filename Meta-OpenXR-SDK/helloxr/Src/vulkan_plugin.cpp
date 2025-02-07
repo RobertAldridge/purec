@@ -35,7 +35,13 @@ std::vector<VkVertexInputAttributeDescription> gVertexBufferBaseAttrDesc {};
 
 VertexBufferBaseBlah gVertexBufferBaseCount = {0, 0};
 
-std::array<VkPipelineShaderStageCreateInfo, 2> gShaderProgramShaderInfo { { {VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO}, {VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO} } };
+std::array<VkPipelineShaderStageCreateInfo, 2> gShaderProgramShaderInfo
+{
+  {
+    {VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO},
+    {VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO}
+  }
+};
 
 std::vector<std::vector<XrSwapchainImageVulkan2KHR> > m_swapchainImageContextSwapchainImages;
 
@@ -503,7 +509,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL VulkanGraphicsPlugin_debugMessageThunk(VkDebugUti
       auto objectType = pCallbackData->pObjects[0].objectType;
 
       if( (objectType == VK_OBJECT_TYPE_INSTANCE) && (strncmp(pCallbackData->pMessage, "Device Extension:", 17) == 0) )
-		    break;
+        break;
 
       objName = VulkanGraphicsPlugin_BlahVkObjectTypeToString(objectType);
       object = pCallbackData->pObjects[0].objectHandle;

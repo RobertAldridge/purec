@@ -27,7 +27,8 @@ constexpr XrVector3f RBF {0.5f, -0.5f, 0.5f};
 constexpr XrVector3f RTB {0.5f, 0.5f, -0.5f};
 constexpr XrVector3f RTF {0.5f, 0.5f, 0.5f};
 
-#define CUBE_SIDE(V1, V2, V3, V4, V5, V6, COLOR) {V1, COLOR}, {V2, COLOR}, {V3, COLOR}, {V4, COLOR}, {V5, COLOR}, {V6, COLOR}
+#define CUBE_SIDE(V1, V2, V3, V4, V5, V6, COLOR) \
+  {V1, COLOR}, {V2, COLOR}, {V3, COLOR}, {V4, COLOR}, {V5, COLOR}, {V6, COLOR}
 
 constexpr Vertex c_cubeVertices[] =
 {

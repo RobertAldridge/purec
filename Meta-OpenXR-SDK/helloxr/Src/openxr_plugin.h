@@ -138,7 +138,10 @@ void OpenXrProgram_OpenXrProgram_Destructor();
 //
 //  std::array<XrSpace, Side_COUNT> handSpace;
 //
-//  std::array<float, Side_COUNT> handScale = { {1.0f, 1.0f} };
+//  std::array<float, Side_COUNT> handScale =
+//  {
+//    {1.0f, 1.0f}
+//  };
 //
 //  std::array<XrBool32, Side_COUNT> handActive;
 //};

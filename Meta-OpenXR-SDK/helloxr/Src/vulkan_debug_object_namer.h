@@ -13,11 +13,14 @@ public:
       BlahVkSetDebugUtilsObjectNameEXT = (PFN_vkSetDebugUtilsObjectNameEXT)tableVk.GetInstanceProcAddr(instance, "vkSetDebugUtilsObjectNameEXT");
   }
 
-  VulkanDebugObjectNamer(const VulkanDebugObjectNamer&) = default;
+  VulkanDebugObjectNamer(const VulkanDebugObjectNamer& ) = default;
 
-  VulkanDebugObjectNamer& operator=(const VulkanDebugObjectNamer&) = default;
+  VulkanDebugObjectNamer& operator=(const VulkanDebugObjectNamer& ) = default;
 
-  ~VulkanDebugObjectNamer() { Reset(); }
+  ~VulkanDebugObjectNamer()
+  {
+    Reset();
+  }
 
   void Init(VkInstance instance, VkDevice device)
   {

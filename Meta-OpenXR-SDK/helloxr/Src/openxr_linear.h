@@ -431,15 +431,27 @@ inline static void XrMatrix4x4f_CreateRotationRadians(
 {
   const float sinX = sinf(radiansX);
   const float cosX = cosf(radiansX);
-  const XrMatrix4x4f rotationX = { {1, 0, 0, 0, 0, cosX, sinX, 0, 0, -sinX, cosX, 0, 0, 0, 0, 1} };
+
+  const XrMatrix4x4f rotationX =
+  {
+    {1, 0, 0, 0, 0, cosX, sinX, 0, 0, -sinX, cosX, 0, 0, 0, 0, 1}
+  };
 
   const float sinY = sinf(radiansY);
   const float cosY = cosf(radiansY);
-  const XrMatrix4x4f rotationY = { {cosY, 0, -sinY, 0, 0, 1, 0, 0, sinY, 0, cosY, 0, 0, 0, 0, 1} };
+
+  const XrMatrix4x4f rotationY =
+  {
+    {cosY, 0, -sinY, 0, 0, 1, 0, 0, sinY, 0, cosY, 0, 0, 0, 0, 1}
+  };
 
   const float sinZ = sinf(radiansZ);
   const float cosZ = cosf(radiansZ);
-  const XrMatrix4x4f rotationZ = { {cosZ, sinZ, 0, 0, -sinZ, cosZ, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1} };
+
+  const XrMatrix4x4f rotationZ =
+  {
+    {cosZ, sinZ, 0, 0, -sinZ, cosZ, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1}
+  };
 
   XrMatrix4x4f rotationXY;
   XrMatrix4x4f_Multiply( &rotationXY, &rotationY, &rotationX);
@@ -892,11 +904,15 @@ inline static bool XrMatrix4x4f_CullBounds(const XrMatrix4x4f* mvp, const XrVect
   if(maxs->x <= mins->x && maxs->y <= mins->y && maxs->z <= mins->z)
     return false;
 
-  XrVector4f c[8] = { {0} };
+  XrVector4f c[8] =
+  {
+    {0}
+  };
 
   for(int i = 0; i < 8; i++)
   {
-    const XrVector4f corner = {
+    const XrVector4f corner =
+    {
       (i & 1) != 0 ? maxs->x : mins->x,
       (i & 2) != 0 ? maxs->y : mins->y,
       (i & 4) != 0 ? maxs->z : mins->z,

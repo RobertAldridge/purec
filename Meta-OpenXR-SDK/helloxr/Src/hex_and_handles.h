@@ -43,11 +43,17 @@ template <typename T> static inline T const& TreatIntegerAsHandle(uint64_t const
   return reinterpret_cast<T const&>(handle);
 }
 
-static inline bool IsIntegerNullHandle(uint64_t handle) { return XR_NULL_HANDLE == reinterpret_cast<void*>(handle); }
+static inline bool IsIntegerNullHandle(uint64_t handle)
+{
+  return XR_NULL_HANDLE == reinterpret_cast<void*>(handle);
+}
 
 #else
 
-static inline uint64_t MakeHandleGeneric(uint64_t handle) { return handle; }
+static inline uint64_t MakeHandleGeneric(uint64_t handle)
+{
+  return handle;
+}
 
 template <typename T> static inline T& TreatIntegerAsHandle(uint64_t& handle)
 {
@@ -59,20 +65,32 @@ template <typename T> static inline T const& TreatIntegerAsHandle(uint64_t const
   return handle;
 }
 
-static inline bool IsIntegerNullHandle(uint64_t handle) { return XR_NULL_HANDLE == handle; }
+static inline bool IsIntegerNullHandle(uint64_t handle)
+{
+  return XR_NULL_HANDLE == handle;
+}
 
 #endif
 
-inline std::string Uint64ToHexString(uint64_t val) { return to_hex(val); }
+inline std::string Uint64ToHexString(uint64_t val)
+{
+  return to_hex(val);
+}
 
-inline std::string Uint32ToHexString(uint32_t val) { return to_hex(val); }
+inline std::string Uint32ToHexString(uint32_t val)
+{
+  return to_hex(val);
+}
 
 template <typename T> inline std::string HandleToHexString(T handle)
 {
   return to_hex(handle);
 }
 
-inline std::string UintptrToHexString(uintptr_t val) { return to_hex(val); }
+inline std::string UintptrToHexString(uintptr_t val)
+{
+  return to_hex(val);
+}
 
 template <typename T> inline std::string PointerToHexString(T const* ptr)
 {

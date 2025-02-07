@@ -17,9 +17,13 @@ struct XrSdkGenericObject
     return TreatIntegerAsHandle<HandleType&>(handle);
   }
 
-  template <typename T> XrSdkGenericObject(T h, XrObjectType t) : handle(MakeHandleGeneric(h) ), type(t) {}
+  template <typename T> XrSdkGenericObject(T h, XrObjectType t) : handle(MakeHandleGeneric(h) ), type(t)
+  {
+  }
 
-  XrSdkGenericObject(uint64_t h, XrObjectType t) : handle(h), type(t) {}
+  XrSdkGenericObject(uint64_t h, XrObjectType t) : handle(h), type(t)
+  {
+  }
 };
 
 struct XrSdkLogObjectInfo
@@ -42,11 +46,17 @@ struct XrSdkLogObjectInfo
 
   XrSdkLogObjectInfo() = default;
 
-  template <typename T> XrSdkLogObjectInfo(T h, XrObjectType t) : handle(MakeHandleGeneric(h) ), type(t) {}
+  template <typename T> XrSdkLogObjectInfo(T h, XrObjectType t) : handle(MakeHandleGeneric(h) ), type(t)
+  {
+  }
 
-  XrSdkLogObjectInfo(uint64_t h, XrObjectType t) : handle(h), type(t) {}
+  XrSdkLogObjectInfo(uint64_t h, XrObjectType t) : handle(h), type(t)
+  {
+  }
 
-  XrSdkLogObjectInfo(uint64_t h, XrObjectType t, const char* n) : handle(h), type(t), name(n == nullptr ? "" : n) {}
+  XrSdkLogObjectInfo(uint64_t h, XrObjectType t, const char* n) : handle(h), type(t), name(n == nullptr ? "" : n)
+  {
+  }
 
   std::string ToString() const;
 };
@@ -61,7 +71,10 @@ static inline bool Equivalent(XrDebugUtilsObjectNameInfoEXT const& a, XrSdkLogOb
   return a.objectHandle == b.handle && a.objectType == b.type;
 }
 
-static inline bool Equivalent(XrSdkLogObjectInfo const& a, XrDebugUtilsObjectNameInfoEXT const& b) { return Equivalent(b, a); }
+static inline bool Equivalent(XrSdkLogObjectInfo const& a, XrDebugUtilsObjectNameInfoEXT const& b)
+{
+  return Equivalent(b, a);
+}
 
 class ObjectInfoCollection
 {

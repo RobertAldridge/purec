@@ -135,7 +135,8 @@ R"_(
       vec4(0.0, 0.0, 1.0, 1.0)
   );
 
-  void main() {
+  void main()
+  {
       gl_Position = vec4(positions[gl_VertexIndex], 0.0, 1.0);
       fragColor = colors[gl_VertexIndex % 3];
   }
@@ -151,7 +152,8 @@ R"_(
 
   layout(location = 0) out vec4 outColor;
 
-  void main() {
+  void main()
+  {
       outColor = vec4(fragColor, 1.0);
   }
 
@@ -327,7 +329,7 @@ R"_(
     // If the virtual object is further away (occluded) output a transparent color so real scene content from PT layer is displayed.
     outColor = fragmentColor;
 
-    if (cubeDepth < depthViewEyeZ)
+    if(cubeDepth < depthViewEyeZ)
     {
       outColor.a = 1.0f; // fully opaque
     }
