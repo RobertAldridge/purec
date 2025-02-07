@@ -5,10 +5,25 @@
 
 XrEnvironmentDepthSwapchainMETA gEnvironmentDepthSwapchainMETA = XR_NULL_HANDLE;
 
-XrEnvironmentDepthProviderCreateInfoMETA gEnvironmentDepthProviderCreateInfoMETA {XR_TYPE_ENVIRONMENT_DEPTH_PROVIDER_CREATE_INFO_META};
-XrEnvironmentDepthHandRemovalSetInfoMETA gEnvironmentDepthHandRemovalSetInfoMETA {XR_TYPE_ENVIRONMENT_DEPTH_HAND_REMOVAL_SET_INFO_META};
-XrEnvironmentDepthSwapchainCreateInfoMETA gEnvironmentDepthSwapchainCreateInfoMETA {XR_TYPE_ENVIRONMENT_DEPTH_SWAPCHAIN_CREATE_INFO_META};
-XrEnvironmentDepthSwapchainStateMETA gEnvironmentDepthSwapchainStateMETA {XR_TYPE_ENVIRONMENT_DEPTH_SWAPCHAIN_STATE_META};
+XrEnvironmentDepthProviderCreateInfoMETA gEnvironmentDepthProviderCreateInfoMETA
+{
+  XR_TYPE_ENVIRONMENT_DEPTH_PROVIDER_CREATE_INFO_META
+};
+
+XrEnvironmentDepthHandRemovalSetInfoMETA gEnvironmentDepthHandRemovalSetInfoMETA
+{
+  XR_TYPE_ENVIRONMENT_DEPTH_HAND_REMOVAL_SET_INFO_META
+};
+
+XrEnvironmentDepthSwapchainCreateInfoMETA gEnvironmentDepthSwapchainCreateInfoMETA
+{
+  XR_TYPE_ENVIRONMENT_DEPTH_SWAPCHAIN_CREATE_INFO_META
+};
+
+XrEnvironmentDepthSwapchainStateMETA gEnvironmentDepthSwapchainStateMETA
+{
+  XR_TYPE_ENVIRONMENT_DEPTH_SWAPCHAIN_STATE_META
+};
 
 uint32_t gEnvironmentDepthSwapChainLength = 0;
 
@@ -501,7 +516,13 @@ try
   XrResult result = XR_ERROR_VALIDATION_FAILURE;
 
   if(tableXr.GetInstanceProcAddr)
-    result = tableXr.GetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction*) &initializeLoader);
+  {
+    result = tableXr.GetInstanceProcAddr(
+      XR_NULL_HANDLE,
+      "xrInitializeLoaderKHR",
+      (PFN_xrVoidFunction*) &initializeLoader
+    );
+  }
 
   if(XR_SUCCEEDED(result) && initializeLoader)
   {
@@ -523,19 +544,41 @@ try
       uint32_t instanceExtensionCount = 0;
 
       if(tableXr.EnumerateInstanceExtensionProperties)
-        CHECK_XRCMD_CHECK(tableXr.EnumerateInstanceExtensionProperties(layerName, 0, &instanceExtensionCount, nullptr) );
+      {
+        CHECK_XRCMD_CHECK(tableXr.EnumerateInstanceExtensionProperties(
+          layerName,
+          0,
+          &instanceExtensionCount,
+          nullptr
+        ) );
+      }
 
-      std::vector<XrExtensionProperties> extensions(instanceExtensionCount, {XR_TYPE_EXTENSION_PROPERTIES} );
+      std::vector<XrExtensionProperties> extensions(
+        instanceExtensionCount,
+        {XR_TYPE_EXTENSION_PROPERTIES}
+      );
 
       if(tableXr.EnumerateInstanceExtensionProperties)
-        CHECK_XRCMD_CHECK(tableXr.EnumerateInstanceExtensionProperties(layerName, (uint32_t)extensions.size(), &instanceExtensionCount, extensions.data() ) );
+      {
+        CHECK_XRCMD_CHECK(tableXr.EnumerateInstanceExtensionProperties(
+          layerName,
+          (uint32_t)extensions.size(),
+          &instanceExtensionCount,
+          extensions.data()
+        ) );
+      }
 
       const std::string indentStr(indent, ' ');
 
       Log::Write(Log::Level::Verbose, Fmt("%sAvailable Extensions: (%d)", indentStr.c_str(), instanceExtensionCount) );
 
       for(const XrExtensionProperties& extension : extensions)
-        Log::Write(Log::Level::Verbose, Fmt("%s  Name=%s SpecVersion=%d", indentStr.c_str(), extension.extensionName, extension.extensionVersion) );
+      {
+        Log::Write(
+          Log::Level::Verbose,
+          Fmt("%s  Name=%s SpecVersion=%d", indentStr.c_str(), extension.extensionName, extension.extensionVersion)
+        );
+      }
     }
 
     // Log non-layer extensions (layerName==nullptr).
@@ -561,7 +604,16 @@ try
 
       for(const XrApiLayerProperties& layer : layers)
       {
-        Log::Write(Log::Level::Verbose, Fmt("  Name=%s SpecVersion=%s LayerVersion=%d Description=%s", layer.layerName, GetXrVersionString(layer.specVersion).c_str(), layer.layerVersion, layer.description) );
+        Log::Write(
+          Log::Level::Verbose,
+          Fmt(
+            "  Name=%s SpecVersion=%s LayerVersion=%d Description=%s",
+            layer.layerName,
+            GetXrVersionString(layer.specVersion).c_str(),
+            layer.layerVersion,
+            layer.description
+          )
+        );
 
         logExtensions(layer.layerName, 4);
       }
@@ -694,14 +746,16 @@ XR_YVR_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_YVR_controller_interaction"
 
     const std::vector<std::string> platformExtensions = {XR_KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME};
 
-    std::transform(platformExtensions.begin(), platformExtensions.end(), std::back_inserter(extensions), [](const std::string& ext)
+    std::transform(platformExtensions.begin(), platformExtensions.end(), std::back_inserter(extensions),
+    [](const std::string& ext)
     {
       return ext.c_str();
     } );
 
     const std::vector<std::string> graphicsExtensions = {XR_KHR_VULKAN_ENABLE2_EXTENSION_NAME};
 
-    std::transform(graphicsExtensions.begin(), graphicsExtensions.end(), std::back_inserter(extensions), [](const std::string& ext)
+    std::transform(graphicsExtensions.begin(), graphicsExtensions.end(), std::back_inserter(extensions),
+    [](const std::string& ext)
     {
       return ext.c_str();
     } );
@@ -819,7 +873,14 @@ XR_YVR_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_YVR_controller_interaction"
   if(tableXr.GetInstanceProperties)
     CHECK_XRCMD_CHECK(tableXr.GetInstanceProperties(gXrInstance, &instanceProperties) );
 
-  Log::Write(Log::Level::Info, Fmt("Instance RuntimeName=%s RuntimeVersion=%s", instanceProperties.runtimeName, GetXrVersionString(instanceProperties.runtimeVersion).c_str() ) );
+  Log::Write(
+    Log::Level::Info,
+    Fmt(
+      "Instance RuntimeName=%s RuntimeVersion=%s",
+      instanceProperties.runtimeName,
+      GetXrVersionString(instanceProperties.runtimeVersion).c_str()
+    )
+  );
 
   CHECK_CHECK(gXrInstance != XR_NULL_HANDLE);
   CHECK_CHECK(gXrSystemId == XR_NULL_SYSTEM_ID);
@@ -830,7 +891,11 @@ XR_YVR_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_YVR_controller_interaction"
   if(tableXr.GetSystem)
     CHECK_XRCMD_CHECK(tableXr.GetSystem(gXrInstance, &systemInfo, &gXrSystemId) );
 
-  Log::Write(Log::Level::Verbose, Fmt("Using system %d for form factor %s", gXrSystemId, to_string(gOptions_XrFormFactor) ) );
+  Log::Write(
+    Log::Level::Verbose,
+    Fmt("Using system %d for form factor %s", gXrSystemId, to_string(gOptions_XrFormFactor) )
+  );
+
   CHECK_CHECK(gXrInstance != XR_NULL_HANDLE);
   CHECK_CHECK(gXrSystemId != XR_NULL_SYSTEM_ID);
 
@@ -840,14 +905,32 @@ XR_YVR_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_YVR_controller_interaction"
   bool found = false;
 
   if(tableXr.EnumerateEnvironmentBlendModes)
-    CHECK_XRCMD_CHECK(tableXr.EnumerateEnvironmentBlendModes(gXrInstance, gXrSystemId, gOptions_XrViewConfigurationType, 0, &countBlendModes, nullptr) );
+  {
+    CHECK_XRCMD_CHECK(tableXr.EnumerateEnvironmentBlendModes(
+      gXrInstance,
+      gXrSystemId,
+      gOptions_XrViewConfigurationType,
+      0,
+      &countBlendModes,
+      nullptr
+    ) );
+  }
 
   CHECK_CHECK(countBlendModes > 0);
 
   std::vector<XrEnvironmentBlendMode> blendModes(countBlendModes);
 
   if(tableXr.EnumerateEnvironmentBlendModes)
-    CHECK_XRCMD_CHECK(tableXr.EnumerateEnvironmentBlendModes(gXrInstance, gXrSystemId, gOptions_XrViewConfigurationType, countBlendModes, &countBlendModes, blendModes.data() ) );
+  {
+    CHECK_XRCMD_CHECK(tableXr.EnumerateEnvironmentBlendModes(
+      gXrInstance,
+      gXrSystemId,
+      gOptions_XrViewConfigurationType,
+      countBlendModes,
+      &countBlendModes,
+      blendModes.data()
+    ) );
+  }
 
   for(const auto& blendMode : blendModes)
   {
@@ -874,12 +957,28 @@ XR_YVR_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_YVR_controller_interaction"
   uint32_t viewConfigurationTypeCount = 0;
 
   if(tableXr.EnumerateViewConfigurations)
-    CHECK_XRCMD_CHECK(tableXr.EnumerateViewConfigurations(gXrInstance, gXrSystemId, 0, &viewConfigurationTypeCount, nullptr) );
+  {
+    CHECK_XRCMD_CHECK(tableXr.EnumerateViewConfigurations(
+      gXrInstance,
+      gXrSystemId,
+      0,
+      &viewConfigurationTypeCount,
+      nullptr
+    ) );
+  }
 
   std::vector<XrViewConfigurationType> viewConfigurationTypes(viewConfigurationTypeCount);
 
   if(tableXr.EnumerateViewConfigurations)
-    CHECK_XRCMD_CHECK(tableXr.EnumerateViewConfigurations(gXrInstance, gXrSystemId, viewConfigurationTypeCount, &viewConfigurationTypeCount, viewConfigurationTypes.data() ) );
+  {
+    CHECK_XRCMD_CHECK(tableXr.EnumerateViewConfigurations(
+      gXrInstance,
+      gXrSystemId,
+      viewConfigurationTypeCount,
+      &viewConfigurationTypeCount,
+      viewConfigurationTypes.data()
+    ) );
+  }
 
   CHECK_CHECK( (uint32_t)viewConfigurationTypes.size() == viewConfigurationTypeCount);
 
@@ -887,34 +986,87 @@ XR_YVR_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_YVR_controller_interaction"
 
   for(XrViewConfigurationType viewConfigurationType : viewConfigurationTypes)
   {
-    Log::Write(Log::Level::Verbose, Fmt("View Configuration Type: %s %s", to_string(viewConfigurationType), viewConfigurationType == gOptions_XrViewConfigurationType ? "(Selected)" : "") );
+    Log::Write(
+      Log::Level::Verbose,
+      Fmt(
+        "View Configuration Type: %s %s",
+        to_string(viewConfigurationType),
+        viewConfigurationType == gOptions_XrViewConfigurationType ? "(Selected)" : ""
+      )
+    );
 
     XrViewConfigurationProperties viewConfigProperties {XR_TYPE_VIEW_CONFIGURATION_PROPERTIES};
 
     if(tableXr.GetViewConfigurationProperties)
-      CHECK_XRCMD_CHECK(tableXr.GetViewConfigurationProperties(gXrInstance, gXrSystemId, viewConfigurationType, &viewConfigProperties) );
+    {
+      CHECK_XRCMD_CHECK(tableXr.GetViewConfigurationProperties(
+        gXrInstance,
+        gXrSystemId,
+        viewConfigurationType,
+        &viewConfigProperties
+      ) );
+    }
 
-    Log::Write(Log::Level::Verbose, Fmt("View configuration FovMutable=%s", viewConfigProperties.fovMutable == XR_TRUE ? "True" : "False") );
+    Log::Write(
+      Log::Level::Verbose,
+      Fmt("View configuration FovMutable=%s", viewConfigProperties.fovMutable == XR_TRUE ? "True" : "False")
+    );
 
     uint32_t viewCount = 0;
 
     if(tableXr.EnumerateViewConfigurationViews)
-      CHECK_XRCMD_CHECK(tableXr.EnumerateViewConfigurationViews(gXrInstance, gXrSystemId, viewConfigurationType, 0, &viewCount, nullptr) );
+    {
+      CHECK_XRCMD_CHECK(tableXr.EnumerateViewConfigurationViews(
+        gXrInstance,
+        gXrSystemId,
+        viewConfigurationType,
+        0,
+        &viewCount,
+        nullptr
+      ) );
+    }
 
     if(viewCount > 0)
     {
       std::vector<XrViewConfigurationView> views(viewCount, {XR_TYPE_VIEW_CONFIGURATION_VIEW} );
 
       if(tableXr.EnumerateViewConfigurationViews)
-        CHECK_XRCMD_CHECK(tableXr.EnumerateViewConfigurationViews(gXrInstance, gXrSystemId, viewConfigurationType, viewCount, &viewCount, views.data() ) );
+      {
+        CHECK_XRCMD_CHECK(tableXr.EnumerateViewConfigurationViews(
+          gXrInstance,
+          gXrSystemId,
+          viewConfigurationType,
+          viewCount,
+          &viewCount,
+          views.data()
+        ) );
+      }
 
       for(uint32_t i = 0; i < views.size(); i++)
       {
         const XrViewConfigurationView& view = views[i];
 
-        Log::Write(Log::Level::Verbose, Fmt("View [%d]: Recommended Width=%d Height=%d SampleCount=%d", i, view.recommendedImageRectWidth, view.recommendedImageRectHeight, view.recommendedSwapchainSampleCount) );
+        Log::Write(
+          Log::Level::Verbose,
+          Fmt(
+            "View [%d]: Recommended Width=%d Height=%d SampleCount=%d",
+            i,
+            view.recommendedImageRectWidth,
+            view.recommendedImageRectHeight,
+            view.recommendedSwapchainSampleCount
+          )
+        );
 
-        Log::Write(Log::Level::Verbose, Fmt("View [%d]: Maximum Width=%d Height=%d SampleCount=%d", i, view.maxImageRectWidth, view.maxImageRectHeight, view.maxSwapchainSampleCount) );
+        Log::Write(
+          Log::Level::Verbose,
+          Fmt(
+            "View [%d]: Maximum Width=%d Height=%d SampleCount=%d",
+            i,
+            view.maxImageRectWidth,
+            view.maxImageRectHeight,
+            view.maxSwapchainSampleCount
+          )
+        );
       }
     }
     else
@@ -928,16 +1080,37 @@ XR_YVR_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_YVR_controller_interaction"
     uint32_t count = 0;
 
     if(tableXr.EnumerateEnvironmentBlendModes)
-      CHECK_XRCMD_CHECK(tableXr.EnumerateEnvironmentBlendModes(gXrInstance, gXrSystemId, viewConfigurationType, 0, &count, nullptr) );
+    {
+      CHECK_XRCMD_CHECK(tableXr.EnumerateEnvironmentBlendModes(
+        gXrInstance,
+        gXrSystemId,
+        viewConfigurationType,
+        0,
+        &count,
+        nullptr
+      ) );
+    }
 
     CHECK_CHECK(count > 0);
 
-    Log::Write(Log::Level::Info, Fmt("Available Environment Blend Mode count : (%d)", count) );
+    Log::Write(
+      Log::Level::Info,
+      Fmt("Available Environment Blend Mode count : (%d)", count)
+    );
 
     std::vector<XrEnvironmentBlendMode> blendModes(count);
 
     if(tableXr.EnumerateEnvironmentBlendModes)
-      CHECK_XRCMD_CHECK(tableXr.EnumerateEnvironmentBlendModes(gXrInstance, gXrSystemId, viewConfigurationType, count, &count, blendModes.data() ) );
+    {
+      CHECK_XRCMD_CHECK(tableXr.EnumerateEnvironmentBlendModes(
+        gXrInstance,
+        gXrSystemId,
+        viewConfigurationType,
+        count,
+        &count,
+        blendModes.data()
+      ) );
+    }
 
     bool blendModeFound = false;
 
@@ -945,7 +1118,14 @@ XR_YVR_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_YVR_controller_interaction"
     {
       const bool blendModeMatch = (mode == gOptions_XrEnvironmentBlendMode);
 
-      Log::Write(Log::Level::Info, Fmt("Environment Blend Mode (%s) : %s", to_string(mode), blendModeMatch ? "(Selected)" : "") );
+      Log::Write(
+        Log::Level::Info,
+        Fmt(
+          "Environment Blend Mode (%s) : %s",
+          to_string(mode),
+          blendModeMatch ? "(Selected)" : ""
+        )
+      );
 
       blendModeFound |= blendModeMatch;
     }
@@ -957,8 +1137,17 @@ XR_YVR_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_YVR_controller_interaction"
   // Extension function must be loaded by name
   XrGraphicsRequirementsVulkan2KHR graphicsRequirements {XR_TYPE_GRAPHICS_REQUIREMENTS_VULKAN2_KHR};
 
-  //CHECK_XRCMD_CHECK(VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsRequirements2KHR(gXrInstance, gXrSystemId, &graphicsRequirements) );
-  //XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsRequirements2KHR(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsVulkan2KHR* graphicsRequirements)
+  // CHECK_XRCMD_CHECK(VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsRequirements2KHR(
+  //   gXrInstance,
+  //   gXrSystemId,
+  //   &graphicsRequirements)
+  // );
+  //
+  // XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsRequirements2KHR(
+  //   XrInstance instance,
+  //   XrSystemId systemId,
+  //   XrGraphicsRequirementsVulkan2KHR* graphicsRequirements
+  // )
   {
     PFN_xrGetVulkanGraphicsRequirements2KHR pfnGetVulkanGraphicsRequirements2KHR = nullptr;
     XrResult resultGraphicsRequirements = XR_ERROR_VALIDATION_FAILURE;
@@ -967,12 +1156,23 @@ XR_YVR_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_YVR_controller_interaction"
 
     if(tableXr.GetInstanceProcAddr)
     {
-      resultGraphicsRequirements = tableXr.GetInstanceProcAddr(gXrInstance, "xrGetVulkanGraphicsRequirements2KHR", reinterpret_cast<PFN_xrVoidFunction*>( &pfnGetVulkanGraphicsRequirements2KHR) );
+      resultGraphicsRequirements = tableXr.GetInstanceProcAddr(
+        gXrInstance,
+        "xrGetVulkanGraphicsRequirements2KHR",
+        reinterpret_cast<PFN_xrVoidFunction*>( &pfnGetVulkanGraphicsRequirements2KHR)
+      );
+
       CHECK_XRCMD_CHECK(resultGraphicsRequirements);
     }
 
     if(pfnGetVulkanGraphicsRequirements2KHR)
-      resultGraphicsRequirements = pfnGetVulkanGraphicsRequirements2KHR(gXrInstance, gXrSystemId, &graphicsRequirements);
+    {
+      resultGraphicsRequirements = pfnGetVulkanGraphicsRequirements2KHR(
+        gXrInstance,
+        gXrSystemId,
+        &graphicsRequirements
+      );
+    }
 
     CHECK_XRCMD_CHECK(resultGraphicsRequirements);
 
@@ -1035,7 +1235,13 @@ label_return:
     std::vector<VkExtensionProperties> availableExtensions(extensionCount);
 
     if(tableVk.EnumerateInstanceExtensionProperties)
-      CHECK_VULKANCMD(tableVk.EnumerateInstanceExtensionProperties(nullptr, &extensionCount, availableExtensions.data() ) );
+    {
+      CHECK_VULKANCMD(tableVk.EnumerateInstanceExtensionProperties(
+        nullptr,
+        &extensionCount,
+        availableExtensions.data()
+      ) );
+    }
 
     const auto b = availableExtensions.begin();
     const auto e = availableExtensions.end();
@@ -1063,19 +1269,42 @@ label_return:
     extensions.push_back("VK_KHR_external_fence_capabilities"); // SpecVersion = 1
 
 #if 0
-VulkanLoader::LoadInstanceFunctions: Failed to load vkCreateDebugReportCallbackEXT, likely vkInstance created without xrGetVulkanInstanceExtensionsKHR/vrapi_GetInstanceExtensionsVulkan
-VulkanLoader::LoadInstanceFunctions: Failed to load vkDestroyDebugReportCallbackEXT, likely vkInstance created without xrGetVulkanInstanceExtensionsKHR/vrapi_GetInstanceExtensionsVulkan
+VulkanLoader::LoadInstanceFunctions: Failed to load vkCreateDebugReportCallbackEXT,
+likely vkInstance created without xrGetVulkanInstanceExtensionsKHR/vrapi_GetInstanceExtensionsVulkan
+
+VulkanLoader::LoadInstanceFunctions: Failed to load vkDestroyDebugReportCallbackEXT,
+likely vkInstance created without xrGetVulkanInstanceExtensionsKHR/vrapi_GetInstanceExtensionsVulkan
+
 VK_KHR_swapchain
+
 VK_EXT_fragment_density_map
-VulkanLoader::LoadInstanceFunctions: Failed to load vkCreateDebugReportCallbackEXT, likely vkInstance created without xrGetVulkanInstanceExtensionsKHR/vrapi_GetInstanceExtensionsVulkan
-VulkanLoader::LoadInstanceFunctions: Failed to load vkDestroyDebugReportCallbackEXT, likely vkInstance created without xrGetVulkanInstanceExtensionsKHR/vrapi_GetInstanceExtensionsVulkan
-VulkanLoader::LoadDeviceFunctions: Failed to load vkCmdDebugMarkerInsertEXT, likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
-VulkanLoader::LoadDeviceFunctions: Failed to load vkCmdSetCullModeEXT, likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
-VulkanLoader::LoadDeviceFunctions: Failed to load vkCmdSetDepthCompareOpEXT, likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
-VulkanLoader::LoadDeviceFunctions: Failed to load vkCmdSetDepthTestEnableEXT, likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
-VulkanLoader::LoadDeviceFunctions: Failed to load vkCmdSetDepthWriteEnableEXT, likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
-VulkanLoader::LoadDeviceFunctions: Failed to load vkDebugMarkerSetObjectTagEXT, likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
-VulkanLoader::LoadDeviceFunctions: Failed to load vkGetMemoryFdKHR, likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
+
+VulkanLoader::LoadInstanceFunctions: Failed to load vkCreateDebugReportCallbackEXT,
+likely vkInstance created without xrGetVulkanInstanceExtensionsKHR/vrapi_GetInstanceExtensionsVulkan
+
+VulkanLoader::LoadInstanceFunctions: Failed to load vkDestroyDebugReportCallbackEXT,
+likely vkInstance created without xrGetVulkanInstanceExtensionsKHR/vrapi_GetInstanceExtensionsVulkan
+
+VulkanLoader::LoadDeviceFunctions: Failed to load vkCmdDebugMarkerInsertEXT,
+likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
+
+VulkanLoader::LoadDeviceFunctions: Failed to load vkCmdSetCullModeEXT,
+likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
+
+VulkanLoader::LoadDeviceFunctions: Failed to load vkCmdSetDepthCompareOpEXT,
+likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
+
+VulkanLoader::LoadDeviceFunctions: Failed to load vkCmdSetDepthTestEnableEXT,
+likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
+
+VulkanLoader::LoadDeviceFunctions: Failed to load vkCmdSetDepthWriteEnableEXT,
+likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
+
+VulkanLoader::LoadDeviceFunctions: Failed to load vkDebugMarkerSetObjectTagEXT,
+likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
+
+VulkanLoader::LoadDeviceFunctions: Failed to load vkGetMemoryFdKHR,
+likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
 #endif
 
     // TODO add back VK_EXT_debug_report code for compatibility with older systems? (Android)
@@ -1083,13 +1312,18 @@ VulkanLoader::LoadDeviceFunctions: Failed to load vkGetMemoryFdKHR, likely vkDev
 
   VkDebugUtilsMessengerCreateInfoEXT debugInfo {VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT};
 
-  debugInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
+  debugInfo.messageSeverity =
+    VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
 
 #if !defined(NDEBUG)
-  debugInfo.messageSeverity |= VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT;
+  debugInfo.messageSeverity |=
+    VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT;
 #endif
 
-  debugInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+  debugInfo.messageType =
+    VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+    VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+    VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 
   debugInfo.pfnUserCallback = VulkanGraphicsPlugin_debugMessageThunk;
   debugInfo.pUserData = 0;
@@ -1364,10 +1598,21 @@ VK_VALVE_MUTABLE_DESCRIPTOR_TYPE_EXTENSION_NAME "VK_VALVE_mutable_descriptor_typ
     createInfo.vulkanCreateInfo = &instInfo;
     createInfo.vulkanAllocator = nullptr;
 
-    //CHECK_XRCMD_CHECK(VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanInstanceKHR(gXrInstance, &createInfo, &gVkInstance, &err) );
-    //CHECK_VULKANCMD(err);
-
-    //XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanInstanceKHR(XrInstance instance, const XrVulkanInstanceCreateInfoKHR* createInfo, VkInstance* vulkanInstance, VkResult* vulkanResult)
+    // CHECK_XRCMD_CHECK(VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanInstanceKHR(
+    //   gXrInstance,
+    //   &createInfo,
+    //   &gVkInstance,
+    //   &err
+    // ) );
+    //
+    // CHECK_VULKANCMD(err);
+    //
+    // XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanInstanceKHR(
+    //   XrInstance instance,
+    //   const XrVulkanInstanceCreateInfoKHR* createInfo,
+    //   VkInstance* vulkanInstance,
+    //   VkResult* vulkanResult
+    // )
     {
       PFN_xrCreateVulkanInstanceKHR pfnCreateVulkanInstanceKHR = nullptr;
       XrResult result = XR_ERROR_VALIDATION_FAILURE;
@@ -1376,7 +1621,12 @@ VK_VALVE_MUTABLE_DESCRIPTOR_TYPE_EXTENSION_NAME "VK_VALVE_mutable_descriptor_typ
 
       if(tableXr.GetInstanceProcAddr)
       {
-        result = tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateVulkanInstanceKHR", reinterpret_cast<PFN_xrVoidFunction*>( &pfnCreateVulkanInstanceKHR) );
+        result = tableXr.GetInstanceProcAddr(
+          gXrInstance,
+          "xrCreateVulkanInstanceKHR",
+          reinterpret_cast<PFN_xrVoidFunction*>( &pfnCreateVulkanInstanceKHR)
+        );
+
         CHECK_XRCMD_CHECK(result);
       }
 
@@ -1389,7 +1639,10 @@ VK_VALVE_MUTABLE_DESCRIPTOR_TYPE_EXTENSION_NAME "VK_VALVE_mutable_descriptor_typ
   }
 
   {
-    // typedef VkResult (VKAPI_PTR *PFN_vkEnumerateInstanceExtensionProperties)(const char* pLayerName, uint32_t* pPropertyCount, VkExtensionProperties* pProperties)
+    // typedef VkResult (VKAPI_PTR *PFN_vkEnumerateInstanceExtensionProperties)(
+    //   const char* pLayerName,
+    //   uint32_t* pPropertyCount,
+    //   VkExtensionProperties* pProperties)
 
     //const auto logExtensions = [](const char* layerName, int indent = 0 )
     {
@@ -1427,22 +1680,43 @@ typedef struct VkExtensionProperties
       } );
 
       if(tableVk.EnumerateInstanceExtensionProperties)
-        CHECK_VULKANCMD(tableVk.EnumerateInstanceExtensionProperties(layerName, &instanceExtensionCount, extensions.data() ) );
+      {
+        CHECK_VULKANCMD(tableVk.EnumerateInstanceExtensionProperties(
+          layerName,
+          &instanceExtensionCount,
+          extensions.data()
+        ) );
+      }
 
       const std::string indentStr(indent, ' ');
 
       Log::Write(Log::Level::Verbose, Fmt("%sAvailable Extensions: (%d)", indentStr.c_str(), instanceExtensionCount) );
 
       for(const VkExtensionProperties& extension : extensions)
-        Log::Write(Log::Level::Verbose, Fmt("%s  Name=%s SpecVersion=%d", indentStr.c_str(), extension.extensionName, extension.specVersion) );
+      {
+        Log::Write(
+          Log::Level::Verbose,
+          Fmt("%s  Name=%s SpecVersion=%d", indentStr.c_str(), extension.extensionName, extension.specVersion)
+        );
+      }
     };
   }
 
   if(tableVk.GetInstanceProcAddr)
-    gVulkanGraphicsPluginVkCreateDebugUtilsMessengerEXT = (PFN_vkCreateDebugUtilsMessengerEXT)tableVk.GetInstanceProcAddr(gVkInstance, "vkCreateDebugUtilsMessengerEXT");
+  {
+    gVulkanGraphicsPluginVkCreateDebugUtilsMessengerEXT =
+      (PFN_vkCreateDebugUtilsMessengerEXT)tableVk.GetInstanceProcAddr(gVkInstance, "vkCreateDebugUtilsMessengerEXT");
+  }
 
   if(gVulkanGraphicsPluginVkCreateDebugUtilsMessengerEXT != nullptr && tableVk.CreateDebugUtilsMessengerEXT)
-    CHECK_VULKANCMD(tableVk.CreateDebugUtilsMessengerEXT(gVkInstance, &debugInfo, nullptr, &gVulkanGraphicsPluginVkDebugUtilsMessenger) );
+  {
+    CHECK_VULKANCMD(tableVk.CreateDebugUtilsMessengerEXT(
+      gVkInstance,
+      &debugInfo,
+      nullptr,
+      &gVulkanGraphicsPluginVkDebugUtilsMessenger)
+    );
+  }
 
   {
     XrVulkanGraphicsDeviceGetInfoKHR deviceGetInfo {XR_TYPE_VULKAN_GRAPHICS_DEVICE_GET_INFO_KHR};
@@ -1450,8 +1724,17 @@ typedef struct VkExtensionProperties
     deviceGetInfo.systemId = gXrSystemId;
     deviceGetInfo.vulkanInstance = gVkInstance;
 
-    //CHECK_XRCMD_CHECK(VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsDevice2KHR(gXrInstance, &deviceGetInfo, &gVkPhysicalDevice) );
-    //XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsDevice2KHR(XrInstance instance, const XrVulkanGraphicsDeviceGetInfoKHR* getInfo, VkPhysicalDevice* vulkanPhysicalDevice)
+    // CHECK_XRCMD_CHECK(VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsDevice2KHR(
+    //   gXrInstance,
+    //   &deviceGetInfo,
+    //   &gVkPhysicalDevice
+    // ) );
+    //
+    // XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginGetVulkanGraphicsDevice2KHR(
+    //   XrInstance instance,
+    //   const XrVulkanGraphicsDeviceGetInfoKHR* getInfo,
+    //   VkPhysicalDevice* vulkanPhysicalDevice
+    // )
     {
       PFN_xrGetVulkanGraphicsDevice2KHR pfnGetVulkanGraphicsDevice2KHR = nullptr;
       XrResult result = XR_ERROR_VALIDATION_FAILURE;
@@ -1460,7 +1743,12 @@ typedef struct VkExtensionProperties
 
       if(tableXr.GetInstanceProcAddr)
       {
-        result = tableXr.GetInstanceProcAddr(gXrInstance, "xrGetVulkanGraphicsDevice2KHR", reinterpret_cast<PFN_xrVoidFunction*>( &pfnGetVulkanGraphicsDevice2KHR) );
+        result = tableXr.GetInstanceProcAddr(
+          gXrInstance,
+          "xrGetVulkanGraphicsDevice2KHR",
+          reinterpret_cast<PFN_xrVoidFunction*>( &pfnGetVulkanGraphicsDevice2KHR)
+        );
+
         CHECK_XRCMD_CHECK(result);
       }
 
@@ -1523,10 +1811,21 @@ typedef struct VkExtensionProperties
   deviceCreateInfo.vulkanPhysicalDevice = gVkPhysicalDevice;
   deviceCreateInfo.vulkanAllocator = nullptr;
 
-  //CHECK_XRCMD_CHECK(VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanDeviceKHR(gXrInstance, &deviceCreateInfo, &gVkDevice, &err) );
-  //CHECK_VULKANCMD(err);
-
-  //XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanDeviceKHR(XrInstance instance, const XrVulkanDeviceCreateInfoKHR* createInfo, VkDevice* vulkanDevice, VkResult* vulkanResult)
+  // CHECK_XRCMD_CHECK(VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanDeviceKHR(
+  //   gXrInstance,
+  //   &deviceCreateInfo,
+  //   &gVkDevice,
+  //   &err
+  // ) );
+  //
+  // CHECK_VULKANCMD(err);
+  //
+  // XrResult VulkanGraphicsPlugin_VulkanGraphicsPluginCreateVulkanDeviceKHR(
+  //   XrInstance instance,
+  //   const XrVulkanDeviceCreateInfoKHR* createInfo,
+  //   VkDevice* vulkanDevice,
+  //   VkResult* vulkanResult
+  // )
   {
     PFN_xrCreateVulkanDeviceKHR pfnCreateVulkanDeviceKHR = nullptr;
     XrResult result = XR_ERROR_VALIDATION_FAILURE;
@@ -1535,7 +1834,12 @@ typedef struct VkExtensionProperties
 
     if(tableXr.GetInstanceProcAddr)
     {
-      result = tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateVulkanDeviceKHR", reinterpret_cast<PFN_xrVoidFunction*>( &pfnCreateVulkanDeviceKHR) );
+      result = tableXr.GetInstanceProcAddr(
+        gXrInstance,
+        "xrCreateVulkanDeviceKHR",
+        reinterpret_cast<PFN_xrVoidFunction*>( &pfnCreateVulkanDeviceKHR)
+      );
+
       CHECK_XRCMD_CHECK(result);
     }
 
@@ -1557,8 +1861,18 @@ typedef struct VkExtensionProperties
 
   std::vector<uint32_t> vertexSPIRV;
   // compile a shader to a SPIR-V binary
-  //auto vertexSPIRV = VulkanGraphicsPlugin_VulkanGraphicsPluginCompileGlslShader("vertex", shaderc_glsl_default_vertex_shader, VertexShaderGlsl);
-  //std::vector<uint32_t> VulkanGraphicsPlugin_VulkanGraphicsPluginCompileGlslShader(const std::string& name, shaderc_shader_kind kind, const std::string& source)
+  //
+  // auto vertexSPIRV = VulkanGraphicsPlugin_VulkanGraphicsPluginCompileGlslShader(
+  //   "vertex",
+  //   shaderc_glsl_default_vertex_shader,
+  //   VertexShaderGlsl
+  // );
+  //
+  // std::vector<uint32_t> VulkanGraphicsPlugin_VulkanGraphicsPluginCompileGlslShader(
+  //   const std::string& name,
+  //   shaderc_shader_kind kind,
+  //   const std::string& source
+  // )
   {
     const std::string name("vertex");
     shaderc::Compiler compiler;
@@ -1566,11 +1880,19 @@ typedef struct VkExtensionProperties
 
     options.SetOptimizationLevel(shaderc_optimization_level_size);
 
-    shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(VertexShaderGlsl, shaderc_glsl_default_vertex_shader, name.c_str(), options);
+    shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(
+      VertexShaderGlsl,
+      shaderc_glsl_default_vertex_shader,
+      name.c_str(),
+      options
+    );
 
     if(module.GetCompilationStatus() != shaderc_compilation_status_success)
     {
-      Log::Write(Log::Level::Error, Fmt("Shader %s compilation failed: %s", name.c_str(), module.GetErrorMessage().c_str() ) );
+      Log::Write(
+        Log::Level::Error,
+        Fmt("Shader %s compilation failed: %s", name.c_str(), module.GetErrorMessage().c_str() )
+      );
 
       vertexSPIRV = std::vector<uint32_t>();
     }
@@ -1582,8 +1904,18 @@ typedef struct VkExtensionProperties
 
   std::vector<uint32_t> fragmentSPIRV;
   // compile a shader to a SPIR-V binary
-  //auto fragmentSPIRV = VulkanGraphicsPlugin_VulkanGraphicsPluginCompileGlslShader("fragment", shaderc_glsl_default_fragment_shader, FragmentShaderGlsl);
-  //std::vector<uint32_t> VulkanGraphicsPlugin_VulkanGraphicsPluginCompileGlslShader(const std::string& name, shaderc_shader_kind kind, const std::string& source)
+  //
+  // auto fragmentSPIRV = VulkanGraphicsPlugin_VulkanGraphicsPluginCompileGlslShader(
+  //   "fragment",
+  //   shaderc_glsl_default_fragment_shader,
+  //   FragmentShaderGlsl
+  // );
+  //
+  // std::vector<uint32_t> VulkanGraphicsPlugin_VulkanGraphicsPluginCompileGlslShader(
+  //   const std::string& name,
+  //   shaderc_shader_kind kind,
+  //   const std::string& source
+  // )
   {
     const std::string name("fragment");
     shaderc::Compiler compiler;
@@ -1591,11 +1923,19 @@ typedef struct VkExtensionProperties
 
     options.SetOptimizationLevel(shaderc_optimization_level_size);
 
-    shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(FragmentShaderGlsl, shaderc_glsl_default_fragment_shader, name.c_str(), options);
+    shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(
+      FragmentShaderGlsl,
+      shaderc_glsl_default_fragment_shader,
+      name.c_str(),
+      options
+    );
 
     if(module.GetCompilationStatus() != shaderc_compilation_status_success)
     {
-      Log::Write(Log::Level::Error, Fmt("Shader %s compilation failed: %s", name.c_str(), module.GetErrorMessage().c_str() ) );
+      Log::Write(
+        Log::Level::Error,
+        Fmt("Shader %s compilation failed: %s", name.c_str(), module.GetErrorMessage().c_str() )
+      );
 
       fragmentSPIRV = std::vector<uint32_t>();
     }
@@ -1609,16 +1949,16 @@ typedef struct VkExtensionProperties
 
   if(fragmentSPIRV.empty() ) THROW_CHECK("Failed to compile fragment shader");
 
-  //ShaderProgram_ShaderProgramInit(gVkDevice);
-  //nop
+  // ShaderProgram_ShaderProgramInit(gVkDevice);
+  // nop
 
-  //ShaderProgram_ShaderProgramLoadVertexShader(vertexSPIRV);
-  //ShaderProgram_ShaderProgramLoad(0, vertexSPIRV);
+  // ShaderProgram_ShaderProgramLoadVertexShader(vertexSPIRV);
+  // ShaderProgram_ShaderProgramLoad(0, vertexSPIRV);
 
-  //ShaderProgram_ShaderProgramLoadFragmentShader(fragmentSPIRV);
-  //ShaderProgram_ShaderProgramLoad(1, fragmentSPIRV);
+  // ShaderProgram_ShaderProgramLoadFragmentShader(fragmentSPIRV);
+  // ShaderProgram_ShaderProgramLoad(1, fragmentSPIRV);
 
-  //void ShaderProgram_ShaderProgramLoad(uint32_t whichShaderInfo, const std::vector<uint32_t>& code)
+  // void ShaderProgram_ShaderProgramLoad(uint32_t whichShaderInfo, const std::vector<uint32_t>& code)
 
   {
     VkShaderModuleCreateInfo modInfo {VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO};
@@ -1666,17 +2006,37 @@ typedef struct VkExtensionProperties
   if(tableVk.CreateSemaphore)
     CHECK_VULKANCMD(tableVk.CreateSemaphore(gVkDevice, &semInfo, nullptr, &gVulkanGraphicsPluginVkSemaphoreDrawDone) );
 
-  CHECK_VULKANCMD(gVulkanGraphicsPluginVulkanDebugObjectNamer.SetName(VK_OBJECT_TYPE_SEMAPHORE, (uint64_t)gVulkanGraphicsPluginVkSemaphoreDrawDone, "helloxr draw done semaphore") );
+  CHECK_VULKANCMD(gVulkanGraphicsPluginVulkanDebugObjectNamer.SetName(
+    VK_OBJECT_TYPE_SEMAPHORE,
+    (uint64_t)gVulkanGraphicsPluginVkSemaphoreDrawDone,
+    "helloxr draw done semaphore"
+  ) );
 
   bool CmdBuffer_CmdBufferInit_Result = false;
-  //CmdBuffer_CmdBufferInit(gVulkanGraphicsPluginVulkanDebugObjectNamer, gVkDevice, gVulkanGraphicsPluginQueueFamilyIndex)
-  //bool CmdBuffer_CmdBufferInit(const VulkanDebugObjectNamer& namer, VkDevice device, uint32_t queueFamilyIndex)
+  // CmdBuffer_CmdBufferInit(
+  //   gVulkanGraphicsPluginVulkanDebugObjectNamer,
+  //   gVkDevice,
+  //   gVulkanGraphicsPluginQueueFamilyIndex
+  // )
+  //
+  // bool CmdBuffer_CmdBufferInit(
+  //   const VulkanDebugObjectNamer& namer,
+  //   VkDevice device,
+  //   uint32_t queueFamilyIndex
+  // )
   do
   {
     //CHECK_VULKANCMDBUFFERSTATE(CmdBufferStateEnum::Undefined);
     if(gCmdBufferState != CmdBufferStateEnum::Undefined)
     {
-      Log::Write(Log::Level::Error, std::string("Expecting state CmdBufferStateEnum::Undefined from ") + __FUNCTION__ + ", in " + CmdBuffer_CmdBufferStateString(gCmdBufferState) );
+      Log::Write(
+        Log::Level::Error,
+        std::string("Expecting state CmdBufferStateEnum::Undefined from ") +
+          __FUNCTION__ +
+          ", in " +
+          CmdBuffer_CmdBufferStateString(gCmdBufferState)
+      );
+
       break;
     }
 
@@ -1688,7 +2048,11 @@ typedef struct VkExtensionProperties
     if(tableVk.CreateCommandPool)
       CHECK_VULKANCMD(tableVk.CreateCommandPool(gVkDevice, &cmdPoolInfo, nullptr, &gCmdBufferPool) );
 
-    CHECK_VULKANCMD(gVulkanGraphicsPluginVulkanDebugObjectNamer.SetName(VK_OBJECT_TYPE_COMMAND_POOL, (uint64_t)gCmdBufferPool, "helloxr command pool") );
+    CHECK_VULKANCMD(gVulkanGraphicsPluginVulkanDebugObjectNamer.SetName(
+      VK_OBJECT_TYPE_COMMAND_POOL,
+      (uint64_t)gCmdBufferPool,
+      "helloxr command pool"
+    ) );
 
     // Create the command buffer from the command pool
     VkCommandBufferAllocateInfo cmd {VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO};
@@ -1699,14 +2063,22 @@ typedef struct VkExtensionProperties
     if(tableVk.AllocateCommandBuffers)
       CHECK_VULKANCMD(tableVk.AllocateCommandBuffers(gVkDevice, &cmd, &gCmdBufferBuffer) );
 
-    CHECK_VULKANCMD(gVulkanGraphicsPluginVulkanDebugObjectNamer.SetName(VK_OBJECT_TYPE_COMMAND_BUFFER, (uint64_t)gCmdBufferBuffer, "helloxr command buffer") );
+    CHECK_VULKANCMD(gVulkanGraphicsPluginVulkanDebugObjectNamer.SetName(
+      VK_OBJECT_TYPE_COMMAND_BUFFER,
+      (uint64_t)gCmdBufferBuffer,
+      "helloxr command buffer"
+    ) );
 
     VkFenceCreateInfo fenceInfo {VK_STRUCTURE_TYPE_FENCE_CREATE_INFO};
 
     if(tableVk.CreateFence)
       CHECK_VULKANCMD(tableVk.CreateFence(gVkDevice, &fenceInfo, nullptr, &gCmdBufferExecFence) );
 
-    CHECK_VULKANCMD(gVulkanGraphicsPluginVulkanDebugObjectNamer.SetName(VK_OBJECT_TYPE_FENCE, (uint64_t)gCmdBufferExecFence, "helloxr fence") );
+    CHECK_VULKANCMD(gVulkanGraphicsPluginVulkanDebugObjectNamer.SetName(
+      VK_OBJECT_TYPE_FENCE,
+      (uint64_t)gCmdBufferExecFence,
+      "helloxr fence"
+    ) );
 
     gCmdBufferState = CmdBufferStateEnum::Initialized;
 
@@ -1810,7 +2182,16 @@ typedef struct VkExtensionProperties
     uint16_t* map = nullptr;
 
     if(tableVk.MapMemory)
-      CHECK_VULKANCMD(tableVk.MapMemory(gVkDevice, gVertexBufferBaseIdxMem, sizeof(map[0] ) * offset, sizeof(map[0] ) * numCubeIdicies, 0, (void**) &map) );
+    {
+      CHECK_VULKANCMD(tableVk.MapMemory(
+        gVkDevice,
+        gVertexBufferBaseIdxMem,
+        sizeof(map[0] ) * offset,
+        sizeof(map[0] ) * numCubeIdicies,
+        0,
+        (void**) &map
+      ) );
+    }
 
     for(size_t i = 0; i < numCubeIdicies; ++i)
       map[i] = Geometry::c_cubeIndices[i];
@@ -1826,7 +2207,16 @@ typedef struct VkExtensionProperties
     Geometry::Vertex* map = nullptr;
 
     if(tableVk.MapMemory)
-      CHECK_VULKANCMD(tableVk.MapMemory(gVkDevice, gVertexBufferBaseVtxMem, sizeof(map[0] ) * offset, sizeof(map[0] ) * numCubeVerticies, 0, (void**) &map) );
+    {
+      CHECK_VULKANCMD(tableVk.MapMemory(
+        gVkDevice,
+        gVertexBufferBaseVtxMem,
+        sizeof(map[0] ) * offset,
+        sizeof(map[0] ) * numCubeVerticies,
+        0,
+        (void**) &map
+      ) );
+    }
 
     for(size_t i = 0; i < numCubeVerticies; ++i)
       map[i] = Geometry::c_cubeVertices[i];
@@ -1881,16 +2271,34 @@ typedef struct VkExtensionProperties
     actionSetInfo.priority = 0;
 
     if(tableXr.CreateActionSet)
-      CHECK_XRCMD_CHECK(tableXr.CreateActionSet(gXrInstance, &actionSetInfo, &gOpenXrProgramInputState_InputState_actionSet) );
+    {
+      CHECK_XRCMD_CHECK(tableXr.CreateActionSet(
+        gXrInstance,
+        &actionSetInfo,
+        &gOpenXrProgramInputState_InputState_actionSet
+      ) );
+    }
   }
 
   // Get the XrPath for the left and right hands - we will use them as subaction paths.
 
   if(tableXr.StringToPath)
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left", &gOpenXrProgramInputState_InputState_handSubactionPath[Side_LEFT] ) );
+  {
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(
+      gXrInstance,
+      "/user/hand/left",
+      &gOpenXrProgramInputState_InputState_handSubactionPath[Side_LEFT]
+    ) );
+  }
 
   if(tableXr.StringToPath)
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right", &gOpenXrProgramInputState_InputState_handSubactionPath[Side_RIGHT] ) );
+  {
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(
+      gXrInstance,
+      "/user/hand/right",
+      &gOpenXrProgramInputState_InputState_handSubactionPath[Side_RIGHT]
+    ) );
+  }
 
   // Create actions.
   {
@@ -1903,7 +2311,13 @@ typedef struct VkExtensionProperties
     actionInfo.subactionPaths = gOpenXrProgramInputState_InputState_handSubactionPath.data();
 
     if(tableXr.CreateAction)
-      CHECK_XRCMD_CHECK(tableXr.CreateAction(gOpenXrProgramInputState_InputState_actionSet, &actionInfo, &gOpenXrProgramInputState_InputState_grabAction) );
+    {
+      CHECK_XRCMD_CHECK(tableXr.CreateAction(
+        gOpenXrProgramInputState_InputState_actionSet,
+        &actionInfo,
+        &gOpenXrProgramInputState_InputState_grabAction
+      ) );
+    }
 
     // Create an input action getting the left and right hand poses.
     actionInfo.actionType = XR_ACTION_TYPE_POSE_INPUT;
@@ -1913,7 +2327,13 @@ typedef struct VkExtensionProperties
     actionInfo.subactionPaths = gOpenXrProgramInputState_InputState_handSubactionPath.data();
 
     if(tableXr.CreateAction)
-      CHECK_XRCMD_CHECK(tableXr.CreateAction(gOpenXrProgramInputState_InputState_actionSet, &actionInfo, &gOpenXrProgramInputState_InputState_poseAction) );
+    {
+      CHECK_XRCMD_CHECK(tableXr.CreateAction(
+        gOpenXrProgramInputState_InputState_actionSet,
+        &actionInfo,
+        &gOpenXrProgramInputState_InputState_poseAction
+      ) );
+    }
 
     // Create output actions for vibrating the left and right controller.
     actionInfo.actionType = XR_ACTION_TYPE_VIBRATION_OUTPUT;
@@ -1923,7 +2343,13 @@ typedef struct VkExtensionProperties
     actionInfo.subactionPaths = gOpenXrProgramInputState_InputState_handSubactionPath.data();
 
     if(tableXr.CreateAction)
-      CHECK_XRCMD_CHECK(tableXr.CreateAction(gOpenXrProgramInputState_InputState_actionSet, &actionInfo, &gOpenXrProgramInputState_InputState_vibrateAction) );
+    {
+      CHECK_XRCMD_CHECK(tableXr.CreateAction(
+        gOpenXrProgramInputState_InputState_actionSet,
+        &actionInfo,
+        &gOpenXrProgramInputState_InputState_vibrateAction
+      ) );
+    }
 
     // Create input actions for quitting the session using the left and right controller.
     // Since it doesn't matter which hand did this, we do not specify subaction paths for it.
@@ -1935,7 +2361,13 @@ typedef struct VkExtensionProperties
     actionInfo.subactionPaths = nullptr;
 
     if(tableXr.CreateAction)
-      CHECK_XRCMD_CHECK(tableXr.CreateAction(gOpenXrProgramInputState_InputState_actionSet, &actionInfo, &gOpenXrProgramInputState_InputState_quitAction) );
+    {
+      CHECK_XRCMD_CHECK(tableXr.CreateAction(
+        gOpenXrProgramInputState_InputState_actionSet,
+        &actionInfo,
+        &gOpenXrProgramInputState_InputState_quitAction
+      ) );
+    }
   }
 
   std::array<XrPath, Side_COUNT> selectPath;
@@ -1950,24 +2382,113 @@ typedef struct VkExtensionProperties
 
   if(tableXr.StringToPath)
   {
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/select/click", &selectPath[Side_LEFT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/select/click", &selectPath[Side_RIGHT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/squeeze/value", &squeezeValuePath[Side_LEFT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/squeeze/value", &squeezeValuePath[Side_RIGHT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/squeeze/force", &squeezeForcePath[Side_LEFT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/squeeze/force", &squeezeForcePath[Side_RIGHT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/squeeze/click", &squeezeClickPath[Side_LEFT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/squeeze/click", &squeezeClickPath[Side_RIGHT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/grip/pose", &posePath[Side_LEFT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/grip/pose", &posePath[Side_RIGHT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/output/haptic", &hapticPath[Side_LEFT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/output/haptic", &hapticPath[Side_RIGHT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/menu/click", &menuClickPath[Side_LEFT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/menu/click", &menuClickPath[Side_RIGHT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/b/click", &bClickPath[Side_LEFT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/b/click", &bClickPath[Side_RIGHT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/left/input/trigger/value", &triggerValuePath[Side_LEFT] ) );
-    CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/user/hand/right/input/trigger/value", &triggerValuePath[Side_RIGHT] ) );
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(
+      gXrInstance,
+      "/user/hand/left/input/select/click",
+      &selectPath[Side_LEFT]
+    ) );
+
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(
+      gXrInstance,
+      "/user/hand/right/input/select/click",
+      &selectPath[Side_RIGHT]
+    ) );
+
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(
+      gXrInstance,
+      "/user/hand/left/input/squeeze/value",
+      &squeezeValuePath[Side_LEFT]
+    ) );
+
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(
+      gXrInstance,
+      "/user/hand/right/input/squeeze/value",
+      &squeezeValuePath[Side_RIGHT]
+    ) );
+
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(
+      gXrInstance,
+      "/user/hand/left/input/squeeze/force",
+      &squeezeForcePath[Side_LEFT]
+    ) );
+
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(
+      gXrInstance,
+      "/user/hand/right/input/squeeze/force",
+      &squeezeForcePath[Side_RIGHT]
+    ) );
+
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(
+      gXrInstance,
+      "/user/hand/left/input/squeeze/click",
+      &squeezeClickPath[Side_LEFT]
+    ) );
+
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(
+      gXrInstance,
+      "/user/hand/right/input/squeeze/click",
+      &squeezeClickPath[Side_RIGHT]
+    ) );
+
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(
+      gXrInstance,
+      "/user/hand/left/input/grip/pose",
+      &posePath[Side_LEFT]
+    ) );
+
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(
+      gXrInstance,
+      "/user/hand/right/input/grip/pose",
+      &posePath[Side_RIGHT]
+    ) );
+
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(
+      gXrInstance,
+      "/user/hand/left/output/haptic",
+      &hapticPath[Side_LEFT]
+    ) );
+
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(
+      gXrInstance,
+      "/user/hand/right/output/haptic",
+      &hapticPath[Side_RIGHT]
+    ) );
+
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(
+      gXrInstance,
+      "/user/hand/left/input/menu/click",
+      &menuClickPath[Side_LEFT]
+    ) );
+
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(
+      gXrInstance,
+      "/user/hand/right/input/menu/click",
+      &menuClickPath[Side_RIGHT]
+    ) );
+
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(
+      gXrInstance,
+      "/user/hand/left/input/b/click",
+      &bClickPath[Side_LEFT]
+    ) );
+
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(
+      gXrInstance,
+      "/user/hand/right/input/b/click",
+      &bClickPath[Side_RIGHT]
+    ) );
+
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(
+      gXrInstance,
+      "/user/hand/left/input/trigger/value",
+      &triggerValuePath[Side_LEFT]
+    ) );
+
+    CHECK_XRCMD_CHECK(tableXr.StringToPath(
+      gXrInstance,
+      "/user/hand/right/input/trigger/value",
+      &triggerValuePath[Side_RIGHT]
+    ) );
   }
 
   // Suggest bindings for KHR Simple.
@@ -1975,7 +2496,13 @@ typedef struct VkExtensionProperties
     XrPath khrSimpleInteractionProfilePath;
 
     if(tableXr.StringToPath)
-      CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/interaction_profiles/khr/simple_controller", &khrSimpleInteractionProfilePath) );
+    {
+      CHECK_XRCMD_CHECK(tableXr.StringToPath(
+        gXrInstance,
+        "/interaction_profiles/khr/simple_controller",
+        &khrSimpleInteractionProfilePath)
+      );
+    }
 
     // fall back to a click input for the grab action
     std::vector<XrActionSuggestedBinding> bindings
@@ -2007,7 +2534,13 @@ typedef struct VkExtensionProperties
     XrPath oculusTouchInteractionProfilePath;
 
     if(tableXr.StringToPath)
-      CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/interaction_profiles/oculus/touch_controller", &oculusTouchInteractionProfilePath) );
+    {
+      CHECK_XRCMD_CHECK(tableXr.StringToPath(
+        gXrInstance,
+        "/interaction_profiles/oculus/touch_controller",
+        &oculusTouchInteractionProfilePath)
+      );
+    }
 
     std::vector<XrActionSuggestedBinding> bindings
     {
@@ -2037,7 +2570,13 @@ typedef struct VkExtensionProperties
     XrPath viveControllerInteractionProfilePath;
 
     if(tableXr.StringToPath)
-      CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/interaction_profiles/htc/vive_controller", &viveControllerInteractionProfilePath) );
+    {
+      CHECK_XRCMD_CHECK(tableXr.StringToPath(
+        gXrInstance,
+        "/interaction_profiles/htc/vive_controller",
+        &viveControllerInteractionProfilePath
+      ) );
+    }
 
     std::vector<XrActionSuggestedBinding> bindings
     {
@@ -2068,7 +2607,13 @@ typedef struct VkExtensionProperties
     XrPath indexControllerInteractionProfilePath;
 
     if(tableXr.StringToPath)
-      CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/interaction_profiles/valve/index_controller", &indexControllerInteractionProfilePath) );
+    {
+      CHECK_XRCMD_CHECK(tableXr.StringToPath(
+        gXrInstance,
+        "/interaction_profiles/valve/index_controller",
+        &indexControllerInteractionProfilePath
+      ) );
+    }
 
     std::vector<XrActionSuggestedBinding> bindings
     {
@@ -2099,7 +2644,13 @@ typedef struct VkExtensionProperties
     XrPath microsoftMixedRealityInteractionProfilePath;
 
     if(tableXr.StringToPath)
-      CHECK_XRCMD_CHECK(tableXr.StringToPath(gXrInstance, "/interaction_profiles/microsoft/motion_controller", &microsoftMixedRealityInteractionProfilePath) );
+    {
+      CHECK_XRCMD_CHECK(tableXr.StringToPath(
+        gXrInstance,
+        "/interaction_profiles/microsoft/motion_controller",
+        &microsoftMixedRealityInteractionProfilePath
+      ) );
+    }
 
     std::vector<XrActionSuggestedBinding> bindings
     {
@@ -2132,12 +2683,24 @@ typedef struct VkExtensionProperties
   actionSpaceInfo.subactionPath = gOpenXrProgramInputState_InputState_handSubactionPath[Side_LEFT];
 
   if(tableXr.CreateActionSpace)
-    CHECK_XRCMD_CHECK(tableXr.CreateActionSpace(gXrSession, &actionSpaceInfo, &gOpenXrProgramInputState_InputState_handSpace[Side_LEFT] ) );
+  {
+    CHECK_XRCMD_CHECK(tableXr.CreateActionSpace(
+      gXrSession,
+      &actionSpaceInfo,
+      &gOpenXrProgramInputState_InputState_handSpace[Side_LEFT]
+    ) );
+  }
 
   actionSpaceInfo.subactionPath = gOpenXrProgramInputState_InputState_handSubactionPath[Side_RIGHT];
 
   if(tableXr.CreateActionSpace)
-    CHECK_XRCMD_CHECK(tableXr.CreateActionSpace(gXrSession, &actionSpaceInfo, &gOpenXrProgramInputState_InputState_handSpace[Side_RIGHT] ) );
+  {
+    CHECK_XRCMD_CHECK(tableXr.CreateActionSpace(
+      gXrSession,
+      &actionSpaceInfo,
+      &gOpenXrProgramInputState_InputState_handSpace[Side_RIGHT]
+    ) );
+  }
 
   XrSessionActionSetsAttachInfo attachInfo {XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO};
   attachInfo.countActionSets = 1;
@@ -2148,7 +2711,16 @@ typedef struct VkExtensionProperties
 
   CHECK_CHECK(gXrSession != XR_NULL_HANDLE);
 
-  std::string visualizedSpaces[] = {"ViewFront", "Local", "Stage", "StageLeft", "StageRight", "StageLeftRotated", "StageRightRotated"};
+  std::string visualizedSpaces[] =
+  {
+    "ViewFront",
+    "Local",
+    "Stage",
+    "StageLeft",
+    "StageRight",
+    "StageLeftRotated",
+    "StageRightRotated"
+  };
 
   for(const auto& visualizedSpace : visualizedSpaces)
   {
@@ -2162,9 +2734,16 @@ typedef struct VkExtensionProperties
       res = tableXr.CreateReferenceSpace(gXrSession, &referenceSpaceCreateInfo, &space);
 
     if(XR_SUCCEEDED(res) )
+    {
       gOpenXrProgramStdVector_XrSpace.push_back(space);
+    }
     else
-      Log::Write(Log::Level::Warning, Fmt("Failed to create reference space %s with error %d", visualizedSpace.c_str(), res) );
+    {
+      Log::Write(
+        Log::Level::Warning,
+        Fmt("Failed to create reference space %s with error %d", visualizedSpace.c_str(), res)
+      );
+    }
   }
 
   {
@@ -2185,27 +2764,66 @@ typedef struct VkExtensionProperties
     CHECK_XRCMD_CHECK(tableXr.GetSystemProperties(gXrInstance, gXrSystemId, &systemProperties) );
 
   // Log system properties.
-  Log::Write(Log::Level::Info, Fmt("System Properties: Name=%s VendorId=%d", systemProperties.systemName, systemProperties.vendorId) );
+  Log::Write(
+    Log::Level::Info,
+    Fmt("System Properties: Name=%s VendorId=%d", systemProperties.systemName, systemProperties.vendorId)
+  );
 
-  Log::Write(Log::Level::Info, Fmt("System Graphics Properties: MaxWidth=%d MaxHeight=%d MaxLayers=%d", systemProperties.graphicsProperties.maxSwapchainImageWidth, systemProperties.graphicsProperties.maxSwapchainImageHeight, systemProperties.graphicsProperties.maxLayerCount) );
+  Log::Write(
+    Log::Level::Info,
+    Fmt(
+      "System Graphics Properties: MaxWidth=%d MaxHeight=%d MaxLayers=%d",
+      systemProperties.graphicsProperties.maxSwapchainImageWidth,
+      systemProperties.graphicsProperties.maxSwapchainImageHeight,
+      systemProperties.graphicsProperties.maxLayerCount
+    )
+  );
 
-  Log::Write(Log::Level::Info, Fmt("System Tracking Properties: OrientationTracking=%s PositionTracking=%s", systemProperties.trackingProperties.orientationTracking == XR_TRUE ? "True" : "False", systemProperties.trackingProperties.positionTracking == XR_TRUE ? "True" : "False") );
+  Log::Write(
+    Log::Level::Info,
+    Fmt(
+      "System Tracking Properties: OrientationTracking=%s PositionTracking=%s",
+      systemProperties.trackingProperties.orientationTracking == XR_TRUE ? "True" : "False",
+      systemProperties.trackingProperties.positionTracking == XR_TRUE ? "True" : "False"
+    )
+  );
 
   // Note: No other view configurations exist at the time this code was written. If this
   // condition is not met, the project will need to be audited to see how support should be
   // added.
-  CHECK_MSG(gOptions_XrViewConfigurationType == XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO, "Unsupported view configuration type");
+  CHECK_MSG(
+    gOptions_XrViewConfigurationType == XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO,
+    "Unsupported view configuration type"
+  );
 
   // Query and cache view configuration views.
   uint32_t viewCount = 0;
 
   if(tableXr.EnumerateViewConfigurationViews)
-    CHECK_XRCMD_CHECK(tableXr.EnumerateViewConfigurationViews(gXrInstance, gXrSystemId, gOptions_XrViewConfigurationType, 0, &viewCount, nullptr) );
+  {
+    CHECK_XRCMD_CHECK(tableXr.EnumerateViewConfigurationViews(
+      gXrInstance,
+      gXrSystemId,
+      gOptions_XrViewConfigurationType,
+      0,
+      &viewCount,
+      nullptr
+    ) );
+  }
 
   gOpenXrProgramStdVector_XrViewConfigurationView.resize(viewCount, {XR_TYPE_VIEW_CONFIGURATION_VIEW} );
 
   if(tableXr.EnumerateViewConfigurationViews)
-    CHECK_XRCMD_CHECK(tableXr.EnumerateViewConfigurationViews(gXrInstance, gXrSystemId, gOptions_XrViewConfigurationType, viewCount, &viewCount, gOpenXrProgramStdVector_XrViewConfigurationView.data() ) );
+  {
+    CHECK_XRCMD_CHECK(tableXr.EnumerateViewConfigurationViews(
+      gXrInstance,
+      gXrSystemId,
+      gOptions_XrViewConfigurationType,
+      viewCount,
+      &viewCount,
+      gOpenXrProgramStdVector_XrViewConfigurationView.data()
+    ) );
+  }
 
   // Create and cache view buffer for xrLocateViews later
   gOpenXrProgramStdVector_XrView.resize(viewCount, {XR_TYPE_VIEW} );
@@ -2222,17 +2840,40 @@ typedef struct VkExtensionProperties
     std::vector<int64_t> swapchainFormats(swapchainFormatCount);
 
     if(tableXr.EnumerateSwapchainFormats)
-      CHECK_XRCMD_CHECK(tableXr.EnumerateSwapchainFormats(gXrSession, (uint32_t)swapchainFormats.size(), &swapchainFormatCount, swapchainFormats.data() ) );
+    {
+      CHECK_XRCMD_CHECK(tableXr.EnumerateSwapchainFormats(
+        gXrSession,
+        (uint32_t)swapchainFormats.size(),
+        &swapchainFormatCount,
+        swapchainFormats.data()
+      ) );
+    }
 
     CHECK_CHECK(swapchainFormatCount == swapchainFormats.size() );
 
-    //gOpenXrProgramColorSwapchainFormat = VulkanGraphicsPlugin_VulkanGraphicsPluginSelectColorSwapchainFormat(swapchainFormats);
-    //int64_t VulkanGraphicsPlugin_VulkanGraphicsPluginSelectColorSwapchainFormat(const std::vector<int64_t>& runtimeFormats)
+    // gOpenXrProgramColorSwapchainFormat = VulkanGraphicsPlugin_VulkanGraphicsPluginSelectColorSwapchainFormat(
+    //   swapchainFormats
+    // );
+    //
+    // int64_t VulkanGraphicsPlugin_VulkanGraphicsPluginSelectColorSwapchainFormat(
+    //   const std::vector<int64_t>& runtimeFormats
+    // )
     {
       // List of supported color swapchain formats.
-      constexpr int64_t SupportedColorSwapchainFormats[] = {VK_FORMAT_B8G8R8A8_SRGB, VK_FORMAT_R8G8B8A8_SRGB, VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_R8G8B8A8_UNORM};
+      constexpr int64_t SupportedColorSwapchainFormats[] =
+      {
+        VK_FORMAT_B8G8R8A8_SRGB,
+        VK_FORMAT_R8G8B8A8_SRGB,
+        VK_FORMAT_B8G8R8A8_UNORM,
+        VK_FORMAT_R8G8B8A8_UNORM
+      };
 
-      auto swapchainFormatIt = std::find_first_of(swapchainFormats.begin(), swapchainFormats.end(), std::begin(SupportedColorSwapchainFormats), std::end(SupportedColorSwapchainFormats) );
+      auto swapchainFormatIt = std::find_first_of(
+        swapchainFormats.begin(),
+        swapchainFormats.end(),
+        std::begin(SupportedColorSwapchainFormats),
+        std::end(SupportedColorSwapchainFormats)
+      );
 
       if(swapchainFormatIt == swapchainFormats.end() )
         THROW_CHECK("No runtime swapchain format supported for color swapchain");
@@ -2267,7 +2908,16 @@ typedef struct VkExtensionProperties
     {
       const XrViewConfigurationView& vp = gOpenXrProgramStdVector_XrViewConfigurationView[i];
 
-      Log::Write(Log::Level::Info, Fmt("Creating swapchain for view %d with dimensions Width=%d Height=%d SampleCount=%d", i, vp.recommendedImageRectWidth, vp.recommendedImageRectHeight, vp.recommendedSwapchainSampleCount) );
+      Log::Write(
+        Log::Level::Info,
+        Fmt(
+          "Creating swapchain for view %d with dimensions Width=%d Height=%d SampleCount=%d",
+          i,
+          vp.recommendedImageRectWidth,
+          vp.recommendedImageRectHeight,
+          vp.recommendedSwapchainSampleCount
+        )
+      );
 
       // Create the swapchain.
       XrSwapchainCreateInfo swapchainCreateInfo {XR_TYPE_SWAPCHAIN_CREATE_INFO};
@@ -2295,19 +2945,39 @@ typedef struct VkExtensionProperties
 
       std::vector<XrSwapchainImageBaseHeader*> swapchainImages;
       // XXX This should really just return XrSwapchainImageBaseHeader*
-      //std::vector<XrSwapchainImageBaseHeader*> swapchainImages = VulkanGraphicsPlugin_VulkanGraphicsPluginAllocateSwapchainImageStructs(imageCount, swapchainCreateInfo);
-      //std::vector<XrSwapchainImageBaseHeader*> VulkanGraphicsPlugin_VulkanGraphicsPluginAllocateSwapchainImageStructs(uint32_t capacity, const XrSwapchainCreateInfo& swapchainCreateInfo)
+      //
+      // std::vector<XrSwapchainImageBaseHeader*> swapchainImages =
+      //   VulkanGraphicsPlugin_VulkanGraphicsPluginAllocateSwapchainImageStructs(imageCount, swapchainCreateInfo);
+      //
+      // std::vector<XrSwapchainImageBaseHeader*>
+      // VulkanGraphicsPlugin_VulkanGraphicsPluginAllocateSwapchainImageStructs(
+      //   uint32_t capacity,
+      //   const XrSwapchainCreateInfo& swapchainCreateInfo
+      // )
       {
         uint32_t capacity = imageCount;
 
         int indice = gVulkanGraphicsPluginStdList_SwapchainImageContext.size();
 
-        // Allocate and initialize the buffer of image structs (must be sequential in memory for xrEnumerateSwapchainImages).
-        // Return back an array of pointers to each swapchain image struct so the consumer doesn't need to know the type/size.
+        // Allocate and initialize the buffer of image structs (must be sequential in memory for
+        // xrEnumerateSwapchainImages).
+        //
+        // Return back an array of pointers to each swapchain image struct so the consumer doesn't need to know the
+        // type/size.
+        //
         // Keep the buffer alive by adding it into the list of buffers.
 
-        //SwapchainImageContext_SwapchainImageContext_Constructor(indice, VulkanGraphicsPlugin_VulkanGraphicsPluginGetSwapchainImageType(), gVulkanGraphicsPluginVulkanDebugObjectNamer);
-        //void SwapchainImageContext_SwapchainImageContext_Constructor(int index, XrStructureType swapchainImageType, VulkanDebugObjectNamer& namer)
+        // SwapchainImageContext_SwapchainImageContext_Constructor(
+        //   indice,
+        //   VulkanGraphicsPlugin_VulkanGraphicsPluginGetSwapchainImageType(),
+        //   gVulkanGraphicsPluginVulkanDebugObjectNamer
+        // );
+        //
+        // void SwapchainImageContext_SwapchainImageContext_Constructor(
+        //   int index,
+        //   XrStructureType swapchainImageType,
+        //   VulkanDebugObjectNamer& namer
+        // )
         {
           XrStructureType swapchainImageType = XR_TYPE_SWAPCHAIN_IMAGE_VULKAN2_KHR;
 
@@ -2350,16 +3020,38 @@ typedef struct VkExtensionProperties
           m_swapchainImageContextNamer[indice] = gVulkanGraphicsPluginVulkanDebugObjectNamer;
         }
 
-        //gVulkanGraphicsPluginStdList_SwapchainImageContext.push_back(new SwapchainImageContext(VulkanGraphicsPluginGetSwapchainImageType() ) );
+        //gVulkanGraphicsPluginStdList_SwapchainImageContext.push_back(
+        //  new SwapchainImageContext(VulkanGraphicsPluginGetSwapchainImageType() )
+        //);
         gVulkanGraphicsPluginStdList_SwapchainImageContext.push_back(indice);
 
         //SwapchainImageContext* swapchainImageContext = gVulkanGraphicsPluginStdList_SwapchainImageContext[indice];
 
-        //std::vector<XrSwapchainImageBaseHeader*> bases = swapchainImageContext->SwapchainImageContextCreate(gVulkanGraphicsPluginVulkanDebugObjectNamer, gVkDevice, capacity, swapchainCreateInfo, m_vulkanGraphicsPluginShaderProgram, m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer);
+        //std::vector<XrSwapchainImageBaseHeader*> bases = swapchainImageContext->SwapchainImageContextCreate(
+        //  gVulkanGraphicsPluginVulkanDebugObjectNamer,
+        //  gVkDevice,
+        //  capacity,
+        //  swapchainCreateInfo,
+        //  m_vulkanGraphicsPluginShaderProgram,
+        //  m_vulkanGraphicsPluginVertexBuffer_GeometryVertex_DrawBuffer
+        //);
 
         std::vector<XrSwapchainImageBaseHeader*> bases;
-        //std::vector<XrSwapchainImageBaseHeader*> bases = SwapchainImageContext_SwapchainImageContextCreate(indice, gVulkanGraphicsPluginVulkanDebugObjectNamer, gVkDevice, capacity, swapchainCreateInfo);
-        //std::vector<XrSwapchainImageBaseHeader*> SwapchainImageContext_SwapchainImageContextCreate(int index, const VulkanDebugObjectNamer& namer, VkDevice device, uint32_t capacity, const XrSwapchainCreateInfo& swapchainCreateInfo)
+        // std::vector<XrSwapchainImageBaseHeader*> bases = SwapchainImageContext_SwapchainImageContextCreate(
+        //   indice,
+        //   gVulkanGraphicsPluginVulkanDebugObjectNamer,
+        //   gVkDevice,
+        //   capacity,
+        //   swapchainCreateInfo
+        // );
+        //
+        // std::vector<XrSwapchainImageBaseHeader*> SwapchainImageContext_SwapchainImageContextCreate(
+        //   int index,
+        //   const VulkanDebugObjectNamer& namer,
+        //   VkDevice device,
+        //   uint32_t capacity,
+        //   const XrSwapchainCreateInfo& swapchainCreateInfo
+        // )
         {
           m_swapchainImageContextNamer[indice] = gVulkanGraphicsPluginVulkanDebugObjectNamer;
 
@@ -2367,8 +3059,21 @@ typedef struct VkExtensionProperties
           VkFormat colorFormat = (VkFormat)swapchainCreateInfo.format;
           VkFormat depthFormat = VK_FORMAT_D32_SFLOAT;
 
-          //SwapchainImageContext_SwapchainImageContext_DepthBufferCreate(indice, m_swapchainImageContextNamer[indice], gVkDevice, depthFormat, swapchainCreateInfo);
-          //void SwapchainImageContext_SwapchainImageContext_DepthBufferCreate(int index, const VulkanDebugObjectNamer& namer, VkDevice device, VkFormat depthFormat, const XrSwapchainCreateInfo& swapchainCreateInfo)
+          // SwapchainImageContext_SwapchainImageContext_DepthBufferCreate(
+          //   indice,
+          //   m_swapchainImageContextNamer[indice],
+          //   gVkDevice,
+          //   depthFormat,
+          //   swapchainCreateInfo
+          // );
+          //
+          // void SwapchainImageContext_SwapchainImageContext_DepthBufferCreate(
+          //   int index,
+          //   const VulkanDebugObjectNamer& namer,
+          //   VkDevice device,
+          //   VkFormat depthFormat,
+          //   const XrSwapchainCreateInfo& swapchainCreateInfo
+          // )
           {
             VkExtent2D size = {swapchainCreateInfo.width, swapchainCreateInfo.height};
 
@@ -2388,24 +3093,70 @@ typedef struct VkExtensionProperties
             imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
             if(tableVk.CreateImage)
-              CHECK_VULKANCMD(tableVk.CreateImage(gVkDevice, &imageInfo, nullptr, &m_swapchainImageContext_depthBufferDepthImage[indice] ) );
+            {
+              CHECK_VULKANCMD(tableVk.CreateImage(
+                gVkDevice,
+                &imageInfo,
+                nullptr,
+                &m_swapchainImageContext_depthBufferDepthImage[indice]
+              ) );
+            }
 
-            CHECK_VULKANCMD(m_swapchainImageContextNamer[indice].SetName(VK_OBJECT_TYPE_IMAGE, (uint64_t)m_swapchainImageContext_depthBufferDepthImage[indice], "helloxr fallback depth image") );
+            CHECK_VULKANCMD(m_swapchainImageContextNamer[indice].SetName(
+              VK_OBJECT_TYPE_IMAGE,
+              (uint64_t)m_swapchainImageContext_depthBufferDepthImage[indice],
+              "helloxr fallback depth image"
+            ) );
 
             VkMemoryRequirements memRequirements {};
 
             if(tableVk.GetImageMemoryRequirements)
-              tableVk.GetImageMemoryRequirements(gVkDevice, m_swapchainImageContext_depthBufferDepthImage[indice], &memRequirements);
+            {
+              tableVk.GetImageMemoryRequirements(
+                gVkDevice,
+                m_swapchainImageContext_depthBufferDepthImage[indice],
+                &memRequirements
+              );
+            }
 
-            MemoryAllocator_MemoryAllocatorAllocate(memRequirements, &m_swapchainImageContext_depthBufferDepthMemory[indice], VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-            CHECK_VULKANCMD(m_swapchainImageContextNamer[indice].SetName(VK_OBJECT_TYPE_DEVICE_MEMORY, (uint64_t)m_swapchainImageContext_depthBufferDepthMemory[indice], "helloxr fallback depth image memory") );
+            MemoryAllocator_MemoryAllocatorAllocate(
+              memRequirements,
+              &m_swapchainImageContext_depthBufferDepthMemory[indice],
+              VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+            );
+
+            CHECK_VULKANCMD(m_swapchainImageContextNamer[indice].SetName(
+              VK_OBJECT_TYPE_DEVICE_MEMORY,
+              (uint64_t)m_swapchainImageContext_depthBufferDepthMemory[indice],
+              "helloxr fallback depth image memory"
+            ) );
 
             if(tableVk.BindImageMemory)
-              CHECK_VULKANCMD(tableVk.BindImageMemory(gVkDevice, m_swapchainImageContext_depthBufferDepthImage[indice], m_swapchainImageContext_depthBufferDepthMemory[indice], 0) );
+            {
+              CHECK_VULKANCMD(tableVk.BindImageMemory(
+                gVkDevice,
+                m_swapchainImageContext_depthBufferDepthImage[indice],
+                m_swapchainImageContext_depthBufferDepthMemory[indice],
+                0
+              ) );
+            }
           }
 
-          //SwapchainImageContext_SwapchainImageContext_RenderPassCreate(indice, m_swapchainImageContextNamer[indice], gVkDevice, colorFormat, depthFormat);
-          //bool SwapchainImageContext_SwapchainImageContext_RenderPassCreate(int index, const VulkanDebugObjectNamer& namer, VkDevice device, VkFormat aColorFmt, VkFormat aDepthFmt)
+          // SwapchainImageContext_SwapchainImageContext_RenderPassCreate(
+          //   indice,
+          //   m_swapchainImageContextNamer[indice],
+          //   gVkDevice,
+          //   colorFormat,
+          //   depthFormat
+          // );
+          //
+          // bool SwapchainImageContext_SwapchainImageContext_RenderPassCreate(
+          //   int index,
+          //   const VulkanDebugObjectNamer& namer,
+          //   VkDevice device,
+          //   VkFormat aColorFmt,
+          //   VkFormat aDepthFmt
+          // )
           {
             m_swapchainImageContext_renderPassColorFmt[indice] = colorFormat;
             m_swapchainImageContext_renderPassDepthFmt[indice] = depthFormat;
@@ -2458,18 +3209,41 @@ typedef struct VkExtensionProperties
             }
 
             if(tableVk.CreateRenderPass)
-              CHECK_VULKANCMD(tableVk.CreateRenderPass(gVkDevice, &rpInfo, nullptr, &m_swapchainImageContext_renderPassPass[indice] ) );
+            {
+              CHECK_VULKANCMD(tableVk.CreateRenderPass(
+                gVkDevice,
+                &rpInfo,
+                nullptr,
+                &m_swapchainImageContext_renderPassPass[indice]
+              ) );
+            }
 
-            CHECK_VULKANCMD(m_swapchainImageContextNamer[indice].SetName(VK_OBJECT_TYPE_RENDER_PASS, (uint64_t)m_swapchainImageContext_renderPassPass[indice], "helloxr render pass") );
+            CHECK_VULKANCMD(m_swapchainImageContextNamer[indice].SetName(
+              VK_OBJECT_TYPE_RENDER_PASS,
+              (uint64_t)m_swapchainImageContext_renderPassPass[indice],
+              "helloxr render pass"
+            ) );
 
             //return true;
           }
 
-          //SwapchainImageContext_SwapchainImageContext_PipelineCreate(indice, gVkDevice, m_swapchainImageContextSize[indice] );
-          //void SwapchainImageContext_SwapchainImageContext_PipelineCreate(int index, VkDevice device, VkExtent2D size)
+          // SwapchainImageContext_SwapchainImageContext_PipelineCreate(
+          //   indice,
+          //   gVkDevice,
+          //   m_swapchainImageContextSize[indice]
+          // );
+          //
+          // void SwapchainImageContext_SwapchainImageContext_PipelineCreate(
+          //   int index,
+          //   VkDevice device,
+          //   VkExtent2D size
+          // )
           {
             VkPipelineDynamicStateCreateInfo dynamicState {VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO};
-            dynamicState.dynamicStateCount = (uint32_t)m_swapchainImageContextPipe_pipelineDynamicStateEnables[indice].size();
+
+            dynamicState.dynamicStateCount =
+              (uint32_t)m_swapchainImageContextPipe_pipelineDynamicStateEnables[indice].size();
+
             dynamicState.pDynamicStates = m_swapchainImageContextPipe_pipelineDynamicStateEnables[indice].data();
 
             VkPipelineVertexInputStateCreateInfo vi {VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO};
@@ -2502,7 +3276,12 @@ typedef struct VkExtensionProperties
             attachState.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
             attachState.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
             attachState.alphaBlendOp = VK_BLEND_OP_ADD;
-            attachState.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+
+            attachState.colorWriteMask =
+              VK_COLOR_COMPONENT_R_BIT |
+              VK_COLOR_COMPONENT_G_BIT |
+              VK_COLOR_COMPONENT_B_BIT |
+              VK_COLOR_COMPONENT_A_BIT;
 
             VkPipelineColorBlendStateCreateInfo cb {VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO};
             cb.attachmentCount = 1;
@@ -2584,7 +3363,16 @@ typedef struct VkExtensionProperties
             pipeInfo.subpass = 0;
 
             if(tableVk.CreateGraphicsPipelines)
-              CHECK_VULKANCMD(tableVk.CreateGraphicsPipelines(gVkDevice, VK_NULL_HANDLE, 1, &pipeInfo, nullptr, &m_swapchainImageContextPipe_pipelinePipe[indice] ) );
+            {
+              CHECK_VULKANCMD(tableVk.CreateGraphicsPipelines(
+                gVkDevice,
+                VK_NULL_HANDLE,
+                1,
+                &pipeInfo,
+                nullptr,
+                &m_swapchainImageContextPipe_pipelinePipe[indice]
+              ) );
+            }
           }
 
           m_swapchainImageContextSwapchainImages[indice].resize(capacity);
@@ -2600,8 +3388,15 @@ typedef struct VkExtensionProperties
 
           for(uint32_t renderTarget = 0; renderTarget < capacity; renderTarget++)
           {
-            m_swapchainImageContextSwapchainImages[indice][renderTarget] = {m_swapchainImageContextSwapchainImageType[indice] };
-            bases[renderTarget] = reinterpret_cast<XrSwapchainImageBaseHeader*>( &m_swapchainImageContextSwapchainImages[indice][renderTarget] );
+            m_swapchainImageContextSwapchainImages[indice][renderTarget] =
+            {
+              m_swapchainImageContextSwapchainImageType[indice]
+            };
+
+            bases[renderTarget] =
+              reinterpret_cast<XrSwapchainImageBaseHeader*>(
+                &m_swapchainImageContextSwapchainImages[indice][renderTarget]
+              );
           }
 
           //return bases;
@@ -2615,9 +3410,18 @@ typedef struct VkExtensionProperties
       }
 
       if(tableXr.EnumerateSwapchainImages)
-        CHECK_XRCMD_CHECK(tableXr.EnumerateSwapchainImages(swapchain.handle, imageCount, &imageCount, swapchainImages[0] ) );
+      {
+        CHECK_XRCMD_CHECK(tableXr.EnumerateSwapchainImages(
+          swapchain.handle,
+          imageCount,
+          &imageCount,
+          swapchainImages[0]
+        ) );
+      }
 
-      gOpenXrProgramStdMap_XrSwapchain_StdVectorXrSwapchainImageBaseHeader.insert(std::make_pair(swapchain.handle, std::move(swapchainImages) ) );
+      gOpenXrProgramStdMap_XrSwapchain_StdVectorXrSwapchainImageBaseHeader.insert(
+        std::make_pair(swapchain.handle, std::move(swapchainImages) )
+      );
     }
   }
 
@@ -2633,7 +3437,8 @@ typedef struct VkExtensionProperties
 
       // If the timeout is zero, returns immediately without blocking.
       // If the timeout is negative, waits indefinitely until an event appears.
-      const int timeoutMilliseconds = ( !appState.Resumed && !gOpenXrProgramSessionRunning && app->destroyRequested == 0) ? -1 : 0;
+      const int timeoutMilliseconds =
+        ( !appState.Resumed && !gOpenXrProgramSessionRunning && app->destroyRequested == 0) ? -1 : 0;
 
       if(ALooper_pollOnce(timeoutMilliseconds, nullptr, &events, (void**)&source) < 0)
         break;
@@ -2697,7 +3502,16 @@ typedef struct VkExtensionProperties
         const XrSessionState oldState = gOpenXrProgramXrSessionState;
         gOpenXrProgramXrSessionState = sessionStateChangedEvent.state;
 
-        Log::Write(Log::Level::Info, Fmt("XrEventDataSessionStateChanged: state %s->%s session=%lld time=%lld", to_string(oldState), to_string(gOpenXrProgramXrSessionState), sessionStateChangedEvent.session, sessionStateChangedEvent.time) );
+        Log::Write(
+          Log::Level::Info,
+          Fmt(
+            "XrEventDataSessionStateChanged: state %s->%s session=%lld time=%lld",
+            to_string(oldState),
+            to_string(gOpenXrProgramXrSessionState),
+            sessionStateChangedEvent.session,
+            sessionStateChangedEvent.time
+          )
+        );
 
         if(sessionStateChangedEvent.session != XR_NULL_HANDLE && sessionStateChangedEvent.session != gXrSession)
         {
@@ -2761,7 +3575,8 @@ typedef struct VkExtensionProperties
       {
         const int actionSourceNameCount = 4;
 
-        XrAction gOpenXrProgramInputState_InputState_ActionBlah[actionSourceNameCount] = {
+        XrAction gOpenXrProgramInputState_InputState_ActionBlah[actionSourceNameCount] =
+        {
           gOpenXrProgramInputState_InputState_grabAction,
           gOpenXrProgramInputState_InputState_quitAction,
           gOpenXrProgramInputState_InputState_poseAction,
@@ -2790,13 +3605,23 @@ typedef struct VkExtensionProperties
           std::vector<XrPath> paths(pathCount);
 
           if(tableXr.EnumerateBoundSourcesForAction)
-            CHECK_XRCMD_CHECK(tableXr.EnumerateBoundSourcesForAction(gXrSession, &getInfo, uint32_t(paths.size() ), &pathCount, paths.data() ) );
+          {
+            CHECK_XRCMD_CHECK(tableXr.EnumerateBoundSourcesForAction(
+              gXrSession,
+              &getInfo,
+              uint32_t(paths.size() ),
+              &pathCount, paths.data()
+            ) );
+          }
 
           std::string sourceName;
 
           for(uint32_t i = 0; i < pathCount; ++i)
           {
-            constexpr XrInputSourceLocalizedNameFlags all = XR_INPUT_SOURCE_LOCALIZED_NAME_USER_PATH_BIT | XR_INPUT_SOURCE_LOCALIZED_NAME_INTERACTION_PROFILE_BIT | XR_INPUT_SOURCE_LOCALIZED_NAME_COMPONENT_BIT;
+            constexpr XrInputSourceLocalizedNameFlags all =
+              XR_INPUT_SOURCE_LOCALIZED_NAME_USER_PATH_BIT |
+              XR_INPUT_SOURCE_LOCALIZED_NAME_INTERACTION_PROFILE_BIT |
+              XR_INPUT_SOURCE_LOCALIZED_NAME_COMPONENT_BIT;
 
             XrInputSourceLocalizedNameGetInfo nameInfo = {XR_TYPE_INPUT_SOURCE_LOCALIZED_NAME_GET_INFO};
 
@@ -2814,7 +3639,15 @@ typedef struct VkExtensionProperties
             std::vector<char> grabSource(size);
 
             if(tableXr.GetInputSourceLocalizedName)
-              CHECK_XRCMD_CHECK(tableXr.GetInputSourceLocalizedName(gXrSession, &nameInfo, uint32_t(grabSource.size() ), &size, grabSource.data() ) );
+            {
+              CHECK_XRCMD_CHECK(tableXr.GetInputSourceLocalizedName(
+                gXrSession,
+                &nameInfo,
+                uint32_t(grabSource.size() ),
+                &size,
+                grabSource.data()
+              ) );
+            }
 
             if( !sourceName.empty() )
               sourceName += " and ";
@@ -2825,7 +3658,14 @@ typedef struct VkExtensionProperties
             sourceName += "'";
           }
 
-          Log::Write(Log::Level::Info, Fmt("%s action is bound to %s", actionName[index].c_str(), ( ( !sourceName.empty() ) ? sourceName.c_str() : "nothing") ) );
+          Log::Write(
+            Log::Level::Info,
+            Fmt(
+              "%s action is bound to %s",
+              actionName[index].c_str(),
+              ( ( !sourceName.empty() ) ? sourceName.c_str() : "nothing")
+            )
+          );
         }
       }
       break;
@@ -2897,7 +3737,13 @@ typedef struct VkExtensionProperties
           hapticActionInfo.subactionPath = gOpenXrProgramInputState_InputState_handSubactionPath[hand];
 
           if(tableXr.ApplyHapticFeedback)
-            CHECK_XRCMD_CHECK(tableXr.ApplyHapticFeedback(gXrSession, &hapticActionInfo, (XrHapticBaseHeader*) &vibration) );
+          {
+            CHECK_XRCMD_CHECK(tableXr.ApplyHapticFeedback(
+              gXrSession,
+              &hapticActionInfo,
+              (XrHapticBaseHeader*) &vibration
+            ) );
+          }
         }
       }
 
@@ -2912,14 +3758,28 @@ typedef struct VkExtensionProperties
     }
 
     // There were no subaction paths specified for the quit action, because we don't care which hand did it.
-    XrActionStateGetInfo getInfo {XR_TYPE_ACTION_STATE_GET_INFO, nullptr, gOpenXrProgramInputState_InputState_quitAction, XR_NULL_PATH};
+    XrActionStateGetInfo getInfo
+    {
+      XR_TYPE_ACTION_STATE_GET_INFO,
+      nullptr,
+      gOpenXrProgramInputState_InputState_quitAction,
+      XR_NULL_PATH
+    };
+
     XrActionStateBoolean quitValue {XR_TYPE_ACTION_STATE_BOOLEAN};
 
     if(tableXr.GetActionStateBoolean)
       CHECK_XRCMD_CHECK(tableXr.GetActionStateBoolean(gXrSession, &getInfo, &quitValue) );
 
-    if(quitValue.isActive == XR_TRUE && quitValue.changedSinceLastSync == XR_TRUE && quitValue.currentState == XR_TRUE && tableXr.RequestExitSession)
+    if(
+      quitValue.isActive == XR_TRUE &&
+      quitValue.changedSinceLastSync == XR_TRUE &&
+      quitValue.currentState == XR_TRUE &&
+      tableXr.RequestExitSession
+    )
+    {
       CHECK_XRCMD_CHECK(tableXr.RequestExitSession(gXrSession) );
+    }
 
     // OpenXrProgramRenderFrame
 
@@ -2944,10 +3804,18 @@ typedef struct VkExtensionProperties
     {
       XrTime predictedDisplayTime = frameState.predictedDisplayTime;
 
-      //bool renderLayerResult = OpenXrProgram_OpenXrProgramRenderLayer(frameState.predictedDisplayTime, projectionLayerViews, layer);
+      //bool renderLayerResult = OpenXrProgram_OpenXrProgramRenderLayer(
+      //  frameState.predictedDisplayTime,
+      //  projectionLayerViews,
+      //  layer
+      //);
       bool renderLayerResult = false;
 
-      //bool OpenXrProgram_OpenXrProgramRenderLayer(XrTime predictedDisplayTime, std::vector<XrCompositionLayerProjectionView>& projectionLayerViews, XrCompositionLayerProjection& layer)
+      //bool OpenXrProgram_OpenXrProgramRenderLayer(
+      //  XrTime predictedDisplayTime,
+      //  std::vector<XrCompositionLayerProjectionView>& projectionLayerViews,
+      //  XrCompositionLayerProjection& layer
+      //)
 
       do
       {
@@ -2964,12 +3832,25 @@ typedef struct VkExtensionProperties
 
         if(tableXr.LocateViews)
         {
-          renderLayerXrResult = tableXr.LocateViews(gXrSession, &viewLocateInfo, &renderLayerViewState, renderLayerViewCapacityInput, &renderLayerViewCountOutput, gOpenXrProgramStdVector_XrView.data() );
+          renderLayerXrResult = tableXr.LocateViews(
+            gXrSession,
+            &viewLocateInfo,
+            &renderLayerViewState,
+            renderLayerViewCapacityInput,
+            &renderLayerViewCountOutput,
+            gOpenXrProgramStdVector_XrView.data()
+          );
+
           CHECK_XRRESULT(renderLayerXrResult, "xrLocateViews");
         }
 
-        if( (renderLayerViewState.viewStateFlags & XR_VIEW_STATE_POSITION_VALID_BIT) == 0 || (renderLayerViewState.viewStateFlags & XR_VIEW_STATE_ORIENTATION_VALID_BIT) == 0)
-          break;  // There is no valid tracking poses for the views.
+        if(
+          (renderLayerViewState.viewStateFlags & XR_VIEW_STATE_POSITION_VALID_BIT) == 0 ||
+          (renderLayerViewState.viewStateFlags & XR_VIEW_STATE_ORIENTATION_VALID_BIT) == 0
+        )
+        {
+          break; // There is no valid tracking poses for the views.
+        }
 
         CHECK_CHECK(renderLayerViewCountOutput == renderLayerViewCapacityInput);
         CHECK_CHECK(renderLayerViewCountOutput == gOpenXrProgramStdVector_XrViewConfigurationView.size() );
@@ -2986,18 +3867,32 @@ typedef struct VkExtensionProperties
 
           if(tableXr.LocateSpace)
           {
-            renderLayerXrResult = tableXr.LocateSpace(visualizedSpace, gOpenXrProgramXrSpace, predictedDisplayTime, &spaceLocation);
+            renderLayerXrResult = tableXr.LocateSpace(
+              visualizedSpace,
+              gOpenXrProgramXrSpace,
+              predictedDisplayTime,
+              &spaceLocation
+            );
+
             CHECK_XRRESULT(renderLayerXrResult, "xrLocateSpace");
           }
 
           if(XR_UNQUALIFIED_SUCCESS(renderLayerXrResult) )
           {
-            if( (spaceLocation.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) != 0 && (spaceLocation.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0)
+            if(
+              (spaceLocation.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) != 0 &&
+              (spaceLocation.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0
+            )
+            {
               cubes.push_back(Cube {spaceLocation.pose, {0.25f, 0.25f, 0.25f} } );
+            }
           }
           else
           {
-            Log::Write(Log::Level::Verbose, Fmt("Unable to locate a visualized reference space in app space: %d", renderLayerXrResult) );
+            Log::Write(
+              Log::Level::Verbose,
+              Fmt("Unable to locate a visualized reference space in app space: %d", renderLayerXrResult)
+            );
           }
         }
 
@@ -3009,15 +3904,25 @@ typedef struct VkExtensionProperties
 
           if(tableXr.LocateSpace)
           {
-            renderLayerXrResult = tableXr.LocateSpace(gOpenXrProgramInputState_InputState_handSpace[hand], gOpenXrProgramXrSpace, predictedDisplayTime, &spaceLocation);
+            renderLayerXrResult = tableXr.LocateSpace(
+              gOpenXrProgramInputState_InputState_handSpace[hand],
+              gOpenXrProgramXrSpace,
+              predictedDisplayTime,
+              &spaceLocation
+            );
+
             CHECK_XRRESULT(renderLayerXrResult, "xrLocateSpace");
           }
 
           if(XR_UNQUALIFIED_SUCCESS(renderLayerXrResult) )
           {
-            if( (spaceLocation.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) != 0 && (spaceLocation.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0)
+            if(
+              (spaceLocation.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) != 0 &&
+              (spaceLocation.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0
+            )
             {
               float scale = 0.1f * gOpenXrProgramInputState_InputState_handScale[hand];
+
               cubes.push_back(Cube {spaceLocation.pose, {scale, scale, scale} } );
             }
           }
@@ -3028,7 +3933,11 @@ typedef struct VkExtensionProperties
             if(gOpenXrProgramInputState_InputState_handActive[hand] == XR_TRUE)
             {
               const char* handName[] = {"left", "right"};
-              Log::Write(Log::Level::Verbose, Fmt("Unable to locate %s hand action space in app space: %d", handName[hand], renderLayerXrResult) );
+
+              Log::Write(
+                Log::Level::Verbose,
+                Fmt("Unable to locate %s hand action space in app space: %d", handName[hand], renderLayerXrResult)
+              );
             }
           }
         }
@@ -3059,26 +3968,47 @@ typedef struct VkExtensionProperties
           projectionLayerViews[i].subImage.imageRect.offset = {0, 0};
           projectionLayerViews[i].subImage.imageRect.extent = {viewSwapchain.width, viewSwapchain.height};
 
-          const XrSwapchainImageBaseHeader* const swapchainImage = gOpenXrProgramStdMap_XrSwapchain_StdVectorXrSwapchainImageBaseHeader[viewSwapchain.handle][swapchainImageIndex];
+          const XrSwapchainImageBaseHeader* const swapchainImage =
+            gOpenXrProgramStdMap_XrSwapchain_StdVectorXrSwapchainImageBaseHeader
+              [viewSwapchain.handle][swapchainImageIndex];
 
-          //void VulkanGraphicsPlugin_VulkanGraphicsPluginRenderView(const XrCompositionLayerProjectionView& layerView, const XrSwapchainImageBaseHeader* swapchainImage, int64_t /*swapchainFormat*/, const std::vector<Cube>& cubes)
-          //VulkanGraphicsPlugin_VulkanGraphicsPluginRenderView(projectionLayerViews[i], swapchainImage, gOpenXrProgramColorSwapchainFormat, cubes);
+          // void VulkanGraphicsPlugin_VulkanGraphicsPluginRenderView(
+          //   const XrCompositionLayerProjectionView& layerView,
+          //   const XrSwapchainImageBaseHeader* swapchainImage,
+          //   int64_t /*swapchainFormat*/, const std::vector<Cube>& cubes)
+          //
+          // VulkanGraphicsPlugin_VulkanGraphicsPluginRenderView(
+          //   projectionLayerViews[i],
+          //   swapchainImage,
+          //   gOpenXrProgramColorSwapchainFormat,
+          //   cubes
+          // );
           {
-            CHECK_CHECK(projectionLayerViews[i].subImage.imageArrayIndex == 0);  // Texture arrays not supported.
+            CHECK_CHECK(projectionLayerViews[i].subImage.imageArrayIndex == 0); // Texture arrays not supported.
 
-            int swapchainContextIndex = gVulkanGraphicsPluginStdMap_XrSwapchainImageBaseHeader_SwapchainImageContext[swapchainImage];
+            int swapchainContextIndex =
+              gVulkanGraphicsPluginStdMap_XrSwapchainImageBaseHeader_SwapchainImageContext[swapchainImage];
 
             uint32_t renderTarget = 0;
-            //uint32_t renderTarget = SwapchainImageContext_SwapchainImageContextImageIndex(swapchainContextIndex, swapchainImage);
-            //uint32_t SwapchainImageContext_SwapchainImageContextImageIndex(int index, const XrSwapchainImageBaseHeader* swapchainImageHeader)
+            // uint32_t renderTarget = SwapchainImageContext_SwapchainImageContextImageIndex(
+            //   swapchainContextIndex,
+            //   swapchainImage
+            // );
+            //
+            // uint32_t SwapchainImageContext_SwapchainImageContextImageIndex(
+            //   int index,
+            //   const XrSwapchainImageBaseHeader* swapchainImageHeader
+            // )
             {
               auto p = reinterpret_cast<const XrSwapchainImageVulkan2KHR*>(swapchainImage);
               renderTarget = (uint32_t)(p - &m_swapchainImageContextSwapchainImages[swapchainContextIndex][0] );
             }
 
             // XXX Should double-buffer the command buffers, for now just flush
-            //CmdBuffer_CmdBufferWait();
-            //bool CmdBuffer_CmdBufferWait()
+            //
+            // CmdBuffer_CmdBufferWait();
+            //
+            // bool CmdBuffer_CmdBufferWait()
             do
             {
               // Waiting on a not-in-flight command buffer is a no-op
@@ -3088,7 +4018,14 @@ typedef struct VkExtensionProperties
               //CHECK_VULKANCMDBUFFERSTATE(CmdBufferStateEnum::Executing);
               if(gCmdBufferState != CmdBufferStateEnum::Executing)
               {
-                Log::Write(Log::Level::Error, std::string("Expecting state CmdBufferStateEnum::Executing from ") + __FUNCTION__ + ", in " + CmdBuffer_CmdBufferStateString(gCmdBufferState) );
+                Log::Write(
+                  Log::Level::Error,
+                  std::string("Expecting state CmdBufferStateEnum::Executing from ") +
+                    __FUNCTION__ +
+                    ", in " +
+                    CmdBuffer_CmdBufferStateString(gCmdBufferState)
+                );
+
                 break;
               }
 
@@ -3124,7 +4061,14 @@ typedef struct VkExtensionProperties
                 //CHECK_VULKANCMDBUFFERSTATE(CmdBufferStateEnum::Executable);
                 if(gCmdBufferState != CmdBufferStateEnum::Executable)
                 {
-                  Log::Write(Log::Level::Error, std::string("Expecting state CmdBufferStateEnum::Executable from ") + __FUNCTION__ + ", in " + CmdBuffer_CmdBufferStateString(gCmdBufferState) );
+                  Log::Write(
+                    Log::Level::Error,
+                    std::string("Expecting state CmdBufferStateEnum::Executable from ") +
+                      __FUNCTION__ +
+                      ", in " +
+                      CmdBuffer_CmdBufferStateString(gCmdBufferState)
+                  );
+
                   break;
                 }
 
@@ -3146,7 +4090,14 @@ typedef struct VkExtensionProperties
               //CHECK_VULKANCMDBUFFERSTATE(CmdBufferStateEnum::Initialized);
               if(gCmdBufferState != CmdBufferStateEnum::Initialized)
               {
-                Log::Write(Log::Level::Error, std::string("Expecting state CmdBufferStateEnum::Initialized from ") + __FUNCTION__ + ", in " + CmdBuffer_CmdBufferStateString(gCmdBufferState) );
+                Log::Write(
+                  Log::Level::Error,
+                  std::string("Expecting state CmdBufferStateEnum::Initialized from ") +
+                    __FUNCTION__ +
+                    ", in " +
+                    CmdBuffer_CmdBufferStateString(gCmdBufferState)
+                );
+
                 break;
               }
 
@@ -3162,8 +4113,16 @@ typedef struct VkExtensionProperties
             }while(0);
 
             // Ensure depth is in the right layout
-            //SwapchainImageContext_SwapchainImageContext_DepthBufferTransitionImageLayout(swapchainContextIndex, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
-            //void SwapchainImageContext_SwapchainImageContext_DepthBufferTransitionImageLayout(int index, VkImageLayout newLayout)
+            //
+            // SwapchainImageContext_SwapchainImageContext_DepthBufferTransitionImageLayout(
+            //   swapchainContextIndex,
+            //   VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
+            // );
+            //
+            // void SwapchainImageContext_SwapchainImageContext_DepthBufferTransitionImageLayout(
+            //   int index,
+            //   VkImageLayout newLayout
+            // )
             do
             {
               VkImageLayout newLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
@@ -3181,7 +4140,20 @@ typedef struct VkExtensionProperties
               depthBarrier.subresourceRange = {VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1};
 
               if(tableVk.CmdPipelineBarrier)
-                tableVk.CmdPipelineBarrier(gCmdBufferBuffer, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, 0, 0, nullptr, 0, nullptr, 1, &depthBarrier);
+              {
+                tableVk.CmdPipelineBarrier(
+                  gCmdBufferBuffer,
+                  VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT,
+                  VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT,
+                  0,
+                  0,
+                  nullptr,
+                  0,
+                  nullptr,
+                  1,
+                  &depthBarrier
+                );
+              }
 
               m_swapchainImageContext_depthBufferVkImageLayout[swapchainContextIndex] = newLayout;
 
@@ -3199,27 +4171,64 @@ typedef struct VkExtensionProperties
             renderPassBeginInfo.clearValueCount = (uint32_t)clearValues.size();
             renderPassBeginInfo.pClearValues = clearValues.data();
 
-            //SwapchainImageContext_SwapchainImageContextBindRenderTarget(swapchainContextIndex, renderTarget, &renderPassBeginInfo);
-            //void SwapchainImageContext_SwapchainImageContextBindRenderTarget(int index, uint32_t renderTarget, VkRenderPassBeginInfo* renderPassBeginInfo)
+            // SwapchainImageContext_SwapchainImageContextBindRenderTarget(
+            //   swapchainContextIndex,
+            //   renderTarget,
+            //   &renderPassBeginInfo
+            // );
+            //
+            // void SwapchainImageContext_SwapchainImageContextBindRenderTarget(
+            //   int index,
+            //   uint32_t renderTarget,
+            //   VkRenderPassBeginInfo* renderPassBeginInfo
+            // )
             {
-              if(m_swapchainImageContextStdVector_renderTargetFrameBuffer[swapchainContextIndex][renderTarget] == VK_NULL_HANDLE)
-              //SwapchainImageContext_SwapchainImageContext_RenderTargetCreate(swapchainContextIndex, renderTarget, m_swapchainImageContextNamer[swapchainContextIndex], gVkDevice, m_swapchainImageContextSwapchainImages[swapchainContextIndex][renderTarget].image, m_swapchainImageContext_depthBufferDepthImage[swapchainContextIndex], m_swapchainImageContextSize[swapchainContextIndex] );
-              //void SwapchainImageContext_SwapchainImageContext_RenderTargetCreate(int index, int renderTarget, const VulkanDebugObjectNamer& namer, VkDevice device, VkImage aColorImage, VkImage aDepthImage, VkExtent2D size)
+              if(
+                m_swapchainImageContextStdVector_renderTargetFrameBuffer[swapchainContextIndex][renderTarget] ==
+                  VK_NULL_HANDLE
+              )
+              // SwapchainImageContext_SwapchainImageContext_RenderTargetCreate(
+              //   swapchainContextIndex,
+              //   renderTarget,
+              //   m_swapchainImageContextNamer[swapchainContextIndex],
+              //   gVkDevice,
+              //   m_swapchainImageContextSwapchainImages[swapchainContextIndex][renderTarget].image,
+              //   m_swapchainImageContext_depthBufferDepthImage[swapchainContextIndex],
+              //   m_swapchainImageContextSize[swapchainContextIndex]
+              // );
+              //
+              // void SwapchainImageContext_SwapchainImageContext_RenderTargetCreate(
+              //   int index,
+              //   int renderTarget,
+              //   const VulkanDebugObjectNamer& namer,
+              //   VkDevice device,
+              //   VkImage aColorImage,
+              //   VkImage aDepthImage,
+              //   VkExtent2D size
+              // )
               do
               {
-                m_swapchainImageContextStdVector_renderTargetColorImage[swapchainContextIndex][renderTarget] = m_swapchainImageContextSwapchainImages[swapchainContextIndex][renderTarget].image;
-                m_swapchainImageContextStdVector_renderTargetDepthImage[swapchainContextIndex][renderTarget] = m_swapchainImageContext_depthBufferDepthImage[swapchainContextIndex];
+                m_swapchainImageContextStdVector_renderTargetColorImage[swapchainContextIndex][renderTarget] =
+                  m_swapchainImageContextSwapchainImages[swapchainContextIndex][renderTarget].image;
+
+                m_swapchainImageContextStdVector_renderTargetDepthImage[swapchainContextIndex][renderTarget] =
+                  m_swapchainImageContext_depthBufferDepthImage[swapchainContextIndex];
 
                 std::array<VkImageView, 2> attachments {};
 
                 uint32_t attachmentCount = 0;
 
                 // Create color image view
-                if(m_swapchainImageContextStdVector_renderTargetColorImage[swapchainContextIndex][renderTarget] != VK_NULL_HANDLE)
+                if(
+                  m_swapchainImageContextStdVector_renderTargetColorImage[swapchainContextIndex][renderTarget] !=
+                    VK_NULL_HANDLE
+                )
                 {
                   VkImageViewCreateInfo colorViewInfo {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
 
-                  colorViewInfo.image = m_swapchainImageContextStdVector_renderTargetColorImage[swapchainContextIndex][renderTarget];
+                  colorViewInfo.image =
+                    m_swapchainImageContextStdVector_renderTargetColorImage[swapchainContextIndex][renderTarget];
+
                   colorViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
                   colorViewInfo.format = m_swapchainImageContext_renderPassColorFmt[swapchainContextIndex];
                   colorViewInfo.components.r = VK_COMPONENT_SWIZZLE_R;
@@ -3235,20 +4244,40 @@ typedef struct VkExtensionProperties
                   if(tableVk.CreateImageView)
                   {
                     VkImageView renderTargetColorView {VK_NULL_HANDLE};
-                    CHECK_VULKANCMD(tableVk.CreateImageView(gVkDevice, &colorViewInfo, nullptr, &renderTargetColorView) );
-                    m_swapchainImageContextStdVector_renderTargetColorView[swapchainContextIndex][renderTarget] = renderTargetColorView;
+
+                    CHECK_VULKANCMD(tableVk.CreateImageView(
+                      gVkDevice,
+                      &colorViewInfo,
+                      nullptr,
+                      &renderTargetColorView
+                    ) );
+
+                    m_swapchainImageContextStdVector_renderTargetColorView[swapchainContextIndex][renderTarget] =
+                      renderTargetColorView;
                   }
 
-                  CHECK_VULKANCMD(m_swapchainImageContextNamer[swapchainContextIndex].SetName(VK_OBJECT_TYPE_IMAGE_VIEW, (uint64_t)m_swapchainImageContextStdVector_renderTargetColorView[swapchainContextIndex][renderTarget], "helloxr color image view") );
-                  attachments[attachmentCount++] = m_swapchainImageContextStdVector_renderTargetColorView[swapchainContextIndex][renderTarget];
+                  CHECK_VULKANCMD(m_swapchainImageContextNamer[swapchainContextIndex].SetName(
+                    VK_OBJECT_TYPE_IMAGE_VIEW,
+                    (uint64_t)m_swapchainImageContextStdVector_renderTargetColorView
+                      [swapchainContextIndex][renderTarget],
+                    "helloxr color image view"
+                  ) );
+
+                  attachments[attachmentCount++] =
+                    m_swapchainImageContextStdVector_renderTargetColorView[swapchainContextIndex][renderTarget];
                 }
 
                 // Create depth image view
-                if(m_swapchainImageContextStdVector_renderTargetDepthImage[swapchainContextIndex][renderTarget] != VK_NULL_HANDLE)
+                if(
+                  m_swapchainImageContextStdVector_renderTargetDepthImage[swapchainContextIndex][renderTarget] !=
+                    VK_NULL_HANDLE
+                )
                 {
                   VkImageViewCreateInfo depthViewInfo {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
 
-                  depthViewInfo.image = m_swapchainImageContextStdVector_renderTargetDepthImage[swapchainContextIndex][renderTarget];
+                  depthViewInfo.image =
+                    m_swapchainImageContextStdVector_renderTargetDepthImage[swapchainContextIndex][renderTarget];
+
                   depthViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
                   depthViewInfo.format = m_swapchainImageContext_renderPassDepthFmt[swapchainContextIndex];
                   depthViewInfo.components.r = VK_COMPONENT_SWIZZLE_R;
@@ -3264,12 +4293,27 @@ typedef struct VkExtensionProperties
                   if(tableVk.CreateImageView)
                   {
                     VkImageView renderTargetDepthView {VK_NULL_HANDLE};
-                    CHECK_VULKANCMD(tableVk.CreateImageView(gVkDevice, &depthViewInfo, nullptr, &renderTargetDepthView) );
-                    m_swapchainImageContextStdVector_renderTargetDepthView[swapchainContextIndex][renderTarget] = renderTargetDepthView;
+
+                    CHECK_VULKANCMD(tableVk.CreateImageView(
+                      gVkDevice,
+                      &depthViewInfo,
+                      nullptr,
+                      &renderTargetDepthView
+                    ) );
+
+                    m_swapchainImageContextStdVector_renderTargetDepthView[swapchainContextIndex][renderTarget] =
+                      renderTargetDepthView;
                   }
 
-                  CHECK_VULKANCMD(m_swapchainImageContextNamer[swapchainContextIndex].SetName(VK_OBJECT_TYPE_IMAGE_VIEW, (uint64_t)m_swapchainImageContextStdVector_renderTargetDepthView[swapchainContextIndex][renderTarget], "helloxr depth image view") );
-                  attachments[attachmentCount++] = m_swapchainImageContextStdVector_renderTargetDepthView[swapchainContextIndex][renderTarget];
+                  CHECK_VULKANCMD(m_swapchainImageContextNamer[swapchainContextIndex].SetName(
+                    VK_OBJECT_TYPE_IMAGE_VIEW,
+                    (uint64_t)m_swapchainImageContextStdVector_renderTargetDepthView
+                      [swapchainContextIndex][renderTarget],
+                    "helloxr depth image view"
+                  ) );
+
+                  attachments[attachmentCount++] =
+                    m_swapchainImageContextStdVector_renderTargetDepthView[swapchainContextIndex][renderTarget];
                 }
 
                 VkFramebufferCreateInfo fbInfo {VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO};
@@ -3284,17 +4328,26 @@ typedef struct VkExtensionProperties
                 if(tableVk.CreateFramebuffer)
                 {
                   VkFramebuffer renderTargetFrameBuffer {VK_NULL_HANDLE};
+
                   CHECK_VULKANCMD(tableVk.CreateFramebuffer(gVkDevice, &fbInfo, nullptr, &renderTargetFrameBuffer) );
-                  m_swapchainImageContextStdVector_renderTargetFrameBuffer[swapchainContextIndex][renderTarget] = renderTargetFrameBuffer;
+
+                  m_swapchainImageContextStdVector_renderTargetFrameBuffer[swapchainContextIndex][renderTarget] =
+                    renderTargetFrameBuffer;
                 }
 
-                CHECK_VULKANCMD(m_swapchainImageContextNamer[swapchainContextIndex].SetName(VK_OBJECT_TYPE_FRAMEBUFFER, (uint64_t)m_swapchainImageContextStdVector_renderTargetFrameBuffer[swapchainContextIndex][renderTarget], "helloxr framebuffer") );
+                CHECK_VULKANCMD(m_swapchainImageContextNamer[swapchainContextIndex].SetName(
+                  VK_OBJECT_TYPE_FRAMEBUFFER,
+                  (uint64_t)m_swapchainImageContextStdVector_renderTargetFrameBuffer
+                    [swapchainContextIndex][renderTarget],
+                  "helloxr framebuffer"
+                ) );
 
               }while(0);
 
               renderPassBeginInfo.renderPass = m_swapchainImageContext_renderPassPass[swapchainContextIndex];
 
-              renderPassBeginInfo.framebuffer = m_swapchainImageContextStdVector_renderTargetFrameBuffer[swapchainContextIndex][renderTarget];
+              renderPassBeginInfo.framebuffer =
+                m_swapchainImageContextStdVector_renderTargetFrameBuffer[swapchainContextIndex][renderTarget];
 
               renderPassBeginInfo.renderArea.offset = {0, 0};
 
@@ -3305,7 +4358,13 @@ typedef struct VkExtensionProperties
               tableVk.CmdBeginRenderPass(gCmdBufferBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
             if(tableVk.CmdBindPipeline)
-              tableVk.CmdBindPipeline(gCmdBufferBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_swapchainImageContextPipe_pipelinePipe[swapchainContextIndex] );
+            {
+              tableVk.CmdBindPipeline(
+                gCmdBufferBuffer,
+                VK_PIPELINE_BIND_POINT_GRAPHICS,
+                m_swapchainImageContextPipe_pipelinePipe[swapchainContextIndex]
+              );
+            }
 
             // Bind indice and vertex buffers
             if(tableVk.CmdBindIndexBuffer)
@@ -3337,13 +4396,27 @@ typedef struct VkExtensionProperties
             {
               // Compute the model-view-projection transform and push it.
               XrMatrix4x4f model;
-              XrMatrix4x4f_CreateTranslationRotationScale( &model, &cube.Pose.position, &cube.Pose.orientation, &cube.Scale);
+              XrMatrix4x4f_CreateTranslationRotationScale(
+                &model,
+                &cube.Pose.position,
+                &cube.Pose.orientation,
+                &cube.Scale
+              );
 
               XrMatrix4x4f mvp;
               XrMatrix4x4f_Multiply( &mvp, &vp, &model);
 
               if(tableVk.CmdPushConstants)
-                tableVk.CmdPushConstants(gCmdBufferBuffer, gVkPipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(mvp.m), &mvp.m[0] );
+              {
+                tableVk.CmdPushConstants(
+                  gCmdBufferBuffer,
+                  gVkPipelineLayout,
+                  VK_SHADER_STAGE_VERTEX_BIT,
+                  0,
+                  sizeof(mvp.m),
+                  &mvp.m[0]
+                );
+              }
 
               // draw the cube
               if(tableVk.CmdDrawIndexed)
@@ -3360,7 +4433,14 @@ typedef struct VkExtensionProperties
               //CHECK_VULKANCMDBUFFERSTATE(CmdBufferStateEnum::Recording);
               if(gCmdBufferState != CmdBufferStateEnum::Recording)
               {
-                Log::Write(Log::Level::Error, std::string("Expecting state CmdBufferStateEnum::Recording from ") + __FUNCTION__ + ", in " + CmdBuffer_CmdBufferStateString(gCmdBufferState) );
+                Log::Write(
+                  Log::Level::Error,
+                  std::string("Expecting state CmdBufferStateEnum::Recording from ") +
+                    __FUNCTION__ +
+                    ", in " +
+                    CmdBuffer_CmdBufferStateString(gCmdBufferState)
+                );
+
                 break;
               }
 
@@ -3378,7 +4458,14 @@ typedef struct VkExtensionProperties
               //CHECK_VULKANCMDBUFFERSTATE(CmdBufferStateEnum::Executable);
               if(gCmdBufferState != CmdBufferStateEnum::Executable)
               {
-                Log::Write(Log::Level::Error, std::string("Expecting state CmdBufferStateEnum::Executable from ") + __FUNCTION__ + ", in " + CmdBuffer_CmdBufferStateString(gCmdBufferState) );
+                Log::Write(
+                  Log::Level::Error,
+                  std::string("Expecting state CmdBufferStateEnum::Executable from ") +
+                    __FUNCTION__ +
+                    ", in " +
+                    CmdBuffer_CmdBufferStateString(gCmdBufferState)
+                );
+
                 break;
               }
 
@@ -3388,7 +4475,14 @@ typedef struct VkExtensionProperties
               submitInfo.pCommandBuffers = &gCmdBufferBuffer;
 
               if(tableVk.QueueSubmit)
-                CHECK_VULKANCMD(tableVk.QueueSubmit(gVulkanGraphicsPluginVkQueue, 1, &submitInfo, gCmdBufferExecFence) );
+              {
+                CHECK_VULKANCMD(tableVk.QueueSubmit(
+                  gVulkanGraphicsPluginVkQueue,
+                  1,
+                  &submitInfo,
+                  gCmdBufferExecFence
+                ) );
+              }
 
               gCmdBufferState = CmdBufferStateEnum::Executing;
 
@@ -3405,7 +4499,10 @@ typedef struct VkExtensionProperties
 
         layer.space = gOpenXrProgramXrSpace;
 
-        layer.layerFlags = gOptions_XrEnvironmentBlendMode == XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND ? XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT : 0;
+        layer.layerFlags =
+          gOptions_XrEnvironmentBlendMode == XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND ?
+            XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT :
+            0;
 
         layer.viewCount = (uint32_t)projectionLayerViews.size();
 
@@ -3463,16 +4560,33 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
       //projectionLayerViews[i].subImage.imageRect.offset = {0, 0};
       //projectionLayerViews[i].subImage.imageRect.extent = {viewSwapchain.width, viewSwapchain.height};
 
-      //VulkanGraphicsPlugin_VulkanGraphicsPluginRenderView(projectionLayerViews[i], swapchainImage, gOpenXrProgramColorSwapchainFormat, cubes);
+      //VulkanGraphicsPlugin_VulkanGraphicsPluginRenderView(
+      //  projectionLayerViews[i],
+      //  swapchainImage,
+      //  gOpenXrProgramColorSwapchainFormat,
+      //  cubes
+      //);
 
       //XrCompositionLayerProjection layer {XR_TYPE_COMPOSITION_LAYER_PROJECTION};
+
       //layer.space = gOpenXrProgramXrSpace;
-      //layer.layerFlags = gOptions_XrEnvironmentBlendMode == XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND ? XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT : 0;
+
+      //layer.layerFlags =
+      //  gOptions_XrEnvironmentBlendMode == XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND ?
+      //    XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT :
+      //    0;
+
       //layer.viewCount = (uint32_t)projectionLayerViews.size();
+
       //layer.views = projectionLayerViews.data();
+
       //layers_vector.push_back(reinterpret_cast<XrCompositionLayerBaseHeader*>( &layer) );
 
-      XrEnvironmentDepthImageAcquireInfoMETA environmentDepthImageAcquireInfoMETA {XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_ACQUIRE_INFO_META};
+      XrEnvironmentDepthImageAcquireInfoMETA environmentDepthImageAcquireInfoMETA
+      {
+        XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_ACQUIRE_INFO_META
+      };
+
       environmentDepthImageAcquireInfoMETA.next = 0;
       environmentDepthImageAcquireInfoMETA.space = gOpenXrProgramXrSpace;
       environmentDepthImageAcquireInfoMETA.displayTime = frameState.predictedDisplayTime;
@@ -3489,19 +4603,34 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
       //   XrEnvironmentDepthImageMETA* environmentDepthImage
       // );
 
-//gAcquireEnvironmentDepthImageMETA(gEnvironmentDepthProviderMETA, &environmentDepthImageAcquireInfoMETA, &environmentDepthImageMETA);
+      //gAcquireEnvironmentDepthImageMETA(
+      //  gEnvironmentDepthProviderMETA,
+      //  &environmentDepthImageAcquireInfoMETA,
+      //  &environmentDepthImageMETA
+      //);
 
 #if 0
-      XrEnvironmentDepthImageAcquireInfoMETA environmentDepthAcquireInfo {XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_ACQUIRE_INFO_META};
+      XrEnvironmentDepthImageAcquireInfoMETA environmentDepthAcquireInfo
+      {
+        XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_ACQUIRE_INFO_META
+      };
 
       environmentDepthAcquireInfo.space = app.LocalSpace;
       environmentDepthAcquireInfo.displayTime = frameState.predictedDisplayTime;
 
-      XrEnvironmentDepthImageMETA environmentDepthImage {XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_META};
+      XrEnvironmentDepthImageMETA environmentDepthImage
+      {
+        XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_META
+      };
+
       environmentDepthImage.views[0].type = XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_VIEW_META;
       environmentDepthImage.views[1].type = XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_VIEW_META;
 
-      const XrResult acquireResult = xrAcquireEnvironmentDepthImageMETA(app.EnvironmentDepthProvider, &environmentDepthAcquireInfo, &environmentDepthImage);
+      const XrResult acquireResult = xrAcquireEnvironmentDepthImageMETA(
+        app.EnvironmentDepthProvider,
+        &environmentDepthAcquireInfo,
+        &environmentDepthImage
+      );
 
       if(acquireResult == XR_SUCCESS)
       {
@@ -3517,13 +4646,19 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
           const XrPosef xfLocalFromDepthEye = environmentDepthImage.views[eye].pose;
 
           XrPosef xfDepthEyeFromLocal;
-          XrPosef_Invert(&xfDepthEyeFromLocal, &xfLocalFromDepthEye);
+          XrPosef_Invert( &xfDepthEyeFromLocal, &xfLocalFromDepthEye);
 
           XrMatrix4x4f viewMat;
-          XrMatrix4x4f_CreateFromRigidTransform(&viewMat, &xfDepthEyeFromLocal);
+          XrMatrix4x4f_CreateFromRigidTransform( &viewMat, &xfDepthEyeFromLocal);
 
           XrMatrix4x4f projectionMat;
-          XrMatrix4x4f_CreateProjectionFov(&projectionMat, GRAPHICS_OPENGL_ES, environmentDepthImage.views[eye].fov, environmentDepthImage.nearZ, std::isfinite(environmentDepthImage.farZ) ? environmentDepthImage.farZ : 0);
+          XrMatrix4x4f_CreateProjectionFov(
+            &projectionMat,
+            GRAPHICS_OPENGL_ES,
+            environmentDepthImage.views[eye].fov,
+            environmentDepthImage.nearZ,
+            std::isfinite(environmentDepthImage.farZ) ? environmentDepthImage.farZ : 0
+          );
 
           frameIn.DepthViewMatrices[eye] = OvrFromXr(viewMat);
           frameIn.DepthProjectionMatrices[eye] = OvrFromXr(projectionMat);
@@ -3681,11 +4816,22 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
 #if 0
       XrCompositionLayerProjectionView environmentDepthXrCompositionLayerProjectionView[2] = {};
 
-      XrCompositionLayerProjection environmentDepthXrCompositionLayerProjection = {XR_TYPE_COMPOSITION_LAYER_PROJECTION};
+      XrCompositionLayerProjection environmentDepthXrCompositionLayerProjection =
+      {
+        XR_TYPE_COMPOSITION_LAYER_PROJECTION
+      };
+
       environmentDepthXrCompositionLayerProjection.next = 0;
-      environmentDepthXrCompositionLayerProjection.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT | XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT;
+
+      environmentDepthXrCompositionLayerProjection.layerFlags =
+        XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT |
+        XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT |
+        XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT;
+
       environmentDepthXrCompositionLayerProjection.space = gOpenXrProgramXrSpace;
+
       environmentDepthXrCompositionLayerProjection.viewCount = 2;
+
       environmentDepthXrCompositionLayerProjection.views = environmentDepthXrCompositionLayerProjectionView;
 
       for(int index = 0; index < 2; index++)
@@ -3695,11 +4841,19 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
         environmentDepthXrCompositionLayerProjectionView[index].pose = environmentDepthImageMETA.views[index].pose;
         environmentDepthXrCompositionLayerProjectionView[index].fov = environmentDepthImageMETA.views[index].fov;
 
-        environmentDepthXrCompositionLayerProjectionView[index].subImage.swapchain = (XrSwapchain)gEnvironmentDepthImages[index];
+        environmentDepthXrCompositionLayerProjectionView[index].subImage.swapchain =
+          (XrSwapchain)gEnvironmentDepthImages[index];
+
         environmentDepthXrCompositionLayerProjectionView[index].subImage.imageRect.offset.x = 0;
+
         environmentDepthXrCompositionLayerProjectionView[index].subImage.imageRect.offset.y = 0;
-        environmentDepthXrCompositionLayerProjectionView[index].subImage.imageRect.extent.width = gEnvironmentDepthSwapchainStateMETA.width;
-        environmentDepthXrCompositionLayerProjectionView[index].subImage.imageRect.extent.height = gEnvironmentDepthSwapchainStateMETA.height;
+
+        environmentDepthXrCompositionLayerProjectionView[index].subImage.imageRect.extent.width =
+          gEnvironmentDepthSwapchainStateMETA.width;
+
+        environmentDepthXrCompositionLayerProjectionView[index].subImage.imageRect.extent.height =
+          gEnvironmentDepthSwapchainStateMETA.height;
+
         environmentDepthXrCompositionLayerProjectionView[index].subImage.imageArrayIndex = index;
       }
 #endif
@@ -3717,7 +4871,11 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
       //   XrEnvironmentDepthImageMETA* environmentDepthImage
       // );
 
-      //gAcquireEnvironmentDepthImageMETA(gEnvironmentDepthProviderMETA, &environmentDepthImageAcquireInfoMETA, &environmentDepthImageMETA);
+      //gAcquireEnvironmentDepthImageMETA(
+      //  gEnvironmentDepthProviderMETA,
+      //  &environmentDepthImageAcquireInfoMETA,
+      //  &environmentDepthImageMETA
+      //);
 
       // struct XrEnvironmentDepthImageAcquireInfoMETA
       // {
@@ -3767,7 +4925,11 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
 
     if( !gCreatePassthroughFB)
     {
-      XrResult result = tableXr.GetInstanceProcAddr(gXrInstance, "xrCreatePassthroughFB", (PFN_xrVoidFunction*) &gCreatePassthroughFB);
+      XrResult result = tableXr.GetInstanceProcAddr(
+        gXrInstance,
+        "xrCreatePassthroughFB",
+        (PFN_xrVoidFunction*) &gCreatePassthroughFB
+      );
 
       if(XR_FAILED(result) )
         Log::Write(Log::Level::Info, Fmt("failed to obtain the function pointer for xrCreatePassthroughFB") );
@@ -3785,7 +4947,11 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
 
       // Create and run passthrough layer
 
-      result = tableXr.GetInstanceProcAddr(gXrInstance, "xrCreatePassthroughLayerFB", (PFN_xrVoidFunction*) &gCreatePassthroughLayerFB);
+      result = tableXr.GetInstanceProcAddr(
+        gXrInstance,
+        "xrCreatePassthroughLayerFB",
+        (PFN_xrVoidFunction*) &gCreatePassthroughLayerFB
+      );
 
       XrPassthroughLayerCreateInfoFB layerCreateInfo = {XR_TYPE_PASSTHROUGH_LAYER_CREATE_INFO_FB};
       layerCreateInfo.passthrough = gPassthroughFeature;
@@ -3864,16 +5030,65 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
 
       // The following snippet initializes all the available functions:
 
-      tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateEnvironmentDepthProviderMETA", (PFN_xrVoidFunction*) &gCreateEnvironmentDepthProviderMETA);
-      tableXr.GetInstanceProcAddr(gXrInstance, "xrDestroyEnvironmentDepthProviderMETA", (PFN_xrVoidFunction*) &gDestroyEnvironmentDepthProviderMETA);
-      tableXr.GetInstanceProcAddr(gXrInstance, "xrStartEnvironmentDepthProviderMETA", (PFN_xrVoidFunction*) &gStartEnvironmentDepthProviderMETA);
-      tableXr.GetInstanceProcAddr(gXrInstance, "xrStopEnvironmentDepthProviderMETA", (PFN_xrVoidFunction*) &gStopEnvironmentDepthProviderMETA);
-      tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateEnvironmentDepthSwapchainMETA", (PFN_xrVoidFunction*) &gCreateEnvironmentDepthSwapchainMETA);
-      tableXr.GetInstanceProcAddr(gXrInstance, "xrDestroyEnvironmentDepthSwapchainMETA", (PFN_xrVoidFunction*) &gDestroyEnvironmentDepthSwapchainMETA);
-      tableXr.GetInstanceProcAddr(gXrInstance, "xrEnumerateEnvironmentDepthSwapchainImagesMETA", (PFN_xrVoidFunction*) &gEnumerateEnvironmentDepthSwapchainImagesMETA);
-      tableXr.GetInstanceProcAddr(gXrInstance, "xrGetEnvironmentDepthSwapchainStateMETA", (PFN_xrVoidFunction*) &gGetEnvironmentDepthSwapchainStateMETA);
-      tableXr.GetInstanceProcAddr(gXrInstance, "xrAcquireEnvironmentDepthImageMETA", (PFN_xrVoidFunction*) &gAcquireEnvironmentDepthImageMETA);
-      tableXr.GetInstanceProcAddr(gXrInstance, "xrSetEnvironmentDepthHandRemovalMETA", (PFN_xrVoidFunction*) &gSetEnvironmentDepthHandRemovalMETA);
+      tableXr.GetInstanceProcAddr(
+        gXrInstance,
+        "xrCreateEnvironmentDepthProviderMETA",
+        (PFN_xrVoidFunction*) &gCreateEnvironmentDepthProviderMETA
+      );
+
+      tableXr.GetInstanceProcAddr(
+        gXrInstance,
+        "xrDestroyEnvironmentDepthProviderMETA",
+        (PFN_xrVoidFunction*) &gDestroyEnvironmentDepthProviderMETA
+      );
+
+      tableXr.GetInstanceProcAddr(
+        gXrInstance,
+        "xrStartEnvironmentDepthProviderMETA",
+        (PFN_xrVoidFunction*) &gStartEnvironmentDepthProviderMETA
+      );
+
+      tableXr.GetInstanceProcAddr(
+        gXrInstance,
+        "xrStopEnvironmentDepthProviderMETA",
+        (PFN_xrVoidFunction*) &gStopEnvironmentDepthProviderMETA
+      );
+
+      tableXr.GetInstanceProcAddr(
+        gXrInstance,
+        "xrCreateEnvironmentDepthSwapchainMETA",
+        (PFN_xrVoidFunction*) &gCreateEnvironmentDepthSwapchainMETA
+      );
+
+      tableXr.GetInstanceProcAddr(
+        gXrInstance,
+        "xrDestroyEnvironmentDepthSwapchainMETA",
+        (PFN_xrVoidFunction*) &gDestroyEnvironmentDepthSwapchainMETA
+      );
+
+      tableXr.GetInstanceProcAddr(
+        gXrInstance,
+        "xrEnumerateEnvironmentDepthSwapchainImagesMETA",
+        (PFN_xrVoidFunction*) &gEnumerateEnvironmentDepthSwapchainImagesMETA
+      );
+
+      tableXr.GetInstanceProcAddr(
+        gXrInstance,
+        "xrGetEnvironmentDepthSwapchainStateMETA",
+        (PFN_xrVoidFunction*) &gGetEnvironmentDepthSwapchainStateMETA
+      );
+
+      tableXr.GetInstanceProcAddr(
+        gXrInstance,
+        "xrAcquireEnvironmentDepthImageMETA",
+        (PFN_xrVoidFunction*) &gAcquireEnvironmentDepthImageMETA
+      );
+
+      tableXr.GetInstanceProcAddr(
+        gXrInstance,
+        "xrSetEnvironmentDepthHandRemovalMETA",
+        (PFN_xrVoidFunction*) &gSetEnvironmentDepthHandRemovalMETA
+      );
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // Creating a depth provider
@@ -3905,7 +5120,12 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
 
       gEnvironmentDepthProviderMETA = XR_NULL_HANDLE;
 
-      XrResult result = gCreateEnvironmentDepthProviderMETA(gXrSession, &gEnvironmentDepthProviderCreateInfoMETA, &gEnvironmentDepthProviderMETA);
+      XrResult result = gCreateEnvironmentDepthProviderMETA(
+        gXrSession,
+        &gEnvironmentDepthProviderCreateInfoMETA,
+        &gEnvironmentDepthProviderMETA
+      );
+
       if(XR_FAILED(result) )
         Log::Write(Log::Level::Info, Fmt("failed CreateEnvironmentDepthProviderMETA") );
       else
@@ -3948,7 +5168,10 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
       gEnvironmentDepthHandRemovalSetInfoMETA.next = nullptr;
       gEnvironmentDepthHandRemovalSetInfoMETA.enabled = true;
 
-      result = gSetEnvironmentDepthHandRemovalMETA(gEnvironmentDepthProviderMETA, &gEnvironmentDepthHandRemovalSetInfoMETA);
+      result = gSetEnvironmentDepthHandRemovalMETA(
+        gEnvironmentDepthProviderMETA,
+        &gEnvironmentDepthHandRemovalSetInfoMETA
+      );
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // Creating and enumerating a depth swapchain
@@ -3983,7 +5206,11 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
 
       gEnvironmentDepthSwapchainMETA = XR_NULL_HANDLE;
 
-      gCreateEnvironmentDepthSwapchainMETA(gEnvironmentDepthProviderMETA, &gEnvironmentDepthSwapchainCreateInfoMETA, &gEnvironmentDepthSwapchainMETA);
+      gCreateEnvironmentDepthSwapchainMETA(
+        gEnvironmentDepthProviderMETA,
+        &gEnvironmentDepthSwapchainCreateInfoMETA,
+        &gEnvironmentDepthSwapchainMETA
+      );
 
       // Once the swapchain is created the resolution can be queried by calling xrGetEnvironmentDepthSwapchainStateMETA:
 
@@ -4028,7 +5255,12 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
 
       gEnvironmentDepthSwapChainLength = 0;
 
-      gEnumerateEnvironmentDepthSwapchainImagesMETA(gEnvironmentDepthSwapchainMETA, 0, &gEnvironmentDepthSwapChainLength, nullptr);
+      gEnumerateEnvironmentDepthSwapchainImagesMETA(
+        gEnvironmentDepthSwapchainMETA,
+        0,
+        &gEnvironmentDepthSwapChainLength,
+        nullptr
+      );
 
       //struct XrSwapchainImageVulkanKHR
       //{
@@ -4045,7 +5277,12 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
         gEnvironmentDepthImages.push_back(swapchainImageVulkanKHR);
       }
 
-      gEnumerateEnvironmentDepthSwapchainImagesMETA(gEnvironmentDepthSwapchainMETA, gEnvironmentDepthSwapChainLength, &gEnvironmentDepthSwapChainLength, (XrSwapchainImageBaseHeader*)gEnvironmentDepthImages.data() );
+      gEnumerateEnvironmentDepthSwapchainImagesMETA(
+        gEnvironmentDepthSwapchainMETA,
+        gEnvironmentDepthSwapChainLength,
+        &gEnvironmentDepthSwapChainLength,
+        (XrSwapchainImageBaseHeader*)gEnvironmentDepthImages.data()
+      );
 
       gEnvironmentDepthTextures.empty();
 
@@ -4097,7 +5334,11 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
       // };
 
 #if 0
-      XrEnvironmentDepthImageAcquireInfoMETA environmentDepthImageAcquireInfoMETA {XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_ACQUIRE_INFO_META};
+      XrEnvironmentDepthImageAcquireInfoMETA environmentDepthImageAcquireInfoMETA
+      {
+        XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_ACQUIRE_INFO_META
+      };
+
       environmentDepthImageAcquireInfoMETA.next = 0;
       environmentDepthImageAcquireInfoMETA.space = gOpenXrProgramXrSpace;
       environmentDepthImageAcquireInfoMETA.displayTime = frameState.predictedDisplayTime;
@@ -4108,7 +5349,11 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
       environmentDepthImageMETA.views[0].type = XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_VIEW_META;
       environmentDepthImageMETA.views[1].type = XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_VIEW_META;
 
-      gAcquireEnvironmentDepthImageMETA(gEnvironmentDepthProviderMETA, &environmentDepthImageAcquireInfoMETA, &environmentDepthImageMETA);
+      gAcquireEnvironmentDepthImageMETA(
+        gEnvironmentDepthProviderMETA,
+        &environmentDepthImageAcquireInfoMETA,
+        &environmentDepthImageMETA
+      );
 #endif
 
       // The space field should be set to the XrSpace you want the space to be of the returned pose which the depth map
@@ -4581,7 +5826,11 @@ void anagOnInputQueueDestroyed(ANativeActivity* activity, AInputQueue* queue)
   anag_android_app_set_input(app, 0);
 }
 
-extern "C" __attribute__ ( (visibility ("default") ) ) void ANativeActivity_onCreate(ANativeActivity* activity, void* savedState, size_t savedStateSize)
+extern "C" __attribute__ ( (visibility ("default") ) ) void ANativeActivity_onCreate(
+  ANativeActivity* activity,
+  void* savedState,
+  size_t savedStateSize
+)
 {
   ANAG_LOGV("Creating: %p", activity);
 

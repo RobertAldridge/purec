@@ -35,9 +35,15 @@ const bool VulkanTutorialEnableValidationLayers = false;
 const bool VulkanTutorialEnableValidationLayers = true;
 #endif
 
-const std::vector<uint16_t> VulkanTutorialIndices = {0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4};
+const std::vector<uint16_t> VulkanTutorialIndices =
+{
+  0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4
+};
 
-const std::vector<VkFormat> VulkanTutorialDepthFormatCandidates = {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT};
+const std::vector<VkFormat> VulkanTutorialDepthFormatCandidates =
+{
+  VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT
+};
 
 //////////
 
@@ -142,7 +148,10 @@ void VulkanTutorialCleanupSwapChain(
   VkImageView& depthImageView
 );
 
-VulkanTutorialSwapChainSupportDetails VulkanTutorialQuerySwapChainSupport(VkPhysicalDevice physicalDevice, VkSurfaceKHR& surface);
+VulkanTutorialSwapChainSupportDetails VulkanTutorialQuerySwapChainSupport(
+  VkPhysicalDevice physicalDevice,
+  VkSurfaceKHR& surface
+);
 
 VkSurfaceFormatKHR VulkanTutorialChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 
@@ -150,7 +159,10 @@ VkPresentModeKHR VulkanTutorialChooseSwapPresentMode(const std::vector<VkPresent
 
 VkExtent2D VulkanTutorialChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
-VulkanTutorialQueueFamilyIndices VulkanTutorialFindQueueFamilies(VkPhysicalDevice physicalDevice, VkSurfaceKHR& surface);
+VulkanTutorialQueueFamilyIndices VulkanTutorialFindQueueFamilies(
+  VkPhysicalDevice physicalDevice,
+  VkSurfaceKHR& surface
+);
 
 bool VulkanTutorialCheckDeviceExtensionSupport(VkPhysicalDevice physicalDevice);
 
@@ -166,7 +178,12 @@ void VulkanTutorialCreateSwapChain(
   VkExtent2D& swapChainExtent
 );
 
-void VulkanTutorialCreateImageViews(VkDevice& device, std::vector<VkImage>& swapChainImages, VkFormat& swapChainImageFormat, std::vector<VkImageView>& swapChainImageViews);
+void VulkanTutorialCreateImageViews(
+  VkDevice& device,
+  std::vector<VkImage>& swapChainImages,
+  VkFormat& swapChainImageFormat,
+  std::vector<VkImageView>& swapChainImageViews
+);
 
 void VulkanTutorialRecreateSwapChain(
   VkDevice& device,
@@ -184,8 +201,17 @@ void VulkanTutorialRecreateSwapChain(
   VkImageView& depthImageView
 );
 
-VkResult VulkanTutorialCreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
+VkResult VulkanTutorialCreateDebugUtilsMessengerEXT(
+  VkInstance instance,
+  const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+  const VkAllocationCallbacks* pAllocator,
+  VkDebugUtilsMessengerEXT* pDebugMessenger
+);
 
-void VulkanTutorialDestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
+void VulkanTutorialDestroyDebugUtilsMessengerEXT(
+  VkInstance instance,
+  VkDebugUtilsMessengerEXT debugMessenger,
+  const VkAllocationCallbacks* pAllocator
+);
 
 bool VulkanTutorialQueueFamilyIndices_isComplete(VulkanTutorialQueueFamilyIndices _this);
