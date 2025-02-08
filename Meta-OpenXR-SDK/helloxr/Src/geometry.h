@@ -27,17 +27,28 @@ constexpr XrVector3f RBF {0.5f, -0.5f, 0.5f};
 constexpr XrVector3f RTB {0.5f, 0.5f, -0.5f};
 constexpr XrVector3f RTF {0.5f, 0.5f, 0.5f};
 
-#define CUBE_SIDE(V1, V2, V3, V4, V5, V6, COLOR) \
-  {V1, COLOR}, {V2, COLOR}, {V3, COLOR}, {V4, COLOR}, {V5, COLOR}, {V6, COLOR}
+//#define CUBE_SIDE(V1, V2, V3, V4, V5, V6, COLOR) \
+//  {V1, COLOR}, {V2, COLOR}, {V3, COLOR}, {V4, COLOR}, {V5, COLOR}, {V6, COLOR}
 
 constexpr Vertex c_cubeVertices[] =
 {
-  CUBE_SIDE(LTB, LBF, LBB, LTB, LTF, LBF, DarkRed), // -X
-  CUBE_SIDE(RTB, RBB, RBF, RTB, RBF, RTF, Red), // +X
-  CUBE_SIDE(LBB, LBF, RBF, LBB, RBF, RBB, DarkGreen), // -Y
-  CUBE_SIDE(LTB, RTB, RTF, LTB, RTF, LTF, Green), // +Y
-  CUBE_SIDE(LBB, RBB, RTB, LBB, RTB, LTB, DarkBlue), // -Z
-  CUBE_SIDE(LBF, LTF, RTF, LBF, RTF, RBF, Blue) // +Z
+  // -X
+  {LTB, DarkRed}, {LBF, DarkRed}, {LBB, DarkRed}, {LTB, DarkRed}, {LTF, DarkRed}, {LBF, DarkRed},
+
+  // +X
+  {RTB, Red}, {RBB, Red}, {RBF, Red}, {RTB, Red}, {RBF, Red}, {RTF, Red},
+
+  // -Y
+  {LBB, DarkGreen}, {LBF, DarkGreen}, {RBF, DarkGreen}, {LBB, DarkGreen}, {RBF, DarkGreen}, {RBB, DarkGreen},
+
+  // +Y
+  {LTB, Green}, {RTB, Green}, {RTF, Green}, {LTB, Green}, {RTF, Green}, {LTF, Green},
+
+  // -Z
+  {LBB, DarkBlue}, {RBB, DarkBlue}, {RTB, DarkBlue}, {LBB, DarkBlue}, {RTB, DarkBlue}, {LTB, DarkBlue},
+
+  // +Z
+  {LBF, Blue}, {LTF, Blue}, {RTF, Blue}, {LBF, Blue}, {RTF, Blue}, {RBF, Blue}
 };
 
 // Winding order is clockwise. Each side uses a different color.

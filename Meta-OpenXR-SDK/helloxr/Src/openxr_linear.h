@@ -883,16 +883,19 @@ inline static void XrMatrix4x4f_TransformBounds(
 
   const XrVector3f extents = {maxs->x - center.x, maxs->y - center.y, maxs->z - center.z};
 
-  const XrVector3f newCenter = {
+  const XrVector3f newCenter =
+  {
     matrix->m[0] * center.x + matrix->m[4] * center.y + matrix->m[8] * center.z + matrix->m[12],
     matrix->m[1] * center.x + matrix->m[5] * center.y + matrix->m[9] * center.z + matrix->m[13],
     matrix->m[2] * center.x + matrix->m[6] * center.y + matrix->m[10] * center.z + matrix->m[14]
   };
 
-  const XrVector3f newExtents = {
+  const XrVector3f newExtents =
+  {
     fabsf(extents.x * matrix->m[0] ) + fabsf(extents.y * matrix->m[4] ) + fabsf(extents.z * matrix->m[8] ),
     fabsf(extents.x * matrix->m[1] ) + fabsf(extents.y * matrix->m[5] ) + fabsf(extents.z * matrix->m[9] ),
-    fabsf(extents.x * matrix->m[2] ) + fabsf(extents.y * matrix->m[6] ) + fabsf(extents.z * matrix->m[10] ) };
+    fabsf(extents.x * matrix->m[2] ) + fabsf(extents.y * matrix->m[6] ) + fabsf(extents.z * matrix->m[10] )
+  };
 
   XrVector3f_Sub(resultMins, &newCenter, &newExtents);
   XrVector3f_Add(resultMaxs, &newCenter, &newExtents);

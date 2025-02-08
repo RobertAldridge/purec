@@ -59,10 +59,11 @@ VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL vk_icdGetPhysicalDeviceProcAddr(VkInsta
 
 #define ICD_LOADER_MAGIC 0x01CDC0DE
 
-typedef union {
- uintptr_t loaderMagic;
- void *loaderData;
-} VK_LOADER_DATA;
+union VK_LOADER_DATA
+{
+  uintptr_t loaderMagic;
+  void *loaderData;
+};
 
 static inline void set_loader_magic_value(void *pNewObject)
 {

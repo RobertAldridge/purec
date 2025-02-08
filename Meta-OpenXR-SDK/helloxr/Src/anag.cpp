@@ -182,13 +182,13 @@ int8_t anag_android_app_read_cmd(struct android_app* app)
   if(read(app->msgread, &cmd, sizeof(cmd) ) != sizeof(cmd) )
   {
     ANAG_LOGE("No data on command pipe!");
-  return -1;
+    return -1;
   }
 
   if(cmd == APP_CMD_SAVE_STATE)
     anag_free_saved_state(app);
 
-    return cmd;
+  return cmd;
 }
 
 void anag_print_cur_config(struct android_app* app)
@@ -477,8 +477,7 @@ try
   app->userData = &appState;
   app->onAppCmd = anag_app_handle_cmd;
 
-  if( !AnagUpdateOptionsFromSystemProperties() )
-    return 0;
+  AnagUpdateOptionsFromSystemProperties();
 
   instanceCreateInfoAndroid.applicationVM = app->activity->vm;
   instanceCreateInfoAndroid.applicationActivity = app->activity->clazz;
@@ -2084,12 +2083,63 @@ struct VkExtensionProperties
     //VertexBufferBase_VertexBufferBaseAllocateBufferMemory(gVertexBufferBaseIdxBuf, &gVertexBufferBaseIdxMem);
     //void VertexBufferBase_VertexBufferBaseAllocateBufferMemory(VkBuffer buf, VkDeviceMemory* mem)
     {
-      VkMemoryRequirements memReq = {};
+      VkMemoryRequirements memReqs = {};
 
       if(tableVk.GetBufferMemoryRequirements)
-        tableVk.GetBufferMemoryRequirements(gVkDevice, gVertexBufferBaseIdxBuf, &memReq);
+        tableVk.GetBufferMemoryRequirements(gVkDevice, gVertexBufferBaseIdxBuf, &memReqs);
 
-      MemoryAllocator_MemoryAllocatorAllocate(memReq, &gVertexBufferBaseIdxMem);
+// MemoryAllocator_MemoryAllocatorAllocate
+      // MemoryAllocator_MemoryAllocatorAllocate(memReqs, &gVertexBufferBaseIdxMem);
+      //
+      // void MemoryAllocator_MemoryAllocatorAllocate(
+      //   VkMemoryRequirements const& memReqs,
+      //   VkDeviceMemory* mem,
+      //   VkFlags flags = MemoryAllocator_m_memoryAllocatorDefaultFlags,
+      //   void* pNext = nullptr
+      // );
+      //
+      // void MemoryAllocator_MemoryAllocatorAllocate(
+      //   VkMemoryRequirements const& memReqs,
+      //   VkDeviceMemory* mem,
+      //   VkFlags flags,
+      //   void* pNext
+      // )
+      {
+        bool foundMemoryAvailability = false;
+
+        // Search memtypes to find first offset with those properties
+        for(uint32_t offsetMemory = 0; offsetMemory < gMemoryAllocatorMemoryProperties.memoryTypeCount; offsetMemory++)
+        {
+          if(memReqs.memoryTypeBits & (1 << offsetMemory) )
+          {
+            // Type is available, does it match user properties?
+            if(
+              (gMemoryAllocatorMemoryProperties.memoryTypes[offsetMemory].propertyFlags &
+                MemoryAllocator_m_memoryAllocatorDefaultFlags
+              ) ==
+              MemoryAllocator_m_memoryAllocatorDefaultFlags
+            )
+            {
+              VkMemoryAllocateInfo memAlloc {VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr};
+
+              memAlloc.allocationSize = memReqs.size;
+              memAlloc.memoryTypeIndex = offsetMemory;
+
+              if(tableVk.AllocateMemory)
+                CHECK_VULKANCMD(tableVk.AllocateMemory(gVkDevice, &memAlloc, nullptr, &gVertexBufferBaseIdxMem) );
+
+              foundMemoryAvailability = true;
+
+              break;
+            }
+          }
+        }
+
+        if( !foundMemoryAvailability)
+          THROW_CHECK("Memory format not supported");
+      }
+// MemoryAllocator_MemoryAllocatorAllocate
+
     }
 
     if(tableVk.BindBufferMemory)
@@ -2104,12 +2154,63 @@ struct VkExtensionProperties
     //VertexBufferBase_VertexBufferBaseAllocateBufferMemory(gVertexBufferBaseVtxBuf, &gVertexBufferBaseVtxMem);
     //void VertexBufferBase_VertexBufferBaseAllocateBufferMemory(VkBuffer buf, VkDeviceMemory* mem)
     {
-      VkMemoryRequirements memReq = {};
+      VkMemoryRequirements memReqs = {};
 
       if(tableVk.GetBufferMemoryRequirements)
-        tableVk.GetBufferMemoryRequirements(gVkDevice, gVertexBufferBaseVtxBuf, &memReq);
+        tableVk.GetBufferMemoryRequirements(gVkDevice, gVertexBufferBaseVtxBuf, &memReqs);
 
-      MemoryAllocator_MemoryAllocatorAllocate(memReq, &gVertexBufferBaseVtxMem);
+// MemoryAllocator_MemoryAllocatorAllocate
+      // MemoryAllocator_MemoryAllocatorAllocate(memReqs, &gVertexBufferBaseVtxMem);
+      //
+      // void MemoryAllocator_MemoryAllocatorAllocate(
+      //   VkMemoryRequirements const& memReqs,
+      //   VkDeviceMemory* mem,
+      //   VkFlags flags = MemoryAllocator_m_memoryAllocatorDefaultFlags,
+      //   void* pNext = nullptr
+      // );
+      //
+      // void MemoryAllocator_MemoryAllocatorAllocate(
+      //   VkMemoryRequirements const& memReqs,
+      //   VkDeviceMemory* mem,
+      //   VkFlags flags,
+      //   void* pNext
+      // )
+      {
+        bool foundMemoryAvailability = false;
+
+        // Search memtypes to find first offset with those properties
+        for(uint32_t offsetMemory = 0; offsetMemory < gMemoryAllocatorMemoryProperties.memoryTypeCount; offsetMemory++)
+        {
+          if(memReqs.memoryTypeBits & (1 << offsetMemory) )
+          {
+            // Type is available, does it match user properties?
+            if(
+              (gMemoryAllocatorMemoryProperties.memoryTypes[offsetMemory].propertyFlags &
+                MemoryAllocator_m_memoryAllocatorDefaultFlags
+              ) ==
+              MemoryAllocator_m_memoryAllocatorDefaultFlags
+            )
+            {
+              VkMemoryAllocateInfo memAlloc {VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr};
+
+              memAlloc.allocationSize = memReqs.size;
+              memAlloc.memoryTypeIndex = offsetMemory;
+
+              if(tableVk.AllocateMemory)
+                CHECK_VULKANCMD(tableVk.AllocateMemory(gVkDevice, &memAlloc, nullptr, &gVertexBufferBaseVtxMem) );
+
+              foundMemoryAvailability = true;
+
+              break;
+            }
+          }
+        }
+
+        if( !foundMemoryAvailability)
+          THROW_CHECK("Memory format not supported");
+      }
+// MemoryAllocator_MemoryAllocatorAllocate
+
     }
 
     if(tableVk.BindBufferMemory)
@@ -3078,11 +3179,72 @@ struct VkExtensionProperties
               );
             }
 
-            MemoryAllocator_MemoryAllocatorAllocate(
-              memRequirements,
-              &m_swapchainImageContext_depthBufferDepthMemory[indice],
-              VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
-            );
+// MemoryAllocator_MemoryAllocatorAllocate
+            // MemoryAllocator_MemoryAllocatorAllocate(
+            //   memRequirements,
+            //   &m_swapchainImageContext_depthBufferDepthMemory[indice],
+            //   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+            // );
+            //
+            // void MemoryAllocator_MemoryAllocatorAllocate(
+            //   VkMemoryRequirements const& memReqs,
+            //   VkDeviceMemory* mem,
+            //   VkFlags flags = MemoryAllocator_m_memoryAllocatorDefaultFlags,
+            //   void* pNext = nullptr
+            // );
+            //
+            // void MemoryAllocator_MemoryAllocatorAllocate(
+            //   VkMemoryRequirements const& memReqs,
+            //   VkDeviceMemory* mem,
+            //   VkFlags flags,
+            //   void* pNext
+            // )
+            {
+              bool foundMemoryAvailability = false;
+
+              // Search memtypes to find first offset with those properties
+              for(
+                uint32_t offsetMemory = 0;
+                offsetMemory < gMemoryAllocatorMemoryProperties.memoryTypeCount;
+                offsetMemory++
+              )
+              {
+                if(memRequirements.memoryTypeBits & (1 << offsetMemory) )
+                {
+                  // Type is available, does it match user properties?
+                  if(
+                    (gMemoryAllocatorMemoryProperties.memoryTypes[offsetMemory].propertyFlags &
+                      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT/*flags*/
+                    ) ==
+                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT/*flags*/
+                  )
+                  {
+                    VkMemoryAllocateInfo memAlloc {VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr/*pNext*/};
+
+                    memAlloc.allocationSize = memRequirements.size;
+                    memAlloc.memoryTypeIndex = offsetMemory;
+
+                    if(tableVk.AllocateMemory)
+                    {
+                      CHECK_VULKANCMD(tableVk.AllocateMemory(
+                        gVkDevice,
+                        &memAlloc,
+                        nullptr,
+                        &m_swapchainImageContext_depthBufferDepthMemory[indice]/*mem*/
+                      ) );
+                    }
+
+                    foundMemoryAvailability = true;
+
+                    break;
+                  }
+                }
+              }
+
+              if( !foundMemoryAvailability)
+                THROW_CHECK("Memory format not supported");
+            }
+// MemoryAllocator_MemoryAllocatorAllocate
 
 #if defined(VULKAN_DEBUG_OBJECT_NAMER)
             CHECK_VULKANCMD(m_swapchainImageContextNamer[indice].SetName(
@@ -5126,7 +5288,10 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
       gEnvironmentDepthSwapchainStateMETA.width = 0;
       gEnvironmentDepthSwapchainStateMETA.height = 0;
 
-      tableXr.GetEnvironmentDepthSwapchainStateMETA(gEnvironmentDepthSwapchainMETA, &gEnvironmentDepthSwapchainStateMETA);
+      tableXr.GetEnvironmentDepthSwapchainStateMETA(
+        gEnvironmentDepthSwapchainMETA,
+        &gEnvironmentDepthSwapchainStateMETA
+      );
 
       // In the same way as for a regular XrSwapchain, the XrEnvironmentDepthSwapchainMETA needs to be “enumerated” into
       // a graphics API specific array of texture handles. This is done by calling

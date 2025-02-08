@@ -178,37 +178,6 @@ std::string BlahVkResultString(VkResult res)
   }
 }
 
-void MemoryAllocator_MemoryAllocatorAllocate(
-  VkMemoryRequirements const& memReqs,
-  VkDeviceMemory* mem,
-  VkFlags flags,
-  void* pNext
-)
-{
-  // Search memtypes to find first offset with those properties
-  for(uint32_t offset = 0; offset < gMemoryAllocatorMemoryProperties.memoryTypeCount; offset++)
-  {
-    if(memReqs.memoryTypeBits & (1 << offset) )
-    {
-      // Type is available, does it match user properties?
-      if( (gMemoryAllocatorMemoryProperties.memoryTypes[offset].propertyFlags & flags) == flags)
-      {
-        VkMemoryAllocateInfo memAlloc {VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, pNext};
-
-        memAlloc.allocationSize = memReqs.size;
-        memAlloc.memoryTypeIndex = offset;
-
-        if(tableVk.AllocateMemory)
-          CHECK_VULKANCMD(tableVk.AllocateMemory(gVkDevice, &memAlloc, nullptr, mem) );
-
-        return;
-      }
-    }
-  }
-
-  THROW_CHECK("Memory format not supported");
-}
-
 #if 0
 void CmdBuffer_CmdBuffer_Destructor()
 {

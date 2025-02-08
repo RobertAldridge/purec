@@ -12,7 +12,14 @@
 //{ \
 //  if(gCmdBufferState != (s) ) \
 //  { \
-//    Log::Write(Log::Level::Error, std::string("Expecting state " #s " from ") + __FUNCTION__ + ", in " + CmdBuffer_CmdBufferStateString(gCmdBufferState) ); \
+//    Log::Write( \
+//      Log::Level::Error, \
+//      std::string("Expecting state " #s " from ") + \
+//        __FUNCTION__ + \
+//        ", in " + \
+//        CmdBuffer_CmdBufferStateString(gCmdBufferState) \
+//    ); \
+// \
 //    return false; \
 //  } \
 // \
@@ -39,7 +46,8 @@ struct VertexBufferBaseBlah
   uint32_t vtx;
 };
 
-constexpr VkFlags MemoryAllocator_m_memoryAllocatorDefaultFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+constexpr VkFlags MemoryAllocator_m_memoryAllocatorDefaultFlags =
+  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
 extern VkPipelineLayout gVkPipelineLayout;
 
@@ -102,7 +110,8 @@ extern XrGraphicsBindingVulkan2KHR gVulkanGraphicsPluginXrGraphicsBindingVulkan2
 //std::vector<SwapchainImageContext*> gVulkanGraphicsPluginStdList_SwapchainImageContext;
 extern std::vector<int> gVulkanGraphicsPluginStdList_SwapchainImageContext;
 
-extern std::map<const XrSwapchainImageBaseHeader*, int> gVulkanGraphicsPluginStdMap_XrSwapchainImageBaseHeader_SwapchainImageContext;
+extern std::map<const XrSwapchainImageBaseHeader*, int>
+  gVulkanGraphicsPluginStdMap_XrSwapchainImageBaseHeader_SwapchainImageContext;
 
 #if defined(VULKAN_DEBUG_OBJECT_NAMER)
 extern VulkanDebugObjectNamer gVulkanGraphicsPluginVulkanDebugObjectNamer;
@@ -330,7 +339,9 @@ R"_(
     cubeDepth = cubeDepth * 0.5f + 0.5f;
 
     // Test virtual object depth with environment depth.
-    // If the virtual object is further away (occluded) output a transparent color so real scene content from PT layer is displayed.
+    //
+    // If the virtual object is further away (occluded) output a transparent color so real scene content from PT layer
+    // is displayed.
     outColor = fragmentColor;
 
     if(cubeDepth < depthViewEyeZ)
@@ -352,7 +363,11 @@ R"_(
 
 std::string BlahVkResultString(VkResult res);
 
-[ [noreturn] ] inline void ThrowVkResult(VkResult res, const char* originator = nullptr, const char* sourceLocation = nullptr)
+[ [noreturn] ] inline void ThrowVkResult(
+  VkResult res,
+  const char* originator = nullptr,
+  const char* sourceLocation = nullptr
+)
 {
   ThrowCheck(Fmt("VkResult failure [%s]", BlahVkResultString(res).c_str() ), originator, sourceLocation);
 }
@@ -364,8 +379,6 @@ inline VkResult CheckVkResult(VkResult res, const char* originator = nullptr, co
 
   return res;
 }
-
-void MemoryAllocator_MemoryAllocatorAllocate(VkMemoryRequirements const& memReqs, VkDeviceMemory* mem, VkFlags flags = MemoryAllocator_m_memoryAllocatorDefaultFlags, void* pNext = nullptr);
 
 std::string CmdBuffer_CmdBufferStateString(CmdBufferStateEnum s);
 
@@ -380,10 +393,16 @@ void SwapchainImageContext_SwapchainImageContext_PipelineRelease(int index);
 void VulkanGraphicsPlugin_VulkanGraphicsPlugin_Destructor();
 
 #if 0
-// note: The output must not outlive the input - this modifies the input and returns a collection of views into that modified input!
+// note: The output must not outlive the input - this modifies the input and returns a collection of views into that
+// modified input!
 std::vector<const char*> VulkanGraphicsPlugin_VulkanGraphicsPluginParseExtensionString(char* names);
 #endif
 
-VKAPI_ATTR VkBool32 VKAPI_CALL VulkanGraphicsPlugin_debugMessageThunk(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* /*pUserData*/);
+VKAPI_ATTR VkBool32 VKAPI_CALL VulkanGraphicsPlugin_debugMessageThunk(
+  VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+  VkDebugUtilsMessageTypeFlagsEXT messageTypes,
+  const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+  void* /*pUserData*/
+);
 
 std::string VulkanGraphicsPlugin_BlahVkObjectTypeToString(VkObjectType objectType);
