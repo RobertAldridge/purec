@@ -97,26 +97,30 @@ enum VkIcdWsiPlatform
  VK_ICD_WSI_PLATFORM_FUCHSIA,
 };
 
-typedef struct {
- VkIcdWsiPlatform platform;
-} VkIcdSurfaceBase;
+struct VkIcdSurfaceBase
+{
+  VkIcdWsiPlatform platform;
+};
 
-typedef struct {
- VkIcdSurfaceBase base;
- struct ANativeWindow *window;
-} VkIcdSurfaceAndroid;
+struct VkIcdSurfaceAndroid
+{
+  VkIcdSurfaceBase base;
+  struct ANativeWindow* window;
+};
 
-typedef struct {
- VkIcdSurfaceBase base;
- VkDisplayModeKHR displayMode;
- uint32_t planeIndex;
- uint32_t planeStackIndex;
- VkSurfaceTransformFlagBitsKHR transform;
- float globalAlpha;
- VkDisplayPlaneAlphaFlagBitsKHR alphaMode;
- VkExtent2D imageExtent;
-} VkIcdSurfaceDisplay;
+struct VkIcdSurfaceDisplay
+{
+  VkIcdSurfaceBase base;
+  VkDisplayModeKHR displayMode;
+  uint32_t planeIndex;
+  uint32_t planeStackIndex;
+  VkSurfaceTransformFlagBitsKHR transform;
+  float globalAlpha;
+  VkDisplayPlaneAlphaFlagBitsKHR alphaMode;
+  VkExtent2D imageExtent;
+};
 
-typedef struct {
- VkIcdSurfaceBase base;
-} VkIcdSurfaceHeadless;
+struct VkIcdSurfaceHeadless
+{
+  VkIcdSurfaceBase base;
+};

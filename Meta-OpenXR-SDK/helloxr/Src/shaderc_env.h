@@ -1,7 +1,7 @@
 
 // shaderc_env.h
 
-typedef enum
+enum shaderc_target_env
 {
   shaderc_target_env_vulkan, // SPIR-V under Vulkan semantics
   shaderc_target_env_opengl, // SPIR-V under OpenGL semantics
@@ -13,10 +13,9 @@ typedef enum
   shaderc_target_env_webgpu, // Deprecated, SPIR-V under WebGPU
   // semantics
   shaderc_target_env_default = shaderc_target_env_vulkan
+};
 
-}shaderc_target_env;
-
-typedef enum
+enum shaderc_env_version
 {
   // For Vulkan, use Vulkan's mapping of version numbers to integers.
   // See vulkan.h
@@ -29,12 +28,11 @@ typedef enum
   // See glslang/Standalone/Standalone.cpp
   // TODO(dneto): Glslang doesn't accept a OpenGL client version of 460.
   shaderc_env_version_opengl_4_5 = 450,
-  shaderc_env_version_webgpu, // Deprecated, WebGPU env never defined versions
-
-}shaderc_env_version;
+  shaderc_env_version_webgpu // Deprecated, WebGPU env never defined versions
+};
 
 // The known versions of SPIR-V.
-typedef enum
+enum shaderc_spirv_version
 {
   // Use the values used for word 1 of a SPIR-V binary:
   // - bits 24 to 31: zero
@@ -48,5 +46,4 @@ typedef enum
   shaderc_spirv_version_1_4 = 0x010400u,
   shaderc_spirv_version_1_5 = 0x010500u,
   shaderc_spirv_version_1_6 = 0x010600u
-
-}shaderc_spirv_version;
+};

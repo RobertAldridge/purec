@@ -1661,21 +1661,21 @@ VK_VALVE_MUTABLE_DESCRIPTOR_TYPE_EXTENSION_NAME "VK_VALVE_mutable_descriptor_typ
         CHECK_VULKANCMD(tableVk.EnumerateInstanceExtensionProperties(layerName, &instanceExtensionCount, nullptr) );
 
 #if 0
-typedef struct XrExtensionProperties
+struct XrExtensionProperties
 {
   XrStructureType type;
   void* XR_MAY_ALIAS next;
   char extensionName[XR_MAX_EXTENSION_NAME_SIZE];
   uint32_t extensionVersion;
 
-}XrExtensionProperties;
+};
 
-typedef struct VkExtensionProperties
+struct VkExtensionProperties
 {
   char extensionName[VK_MAX_EXTENSION_NAME_SIZE];
   uint32_t specVersion;
 
-}VkExtensionProperties;
+};
 #endif
 
       //std::vector<XrExtensionProperties> extensions(instanceExtensionCount, {XR_TYPE_EXTENSION_PROPERTIES} );
