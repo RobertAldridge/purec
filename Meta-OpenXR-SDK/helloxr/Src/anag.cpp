@@ -3489,6 +3489,41 @@ struct VkExtensionProperties
             pipeInfo.renderPass = m_swapchainImageContext_renderPassPass[indice];
             pipeInfo.subpass = 0;
 
+#if 0
+            struct VkBindBufferMemoryInfo
+            {
+              VkStructureType sType;
+              const void* pNext;
+              VkBuffer buffer;
+              VkDeviceMemory memory;
+              VkDeviceSize memoryOffset;
+            };
+
+            struct VkGraphicsPipelineCreateInfo
+            {
+              VkStructureType sType;
+              const void* pNext;
+              VkPipelineCreateFlags flags;
+              uint32_t stageCount;
+              const VkPipelineShaderStageCreateInfo* pStages;
+              const VkPipelineVertexInputStateCreateInfo* pVertexInputState;
+              const VkPipelineInputAssemblyStateCreateInfo* pInputAssemblyState;
+              const VkPipelineTessellationStateCreateInfo* pTessellationState;
+              const VkPipelineViewportStateCreateInfo* pViewportState;
+              const VkPipelineRasterizationStateCreateInfo* pRasterizationState;
+              const VkPipelineMultisampleStateCreateInfo* pMultisampleState;
+              const VkPipelineDepthStencilStateCreateInfo* pDepthStencilState;
+              const VkPipelineColorBlendStateCreateInfo* pColorBlendState;
+              const VkPipelineDynamicStateCreateInfo* pDynamicState;
+              VkPipelineLayout layout;
+              VkRenderPass renderPass;
+              uint32_t subpass;
+              VkPipeline basePipelineHandle;
+              int32_t basePipelineIndex;
+            };
+#endif
+
+// VkResult vkCreateGraphicsPipelines(VkDevice device, VkPipelineCache pipelineCache, uint32_t createInfoCount, const VkGraphicsPipelineCreateInfo* pCreateInfos, const VkAllocationCallbacks* pAllocator, VkPipeline* pPipelines);
             if(tableVk.CreateGraphicsPipelines)
             {
               CHECK_VULKANCMD(tableVk.CreateGraphicsPipelines(

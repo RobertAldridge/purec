@@ -497,20 +497,22 @@ typedef VkPhysicalDeviceDynamicRenderingFeatures VkPhysicalDeviceDynamicRenderin
 
 typedef VkCommandBufferInheritanceRenderingInfo VkCommandBufferInheritanceRenderingInfoKHR;
 
-typedef struct VkRenderingFragmentShadingRateAttachmentInfoKHR {
- VkStructureType sType;
- const void* pNext;
- VkImageView imageView;
- VkImageLayout imageLayout;
- VkExtent2D shadingRateAttachmentTexelSize;
-} VkRenderingFragmentShadingRateAttachmentInfoKHR;
+struct VkRenderingFragmentShadingRateAttachmentInfoKHR
+{
+  VkStructureType sType;
+  const void* pNext;
+  VkImageView imageView;
+  VkImageLayout imageLayout;
+  VkExtent2D shadingRateAttachmentTexelSize;
+};
 
-typedef struct VkRenderingFragmentDensityMapAttachmentInfoEXT {
- VkStructureType sType;
- const void* pNext;
- VkImageView imageView;
- VkImageLayout imageLayout;
-} VkRenderingFragmentDensityMapAttachmentInfoEXT;
+struct VkRenderingFragmentDensityMapAttachmentInfoEXT
+{
+  VkStructureType sType;
+  const void* pNext;
+  VkImageView imageView;
+  VkImageLayout imageLayout;
+};
 
 typedef struct VkAttachmentSampleCountInfoAMD {
  VkStructureType sType;
@@ -2850,53 +2852,61 @@ typedef struct VkVideoInlineQueryInfoKHR {
 #define VK_KHR_vertex_attribute_divisor 1
 #define VK_KHR_VERTEX_ATTRIBUTE_DIVISOR_SPEC_VERSION 1
 #define VK_KHR_VERTEX_ATTRIBUTE_DIVISOR_EXTENSION_NAME "VK_KHR_vertex_attribute_divisor"
-typedef struct VkPhysicalDeviceVertexAttributeDivisorPropertiesKHR {
- VkStructureType sType;
- void* pNext;
- uint32_t maxVertexAttribDivisor;
- VkBool32 supportsNonZeroFirstInstance;
-} VkPhysicalDeviceVertexAttributeDivisorPropertiesKHR;
 
-typedef struct VkVertexInputBindingDivisorDescriptionKHR {
- uint32_t binding;
- uint32_t divisor;
-} VkVertexInputBindingDivisorDescriptionKHR;
+struct VkPhysicalDeviceVertexAttributeDivisorPropertiesKHR
+{
+  VkStructureType sType;
+  void* pNext;
+  uint32_t maxVertexAttribDivisor;
+  VkBool32 supportsNonZeroFirstInstance;
+};
 
-typedef struct VkPipelineVertexInputDivisorStateCreateInfoKHR {
- VkStructureType sType;
- const void* pNext;
- uint32_t vertexBindingDivisorCount;
- const VkVertexInputBindingDivisorDescriptionKHR* pVertexBindingDivisors;
-} VkPipelineVertexInputDivisorStateCreateInfoKHR;
+struct VkVertexInputBindingDivisorDescriptionKHR
+{
+  uint32_t binding;
+  uint32_t divisor;
+};
 
-typedef struct VkPhysicalDeviceVertexAttributeDivisorFeaturesKHR {
- VkStructureType sType;
- void* pNext;
- VkBool32 vertexAttributeInstanceRateDivisor;
- VkBool32 vertexAttributeInstanceRateZeroDivisor;
-} VkPhysicalDeviceVertexAttributeDivisorFeaturesKHR;
+struct VkPipelineVertexInputDivisorStateCreateInfoKHR
+{
+  VkStructureType sType;
+  const void* pNext;
+  uint32_t vertexBindingDivisorCount;
+  const VkVertexInputBindingDivisorDescriptionKHR* pVertexBindingDivisors;
+};
+
+struct VkPhysicalDeviceVertexAttributeDivisorFeaturesKHR
+{
+  VkStructureType sType;
+  void* pNext;
+  VkBool32 vertexAttributeInstanceRateDivisor;
+  VkBool32 vertexAttributeInstanceRateZeroDivisor;
+};
 
 // VK_KHR_calibrated_timestamps is a preprocessor guard. Do not pass it to API calls.
 #define VK_KHR_calibrated_timestamps 1
 #define VK_KHR_CALIBRATED_TIMESTAMPS_SPEC_VERSION 1
 #define VK_KHR_CALIBRATED_TIMESTAMPS_EXTENSION_NAME "VK_KHR_calibrated_timestamps"
 
-typedef enum VkTimeDomainKHR {
- VK_TIME_DOMAIN_DEVICE_KHR = 0,
- VK_TIME_DOMAIN_CLOCK_MONOTONIC_KHR = 1,
- VK_TIME_DOMAIN_CLOCK_MONOTONIC_RAW_KHR = 2,
- VK_TIME_DOMAIN_QUERY_PERFORMANCE_COUNTER_KHR = 3,
- VK_TIME_DOMAIN_DEVICE_EXT = VK_TIME_DOMAIN_DEVICE_KHR,
- VK_TIME_DOMAIN_CLOCK_MONOTONIC_EXT = VK_TIME_DOMAIN_CLOCK_MONOTONIC_KHR,
- VK_TIME_DOMAIN_CLOCK_MONOTONIC_RAW_EXT = VK_TIME_DOMAIN_CLOCK_MONOTONIC_RAW_KHR,
- VK_TIME_DOMAIN_QUERY_PERFORMANCE_COUNTER_EXT = VK_TIME_DOMAIN_QUERY_PERFORMANCE_COUNTER_KHR,
- VK_TIME_DOMAIN_MAX_ENUM_KHR = 0x7FFFFFFF
-} VkTimeDomainKHR;
-typedef struct VkCalibratedTimestampInfoKHR {
- VkStructureType sType;
- const void* pNext;
- VkTimeDomainKHR timeDomain;
-} VkCalibratedTimestampInfoKHR;
+enum VkTimeDomainKHR
+{
+  VK_TIME_DOMAIN_DEVICE_KHR = 0,
+  VK_TIME_DOMAIN_CLOCK_MONOTONIC_KHR = 1,
+  VK_TIME_DOMAIN_CLOCK_MONOTONIC_RAW_KHR = 2,
+  VK_TIME_DOMAIN_QUERY_PERFORMANCE_COUNTER_KHR = 3,
+  VK_TIME_DOMAIN_DEVICE_EXT = VK_TIME_DOMAIN_DEVICE_KHR,
+  VK_TIME_DOMAIN_CLOCK_MONOTONIC_EXT = VK_TIME_DOMAIN_CLOCK_MONOTONIC_KHR,
+  VK_TIME_DOMAIN_CLOCK_MONOTONIC_RAW_EXT = VK_TIME_DOMAIN_CLOCK_MONOTONIC_RAW_KHR,
+  VK_TIME_DOMAIN_QUERY_PERFORMANCE_COUNTER_EXT = VK_TIME_DOMAIN_QUERY_PERFORMANCE_COUNTER_KHR,
+  VK_TIME_DOMAIN_MAX_ENUM_KHR = 0x7FFFFFFF
+};
+
+struct VkCalibratedTimestampInfoKHR
+{
+  VkStructureType sType;
+  const void* pNext;
+  VkTimeDomainKHR timeDomain;
+};
 
 typedef VkResult (VKAPI_PTR *PFN_vkGetPhysicalDeviceCalibrateableTimeDomainsKHR)(VkPhysicalDevice physicalDevice, uint32_t* pTimeDomainCount, VkTimeDomainKHR* pTimeDomains);
 typedef VkResult (VKAPI_PTR *PFN_vkGetCalibratedTimestampsKHR)(VkDevice device, uint32_t timestampCount, const VkCalibratedTimestampInfoKHR* pTimestampInfos, uint64_t* pTimestamps, uint64_t* pMaxDeviation);
@@ -2919,6 +2929,7 @@ VKAPI_ATTR VkResult VKAPI_CALL vkGetCalibratedTimestampsKHR(
 #define VK_KHR_maintenance6 1
 #define VK_KHR_MAINTENANCE_6_SPEC_VERSION 1
 #define VK_KHR_MAINTENANCE_6_EXTENSION_NAME "VK_KHR_maintenance6"
+
 typedef struct VkPhysicalDeviceMaintenance6FeaturesKHR {
  VkStructureType sType;
  void* pNext;
@@ -2933,71 +2944,78 @@ typedef struct VkPhysicalDeviceMaintenance6PropertiesKHR {
  VkBool32 fragmentShadingRateClampCombinerInputs;
 } VkPhysicalDeviceMaintenance6PropertiesKHR;
 
-typedef struct VkBindMemoryStatusKHR {
- VkStructureType sType;
- const void* pNext;
- VkResult* pResult;
-} VkBindMemoryStatusKHR;
+struct VkBindMemoryStatusKHR
+{
+  VkStructureType sType;
+  const void* pNext;
+  VkResult* pResult;
+};
 
-typedef struct VkBindDescriptorSetsInfoKHR {
- VkStructureType sType;
- const void* pNext;
- VkShaderStageFlags stageFlags;
- VkPipelineLayout layout;
- uint32_t firstSet;
- uint32_t descriptorSetCount;
- const VkDescriptorSet* pDescriptorSets;
- uint32_t dynamicOffsetCount;
- const uint32_t* pDynamicOffsets;
-} VkBindDescriptorSetsInfoKHR;
+struct VkBindDescriptorSetsInfoKHR
+{
+  VkStructureType sType;
+  const void* pNext;
+  VkShaderStageFlags stageFlags;
+  VkPipelineLayout layout;
+  uint32_t firstSet;
+  uint32_t descriptorSetCount;
+  const VkDescriptorSet* pDescriptorSets;
+  uint32_t dynamicOffsetCount;
+  const uint32_t* pDynamicOffsets;
+};
 
-typedef struct VkPushConstantsInfoKHR {
- VkStructureType sType;
- const void* pNext;
- VkPipelineLayout layout;
- VkShaderStageFlags stageFlags;
- uint32_t offset;
- uint32_t size;
- const void* pValues;
-} VkPushConstantsInfoKHR;
+struct VkPushConstantsInfoKHR
+{
+  VkStructureType sType;
+  const void* pNext;
+  VkPipelineLayout layout;
+  VkShaderStageFlags stageFlags;
+  uint32_t offset;
+  uint32_t size;
+  const void* pValues;
+};
 
-typedef struct VkPushDescriptorSetInfoKHR {
- VkStructureType sType;
- const void* pNext;
- VkShaderStageFlags stageFlags;
- VkPipelineLayout layout;
- uint32_t set;
- uint32_t descriptorWriteCount;
- const VkWriteDescriptorSet* pDescriptorWrites;
-} VkPushDescriptorSetInfoKHR;
+struct VkPushDescriptorSetInfoKHR
+{
+  VkStructureType sType;
+  const void* pNext;
+  VkShaderStageFlags stageFlags;
+  VkPipelineLayout layout;
+  uint32_t set;
+  uint32_t descriptorWriteCount;
+  const VkWriteDescriptorSet* pDescriptorWrites;
+};
 
-typedef struct VkPushDescriptorSetWithTemplateInfoKHR {
- VkStructureType sType;
- const void* pNext;
- VkDescriptorUpdateTemplate descriptorUpdateTemplate;
- VkPipelineLayout layout;
- uint32_t set;
- const void* pData;
-} VkPushDescriptorSetWithTemplateInfoKHR;
+struct VkPushDescriptorSetWithTemplateInfoKHR
+{
+  VkStructureType sType;
+  const void* pNext;
+  VkDescriptorUpdateTemplate descriptorUpdateTemplate;
+  VkPipelineLayout layout;
+  uint32_t set;
+  const void* pData;
+};
 
-typedef struct VkSetDescriptorBufferOffsetsInfoEXT {
- VkStructureType sType;
- const void* pNext;
- VkShaderStageFlags stageFlags;
- VkPipelineLayout layout;
- uint32_t firstSet;
- uint32_t setCount;
- const uint32_t* pBufferIndices;
- const VkDeviceSize* pOffsets;
-} VkSetDescriptorBufferOffsetsInfoEXT;
+struct VkSetDescriptorBufferOffsetsInfoEXT
+{
+  VkStructureType sType;
+  const void* pNext;
+  VkShaderStageFlags stageFlags;
+  VkPipelineLayout layout;
+  uint32_t firstSet;
+  uint32_t setCount;
+  const uint32_t* pBufferIndices;
+  const VkDeviceSize* pOffsets;
+};
 
-typedef struct VkBindDescriptorBufferEmbeddedSamplersInfoEXT {
- VkStructureType sType;
- const void* pNext;
- VkShaderStageFlags stageFlags;
- VkPipelineLayout layout;
- uint32_t set;
-} VkBindDescriptorBufferEmbeddedSamplersInfoEXT;
+struct VkBindDescriptorBufferEmbeddedSamplersInfoEXT
+{
+  VkStructureType sType;
+  const void* pNext;
+  VkShaderStageFlags stageFlags;
+  VkPipelineLayout layout;
+  uint32_t set;
+};
 
 typedef void (VKAPI_PTR *PFN_vkCmdBindDescriptorSets2KHR)(VkCommandBuffer commandBuffer, const VkBindDescriptorSetsInfoKHR* pBindDescriptorSetsInfo);
 typedef void (VKAPI_PTR *PFN_vkCmdPushConstants2KHR)(VkCommandBuffer commandBuffer, const VkPushConstantsInfoKHR* pPushConstantsInfo);
@@ -3077,8 +3095,6 @@ typedef enum VkDebugReportObjectTypeEXT {
  VK_DEBUG_REPORT_OBJECT_TYPE_CU_FUNCTION_NVX_EXT = 1000029001,
  VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_KHR_EXT = 1000150000,
  VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_NV_EXT = 1000165000,
- VK_DEBUG_REPORT_OBJECT_TYPE_CUDA_MODULE_NV_EXT = 1000307000,
- VK_DEBUG_REPORT_OBJECT_TYPE_CUDA_FUNCTION_NV_EXT = 1000307001,
  VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_COLLECTION_FUCHSIA_EXT = 1000366000,
  VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_EXT = VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT_EXT,
  VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT = VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT_EXT,
@@ -4738,163 +4754,178 @@ typedef VkBuildAccelerationStructureFlagsKHR VkBuildAccelerationStructureFlagsNV
 
 typedef VkBuildAccelerationStructureFlagBitsKHR VkBuildAccelerationStructureFlagBitsNV;
 
-typedef struct VkRayTracingShaderGroupCreateInfoNV {
- VkStructureType sType;
- const void* pNext;
- VkRayTracingShaderGroupTypeKHR type;
- uint32_t generalShader;
- uint32_t closestHitShader;
- uint32_t anyHitShader;
- uint32_t intersectionShader;
-} VkRayTracingShaderGroupCreateInfoNV;
+struct VkRayTracingShaderGroupCreateInfoNV
+{
+  VkStructureType sType;
+  const void* pNext;
+  VkRayTracingShaderGroupTypeKHR type;
+  uint32_t generalShader;
+  uint32_t closestHitShader;
+  uint32_t anyHitShader;
+  uint32_t intersectionShader;
+};
 
-typedef struct VkRayTracingPipelineCreateInfoNV {
- VkStructureType sType;
- const void* pNext;
- VkPipelineCreateFlags flags;
- uint32_t stageCount;
- const VkPipelineShaderStageCreateInfo* pStages;
- uint32_t groupCount;
- const VkRayTracingShaderGroupCreateInfoNV* pGroups;
- uint32_t maxRecursionDepth;
- VkPipelineLayout layout;
- VkPipeline basePipelineHandle;
- int32_t basePipelineIndex;
-} VkRayTracingPipelineCreateInfoNV;
+struct VkRayTracingPipelineCreateInfoNV
+{
+  VkStructureType sType;
+  const void* pNext;
+  VkPipelineCreateFlags flags;
+  uint32_t stageCount;
+  const VkPipelineShaderStageCreateInfo* pStages;
+  uint32_t groupCount;
+  const VkRayTracingShaderGroupCreateInfoNV* pGroups;
+  uint32_t maxRecursionDepth;
+  VkPipelineLayout layout;
+  VkPipeline basePipelineHandle;
+  int32_t basePipelineIndex;
+};
 
-typedef struct VkGeometryTrianglesNV {
- VkStructureType sType;
- const void* pNext;
- VkBuffer vertexData;
- VkDeviceSize vertexOffset;
- uint32_t vertexCount;
- VkDeviceSize vertexStride;
- VkFormat vertexFormat;
- VkBuffer indexData;
- VkDeviceSize indexOffset;
- uint32_t indexCount;
- VkIndexType indexType;
- VkBuffer transformData;
- VkDeviceSize transformOffset;
-} VkGeometryTrianglesNV;
+struct VkGeometryTrianglesNV
+{
+  VkStructureType sType;
+  const void* pNext;
+  VkBuffer vertexData;
+  VkDeviceSize vertexOffset;
+  uint32_t vertexCount;
+  VkDeviceSize vertexStride;
+  VkFormat vertexFormat;
+  VkBuffer indexData;
+  VkDeviceSize indexOffset;
+  uint32_t indexCount;
+  VkIndexType indexType;
+  VkBuffer transformData;
+  VkDeviceSize transformOffset;
+};
 
 typedef VkGeometryTrianglesNV VkGeometryTrianglesKHR;
 
-typedef struct VkGeometryAABBNV {
- VkStructureType sType;
- const void* pNext;
- VkBuffer aabbData;
- uint32_t numAABBs;
- uint32_t stride;
- VkDeviceSize offset;
-} VkGeometryAABBNV;
+struct VkGeometryAABBNV
+{
+  VkStructureType sType;
+  const void* pNext;
+  VkBuffer aabbData;
+  uint32_t numAABBs;
+  uint32_t stride;
+  VkDeviceSize offset;
+};
 
 typedef VkGeometryAABBNV VkGeometryAABBKHR;
 
-typedef struct VkGeometryDataNV {
- VkGeometryTrianglesNV triangles;
- VkGeometryAABBNV aabbs;
-} VkGeometryDataNV;
+struct VkGeometryDataNV
+{
+  VkGeometryTrianglesNV triangles;
+  VkGeometryAABBNV aabbs;
+};
 
 typedef VkGeometryDataNV VkGeometryDataKHR;
 
-typedef struct VkGeometryNV {
- VkStructureType sType;
- const void* pNext;
- VkGeometryTypeKHR geometryType;
- VkGeometryDataNV geometry;
- VkGeometryFlagsKHR flags;
-} VkGeometryNV;
+struct VkGeometryNV
+{
+  VkStructureType sType;
+  const void* pNext;
+  VkGeometryTypeKHR geometryType;
+  VkGeometryDataNV geometry;
+  VkGeometryFlagsKHR flags;
+};
 
 typedef VkGeometryNV VkGeometryKHR;
 
-typedef struct VkAccelerationStructureInfoNV {
- VkStructureType sType;
- const void* pNext;
- VkAccelerationStructureTypeNV type;
- VkBuildAccelerationStructureFlagsNV flags;
- uint32_t instanceCount;
- uint32_t geometryCount;
- const VkGeometryNV* pGeometries;
-} VkAccelerationStructureInfoNV;
+struct VkAccelerationStructureInfoNV
+{
+  VkStructureType sType;
+  const void* pNext;
+  VkAccelerationStructureTypeNV type;
+  VkBuildAccelerationStructureFlagsNV flags;
+  uint32_t instanceCount;
+  uint32_t geometryCount;
+  const VkGeometryNV* pGeometries;
+};
 
 typedef VkAccelerationStructureInfoNV VkAccelerationStructureInfoKHR;
 
-typedef struct VkAccelerationStructureCreateInfoNV {
- VkStructureType sType;
- const void* pNext;
- VkDeviceSize compactedSize;
- VkAccelerationStructureInfoNV info;
-} VkAccelerationStructureCreateInfoNV;
+struct VkAccelerationStructureCreateInfoNV
+{
+  VkStructureType sType;
+  const void* pNext;
+  VkDeviceSize compactedSize;
+  VkAccelerationStructureInfoNV info;
+};
 
-typedef struct VkBindAccelerationStructureMemoryInfoNV {
- VkStructureType sType;
- const void* pNext;
- VkAccelerationStructureNV accelerationStructure;
- VkDeviceMemory memory;
- VkDeviceSize memoryOffset;
- uint32_t deviceIndexCount;
- const uint32_t* pDeviceIndices;
-} VkBindAccelerationStructureMemoryInfoNV;
+struct VkBindAccelerationStructureMemoryInfoNV
+{
+  VkStructureType sType;
+  const void* pNext;
+  VkAccelerationStructureNV accelerationStructure;
+  VkDeviceMemory memory;
+  VkDeviceSize memoryOffset;
+  uint32_t deviceIndexCount;
+  const uint32_t* pDeviceIndices;
+};
 
 typedef VkBindAccelerationStructureMemoryInfoNV VkBindAccelerationStructureMemoryInfoKHR;
 
-typedef struct VkWriteDescriptorSetAccelerationStructureNV {
- VkStructureType sType;
- const void* pNext;
- uint32_t accelerationStructureCount;
- const VkAccelerationStructureNV* pAccelerationStructures;
-} VkWriteDescriptorSetAccelerationStructureNV;
+struct VkWriteDescriptorSetAccelerationStructureNV
+{
+  VkStructureType sType;
+  const void* pNext;
+  uint32_t accelerationStructureCount;
+  const VkAccelerationStructureNV* pAccelerationStructures;
+};
 
-typedef struct VkAccelerationStructureMemoryRequirementsInfoNV {
- VkStructureType sType;
- const void* pNext;
- VkAccelerationStructureMemoryRequirementsTypeNV type;
- VkAccelerationStructureNV accelerationStructure;
-} VkAccelerationStructureMemoryRequirementsInfoNV;
+struct VkAccelerationStructureMemoryRequirementsInfoNV
+{
+  VkStructureType sType;
+  const void* pNext;
+  VkAccelerationStructureMemoryRequirementsTypeNV type;
+  VkAccelerationStructureNV accelerationStructure;
+};
 
 typedef VkAccelerationStructureMemoryRequirementsInfoNV VkAccelerationStructureMemoryRequirementsInfoKHR;
 
-typedef struct VkPhysicalDeviceRayTracingPropertiesNV {
- VkStructureType sType;
- void* pNext;
- uint32_t shaderGroupHandleSize;
- uint32_t maxRecursionDepth;
- uint32_t maxShaderGroupStride;
- uint32_t shaderGroupBaseAlignment;
- uint64_t maxGeometryCount;
- uint64_t maxInstanceCount;
- uint64_t maxTriangleCount;
- uint32_t maxDescriptorSetAccelerationStructures;
-} VkPhysicalDeviceRayTracingPropertiesNV;
+struct VkPhysicalDeviceRayTracingPropertiesNV
+{
+  VkStructureType sType;
+  void* pNext;
+  uint32_t shaderGroupHandleSize;
+  uint32_t maxRecursionDepth;
+  uint32_t maxShaderGroupStride;
+  uint32_t shaderGroupBaseAlignment;
+  uint64_t maxGeometryCount;
+  uint64_t maxInstanceCount;
+  uint64_t maxTriangleCount;
+  uint32_t maxDescriptorSetAccelerationStructures;
+};
 
 typedef VkPhysicalDeviceRayTracingPropertiesNV VkPhysicalDeviceRayTracingPropertiesKHR;
 
-typedef struct VkTransformMatrixKHR {
- float matrix[3][4];
-} VkTransformMatrixKHR;
+struct VkTransformMatrixKHR
+{
+  float matrix[3][4];
+};
 
 typedef VkTransformMatrixKHR VkTransformMatrixNV;
 
-typedef struct VkAabbPositionsKHR {
- float minX;
- float minY;
- float minZ;
- float maxX;
- float maxY;
- float maxZ;
-} VkAabbPositionsKHR;
+struct VkAabbPositionsKHR
+{
+  float minX;
+  float minY;
+  float minZ;
+  float maxX;
+  float maxY;
+  float maxZ;
+};
 
 typedef VkAabbPositionsKHR VkAabbPositionsNV;
 
-typedef struct VkAccelerationStructureInstanceKHR {
- VkTransformMatrixKHR transform;
- uint32_t instanceCustomIndex:24;
- uint32_t mask:8;
- uint32_t instanceShaderBindingTableRecordOffset:24;
- VkGeometryInstanceFlagsKHR flags:8;
- uint64_t accelerationStructureReference;
-} VkAccelerationStructureInstanceKHR;
+struct VkAccelerationStructureInstanceKHR
+{
+  VkTransformMatrixKHR transform;
+  uint32_t instanceCustomIndex:24;
+  uint32_t mask:8;
+  uint32_t instanceShaderBindingTableRecordOffset:24;
+  VkGeometryInstanceFlagsKHR flags:8;
+  uint64_t accelerationStructureReference;
+};
 
 typedef VkAccelerationStructureInstanceKHR VkAccelerationStructureInstanceNV;
 
@@ -5016,34 +5047,40 @@ VKAPI_ATTR VkResult VKAPI_CALL vkCompileDeferredNV(
 #define VK_NV_representative_fragment_test 1
 #define VK_NV_REPRESENTATIVE_FRAGMENT_TEST_SPEC_VERSION 2
 #define VK_NV_REPRESENTATIVE_FRAGMENT_TEST_EXTENSION_NAME "VK_NV_representative_fragment_test"
-typedef struct VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV {
- VkStructureType sType;
- void* pNext;
- VkBool32 representativeFragmentTest;
-} VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV;
 
-typedef struct VkPipelineRepresentativeFragmentTestStateCreateInfoNV {
- VkStructureType sType;
- const void* pNext;
- VkBool32 representativeFragmentTestEnable;
-} VkPipelineRepresentativeFragmentTestStateCreateInfoNV;
+struct VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV
+{
+  VkStructureType sType;
+  void* pNext;
+  VkBool32 representativeFragmentTest;
+};
+
+struct VkPipelineRepresentativeFragmentTestStateCreateInfoNV
+{
+  VkStructureType sType;
+  const void* pNext;
+  VkBool32 representativeFragmentTestEnable;
+};
 
 // VK_EXT_filter_cubic is a preprocessor guard. Do not pass it to API calls.
 #define VK_EXT_filter_cubic 1
 #define VK_EXT_FILTER_CUBIC_SPEC_VERSION 3
 #define VK_EXT_FILTER_CUBIC_EXTENSION_NAME "VK_EXT_filter_cubic"
-typedef struct VkPhysicalDeviceImageViewImageFormatInfoEXT {
- VkStructureType sType;
- void* pNext;
- VkImageViewType imageViewType;
-} VkPhysicalDeviceImageViewImageFormatInfoEXT;
 
-typedef struct VkFilterCubicImageViewImageFormatPropertiesEXT {
- VkStructureType sType;
- void* pNext;
- VkBool32 filterCubic;
- VkBool32 filterCubicMinmax;
-} VkFilterCubicImageViewImageFormatPropertiesEXT;
+struct VkPhysicalDeviceImageViewImageFormatInfoEXT
+{
+  VkStructureType sType;
+  void* pNext;
+  VkImageViewType imageViewType;
+};
+
+struct VkFilterCubicImageViewImageFormatPropertiesEXT
+{
+  VkStructureType sType;
+  void* pNext;
+  VkBool32 filterCubic;
+  VkBool32 filterCubicMinmax;
+};
 
 // VK_QCOM_render_pass_shader_resolve is a preprocessor guard. Do not pass it to API calls.
 #define VK_QCOM_render_pass_shader_resolve 1
@@ -5054,6 +5091,7 @@ typedef struct VkFilterCubicImageViewImageFormatPropertiesEXT {
 #define VK_EXT_global_priority 1
 #define VK_EXT_GLOBAL_PRIORITY_SPEC_VERSION 2
 #define VK_EXT_GLOBAL_PRIORITY_EXTENSION_NAME "VK_EXT_global_priority"
+
 typedef VkQueueGlobalPriorityKHR VkQueueGlobalPriorityEXT;
 
 typedef VkDeviceQueueGlobalPriorityCreateInfoKHR VkDeviceQueueGlobalPriorityCreateInfoEXT;
@@ -5062,24 +5100,28 @@ typedef VkDeviceQueueGlobalPriorityCreateInfoKHR VkDeviceQueueGlobalPriorityCrea
 #define VK_EXT_external_memory_host 1
 #define VK_EXT_EXTERNAL_MEMORY_HOST_SPEC_VERSION 1
 #define VK_EXT_EXTERNAL_MEMORY_HOST_EXTENSION_NAME "VK_EXT_external_memory_host"
-typedef struct VkImportMemoryHostPointerInfoEXT {
- VkStructureType sType;
- const void* pNext;
- VkExternalMemoryHandleTypeFlagBits handleType;
- void* pHostPointer;
-} VkImportMemoryHostPointerInfoEXT;
 
-typedef struct VkMemoryHostPointerPropertiesEXT {
- VkStructureType sType;
- void* pNext;
- uint32_t memoryTypeBits;
-} VkMemoryHostPointerPropertiesEXT;
+struct VkImportMemoryHostPointerInfoEXT
+{
+  VkStructureType sType;
+  const void* pNext;
+  VkExternalMemoryHandleTypeFlagBits handleType;
+  void* pHostPointer;
+};
 
-typedef struct VkPhysicalDeviceExternalMemoryHostPropertiesEXT {
- VkStructureType sType;
- void* pNext;
- VkDeviceSize minImportedHostPointerAlignment;
-} VkPhysicalDeviceExternalMemoryHostPropertiesEXT;
+struct VkMemoryHostPointerPropertiesEXT
+{
+  VkStructureType sType;
+  void* pNext;
+  uint32_t memoryTypeBits;
+};
+
+struct VkPhysicalDeviceExternalMemoryHostPropertiesEXT
+{
+  VkStructureType sType;
+  void* pNext;
+  VkDeviceSize minImportedHostPointerAlignment;
+};
 
 typedef VkResult (VKAPI_PTR *PFN_vkGetMemoryHostPointerPropertiesEXT)(VkDevice device, VkExternalMemoryHandleTypeFlagBits handleType, const void* pHostPointer, VkMemoryHostPointerPropertiesEXT* pMemoryHostPointerProperties);
 
@@ -5153,46 +5195,52 @@ typedef VkPipelineCreationFeedback VkPipelineCreationFeedbackEXT;
 #define VK_NV_compute_shader_derivatives 1
 #define VK_NV_COMPUTE_SHADER_DERIVATIVES_SPEC_VERSION 1
 #define VK_NV_COMPUTE_SHADER_DERIVATIVES_EXTENSION_NAME "VK_NV_compute_shader_derivatives"
-typedef struct VkPhysicalDeviceComputeShaderDerivativesFeaturesNV {
- VkStructureType sType;
- void* pNext;
- VkBool32 computeDerivativeGroupQuads;
- VkBool32 computeDerivativeGroupLinear;
-} VkPhysicalDeviceComputeShaderDerivativesFeaturesNV;
+
+struct VkPhysicalDeviceComputeShaderDerivativesFeaturesNV
+{
+  VkStructureType sType;
+  void* pNext;
+  VkBool32 computeDerivativeGroupQuads;
+  VkBool32 computeDerivativeGroupLinear;
+};
 
 // VK_NV_mesh_shader is a preprocessor guard. Do not pass it to API calls.
 #define VK_NV_mesh_shader 1
 #define VK_NV_MESH_SHADER_SPEC_VERSION 1
 #define VK_NV_MESH_SHADER_EXTENSION_NAME "VK_NV_mesh_shader"
-typedef struct VkPhysicalDeviceMeshShaderFeaturesNV {
- VkStructureType sType;
- void* pNext;
- VkBool32 taskShader;
- VkBool32 meshShader;
-} VkPhysicalDeviceMeshShaderFeaturesNV;
 
-typedef struct VkPhysicalDeviceMeshShaderPropertiesNV {
- VkStructureType sType;
- void* pNext;
- uint32_t maxDrawMeshTasksCount;
- uint32_t maxTaskWorkGroupInvocations;
- uint32_t maxTaskWorkGroupSize[3];
- uint32_t maxTaskTotalMemorySize;
- uint32_t maxTaskOutputCount;
- uint32_t maxMeshWorkGroupInvocations;
- uint32_t maxMeshWorkGroupSize[3];
- uint32_t maxMeshTotalMemorySize;
- uint32_t maxMeshOutputVertices;
- uint32_t maxMeshOutputPrimitives;
- uint32_t maxMeshMultiviewViewCount;
- uint32_t meshOutputPerVertexGranularity;
- uint32_t meshOutputPerPrimitiveGranularity;
-} VkPhysicalDeviceMeshShaderPropertiesNV;
+struct VkPhysicalDeviceMeshShaderFeaturesNV
+{
+  VkStructureType sType;
+  void* pNext;
+  VkBool32 taskShader;
+  VkBool32 meshShader;
+};
 
-typedef struct VkDrawMeshTasksIndirectCommandNV {
- uint32_t taskCount;
- uint32_t firstTask;
-} VkDrawMeshTasksIndirectCommandNV;
+struct VkPhysicalDeviceMeshShaderPropertiesNV
+{
+  VkStructureType sType;
+  void* pNext;
+  uint32_t maxDrawMeshTasksCount;
+  uint32_t maxTaskWorkGroupInvocations;
+  uint32_t maxTaskWorkGroupSize[3];
+  uint32_t maxTaskTotalMemorySize;
+  uint32_t maxTaskOutputCount;
+  uint32_t maxMeshWorkGroupInvocations;
+  uint32_t maxMeshWorkGroupSize[3];
+  uint32_t maxMeshTotalMemorySize;
+  uint32_t maxMeshOutputVertices;
+  uint32_t maxMeshOutputPrimitives;
+  uint32_t maxMeshMultiviewViewCount;
+  uint32_t meshOutputPerVertexGranularity;
+  uint32_t meshOutputPerPrimitiveGranularity;
+};
+
+struct VkDrawMeshTasksIndirectCommandNV
+{
+  uint32_t taskCount;
+  uint32_t firstTask;
+};
 
 typedef void (VKAPI_PTR *PFN_vkCmdDrawMeshTasksNV)(VkCommandBuffer commandBuffer, uint32_t taskCount, uint32_t firstTask);
 typedef void (VKAPI_PTR *PFN_vkCmdDrawMeshTasksIndirectNV)(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset, uint32_t drawCount, uint32_t stride);
@@ -5231,11 +5279,13 @@ typedef VkPhysicalDeviceFragmentShaderBarycentricFeaturesKHR VkPhysicalDeviceFra
 #define VK_NV_shader_image_footprint 1
 #define VK_NV_SHADER_IMAGE_FOOTPRINT_SPEC_VERSION 2
 #define VK_NV_SHADER_IMAGE_FOOTPRINT_EXTENSION_NAME "VK_NV_shader_image_footprint"
-typedef struct VkPhysicalDeviceShaderImageFootprintFeaturesNV {
- VkStructureType sType;
- void* pNext;
- VkBool32 imageFootprint;
-} VkPhysicalDeviceShaderImageFootprintFeaturesNV;
+
+struct VkPhysicalDeviceShaderImageFootprintFeaturesNV
+{
+  VkStructureType sType;
+  void* pNext;
+  VkBool32 imageFootprint;
+};
 
 // VK_NV_scissor_exclusive is a preprocessor guard. Do not pass it to API calls.
 #define VK_NV_scissor_exclusive 1
@@ -6111,152 +6161,171 @@ VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkIndirectCommandsLayoutNV)
 #define VK_NV_DEVICE_GENERATED_COMMANDS_SPEC_VERSION 3
 #define VK_NV_DEVICE_GENERATED_COMMANDS_EXTENSION_NAME "VK_NV_device_generated_commands"
 
-typedef enum VkIndirectCommandsTokenTypeNV {
- VK_INDIRECT_COMMANDS_TOKEN_TYPE_SHADER_GROUP_NV = 0,
- VK_INDIRECT_COMMANDS_TOKEN_TYPE_STATE_FLAGS_NV = 1,
- VK_INDIRECT_COMMANDS_TOKEN_TYPE_INDEX_BUFFER_NV = 2,
- VK_INDIRECT_COMMANDS_TOKEN_TYPE_VERTEX_BUFFER_NV = 3,
- VK_INDIRECT_COMMANDS_TOKEN_TYPE_PUSH_CONSTANT_NV = 4,
- VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_INDEXED_NV = 5,
- VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_NV = 6,
- VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_TASKS_NV = 7,
- VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_MESH_TASKS_NV = 1000328000,
- VK_INDIRECT_COMMANDS_TOKEN_TYPE_PIPELINE_NV = 1000428003,
- VK_INDIRECT_COMMANDS_TOKEN_TYPE_DISPATCH_NV = 1000428004,
- VK_INDIRECT_COMMANDS_TOKEN_TYPE_MAX_ENUM_NV = 0x7FFFFFFF
-} VkIndirectCommandsTokenTypeNV;
+enum VkIndirectCommandsTokenTypeNV
+{
+  VK_INDIRECT_COMMANDS_TOKEN_TYPE_SHADER_GROUP_NV = 0,
+  VK_INDIRECT_COMMANDS_TOKEN_TYPE_STATE_FLAGS_NV = 1,
+  VK_INDIRECT_COMMANDS_TOKEN_TYPE_INDEX_BUFFER_NV = 2,
+  VK_INDIRECT_COMMANDS_TOKEN_TYPE_VERTEX_BUFFER_NV = 3,
+  VK_INDIRECT_COMMANDS_TOKEN_TYPE_PUSH_CONSTANT_NV = 4,
+  VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_INDEXED_NV = 5,
+  VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_NV = 6,
+  VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_TASKS_NV = 7,
+  VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_MESH_TASKS_NV = 1000328000,
+  VK_INDIRECT_COMMANDS_TOKEN_TYPE_PIPELINE_NV = 1000428003,
+  VK_INDIRECT_COMMANDS_TOKEN_TYPE_DISPATCH_NV = 1000428004,
+  VK_INDIRECT_COMMANDS_TOKEN_TYPE_MAX_ENUM_NV = 0x7FFFFFFF
+};
 
-typedef enum VkIndirectStateFlagBitsNV {
- VK_INDIRECT_STATE_FLAG_FRONTFACE_BIT_NV = 0x00000001,
- VK_INDIRECT_STATE_FLAG_BITS_MAX_ENUM_NV = 0x7FFFFFFF
-} VkIndirectStateFlagBitsNV;
+enum VkIndirectStateFlagBitsNV
+{
+  VK_INDIRECT_STATE_FLAG_FRONTFACE_BIT_NV = 0x00000001,
+  VK_INDIRECT_STATE_FLAG_BITS_MAX_ENUM_NV = 0x7FFFFFFF
+};
+
 typedef VkFlags VkIndirectStateFlagsNV;
 
-typedef enum VkIndirectCommandsLayoutUsageFlagBitsNV {
- VK_INDIRECT_COMMANDS_LAYOUT_USAGE_EXPLICIT_PREPROCESS_BIT_NV = 0x00000001,
- VK_INDIRECT_COMMANDS_LAYOUT_USAGE_INDEXED_SEQUENCES_BIT_NV = 0x00000002,
- VK_INDIRECT_COMMANDS_LAYOUT_USAGE_UNORDERED_SEQUENCES_BIT_NV = 0x00000004,
- VK_INDIRECT_COMMANDS_LAYOUT_USAGE_FLAG_BITS_MAX_ENUM_NV = 0x7FFFFFFF
-} VkIndirectCommandsLayoutUsageFlagBitsNV;
+enum VkIndirectCommandsLayoutUsageFlagBitsNV
+{
+  VK_INDIRECT_COMMANDS_LAYOUT_USAGE_EXPLICIT_PREPROCESS_BIT_NV = 0x00000001,
+  VK_INDIRECT_COMMANDS_LAYOUT_USAGE_INDEXED_SEQUENCES_BIT_NV = 0x00000002,
+  VK_INDIRECT_COMMANDS_LAYOUT_USAGE_UNORDERED_SEQUENCES_BIT_NV = 0x00000004,
+  VK_INDIRECT_COMMANDS_LAYOUT_USAGE_FLAG_BITS_MAX_ENUM_NV = 0x7FFFFFFF
+};
+
 typedef VkFlags VkIndirectCommandsLayoutUsageFlagsNV;
-typedef struct VkPhysicalDeviceDeviceGeneratedCommandsPropertiesNV {
- VkStructureType sType;
- void* pNext;
- uint32_t maxGraphicsShaderGroupCount;
- uint32_t maxIndirectSequenceCount;
- uint32_t maxIndirectCommandsTokenCount;
- uint32_t maxIndirectCommandsStreamCount;
- uint32_t maxIndirectCommandsTokenOffset;
- uint32_t maxIndirectCommandsStreamStride;
- uint32_t minSequencesCountBufferOffsetAlignment;
- uint32_t minSequencesIndexBufferOffsetAlignment;
- uint32_t minIndirectCommandsBufferOffsetAlignment;
-} VkPhysicalDeviceDeviceGeneratedCommandsPropertiesNV;
 
-typedef struct VkPhysicalDeviceDeviceGeneratedCommandsFeaturesNV {
- VkStructureType sType;
- void* pNext;
- VkBool32 deviceGeneratedCommands;
-} VkPhysicalDeviceDeviceGeneratedCommandsFeaturesNV;
+struct VkPhysicalDeviceDeviceGeneratedCommandsPropertiesNV
+{
+  VkStructureType sType;
+  void* pNext;
+  uint32_t maxGraphicsShaderGroupCount;
+  uint32_t maxIndirectSequenceCount;
+  uint32_t maxIndirectCommandsTokenCount;
+  uint32_t maxIndirectCommandsStreamCount;
+  uint32_t maxIndirectCommandsTokenOffset;
+  uint32_t maxIndirectCommandsStreamStride;
+  uint32_t minSequencesCountBufferOffsetAlignment;
+  uint32_t minSequencesIndexBufferOffsetAlignment;
+  uint32_t minIndirectCommandsBufferOffsetAlignment;
+};
 
-typedef struct VkGraphicsShaderGroupCreateInfoNV {
- VkStructureType sType;
- const void* pNext;
- uint32_t stageCount;
- const VkPipelineShaderStageCreateInfo* pStages;
- const VkPipelineVertexInputStateCreateInfo* pVertexInputState;
- const VkPipelineTessellationStateCreateInfo* pTessellationState;
-} VkGraphicsShaderGroupCreateInfoNV;
+struct VkPhysicalDeviceDeviceGeneratedCommandsFeaturesNV
+{
+  VkStructureType sType;
+  void* pNext;
+  VkBool32 deviceGeneratedCommands;
+};
 
-typedef struct VkGraphicsPipelineShaderGroupsCreateInfoNV {
- VkStructureType sType;
- const void* pNext;
- uint32_t groupCount;
- const VkGraphicsShaderGroupCreateInfoNV* pGroups;
- uint32_t pipelineCount;
- const VkPipeline* pPipelines;
-} VkGraphicsPipelineShaderGroupsCreateInfoNV;
+struct VkGraphicsShaderGroupCreateInfoNV
+{
+  VkStructureType sType;
+  const void* pNext;
+  uint32_t stageCount;
+  const VkPipelineShaderStageCreateInfo* pStages;
+  const VkPipelineVertexInputStateCreateInfo* pVertexInputState;
+  const VkPipelineTessellationStateCreateInfo* pTessellationState;
+};
 
-typedef struct VkBindShaderGroupIndirectCommandNV {
- uint32_t groupIndex;
-} VkBindShaderGroupIndirectCommandNV;
+struct VkGraphicsPipelineShaderGroupsCreateInfoNV
+{
+  VkStructureType sType;
+  const void* pNext;
+  uint32_t groupCount;
+  const VkGraphicsShaderGroupCreateInfoNV* pGroups;
+  uint32_t pipelineCount;
+  const VkPipeline* pPipelines;
+};
 
-typedef struct VkBindIndexBufferIndirectCommandNV {
- VkDeviceAddress bufferAddress;
- uint32_t size;
- VkIndexType indexType;
-} VkBindIndexBufferIndirectCommandNV;
+struct VkBindShaderGroupIndirectCommandNV
+{
+  uint32_t groupIndex;
+};
 
-typedef struct VkBindVertexBufferIndirectCommandNV {
- VkDeviceAddress bufferAddress;
- uint32_t size;
- uint32_t stride;
-} VkBindVertexBufferIndirectCommandNV;
+struct VkBindIndexBufferIndirectCommandNV
+{
+  VkDeviceAddress bufferAddress;
+  uint32_t size;
+  VkIndexType indexType;
+};
 
-typedef struct VkSetStateFlagsIndirectCommandNV {
- uint32_t data;
-} VkSetStateFlagsIndirectCommandNV;
+struct VkBindVertexBufferIndirectCommandNV
+{
+  VkDeviceAddress bufferAddress;
+  uint32_t size;
+  uint32_t stride;
+};
 
-typedef struct VkIndirectCommandsStreamNV {
- VkBuffer buffer;
- VkDeviceSize offset;
-} VkIndirectCommandsStreamNV;
+struct VkSetStateFlagsIndirectCommandNV
+{
+  uint32_t data;
+};
 
-typedef struct VkIndirectCommandsLayoutTokenNV {
- VkStructureType sType;
- const void* pNext;
- VkIndirectCommandsTokenTypeNV tokenType;
- uint32_t stream;
- uint32_t offset;
- uint32_t vertexBindingUnit;
- VkBool32 vertexDynamicStride;
- VkPipelineLayout pushconstantPipelineLayout;
- VkShaderStageFlags pushconstantShaderStageFlags;
- uint32_t pushconstantOffset;
- uint32_t pushconstantSize;
- VkIndirectStateFlagsNV indirectStateFlags;
- uint32_t indexTypeCount;
- const VkIndexType* pIndexTypes;
- const uint32_t* pIndexTypeValues;
-} VkIndirectCommandsLayoutTokenNV;
+struct VkIndirectCommandsStreamNV
+{
+  VkBuffer buffer;
+  VkDeviceSize offset;
+};
 
-typedef struct VkIndirectCommandsLayoutCreateInfoNV {
- VkStructureType sType;
- const void* pNext;
- VkIndirectCommandsLayoutUsageFlagsNV flags;
- VkPipelineBindPoint pipelineBindPoint;
- uint32_t tokenCount;
- const VkIndirectCommandsLayoutTokenNV* pTokens;
- uint32_t streamCount;
- const uint32_t* pStreamStrides;
-} VkIndirectCommandsLayoutCreateInfoNV;
+struct VkIndirectCommandsLayoutTokenNV
+{
+  VkStructureType sType;
+  const void* pNext;
+  VkIndirectCommandsTokenTypeNV tokenType;
+  uint32_t stream;
+  uint32_t offset;
+  uint32_t vertexBindingUnit;
+  VkBool32 vertexDynamicStride;
+  VkPipelineLayout pushconstantPipelineLayout;
+  VkShaderStageFlags pushconstantShaderStageFlags;
+  uint32_t pushconstantOffset;
+  uint32_t pushconstantSize;
+  VkIndirectStateFlagsNV indirectStateFlags;
+  uint32_t indexTypeCount;
+  const VkIndexType* pIndexTypes;
+  const uint32_t* pIndexTypeValues;
+};
 
-typedef struct VkGeneratedCommandsInfoNV {
- VkStructureType sType;
- const void* pNext;
- VkPipelineBindPoint pipelineBindPoint;
- VkPipeline pipeline;
- VkIndirectCommandsLayoutNV indirectCommandsLayout;
- uint32_t streamCount;
- const VkIndirectCommandsStreamNV* pStreams;
- uint32_t sequencesCount;
- VkBuffer preprocessBuffer;
- VkDeviceSize preprocessOffset;
- VkDeviceSize preprocessSize;
- VkBuffer sequencesCountBuffer;
- VkDeviceSize sequencesCountOffset;
- VkBuffer sequencesIndexBuffer;
- VkDeviceSize sequencesIndexOffset;
-} VkGeneratedCommandsInfoNV;
+struct VkIndirectCommandsLayoutCreateInfoNV
+{
+  VkStructureType sType;
+  const void* pNext;
+  VkIndirectCommandsLayoutUsageFlagsNV flags;
+  VkPipelineBindPoint pipelineBindPoint;
+  uint32_t tokenCount;
+  const VkIndirectCommandsLayoutTokenNV* pTokens;
+  uint32_t streamCount;
+  const uint32_t* pStreamStrides;
+};
 
-typedef struct VkGeneratedCommandsMemoryRequirementsInfoNV {
- VkStructureType sType;
- const void* pNext;
- VkPipelineBindPoint pipelineBindPoint;
- VkPipeline pipeline;
- VkIndirectCommandsLayoutNV indirectCommandsLayout;
- uint32_t maxSequencesCount;
-} VkGeneratedCommandsMemoryRequirementsInfoNV;
+struct VkGeneratedCommandsInfoNV
+{
+  VkStructureType sType;
+  const void* pNext;
+  VkPipelineBindPoint pipelineBindPoint;
+  VkPipeline pipeline;
+  VkIndirectCommandsLayoutNV indirectCommandsLayout;
+  uint32_t streamCount;
+  const VkIndirectCommandsStreamNV* pStreams;
+  uint32_t sequencesCount;
+  VkBuffer preprocessBuffer;
+  VkDeviceSize preprocessOffset;
+  VkDeviceSize preprocessSize;
+  VkBuffer sequencesCountBuffer;
+  VkDeviceSize sequencesCountOffset;
+  VkBuffer sequencesIndexBuffer;
+  VkDeviceSize sequencesIndexOffset;
+};
+
+struct VkGeneratedCommandsMemoryRequirementsInfoNV
+{
+  VkStructureType sType;
+  const void* pNext;
+  VkPipelineBindPoint pipelineBindPoint;
+  VkPipeline pipeline;
+  VkIndirectCommandsLayoutNV indirectCommandsLayout;
+  uint32_t maxSequencesCount;
+};
 
 typedef void (VKAPI_PTR *PFN_vkGetGeneratedCommandsMemoryRequirementsNV)(VkDevice device, const VkGeneratedCommandsMemoryRequirementsInfoNV* pInfo, VkMemoryRequirements2* pMemoryRequirements);
 typedef void (VKAPI_PTR *PFN_vkCmdPreprocessGeneratedCommandsNV)(VkCommandBuffer commandBuffer, const VkGeneratedCommandsInfoNV* pGeneratedCommandsInfo);
@@ -6601,97 +6670,6 @@ typedef struct VkDeviceDiagnosticsConfigCreateInfoNV {
 #define VK_QCOM_render_pass_store_ops 1
 #define VK_QCOM_RENDER_PASS_STORE_OPS_SPEC_VERSION 2
 #define VK_QCOM_RENDER_PASS_STORE_OPS_EXTENSION_NAME "VK_QCOM_render_pass_store_ops"
-
-// VK_NV_cuda_kernel_launch is a preprocessor guard. Do not pass it to API calls.
-#define VK_NV_cuda_kernel_launch 1
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkCudaModuleNV)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkCudaFunctionNV)
-#define VK_NV_CUDA_KERNEL_LAUNCH_SPEC_VERSION 2
-#define VK_NV_CUDA_KERNEL_LAUNCH_EXTENSION_NAME "VK_NV_cuda_kernel_launch"
-typedef struct VkCudaModuleCreateInfoNV {
- VkStructureType sType;
- const void* pNext;
- size_t dataSize;
- const void* pData;
-} VkCudaModuleCreateInfoNV;
-
-typedef struct VkCudaFunctionCreateInfoNV {
- VkStructureType sType;
- const void* pNext;
- VkCudaModuleNV module;
- const char* pName;
-} VkCudaFunctionCreateInfoNV;
-
-typedef struct VkCudaLaunchInfoNV {
- VkStructureType sType;
- const void* pNext;
- VkCudaFunctionNV function;
- uint32_t gridDimX;
- uint32_t gridDimY;
- uint32_t gridDimZ;
- uint32_t blockDimX;
- uint32_t blockDimY;
- uint32_t blockDimZ;
- uint32_t sharedMemBytes;
- size_t paramCount;
- const void* const * pParams;
- size_t extraCount;
- const void* const * pExtras;
-} VkCudaLaunchInfoNV;
-
-typedef struct VkPhysicalDeviceCudaKernelLaunchFeaturesNV {
- VkStructureType sType;
- void* pNext;
- VkBool32 cudaKernelLaunchFeatures;
-} VkPhysicalDeviceCudaKernelLaunchFeaturesNV;
-
-typedef struct VkPhysicalDeviceCudaKernelLaunchPropertiesNV {
- VkStructureType sType;
- void* pNext;
- uint32_t computeCapabilityMinor;
- uint32_t computeCapabilityMajor;
-} VkPhysicalDeviceCudaKernelLaunchPropertiesNV;
-
-typedef VkResult (VKAPI_PTR *PFN_vkCreateCudaModuleNV)(VkDevice device, const VkCudaModuleCreateInfoNV* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkCudaModuleNV* pModule);
-typedef VkResult (VKAPI_PTR *PFN_vkGetCudaModuleCacheNV)(VkDevice device, VkCudaModuleNV module, size_t* pCacheSize, void* pCacheData);
-typedef VkResult (VKAPI_PTR *PFN_vkCreateCudaFunctionNV)(VkDevice device, const VkCudaFunctionCreateInfoNV* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkCudaFunctionNV* pFunction);
-typedef void (VKAPI_PTR *PFN_vkDestroyCudaModuleNV)(VkDevice device, VkCudaModuleNV module, const VkAllocationCallbacks* pAllocator);
-typedef void (VKAPI_PTR *PFN_vkDestroyCudaFunctionNV)(VkDevice device, VkCudaFunctionNV function, const VkAllocationCallbacks* pAllocator);
-typedef void (VKAPI_PTR *PFN_vkCmdCudaLaunchKernelNV)(VkCommandBuffer commandBuffer, const VkCudaLaunchInfoNV* pLaunchInfo);
-
-#ifndef VK_NO_PROTOTYPES
-VKAPI_ATTR VkResult VKAPI_CALL vkCreateCudaModuleNV(
- VkDevice device,
- const VkCudaModuleCreateInfoNV* pCreateInfo,
- const VkAllocationCallbacks* pAllocator,
- VkCudaModuleNV* pModule);
-
-VKAPI_ATTR VkResult VKAPI_CALL vkGetCudaModuleCacheNV(
- VkDevice device,
- VkCudaModuleNV module,
- size_t* pCacheSize,
- void* pCacheData);
-
-VKAPI_ATTR VkResult VKAPI_CALL vkCreateCudaFunctionNV(
- VkDevice device,
- const VkCudaFunctionCreateInfoNV* pCreateInfo,
- const VkAllocationCallbacks* pAllocator,
- VkCudaFunctionNV* pFunction);
-
-VKAPI_ATTR void VKAPI_CALL vkDestroyCudaModuleNV(
- VkDevice device,
- VkCudaModuleNV module,
- const VkAllocationCallbacks* pAllocator);
-
-VKAPI_ATTR void VKAPI_CALL vkDestroyCudaFunctionNV(
- VkDevice device,
- VkCudaFunctionNV function,
- const VkAllocationCallbacks* pAllocator);
-
-VKAPI_ATTR void VKAPI_CALL vkCmdCudaLaunchKernelNV(
- VkCommandBuffer commandBuffer,
- const VkCudaLaunchInfoNV* pLaunchInfo);
-#endif
 
 // VK_NV_low_latency is a preprocessor guard. Do not pass it to API calls.
 #define VK_NV_low_latency 1
