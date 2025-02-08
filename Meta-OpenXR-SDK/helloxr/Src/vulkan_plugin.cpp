@@ -74,7 +74,8 @@ XrGraphicsBindingVulkan2KHR gVulkanGraphicsPluginXrGraphicsBindingVulkan2KHR {XR
 //std::vector<SwapchainImageContext*> gVulkanGraphicsPluginStdList_SwapchainImageContext;
 std::vector<int> gVulkanGraphicsPluginStdList_SwapchainImageContext;
 
-std::map<const XrSwapchainImageBaseHeader*, int> gVulkanGraphicsPluginStdMap_XrSwapchainImageBaseHeader_SwapchainImageContext;
+std::map<const XrSwapchainImageBaseHeader*, int>
+  gVulkanGraphicsPluginStdMap_XrSwapchainImageBaseHeader_SwapchainImageContext;
 
 VulkanDebugObjectNamer gVulkanGraphicsPluginVulkanDebugObjectNamer {};
 
@@ -173,7 +174,12 @@ std::string BlahVkResultString(VkResult res)
   }
 }
 
-void MemoryAllocator_MemoryAllocatorAllocate(VkMemoryRequirements const& memReqs, VkDeviceMemory* mem, VkFlags flags, void* pNext)
+void MemoryAllocator_MemoryAllocatorAllocate(
+  VkMemoryRequirements const& memReqs,
+  VkDeviceMemory* mem,
+  VkFlags flags,
+  void* pNext
+)
 {
   // Search memtypes to find first offset with those properties
   for(uint32_t offset = 0; offset < gMemoryAllocatorMemoryProperties.memoryTypeCount; offset++)
@@ -327,23 +333,57 @@ void SwapchainImageContext_SwapchainImageContext_Destructor(int index)
 
   m_swapchainImageContext_renderPassPass[index] = VK_NULL_HANDLE;
 
-  for(int renderTarget = 0; renderTarget < m_swapchainImageContextStdVector_renderTargetFrameBuffer[index].size(); renderTarget++)
+  for(
+    int renderTarget = 0;
+    renderTarget < m_swapchainImageContextStdVector_renderTargetFrameBuffer[index].size();
+    renderTarget++
+  )
   {
-    if(gVkDevice && m_swapchainImageContextStdVector_renderTargetFrameBuffer[index][renderTarget] != VK_NULL_HANDLE && tableVk.DestroyFramebuffer)
-      tableVk.DestroyFramebuffer(gVkDevice, m_swapchainImageContextStdVector_renderTargetFrameBuffer[index][renderTarget], nullptr);
+    if(
+      gVkDevice &&
+      m_swapchainImageContextStdVector_renderTargetFrameBuffer[index][renderTarget] != VK_NULL_HANDLE &&
+      tableVk.DestroyFramebuffer
+    )
+    {
+      tableVk.DestroyFramebuffer(
+        gVkDevice,
+        m_swapchainImageContextStdVector_renderTargetFrameBuffer[index][renderTarget],
+        nullptr
+      );
+    }
 
-    if(gVkDevice && m_swapchainImageContextStdVector_renderTargetColorView[index][renderTarget] != VK_NULL_HANDLE && tableVk.DestroyImageView)
-      tableVk.DestroyImageView(gVkDevice, m_swapchainImageContextStdVector_renderTargetColorView[index][renderTarget], nullptr);
+    if(
+      gVkDevice &&
+      m_swapchainImageContextStdVector_renderTargetColorView[index][renderTarget] != VK_NULL_HANDLE &&
+      tableVk.DestroyImageView
+    )
+    {
+      tableVk.DestroyImageView(
+        gVkDevice,
+        m_swapchainImageContextStdVector_renderTargetColorView[index][renderTarget],
+        nullptr
+      );
+    }
 
-    if(gVkDevice && m_swapchainImageContextStdVector_renderTargetDepthView[index][renderTarget] != VK_NULL_HANDLE && tableVk.DestroyImageView)
-      tableVk.DestroyImageView(gVkDevice, m_swapchainImageContextStdVector_renderTargetDepthView[index][renderTarget], nullptr);
+    if(
+      gVkDevice &&
+      m_swapchainImageContextStdVector_renderTargetDepthView[index][renderTarget] != VK_NULL_HANDLE &&
+      tableVk.DestroyImageView
+    )
+    {
+      tableVk.DestroyImageView(
+        gVkDevice,
+        m_swapchainImageContextStdVector_renderTargetDepthView[index][renderTarget],
+        nullptr
+      );
+    }
   }
 
-  m_swapchainImageContextStdVector_renderTargetColorImage[index].empty();
-  m_swapchainImageContextStdVector_renderTargetDepthImage[index].empty();
-  m_swapchainImageContextStdVector_renderTargetColorView[index].empty();
-  m_swapchainImageContextStdVector_renderTargetDepthView[index].empty();
-  m_swapchainImageContextStdVector_renderTargetFrameBuffer[index].empty();
+  m_swapchainImageContextStdVector_renderTargetColorImage[index].clear();
+  m_swapchainImageContextStdVector_renderTargetDepthImage[index].clear();
+  m_swapchainImageContextStdVector_renderTargetColorView[index].clear();
+  m_swapchainImageContextStdVector_renderTargetDepthView[index].clear();
+  m_swapchainImageContextStdVector_renderTargetFrameBuffer[index].clear();
 }
 #endif
 
@@ -436,7 +476,8 @@ void VulkanGraphicsPlugin_VulkanGraphicsPlugin_Destructor()
 #endif
 
 #if 0
-// note: The output must not outlive the input - this modifies the input and returns a collection of views into that modified input!
+// note: The output must not outlive the input - this modifies the input and returns a collection of views into that
+// modified input!
 std::vector<const char*> VulkanGraphicsPlugin_VulkanGraphicsPluginParseExtensionString(char* names)
 {
   std::vector<const char*> list;
@@ -459,12 +500,22 @@ std::vector<const char*> VulkanGraphicsPlugin_VulkanGraphicsPluginParseExtension
 }
 #endif
 
-VKAPI_ATTR VkBool32 VKAPI_CALL VulkanGraphicsPlugin_debugMessageThunk(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* /*pUserData*/)
+VKAPI_ATTR VkBool32 VKAPI_CALL VulkanGraphicsPlugin_debugMessageThunk(
+  VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+  VkDebugUtilsMessageTypeFlagsEXT messageTypes,
+  const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+  void* /*pUserData*/
+)
 {
   VkBool32 result = VK_FALSE;
 
-  //return VulkanGraphicsPlugin_VulkanGraphicsPluginDebugMessage(messageSeverity, messageTypes, pCallbackData);
-  //VkBool32 VulkanGraphicsPlugin_VulkanGraphicsPluginDebugMessage(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData)
+  // return VulkanGraphicsPlugin_VulkanGraphicsPluginDebugMessage(messageSeverity, messageTypes, pCallbackData);
+  //
+  // VkBool32 VulkanGraphicsPlugin_VulkanGraphicsPluginDebugMessage(
+  //   VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+  //   VkDebugUtilsMessageTypeFlagsEXT messageTypes,
+  //   const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData
+  // )
   do
   {
     std::string flagNames;

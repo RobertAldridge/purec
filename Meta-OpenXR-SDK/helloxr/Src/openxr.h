@@ -787,7 +787,9 @@ static const XrSwapchainUsageFlags XR_SWAPCHAIN_USAGE_TRANSFER_DST_BIT = 0x00000
 static const XrSwapchainUsageFlags XR_SWAPCHAIN_USAGE_SAMPLED_BIT = 0x00000020;
 static const XrSwapchainUsageFlags XR_SWAPCHAIN_USAGE_MUTABLE_FORMAT_BIT = 0x00000040;
 static const XrSwapchainUsageFlags XR_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_MND = 0x00000080;
-static const XrSwapchainUsageFlags XR_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_KHR = 0x00000080; // alias of XR_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_MND
+
+// alias of XR_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_MND
+static const XrSwapchainUsageFlags XR_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_KHR = 0x00000080;
 
 typedef XrFlags64 XrCompositionLayerFlags;
 
@@ -2153,7 +2155,8 @@ typedef XrFlags64 XrOverlaySessionCreateFlagsEXTX;
 typedef XrFlags64 XrOverlayMainSessionFlagsEXTX;
 
 // Flag bits for XrOverlayMainSessionFlagsEXTX
-static const XrOverlayMainSessionFlagsEXTX XR_OVERLAY_MAIN_SESSION_ENABLED_COMPOSITION_LAYER_INFO_DEPTH_BIT_EXTX = 0x00000001;
+static const XrOverlayMainSessionFlagsEXTX XR_OVERLAY_MAIN_SESSION_ENABLED_COMPOSITION_LAYER_INFO_DEPTH_BIT_EXTX =
+0x00000001;
 
 // XrSessionCreateInfoOverlayEXTX extends XrSessionCreateInfo
 typedef struct XrSessionCreateInfoOverlayEXTX {
@@ -2435,8 +2438,12 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetSwapchainStateFB(
 typedef XrFlags64 XrCompositionLayerSecureContentFlagsFB;
 
 // Flag bits for XrCompositionLayerSecureContentFlagsFB
-static const XrCompositionLayerSecureContentFlagsFB XR_COMPOSITION_LAYER_SECURE_CONTENT_EXCLUDE_LAYER_BIT_FB = 0x00000001;
-static const XrCompositionLayerSecureContentFlagsFB XR_COMPOSITION_LAYER_SECURE_CONTENT_REPLACE_LAYER_BIT_FB = 0x00000002;
+
+static const XrCompositionLayerSecureContentFlagsFB XR_COMPOSITION_LAYER_SECURE_CONTENT_EXCLUDE_LAYER_BIT_FB =
+  0x00000001;
+
+static const XrCompositionLayerSecureContentFlagsFB XR_COMPOSITION_LAYER_SECURE_CONTENT_REPLACE_LAYER_BIT_FB =
+  0x00000002;
 
 // XrCompositionLayerSecureContentFB extends XrCompositionLayerBaseHeader
 typedef struct XrCompositionLayerSecureContentFB {
@@ -3723,7 +3730,10 @@ typedef XrFlags64 XrSemanticLabelsSupportFlagsFB;
 
 // Flag bits for XrSemanticLabelsSupportFlagsFB
 static const XrSemanticLabelsSupportFlagsFB XR_SEMANTIC_LABELS_SUPPORT_MULTIPLE_SEMANTIC_LABELS_BIT_FB = 0x00000001;
-static const XrSemanticLabelsSupportFlagsFB XR_SEMANTIC_LABELS_SUPPORT_ACCEPT_DESK_TO_TABLE_MIGRATION_BIT_FB = 0x00000002;
+
+static const XrSemanticLabelsSupportFlagsFB XR_SEMANTIC_LABELS_SUPPORT_ACCEPT_DESK_TO_TABLE_MIGRATION_BIT_FB =
+  0x00000002;
+
 static const XrSemanticLabelsSupportFlagsFB XR_SEMANTIC_LABELS_SUPPORT_ACCEPT_INVISIBLE_WALL_FACE_BIT_FB = 0x00000004;
 
 typedef XrExtent3Df XrExtent3DfFB;
@@ -4567,8 +4577,11 @@ typedef XrFlags64 XrPerformanceMetricsCounterFlagsMETA;
 
 // Flag bits for XrPerformanceMetricsCounterFlagsMETA
 static const XrPerformanceMetricsCounterFlagsMETA XR_PERFORMANCE_METRICS_COUNTER_ANY_VALUE_VALID_BIT_META = 0x00000001;
+
 static const XrPerformanceMetricsCounterFlagsMETA XR_PERFORMANCE_METRICS_COUNTER_UINT_VALUE_VALID_BIT_META = 0x00000002;
-static const XrPerformanceMetricsCounterFlagsMETA XR_PERFORMANCE_METRICS_COUNTER_FLOAT_VALUE_VALID_BIT_META = 0x00000004;
+
+static const XrPerformanceMetricsCounterFlagsMETA XR_PERFORMANCE_METRICS_COUNTER_FLOAT_VALUE_VALID_BIT_META =
+  0x00000004;
 
 typedef struct XrPerformanceMetricsStateMETA {
  XrStructureType type;

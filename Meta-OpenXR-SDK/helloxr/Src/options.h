@@ -126,7 +126,10 @@ constexpr XrViewConfigurationType gOptions_XrViewConfigurationType {XR_VIEW_CONF
 //XR_ENVIRONMENT_BLEND_MODE_OPAQUE
 //XR_ENVIRONMENT_BLEND_MODE_ADDITIVE
 //XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND
-constexpr XrEnvironmentBlendMode gOptions_XrEnvironmentBlendMode {XR_ENVIRONMENT_BLEND_MODE_OPAQUE/*XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND*/};
+constexpr XrEnvironmentBlendMode gOptions_XrEnvironmentBlendMode
+{
+  XR_ENVIRONMENT_BLEND_MODE_OPAQUE/*XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND*/
+};
 
 constexpr float gOptions_SlateGrey[4] {0.184313729f, 0.309803933f, 0.309803933f, 1.0f};
 constexpr float gOptions_Grey[4] {0.5f, 0.5f, 0.5f, 1.0f};

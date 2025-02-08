@@ -42,8 +42,8 @@ void Write(Level severity, const std::string& msg)
 
   out.fill('0');
 
-  out << "[" << std::setw(2) << now_tm.tm_hour << ":" << std::setw(2) << now_tm.tm_min << ":" << std::setw(2) << now_tm.tm_sec
-    << "." << std::setw(3) << milliseconds << "]"
+  out << "[" << std::setw(2) << now_tm.tm_hour << ":" << std::setw(2) << now_tm.tm_min << ":" << std::setw(2)
+    << now_tm.tm_sec << "." << std::setw(3) << milliseconds << "]"
     << "[" << severityName[severity] << "] " << msg << std::endl;
 
   // Ensure output is serialized

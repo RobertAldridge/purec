@@ -16,7 +16,11 @@ std::string XrSdkLogObjectInfo::ToString() const
   return oss.str();
 }
 
-void ObjectInfoCollection::AddObjectName(uint64_t object_handle, XrObjectType object_type, const std::string& object_name)
+void ObjectInfoCollection::AddObjectName(
+  uint64_t object_handle,
+  XrObjectType object_type,
+  const std::string& object_name
+)
 {
   do
   {
@@ -125,7 +129,15 @@ std::vector<XrDebugUtilsObjectNameInfoEXT> PopulateObjectNameInfo(std::vector<Xr
 
   std::transform(obj.begin(), obj.end(), std::back_inserter(ret), [](XrSdkLogObjectInfo const& info)
   {
-    return XrDebugUtilsObjectNameInfoEXT {XR_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT, nullptr, info.type, info.handle, info.name.c_str() };
+    return XrDebugUtilsObjectNameInfoEXT
+    {
+      XR_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
+      nullptr,
+      info.type,
+      info.handle,
+      info.name.c_str()
+    };
+
   } );
 
   return ret;
@@ -155,7 +167,8 @@ void DebugUtilsData::LookUpSessionLabels(XrSession session, std::vector<XrDebugU
     auto& XrSdkSessionLabels = *session_label_iterator->second;
 
     // Copy the debug utils labels in reverse order in the the labels vector.
-    std::transform(XrSdkSessionLabels.rbegin(), XrSdkSessionLabels.rend(), std::back_inserter(labels), [](XrSdkSessionLabelPtr const& label)
+    std::transform(XrSdkSessionLabels.rbegin(), XrSdkSessionLabels.rend(), std::back_inserter(labels),
+    [](XrSdkSessionLabelPtr const& label)
     {
       return label->debug_utils_label;
     } );
@@ -289,7 +302,10 @@ NamesAndLabels DebugUtilsData::PopulateNamesAndLabels(std::vector<XrSdkLogObject
   return {objects, labels};
 }
 
-void DebugUtilsData::WrapCallbackData(AugmentedCallbackData* aug_data, const XrDebugUtilsMessengerCallbackDataEXT* callback_data) const
+void DebugUtilsData::WrapCallbackData(
+  AugmentedCallbackData* aug_data,
+  const XrDebugUtilsMessengerCallbackDataEXT* callback_data
+) const
 {
   do
   {

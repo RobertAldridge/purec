@@ -7,7 +7,11 @@
 
 #define FILE_AND_LINE_CHECK __FILE__ ":" TOSTRING_CHECK(__LINE__)
 
-[ [noreturn] ] inline void ThrowCheck(std::string failureMessage, const char* originator = nullptr, const char* sourceLocation = nullptr)
+[ [noreturn] ] inline void ThrowCheck(
+  std::string failureMessage,
+  const char* originator = nullptr,
+  const char* sourceLocation = nullptr
+)
 {
   if(originator != nullptr)
     failureMessage += Fmt("\nOrigin: %s", originator);
@@ -36,7 +40,11 @@
   \
   }while(0)
 
-[ [noreturn] ] inline void ThrowXrResult(XrResult res, const char* originator = nullptr, const char* sourceLocation = nullptr)
+[ [noreturn] ] inline void ThrowXrResult(
+  XrResult res,
+  const char* originator = nullptr,
+  const char* sourceLocation = nullptr
+)
 {
   ThrowCheck(Fmt("XrResult failure [%s]", to_string(res) ), originator, sourceLocation);
 }

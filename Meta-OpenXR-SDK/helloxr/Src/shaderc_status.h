@@ -2,7 +2,8 @@
 // shaderc_status.h
 
 // Indicate the status of a compilation.
-typedef enum {
+enum shaderc_compilation_status
+{
  shaderc_compilation_status_success = 0,
  shaderc_compilation_status_invalid_stage = 1, // error stage deduction
  shaderc_compilation_status_compilation_error = 2,
@@ -12,4 +13,4 @@ typedef enum {
  shaderc_compilation_status_validation_error = 6,
  shaderc_compilation_status_transformation_error = 7,
  shaderc_compilation_status_configuration_error = 8,
-} shaderc_compilation_status;
+};

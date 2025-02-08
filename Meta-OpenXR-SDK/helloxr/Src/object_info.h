@@ -175,7 +175,10 @@ public:
 
   NamesAndLabels PopulateNamesAndLabels(std::vector<XrSdkLogObjectInfo> objects) const;
 
-  void WrapCallbackData(AugmentedCallbackData* aug_data, const XrDebugUtilsMessengerCallbackDataEXT* provided_callback_data) const;
+  void WrapCallbackData(
+    AugmentedCallbackData* aug_data,
+    const XrDebugUtilsMessengerCallbackDataEXT* provided_callback_data
+  ) const;
 
 private:
 

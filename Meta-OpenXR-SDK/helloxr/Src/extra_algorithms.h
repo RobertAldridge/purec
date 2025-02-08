@@ -12,7 +12,10 @@ template <typename T, typename Pred> static inline void map_erase_if(T& containe
   }
 }
 
-template <typename T, typename Alloc, typename Pred> static inline void vector_remove_if_and_erase(std::vector<T, Alloc>& vec, Pred&& predicate)
+template <typename T, typename Alloc, typename Pred> static inline void vector_remove_if_and_erase(
+  std::vector<T, Alloc>& vec,
+  Pred&& predicate
+)
 {
   auto b = vec.begin();
   auto e = vec.end();

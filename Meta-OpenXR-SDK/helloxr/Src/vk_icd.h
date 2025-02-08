@@ -80,7 +80,8 @@ static inline bool valid_loader_magic_value(void *pNewObject)
  * Windows and Linux ICDs will treat VkSurfaceKHR as a pointer to a struct that
  * contains the platform-specific connection and surface information.
  */
-typedef enum {
+enum VkIcdWsiPlatform
+{
  VK_ICD_WSI_PLATFORM_MIR,
  VK_ICD_WSI_PLATFORM_WAYLAND,
  VK_ICD_WSI_PLATFORM_WIN32,
@@ -94,7 +95,7 @@ typedef enum {
  VK_ICD_WSI_PLATFORM_GGP,
  VK_ICD_WSI_PLATFORM_SCREEN,
  VK_ICD_WSI_PLATFORM_FUCHSIA,
-} VkIcdWsiPlatform;
+};
 
 typedef struct {
  VkIcdWsiPlatform platform;

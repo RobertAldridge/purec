@@ -185,4 +185,8 @@ void anagOnInputQueueCreated(ANativeActivity* activity, AInputQueue* queue);
 
 void anagOnInputQueueDestroyed(ANativeActivity* activity, AInputQueue* queue);
 
-extern "C" __attribute__ ( (visibility ("default") ) ) void ANativeActivity_onCreate(ANativeActivity* activity, void* savedState, size_t savedStateSize);
+extern "C" __attribute__ ( (visibility ("default") ) ) void ANativeActivity_onCreate(
+  ANativeActivity* activity,
+  void* savedState,
+  size_t savedStateSize
+);

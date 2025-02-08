@@ -1202,6 +1202,8 @@ XR_YVR_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_YVR_controller_interaction"
     validationLayerNames.push_back("VK_LAYER_KHRONOS_validation");
     validationLayerNames.push_back("VK_LAYER_LUNARG_standard_validation");
 
+    bool continueForLoop = true;
+
     // Enable only one validation layer from the list above. Prefer KHRONOS.
     for(auto& validationLayerName : validationLayerNames)
     {
@@ -1210,12 +1212,16 @@ XR_YVR_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_YVR_controller_interaction"
         if(0 == strcmp(validationLayerName, layerProperties.layerName) )
         {
           validationLayerName = validationLayerName;
-          goto label_return;
+          continueForLoop = false;
         }
-      }
-    }
 
-label_return:
+        if( !continueForLoop)
+          break;
+      }
+
+      if( !continueForLoop)
+        break;
+    }
   }
 
   if(validationLayerName)
@@ -5269,7 +5275,7 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
       //  VkImage image;
       //};
 
-      gEnvironmentDepthImages.empty();
+      gEnvironmentDepthImages.clear();
 
       for(int index = 0; index < gEnvironmentDepthSwapChainLength; index++)
       {
@@ -5284,7 +5290,7 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
         (XrSwapchainImageBaseHeader*)gEnvironmentDepthImages.data()
       );
 
-      gEnvironmentDepthTextures.empty();
+      gEnvironmentDepthTextures.clear();
 
       for(int index = 0; index < gEnvironmentDepthSwapChainLength; index++)
         gEnvironmentDepthTextures.push_back(gEnvironmentDepthImages[index].image);
