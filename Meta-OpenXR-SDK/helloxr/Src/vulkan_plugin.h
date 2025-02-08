@@ -136,22 +136,24 @@ R"_(
 
   layout(location = 0) out vec4 fragColor;
 
-  vec2 positions[3] = vec2[](
-      vec2(0.0, -0.5),
-      vec2(0.5, 0.5),
-      vec2(-0.5, 0.5)
+  vec2 positions[3] = vec2[]
+  (
+    vec2(0.0, -0.5),
+    vec2(0.5, 0.5),
+    vec2(-0.5, 0.5)
   );
 
-  vec4 colors[3] = vec4[](
-      vec4(1.0, 0.0, 0.0, 1.0),
-      vec4(0.0, 1.0, 0.0, 1.0),
-      vec4(0.0, 0.0, 1.0, 1.0)
+  vec4 colors[3] = vec4[]
+  (
+    vec4(1.0, 0.0, 0.0, 1.0),
+    vec4(0.0, 1.0, 0.0, 1.0),
+    vec4(0.0, 0.0, 1.0, 1.0)
   );
 
   void main()
   {
-      gl_Position = vec4(positions[gl_VertexIndex], 0.0, 1.0);
-      fragColor = colors[gl_VertexIndex % 3];
+    gl_Position = vec4(positions[gl_VertexIndex], 0.0, 1.0);
+    fragColor = colors[gl_VertexIndex % 3];
   }
 
 )_";
@@ -167,7 +169,7 @@ R"_(
 
   void main()
   {
-      outColor = vec4(fragColor, 1.0);
+    outColor = vec4(fragColor, 1.0);
   }
 
 )_";
@@ -185,7 +187,8 @@ R"_(
   }ubuf;
 
   layout (location = 0) in vec3 Position;
-  layout (location = 1) in vec3 Color;
+  layout (location = 1) in vec3 Normal;
+  layout (location = 2) in vec3 Color;
 
   layout (location = 0) out vec4 fragColor;
 
@@ -194,54 +197,17 @@ R"_(
     vec4 gl_Position;
   };
 
-  vec4 colors[36] = vec4[](
-      vec4(0.0, 0.0, 0.0, 1.0),
-      vec4(0.0, 0.0, 0.0, 1.0),
-      vec4(1.0, 1.0, 1.0, 1.0),
-      vec4(0.0, 0.0, 0.0, 1.0),
-      vec4(1.0, 1.0, 1.0, 1.0),
-      vec4(0.0, 0.0, 0.0, 1.0),
-
-      vec4(0.79, 0.79, 0.79, 1.0),
-      vec4(0.25, 0.25, 0.25, 1.0),
-      vec4(0.25, 0.25, 0.25, 1.0),
-      vec4(0.79, 0.79, 0.79, 1.0),
-      vec4(0.25, 0.25, 0.25, 1.0),
-      vec4(0.25, 0.25, 0.25, 1.0),
-
-      vec4(0.0, 1.0, 0.0, 1.0),
-      vec4(1.0, 0.0, 0.0, 1.0),
-      vec4(0.0, 1.0, 0.0, 1.0),
-      vec4(0.0, 1.0, 0.0, 1.0),
-      vec4(0.0, 1.0, 0.0, 1.0),
-      vec4(0.0, 0.0, 1.0, 1.0),
-
-      vec4(1.0, 0.0, 0.0, 1.0),
-      vec4(0.0, 1.0, 0.0, 1.0),
-      vec4(0.0, 0.0, 1.0, 1.0),
-      vec4(1.0, 0.0, 0.0, 1.0),
-      vec4(0.0, 0.0, 1.0, 1.0),
-      vec4(0.0, 1.0, 0.0, 1.0),
-
-      vec4(0.0, 0.54, 0.54, 1.0),
-      vec4(0.0, 0.54, 0.54, 1.0),
-      vec4(0.54, 0.54, 0.54, 1.0),
-      vec4(0.0, 0.54, 0.54, 1.0),
-      vec4(0.54, 0.54, 0.54, 1.0),
-      vec4(0.0, 0.54, 0.54, 1.0),
-
-      vec4(0.54, 0.54, 0.0, 1.0),
-      vec4(0.54, 0.54, 0.0, 1.0),
-      vec4(0.54, 0.54, 0.54, 1.0),
-      vec4(0.54, 0.54, 0.0, 1.0),
-      vec4(0.54, 0.54, 0.54, 1.0),
-      vec4(0.54, 0.54, 0.0, 1.0)
-  );
+  //vec4 colors[3] = vec4[]
+  //(
+  //  vec4(1.0, 0.0, 0.0, 1.0),
+  //  vec4(0.0, 1.0, 0.0, 1.0),
+  //  vec4(0.0, 0.0, 1.0, 1.0)
+  //);
 
   void main()
   {
-    //fragColor = vec4(Color, 1.0);
-    fragColor = colors[gl_VertexIndex];
+    //fragColor = colors[gl_VertexIndex % 3];
+    fragColor = vec4(Color, 1.0);
 
     gl_Position = ubuf.mvp * vec4(Position, 1.0);
   }

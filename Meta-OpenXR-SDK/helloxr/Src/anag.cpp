@@ -2056,13 +2056,15 @@ struct VkExtensionProperties
       CHECK_VULKANCMD(tableVk.CreatePipelineLayout(gVkDevice, &pipelineLayoutCreateInfo, nullptr, &gVkPipelineLayout) );
   }
 
-  static_assert(sizeof(Geometry::Vertex) == 24, "Unexpected Vertex size");
+  static_assert(sizeof(Geometry::Vertex) == 36, "Unexpected Vertex size");
 
   gVertexBufferBaseAttrDesc =
   {
     {0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Position) },
 
-    {1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Color) }
+    {1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Normal) },
+
+    {2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Color) }
   };
 
   uint32_t numCubeIdicies = sizeof(Geometry::c_cubeIndices) / sizeof(Geometry::c_cubeIndices[0] );
