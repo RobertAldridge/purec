@@ -1789,7 +1789,9 @@ struct VkExtensionProperties
     CHECK_VULKANCMD(err);
   }
 
+#if defined(VULKAN_DEBUG_OBJECT_NAMER)
   gVulkanGraphicsPluginVulkanDebugObjectNamer.Init(gVkInstance, gVkDevice);
+#endif
 
   if(tableVk.GetDeviceQueue)
     tableVk.GetDeviceQueue(gVkDevice, queueInfo.queueFamilyIndex, 0, &gVulkanGraphicsPluginVkQueue);
@@ -1945,11 +1947,13 @@ struct VkExtensionProperties
   if(tableVk.CreateSemaphore)
     CHECK_VULKANCMD(tableVk.CreateSemaphore(gVkDevice, &semInfo, nullptr, &gVulkanGraphicsPluginVkSemaphoreDrawDone) );
 
+#if defined(VULKAN_DEBUG_OBJECT_NAMER)
   CHECK_VULKANCMD(gVulkanGraphicsPluginVulkanDebugObjectNamer.SetName(
     VK_OBJECT_TYPE_SEMAPHORE,
     (uint64_t)gVulkanGraphicsPluginVkSemaphoreDrawDone,
     "helloxr draw done semaphore"
   ) );
+#endif
 
   bool CmdBuffer_CmdBufferInit_Result = false;
   // CmdBuffer_CmdBufferInit(
@@ -1987,11 +1991,13 @@ struct VkExtensionProperties
     if(tableVk.CreateCommandPool)
       CHECK_VULKANCMD(tableVk.CreateCommandPool(gVkDevice, &cmdPoolInfo, nullptr, &gCmdBufferPool) );
 
+#if defined(VULKAN_DEBUG_OBJECT_NAMER)
     CHECK_VULKANCMD(gVulkanGraphicsPluginVulkanDebugObjectNamer.SetName(
       VK_OBJECT_TYPE_COMMAND_POOL,
       (uint64_t)gCmdBufferPool,
       "helloxr command pool"
     ) );
+#endif
 
     // Create the command buffer from the command pool
     VkCommandBufferAllocateInfo cmd {VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO};
@@ -2002,22 +2008,26 @@ struct VkExtensionProperties
     if(tableVk.AllocateCommandBuffers)
       CHECK_VULKANCMD(tableVk.AllocateCommandBuffers(gVkDevice, &cmd, &gCmdBufferBuffer) );
 
+#if defined(VULKAN_DEBUG_OBJECT_NAMER)
     CHECK_VULKANCMD(gVulkanGraphicsPluginVulkanDebugObjectNamer.SetName(
       VK_OBJECT_TYPE_COMMAND_BUFFER,
       (uint64_t)gCmdBufferBuffer,
       "helloxr command buffer"
     ) );
+#endif
 
     VkFenceCreateInfo fenceInfo {VK_STRUCTURE_TYPE_FENCE_CREATE_INFO};
 
     if(tableVk.CreateFence)
       CHECK_VULKANCMD(tableVk.CreateFence(gVkDevice, &fenceInfo, nullptr, &gCmdBufferExecFence) );
 
+#if defined(VULKAN_DEBUG_OBJECT_NAMER)
     CHECK_VULKANCMD(gVulkanGraphicsPluginVulkanDebugObjectNamer.SetName(
       VK_OBJECT_TYPE_FENCE,
       (uint64_t)gCmdBufferExecFence,
       "helloxr fence"
     ) );
+#endif
 
     gCmdBufferState = CmdBufferStateEnum::Initialized;
 
@@ -2937,7 +2947,10 @@ struct VkExtensionProperties
           m_swapchainImageContextPipe_pipelineTopology.resize(indice + 1);
           m_swapchainImageContextPipe_pipelineDynamicStateEnables.resize(indice + 1);
           m_swapchainImageContextSwapchainImageType.resize(indice + 1);
+
+#if defined(VULKAN_DEBUG_OBJECT_NAMER)
           m_swapchainImageContextNamer.resize(indice + 1);
+#endif
 
           //m_swapchainImageContextSwapchainImages[indice].push_back( {swapchainImageType, 0, 0} );
           //m_swapchainImageContextStdVector_renderTargetColorImage[indice].push_back(VK_NULL_HANDLE);
@@ -2956,7 +2969,10 @@ struct VkExtensionProperties
           m_swapchainImageContextPipe_pipelineTopology[indice] = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
           //m_swapchainImageContextPipe_pipelineDynamicStateEnables[indice].push_back(VK_DYNAMIC_STATE_MAX_ENUM);
           m_swapchainImageContextSwapchainImageType[indice] = swapchainImageType;
+
+#if defined(VULKAN_DEBUG_OBJECT_NAMER)
           m_swapchainImageContextNamer[indice] = gVulkanGraphicsPluginVulkanDebugObjectNamer;
+#endif
         }
 
         //gVulkanGraphicsPluginStdList_SwapchainImageContext.push_back(
@@ -2992,7 +3008,9 @@ struct VkExtensionProperties
         //   const XrSwapchainCreateInfo& swapchainCreateInfo
         // )
         {
+#if defined(VULKAN_DEBUG_OBJECT_NAMER)
           m_swapchainImageContextNamer[indice] = gVulkanGraphicsPluginVulkanDebugObjectNamer;
+#endif
 
           m_swapchainImageContextSize[indice] = {swapchainCreateInfo.width, swapchainCreateInfo.height};
           VkFormat colorFormat = (VkFormat)swapchainCreateInfo.format;
@@ -3041,11 +3059,13 @@ struct VkExtensionProperties
               ) );
             }
 
+#if defined(VULKAN_DEBUG_OBJECT_NAMER)
             CHECK_VULKANCMD(m_swapchainImageContextNamer[indice].SetName(
               VK_OBJECT_TYPE_IMAGE,
               (uint64_t)m_swapchainImageContext_depthBufferDepthImage[indice],
               "helloxr fallback depth image"
             ) );
+#endif
 
             VkMemoryRequirements memRequirements {};
 
@@ -3064,11 +3084,13 @@ struct VkExtensionProperties
               VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
             );
 
+#if defined(VULKAN_DEBUG_OBJECT_NAMER)
             CHECK_VULKANCMD(m_swapchainImageContextNamer[indice].SetName(
               VK_OBJECT_TYPE_DEVICE_MEMORY,
               (uint64_t)m_swapchainImageContext_depthBufferDepthMemory[indice],
               "helloxr fallback depth image memory"
             ) );
+#endif
 
             if(tableVk.BindImageMemory)
             {
@@ -3157,11 +3179,13 @@ struct VkExtensionProperties
               ) );
             }
 
+#if defined(VULKAN_DEBUG_OBJECT_NAMER)
             CHECK_VULKANCMD(m_swapchainImageContextNamer[indice].SetName(
               VK_OBJECT_TYPE_RENDER_PASS,
               (uint64_t)m_swapchainImageContext_renderPassPass[indice],
               "helloxr render pass"
             ) );
+#endif
 
             //return true;
           }
@@ -4195,12 +4219,14 @@ struct VkExtensionProperties
                       renderTargetColorView;
                   }
 
+#if defined(VULKAN_DEBUG_OBJECT_NAMER)
                   CHECK_VULKANCMD(m_swapchainImageContextNamer[swapchainContextIndex].SetName(
                     VK_OBJECT_TYPE_IMAGE_VIEW,
                     (uint64_t)m_swapchainImageContextStdVector_renderTargetColorView
                       [swapchainContextIndex][renderTarget],
                     "helloxr color image view"
                   ) );
+#endif
 
                   attachments[attachmentCount++] =
                     m_swapchainImageContextStdVector_renderTargetColorView[swapchainContextIndex][renderTarget];
@@ -4244,12 +4270,14 @@ struct VkExtensionProperties
                       renderTargetDepthView;
                   }
 
+#if defined(VULKAN_DEBUG_OBJECT_NAMER)
                   CHECK_VULKANCMD(m_swapchainImageContextNamer[swapchainContextIndex].SetName(
                     VK_OBJECT_TYPE_IMAGE_VIEW,
                     (uint64_t)m_swapchainImageContextStdVector_renderTargetDepthView
                       [swapchainContextIndex][renderTarget],
                     "helloxr depth image view"
                   ) );
+#endif
 
                   attachments[attachmentCount++] =
                     m_swapchainImageContextStdVector_renderTargetDepthView[swapchainContextIndex][renderTarget];
@@ -4274,12 +4302,14 @@ struct VkExtensionProperties
                     renderTargetFrameBuffer;
                 }
 
+#if defined(VULKAN_DEBUG_OBJECT_NAMER)
                 CHECK_VULKANCMD(m_swapchainImageContextNamer[swapchainContextIndex].SetName(
                   VK_OBJECT_TYPE_FRAMEBUFFER,
                   (uint64_t)m_swapchainImageContextStdVector_renderTargetFrameBuffer
                     [swapchainContextIndex][renderTarget],
                   "helloxr framebuffer"
                 ) );
+#endif
 
               }while(0);
 

@@ -122,6 +122,8 @@
 #include <vector>
 #include <version>
 
+//#define VULKAN_DEBUG_OBJECT_NAMER 1
+
 #define USE_EXPERIMENTAL_FS 0
 #define USE_FINAL_FS 1
 

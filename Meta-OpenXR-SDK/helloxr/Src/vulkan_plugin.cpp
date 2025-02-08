@@ -67,7 +67,9 @@ std::vector<std::vector<VkDynamicState> > m_swapchainImageContextPipe_pipelineDy
 
 std::vector<XrStructureType> m_swapchainImageContextSwapchainImageType;
 
+#if defined(VULKAN_DEBUG_OBJECT_NAMER)
 std::vector<VulkanDebugObjectNamer> m_swapchainImageContextNamer;
+#endif
 
 XrGraphicsBindingVulkan2KHR gVulkanGraphicsPluginXrGraphicsBindingVulkan2KHR {XR_TYPE_GRAPHICS_BINDING_VULKAN2_KHR};
 
@@ -77,7 +79,9 @@ std::vector<int> gVulkanGraphicsPluginStdList_SwapchainImageContext;
 std::map<const XrSwapchainImageBaseHeader*, int>
   gVulkanGraphicsPluginStdMap_XrSwapchainImageBaseHeader_SwapchainImageContext;
 
+#if defined(VULKAN_DEBUG_OBJECT_NAMER)
 VulkanDebugObjectNamer gVulkanGraphicsPluginVulkanDebugObjectNamer {};
+#endif
 
 uint32_t gVulkanGraphicsPluginQueueFamilyIndex = 0;
 

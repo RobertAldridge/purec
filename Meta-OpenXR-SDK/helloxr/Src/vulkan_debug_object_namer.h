@@ -1,6 +1,8 @@
 
 // vulkan_debug_object_namer.h
 
+#if defined(VULKAN_DEBUG_OBJECT_NAMER)
+
 class VulkanDebugObjectNamer
 {
 public:
@@ -10,7 +12,12 @@ public:
   VulkanDebugObjectNamer(VkInstance instance, VkDevice device)
   {
     if(instance && tableVk.GetInstanceProcAddr)
-      BlahVkSetDebugUtilsObjectNameEXT = (PFN_vkSetDebugUtilsObjectNameEXT)tableVk.GetInstanceProcAddr(instance, "vkSetDebugUtilsObjectNameEXT");
+    {
+      BlahVkSetDebugUtilsObjectNameEXT = (PFN_vkSetDebugUtilsObjectNameEXT)tableVk.GetInstanceProcAddr(
+        instance,
+        "vkSetDebugUtilsObjectNameEXT"
+      );
+    }
   }
 
   VulkanDebugObjectNamer(const VulkanDebugObjectNamer& ) = default;
@@ -33,7 +40,14 @@ public:
   {
     if(gVkDevice && BlahVkSetDebugUtilsObjectNameEXT)
     {
-      VkDebugUtilsObjectNameInfoEXT nameInfo {VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT, nullptr, objectType, objectHandle, pObjectName};
+      VkDebugUtilsObjectNameInfoEXT nameInfo
+      {
+        VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
+        nullptr,
+        objectType,
+        objectHandle,
+        pObjectName
+      };
 
       return BlahVkSetDebugUtilsObjectNameEXT(gVkDevice, &nameInfo);
     }
@@ -50,3 +64,5 @@ private:
 
   PFN_vkSetDebugUtilsObjectNameEXT BlahVkSetDebugUtilsObjectNameEXT {nullptr};
 };
+
+#endif

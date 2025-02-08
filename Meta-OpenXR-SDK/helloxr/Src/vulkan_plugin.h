@@ -93,7 +93,9 @@ extern std::vector<std::vector<VkDynamicState> > m_swapchainImageContextPipe_pip
 
 extern std::vector<XrStructureType> m_swapchainImageContextSwapchainImageType;
 
+#if defined(VULKAN_DEBUG_OBJECT_NAMER)
 extern std::vector<VulkanDebugObjectNamer> m_swapchainImageContextNamer;
+#endif
 
 extern XrGraphicsBindingVulkan2KHR gVulkanGraphicsPluginXrGraphicsBindingVulkan2KHR;
 
@@ -102,7 +104,9 @@ extern std::vector<int> gVulkanGraphicsPluginStdList_SwapchainImageContext;
 
 extern std::map<const XrSwapchainImageBaseHeader*, int> gVulkanGraphicsPluginStdMap_XrSwapchainImageBaseHeader_SwapchainImageContext;
 
+#if defined(VULKAN_DEBUG_OBJECT_NAMER)
 extern VulkanDebugObjectNamer gVulkanGraphicsPluginVulkanDebugObjectNamer;
+#endif
 
 extern uint32_t gVulkanGraphicsPluginQueueFamilyIndex;
 
