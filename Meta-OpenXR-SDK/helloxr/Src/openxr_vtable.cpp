@@ -6,11 +6,11 @@
 struct XrGeneratedDispatchTableCore tableXr;
 
 // dispatch tableXr blah function
-int InitOpenXr()
+int InitOpenXr1()
 {
   void* libopenxr = 0;
 
-  if(tableXr.GetInstanceProcAddr)
+  if(tableXr.CreateInstance)
     return 1;
 
   libopenxr = dlopen("libopenxr_loader.so", RTLD_NOW | RTLD_LOCAL);
@@ -18,75 +18,315 @@ int InitOpenXr()
     return 0;
 
   // ---- Core 1.0 commands
-  tableXr.GetInstanceProcAddr = reinterpret_cast<PFN_xrGetInstanceProcAddr>(dlsym(libopenxr, "xrGetInstanceProcAddr") );
 
-  tableXr.AcquireSwapchainImage = reinterpret_cast<PFN_xrAcquireSwapchainImage>(dlsym(libopenxr, "xrAcquireSwapchainImage") );
-  tableXr.ApplyHapticFeedback = reinterpret_cast<PFN_xrApplyHapticFeedback>(dlsym(libopenxr, "xrApplyHapticFeedback") );
-  tableXr.AttachSessionActionSets = reinterpret_cast<PFN_xrAttachSessionActionSets>(dlsym(libopenxr, "xrAttachSessionActionSets") );
-  tableXr.BeginFrame = reinterpret_cast<PFN_xrBeginFrame>(dlsym(libopenxr, "xrBeginFrame") );
-  tableXr.BeginSession = reinterpret_cast<PFN_xrBeginSession>(dlsym(libopenxr, "xrBeginSession") );
-  tableXr.CreateAction = reinterpret_cast<PFN_xrCreateAction>(dlsym(libopenxr, "xrCreateAction") );
-  tableXr.CreateActionSet = reinterpret_cast<PFN_xrCreateActionSet>(dlsym(libopenxr, "xrCreateActionSet") );
-  tableXr.CreateActionSpace = reinterpret_cast<PFN_xrCreateActionSpace>(dlsym(libopenxr, "xrCreateActionSpace") );
-  tableXr.CreateInstance = reinterpret_cast<PFN_xrCreateInstance>(dlsym(libopenxr, "xrCreateInstance") );
-  tableXr.CreateReferenceSpace = reinterpret_cast<PFN_xrCreateReferenceSpace>(dlsym(libopenxr, "xrCreateReferenceSpace") );
-  tableXr.CreateSession = reinterpret_cast<PFN_xrCreateSession>(dlsym(libopenxr, "xrCreateSession") );
-  tableXr.CreateSwapchain = reinterpret_cast<PFN_xrCreateSwapchain>(dlsym(libopenxr, "xrCreateSwapchain") );
-  tableXr.DestroyAction = reinterpret_cast<PFN_xrDestroyAction>(dlsym(libopenxr, "xrDestroyAction") );
-  tableXr.DestroyActionSet = reinterpret_cast<PFN_xrDestroyActionSet>(dlsym(libopenxr, "xrDestroyActionSet") );
-  tableXr.DestroyInstance = reinterpret_cast<PFN_xrDestroyInstance>(dlsym(libopenxr, "xrDestroyInstance") );
-  tableXr.DestroySession = reinterpret_cast<PFN_xrDestroySession>(dlsym(libopenxr, "xrDestroySession") );
-  tableXr.DestroySpace = reinterpret_cast<PFN_xrDestroySpace>(dlsym(libopenxr, "xrDestroySpace") );
-  tableXr.DestroySwapchain = reinterpret_cast<PFN_xrDestroySwapchain>(dlsym(libopenxr, "xrDestroySwapchain") );
-  tableXr.EndFrame = reinterpret_cast<PFN_xrEndFrame>(dlsym(libopenxr, "xrEndFrame") );
-  tableXr.EndSession = reinterpret_cast<PFN_xrEndSession>(dlsym(libopenxr, "xrEndSession") );
-  tableXr.EnumerateApiLayerProperties = reinterpret_cast<PFN_xrEnumerateApiLayerProperties>(dlsym(libopenxr, "xrEnumerateApiLayerProperties") );
-  tableXr.EnumerateBoundSourcesForAction = reinterpret_cast<PFN_xrEnumerateBoundSourcesForAction>(dlsym(libopenxr, "xrEnumerateBoundSourcesForAction") );
-  tableXr.EnumerateEnvironmentBlendModes = reinterpret_cast<PFN_xrEnumerateEnvironmentBlendModes>(dlsym(libopenxr, "xrEnumerateEnvironmentBlendModes") );
-  tableXr.EnumerateInstanceExtensionProperties = reinterpret_cast<PFN_xrEnumerateInstanceExtensionProperties>(dlsym(libopenxr, "xrEnumerateInstanceExtensionProperties") );
-  tableXr.EnumerateReferenceSpaces = reinterpret_cast<PFN_xrEnumerateReferenceSpaces>(dlsym(libopenxr, "xrEnumerateReferenceSpaces") );
-  tableXr.EnumerateSwapchainFormats = reinterpret_cast<PFN_xrEnumerateSwapchainFormats>(dlsym(libopenxr, "xrEnumerateSwapchainFormats") );
-  tableXr.EnumerateSwapchainImages = reinterpret_cast<PFN_xrEnumerateSwapchainImages>(dlsym(libopenxr, "xrEnumerateSwapchainImages") );
-  tableXr.EnumerateViewConfigurationViews = reinterpret_cast<PFN_xrEnumerateViewConfigurationViews>(dlsym(libopenxr, "xrEnumerateViewConfigurationViews") );
-  tableXr.EnumerateViewConfigurations = reinterpret_cast<PFN_xrEnumerateViewConfigurations>(dlsym(libopenxr, "xrEnumerateViewConfigurations") );
-  tableXr.GetActionStateBoolean = reinterpret_cast<PFN_xrGetActionStateBoolean>(dlsym(libopenxr, "xrGetActionStateBoolean") );
-  tableXr.GetActionStateFloat = reinterpret_cast<PFN_xrGetActionStateFloat>(dlsym(libopenxr, "xrGetActionStateFloat") );
-  tableXr.GetActionStatePose = reinterpret_cast<PFN_xrGetActionStatePose>(dlsym(libopenxr, "xrGetActionStatePose") );
-  tableXr.GetActionStateVector2f = reinterpret_cast<PFN_xrGetActionStateVector2f>(dlsym(libopenxr, "xrGetActionStateVector2f") );
-  tableXr.GetCurrentInteractionProfile = reinterpret_cast<PFN_xrGetCurrentInteractionProfile>(dlsym(libopenxr, "xrGetCurrentInteractionProfile") );
-  tableXr.GetInputSourceLocalizedName = reinterpret_cast<PFN_xrGetInputSourceLocalizedName>(dlsym(libopenxr, "xrGetInputSourceLocalizedName") );
+  // tableXr.GetInstanceProcAddr
+  tableXr.GetInstanceProcAddr = (PFN_xrGetInstanceProcAddr)dlsym(libopenxr, "xrGetInstanceProcAddr");
 
-  tableXr.GetInstanceProperties = reinterpret_cast<PFN_xrGetInstanceProperties>(dlsym(libopenxr, "xrGetInstanceProperties") );
-  tableXr.GetReferenceSpaceBoundsRect = reinterpret_cast<PFN_xrGetReferenceSpaceBoundsRect>(dlsym(libopenxr, "xrGetReferenceSpaceBoundsRect") );
-  tableXr.GetSystem = reinterpret_cast<PFN_xrGetSystem>(dlsym(libopenxr, "xrGetSystem") );
-  tableXr.GetSystemProperties = reinterpret_cast<PFN_xrGetSystemProperties>(dlsym(libopenxr, "xrGetSystemProperties") );
-  tableXr.GetViewConfigurationProperties = reinterpret_cast<PFN_xrGetViewConfigurationProperties>(dlsym(libopenxr, "xrGetViewConfigurationProperties") );
-  tableXr.LocateSpace = reinterpret_cast<PFN_xrLocateSpace>(dlsym(libopenxr, "xrLocateSpace") );
-  tableXr.LocateViews = reinterpret_cast<PFN_xrLocateViews>(dlsym(libopenxr, "xrLocateViews") );
-  tableXr.PathToString = reinterpret_cast<PFN_xrPathToString>(dlsym(libopenxr, "xrPathToString") );
-  tableXr.PollEvent = reinterpret_cast<PFN_xrPollEvent>(dlsym(libopenxr, "xrPollEvent") );
-  tableXr.ReleaseSwapchainImage = reinterpret_cast<PFN_xrReleaseSwapchainImage>(dlsym(libopenxr, "xrReleaseSwapchainImage") );
-  tableXr.RequestExitSession = reinterpret_cast<PFN_xrRequestExitSession>(dlsym(libopenxr, "xrRequestExitSession") );
-  tableXr.ResultToString = reinterpret_cast<PFN_xrResultToString>(dlsym(libopenxr, "xrResultToString") );
-  tableXr.StopHapticFeedback = reinterpret_cast<PFN_xrStopHapticFeedback>(dlsym(libopenxr, "xrStopHapticFeedback") );
-  tableXr.StringToPath = reinterpret_cast<PFN_xrStringToPath>(dlsym(libopenxr, "xrStringToPath") );
-  tableXr.StructureTypeToString = reinterpret_cast<PFN_xrStructureTypeToString>(dlsym(libopenxr, "xrStructureTypeToString") );
-  tableXr.SuggestInteractionProfileBindings = reinterpret_cast<PFN_xrSuggestInteractionProfileBindings>(dlsym(libopenxr, "xrSuggestInteractionProfileBindings") );
-  tableXr.SyncActions = reinterpret_cast<PFN_xrSyncActions>(dlsym(libopenxr, "xrSyncActions") );
-  tableXr.WaitFrame = reinterpret_cast<PFN_xrWaitFrame>(dlsym(libopenxr, "xrWaitFrame") );
-  tableXr.WaitSwapchainImage = reinterpret_cast<PFN_xrWaitSwapchainImage>(dlsym(libopenxr, "xrWaitSwapchainImage") );
+  // tableXr.InitializeLoaderKHR
+  tableXr.GetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction*)&tableXr.InitializeLoaderKHR);
+
+  // tableXr.EnumerateInstanceExtensionProperties
+  tableXr.GetInstanceProcAddr(XR_NULL_HANDLE, "xrEnumerateInstanceExtensionProperties", (PFN_xrVoidFunction*)&tableXr.EnumerateInstanceExtensionProperties);
+
+  // tableXr.EnumerateApiLayerProperties
+  tableXr.GetInstanceProcAddr(XR_NULL_HANDLE, "xrEnumerateApiLayerProperties", (PFN_xrVoidFunction*)&tableXr.EnumerateApiLayerProperties);
+
+  // tableXr.CreateInstance
+  tableXr.GetInstanceProcAddr(XR_NULL_HANDLE, "xrCreateInstance", (PFN_xrVoidFunction*)&tableXr.CreateInstance);
+
+  return 1;
+}
+
+int InitOpenXr2()
+{
+  if(tableXr.BeginFrame)
+    return 1;
+
+  // ---- Core 1.0 commands
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetInstanceProcAddr", (PFN_xrVoidFunction*)&tableXr.GetInstanceProcAddr);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrInitializeLoaderKHR", (PFN_xrVoidFunction*)&tableXr.InitializeLoaderKHR);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrEnumerateInstanceExtensionProperties", (PFN_xrVoidFunction*)&tableXr.EnumerateInstanceExtensionProperties);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrEnumerateApiLayerProperties", (PFN_xrVoidFunction*)&tableXr.EnumerateApiLayerProperties);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateInstance", (PFN_xrVoidFunction*)&tableXr.CreateInstance);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrAcquireSwapchainImage", (PFN_xrVoidFunction*)&tableXr.AcquireSwapchainImage);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrApplyHapticFeedback", (PFN_xrVoidFunction*)&tableXr.ApplyHapticFeedback);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrAttachSessionActionSets", (PFN_xrVoidFunction*)&tableXr.AttachSessionActionSets);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrBeginFrame", (PFN_xrVoidFunction*)&tableXr.BeginFrame);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrBeginSession", (PFN_xrVoidFunction*)&tableXr.BeginSession);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateAction", (PFN_xrVoidFunction*)&tableXr.CreateAction);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateActionSet", (PFN_xrVoidFunction*)&tableXr.CreateActionSet);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateActionSpace", (PFN_xrVoidFunction*)&tableXr.CreateActionSpace);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateReferenceSpace", (PFN_xrVoidFunction*)&tableXr.CreateReferenceSpace);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateSession", (PFN_xrVoidFunction*)&tableXr.CreateSession);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateSwapchain", (PFN_xrVoidFunction*)&tableXr.CreateSwapchain);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrDestroyAction", (PFN_xrVoidFunction*)&tableXr.DestroyAction);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrDestroyActionSet", (PFN_xrVoidFunction*)&tableXr.DestroyActionSet);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrDestroyInstance", (PFN_xrVoidFunction*)&tableXr.DestroyInstance);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrDestroySession", (PFN_xrVoidFunction*)&tableXr.DestroySession);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrDestroySpace", (PFN_xrVoidFunction*)&tableXr.DestroySpace);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrDestroySwapchain", (PFN_xrVoidFunction*)&tableXr.DestroySwapchain);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrEndFrame", (PFN_xrVoidFunction*)&tableXr.EndFrame);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrEndSession", (PFN_xrVoidFunction*)&tableXr.EndSession);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrEnumerateBoundSourcesForAction", (PFN_xrVoidFunction*)&tableXr.EnumerateBoundSourcesForAction);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrEnumerateEnvironmentBlendModes", (PFN_xrVoidFunction*)&tableXr.EnumerateEnvironmentBlendModes);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrEnumerateReferenceSpaces", (PFN_xrVoidFunction*)&tableXr.EnumerateReferenceSpaces);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrEnumerateSwapchainFormats", (PFN_xrVoidFunction*)&tableXr.EnumerateSwapchainFormats);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrEnumerateSwapchainImages", (PFN_xrVoidFunction*)&tableXr.EnumerateSwapchainImages);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrEnumerateViewConfigurationViews", (PFN_xrVoidFunction*)&tableXr.EnumerateViewConfigurationViews);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrEnumerateViewConfigurations", (PFN_xrVoidFunction*)&tableXr.EnumerateViewConfigurations);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetActionStateBoolean", (PFN_xrVoidFunction*)&tableXr.GetActionStateBoolean);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetActionStateFloat", (PFN_xrVoidFunction*)&tableXr.GetActionStateFloat);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetActionStatePose", (PFN_xrVoidFunction*)&tableXr.GetActionStatePose);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetActionStateVector2f", (PFN_xrVoidFunction*)&tableXr.GetActionStateVector2f);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetCurrentInteractionProfile", (PFN_xrVoidFunction*)&tableXr.GetCurrentInteractionProfile);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetInputSourceLocalizedName", (PFN_xrVoidFunction*)&tableXr.GetInputSourceLocalizedName);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetInstanceProperties", (PFN_xrVoidFunction*)&tableXr.GetInstanceProperties);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetReferenceSpaceBoundsRect", (PFN_xrVoidFunction*)&tableXr.GetReferenceSpaceBoundsRect);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetSystem", (PFN_xrVoidFunction*)&tableXr.GetSystem);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetSystemProperties", (PFN_xrVoidFunction*)&tableXr.GetSystemProperties);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetViewConfigurationProperties", (PFN_xrVoidFunction*)&tableXr.GetViewConfigurationProperties);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrLocateSpace", (PFN_xrVoidFunction*)&tableXr.LocateSpace);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrLocateViews", (PFN_xrVoidFunction*)&tableXr.LocateViews);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrPathToString", (PFN_xrVoidFunction*)&tableXr.PathToString);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrPollEvent", (PFN_xrVoidFunction*)&tableXr.PollEvent);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrReleaseSwapchainImage", (PFN_xrVoidFunction*)&tableXr.ReleaseSwapchainImage);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrRequestExitSession", (PFN_xrVoidFunction*)&tableXr.RequestExitSession);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrResultToString", (PFN_xrVoidFunction*)&tableXr.ResultToString);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrStopHapticFeedback", (PFN_xrVoidFunction*)&tableXr.StopHapticFeedback);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrStringToPath", (PFN_xrVoidFunction*)&tableXr.StringToPath);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrStructureTypeToString", (PFN_xrVoidFunction*)&tableXr.StructureTypeToString);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSuggestInteractionProfileBindings", (PFN_xrVoidFunction*)&tableXr.SuggestInteractionProfileBindings);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSyncActions", (PFN_xrVoidFunction*)&tableXr.SyncActions);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrWaitFrame", (PFN_xrVoidFunction*)&tableXr.WaitFrame);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrWaitSwapchainImage", (PFN_xrVoidFunction*)&tableXr.WaitSwapchainImage);
 
   // ---- Core 1.1 commands
-  tableXr.LocateSpaces = reinterpret_cast<PFN_xrLocateSpaces>(dlsym(libopenxr, "xrLocateSpaces") );
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrLocateSpaces", (PFN_xrVoidFunction*)&tableXr.LocateSpaces);
 
   // ---- XR_EXT_debug_utils extension commands
-  tableXr.CreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_xrCreateDebugUtilsMessengerEXT>(dlsym(libopenxr, "xrCreateDebugUtilsMessengerEXT") );
-  tableXr.DestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_xrDestroyDebugUtilsMessengerEXT>(dlsym(libopenxr, "xrDestroyDebugUtilsMessengerEXT") );
-  tableXr.SessionBeginDebugUtilsLabelRegionEXT = reinterpret_cast<PFN_xrSessionBeginDebugUtilsLabelRegionEXT>(dlsym(libopenxr, "xrSessionBeginDebugUtilsLabelRegionEXT") );
-  tableXr.SessionEndDebugUtilsLabelRegionEXT = reinterpret_cast<PFN_xrSessionEndDebugUtilsLabelRegionEXT>(dlsym(libopenxr, "xrSessionEndDebugUtilsLabelRegionEXT") );
-  tableXr.SessionInsertDebugUtilsLabelEXT = reinterpret_cast<PFN_xrSessionInsertDebugUtilsLabelEXT>(dlsym(libopenxr, "xrSessionInsertDebugUtilsLabelEXT") );
-  tableXr.SetDebugUtilsObjectNameEXT = reinterpret_cast<PFN_xrSetDebugUtilsObjectNameEXT>(dlsym(libopenxr, "xrSetDebugUtilsObjectNameEXT") );
-  tableXr.SubmitDebugUtilsMessageEXT = reinterpret_cast<PFN_xrSubmitDebugUtilsMessageEXT>(dlsym(libopenxr, "xrSubmitDebugUtilsMessageEXT") );
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateDebugUtilsMessengerEXT", (PFN_xrVoidFunction*)&tableXr.CreateDebugUtilsMessengerEXT);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrDestroyDebugUtilsMessengerEXT", (PFN_xrVoidFunction*)&tableXr.DestroyDebugUtilsMessengerEXT);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSessionBeginDebugUtilsLabelRegionEXT", (PFN_xrVoidFunction*)&tableXr.SessionBeginDebugUtilsLabelRegionEXT);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSessionEndDebugUtilsLabelRegionEXT", (PFN_xrVoidFunction*)&tableXr.SessionEndDebugUtilsLabelRegionEXT);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSessionInsertDebugUtilsLabelEXT", (PFN_xrVoidFunction*)&tableXr.SessionInsertDebugUtilsLabelEXT);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSetDebugUtilsObjectNameEXT", (PFN_xrVoidFunction*)&tableXr.SetDebugUtilsObjectNameEXT);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSubmitDebugUtilsMessageEXT", (PFN_xrVoidFunction*)&tableXr.SubmitDebugUtilsMessageEXT);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetVulkanGraphicsRequirements2KHR", (PFN_xrVoidFunction*)&tableXr.GetVulkanGraphicsRequirements2KHR);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateVulkanInstanceKHR", (PFN_xrVoidFunction*)&tableXr.CreateVulkanInstanceKHR);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetVulkanGraphicsDevice2KHR", (PFN_xrVoidFunction*)&tableXr.GetVulkanGraphicsDevice2KHR);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateVulkanDeviceKHR", (PFN_xrVoidFunction*)&tableXr.CreateVulkanDeviceKHR);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreatePassthroughFB", (PFN_xrVoidFunction*)&tableXr.CreatePassthroughFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreatePassthroughLayerFB", (PFN_xrVoidFunction*)&tableXr.CreatePassthroughLayerFB);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateEnvironmentDepthProviderMETA", (PFN_xrVoidFunction*)&tableXr.CreateEnvironmentDepthProviderMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrDestroyEnvironmentDepthProviderMETA", (PFN_xrVoidFunction*)&tableXr.DestroyEnvironmentDepthProviderMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrStartEnvironmentDepthProviderMETA", (PFN_xrVoidFunction*)&tableXr.StartEnvironmentDepthProviderMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrStopEnvironmentDepthProviderMETA", (PFN_xrVoidFunction*)&tableXr.StopEnvironmentDepthProviderMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateEnvironmentDepthSwapchainMETA", (PFN_xrVoidFunction*)&tableXr.CreateEnvironmentDepthSwapchainMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrDestroyEnvironmentDepthSwapchainMETA", (PFN_xrVoidFunction*)&tableXr.DestroyEnvironmentDepthSwapchainMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrEnumerateEnvironmentDepthSwapchainImagesMETA", (PFN_xrVoidFunction*)&tableXr.EnumerateEnvironmentDepthSwapchainImagesMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetEnvironmentDepthSwapchainStateMETA", (PFN_xrVoidFunction*)&tableXr.GetEnvironmentDepthSwapchainStateMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrAcquireEnvironmentDepthImageMETA", (PFN_xrVoidFunction*)&tableXr.AcquireEnvironmentDepthImageMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSetEnvironmentDepthHandRemovalMETA", (PFN_xrVoidFunction*)&tableXr.SetEnvironmentDepthHandRemovalMETA);
+
+  // openxr.h
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrVoidFunction", (PFN_xrVoidFunction*)&tableXr.VoidFunction);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrDebugUtilsMessengerCallbackEXT", (PFN_xrVoidFunction*)&tableXr.DebugUtilsMessengerCallbackEXT);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrApplyForceFeedbackCurlMNDX", (PFN_xrVoidFunction*)&tableXr.ApplyForceFeedbackCurlMNDX);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrBeginPlaneDetectionEXT", (PFN_xrVoidFunction*)&tableXr.BeginPlaneDetectionEXT);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCancelFutureEXT", (PFN_xrVoidFunction*)&tableXr.CancelFutureEXT);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrChangeVirtualKeyboardTextContextMETA", (PFN_xrVoidFunction*)&tableXr.ChangeVirtualKeyboardTextContextMETA);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateBodyTrackerFB", (PFN_xrVoidFunction*)&tableXr.CreateBodyTrackerFB);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateEyeTrackerFB", (PFN_xrVoidFunction*)&tableXr.CreateEyeTrackerFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateFaceTracker2FB", (PFN_xrVoidFunction*)&tableXr.CreateFaceTracker2FB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateFaceTrackerFB", (PFN_xrVoidFunction*)&tableXr.CreateFaceTrackerFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateFoveationProfileFB", (PFN_xrVoidFunction*)&tableXr.CreateFoveationProfileFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateGeometryInstanceFB", (PFN_xrVoidFunction*)&tableXr.CreateGeometryInstanceFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateHandTrackerEXT", (PFN_xrVoidFunction*)&tableXr.CreateHandTrackerEXT);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateKeyboardSpaceFB", (PFN_xrVoidFunction*)&tableXr.CreateKeyboardSpaceFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreatePassthroughColorLutMETA", (PFN_xrVoidFunction*)&tableXr.CreatePassthroughColorLutMETA);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreatePlaneDetectorEXT", (PFN_xrVoidFunction*)&tableXr.CreatePlaneDetectorEXT);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateSpaceUserFB", (PFN_xrVoidFunction*)&tableXr.CreateSpaceUserFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateSpatialAnchorFB", (PFN_xrVoidFunction*)&tableXr.CreateSpatialAnchorFB);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateTriangleMeshFB", (PFN_xrVoidFunction*)&tableXr.CreateTriangleMeshFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateVirtualKeyboardMETA", (PFN_xrVoidFunction*)&tableXr.CreateVirtualKeyboardMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateVirtualKeyboardSpaceMETA", (PFN_xrVoidFunction*)&tableXr.CreateVirtualKeyboardSpaceMETA);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrDestroyBodyTrackerFB", (PFN_xrVoidFunction*)&tableXr.DestroyBodyTrackerFB);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrDestroyEyeTrackerFB", (PFN_xrVoidFunction*)&tableXr.DestroyEyeTrackerFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrDestroyFaceTracker2FB", (PFN_xrVoidFunction*)&tableXr.DestroyFaceTracker2FB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrDestroyFaceTrackerFB", (PFN_xrVoidFunction*)&tableXr.DestroyFaceTrackerFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrDestroyFoveationProfileFB", (PFN_xrVoidFunction*)&tableXr.DestroyFoveationProfileFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrDestroyGeometryInstanceFB", (PFN_xrVoidFunction*)&tableXr.DestroyGeometryInstanceFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrDestroyHandTrackerEXT", (PFN_xrVoidFunction*)&tableXr.DestroyHandTrackerEXT);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrDestroyPassthroughColorLutMETA", (PFN_xrVoidFunction*)&tableXr.DestroyPassthroughColorLutMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrDestroyPassthroughFB", (PFN_xrVoidFunction*)&tableXr.DestroyPassthroughFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrDestroyPassthroughLayerFB", (PFN_xrVoidFunction*)&tableXr.DestroyPassthroughLayerFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrDestroyPlaneDetectorEXT", (PFN_xrVoidFunction*)&tableXr.DestroyPlaneDetectorEXT);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrDestroySpaceUserFB", (PFN_xrVoidFunction*)&tableXr.DestroySpaceUserFB);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrDestroyTriangleMeshFB", (PFN_xrVoidFunction*)&tableXr.DestroyTriangleMeshFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrDestroyVirtualKeyboardMETA", (PFN_xrVoidFunction*)&tableXr.DestroyVirtualKeyboardMETA);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrEnumerateApiLayerProperties", (PFN_xrVoidFunction*)&tableXr.EnumerateApiLayerProperties);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrEnumerateColorSpacesFB", (PFN_xrVoidFunction*)&tableXr.EnumerateColorSpacesFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrEnumerateDisplayRefreshRatesFB", (PFN_xrVoidFunction*)&tableXr.EnumerateDisplayRefreshRatesFB);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrEnumerateExternalCamerasOCULUS", (PFN_xrVoidFunction*)&tableXr.EnumerateExternalCamerasOCULUS);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrEnumerateInstanceExtensionProperties", (PFN_xrVoidFunction*)&tableXr.EnumerateInstanceExtensionProperties);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrEnumeratePerformanceMetricsCounterPathsMETA", (PFN_xrVoidFunction*)&tableXr.EnumeratePerformanceMetricsCounterPathsMETA);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrEnumerateRenderModelPathsFB", (PFN_xrVoidFunction*)&tableXr.EnumerateRenderModelPathsFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrEnumerateSpaceSupportedComponentsFB", (PFN_xrVoidFunction*)&tableXr.EnumerateSpaceSupportedComponentsFB);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrEraseSpaceFB", (PFN_xrVoidFunction*)&tableXr.EraseSpaceFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGeometryInstanceSetTransformFB", (PFN_xrVoidFunction*)&tableXr.GeometryInstanceSetTransformFB);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetBodySkeletonFB", (PFN_xrVoidFunction*)&tableXr.GetBodySkeletonFB);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetDeviceSampleRateFB", (PFN_xrVoidFunction*)&tableXr.GetDeviceSampleRateFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetDisplayRefreshRateFB", (PFN_xrVoidFunction*)&tableXr.GetDisplayRefreshRateFB);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetEyeGazesFB", (PFN_xrVoidFunction*)&tableXr.GetEyeGazesFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetFaceExpressionWeights2FB", (PFN_xrVoidFunction*)&tableXr.GetFaceExpressionWeights2FB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetFaceExpressionWeightsFB", (PFN_xrVoidFunction*)&tableXr.GetFaceExpressionWeightsFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetFoveationEyeTrackedStateMETA", (PFN_xrVoidFunction*)&tableXr.GetFoveationEyeTrackedStateMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetHandMeshFB", (PFN_xrVoidFunction*)&tableXr.GetHandMeshFB);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetInstanceProcAddr", (PFN_xrVoidFunction*)&tableXr.GetInstanceProcAddr);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetPassthroughPreferencesMETA", (PFN_xrVoidFunction*)&tableXr.GetPassthroughPreferencesMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetPerformanceMetricsStateMETA", (PFN_xrVoidFunction*)&tableXr.GetPerformanceMetricsStateMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetPlaneDetectionStateEXT", (PFN_xrVoidFunction*)&tableXr.GetPlaneDetectionStateEXT);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetPlaneDetectionsEXT", (PFN_xrVoidFunction*)&tableXr.GetPlaneDetectionsEXT);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetPlanePolygonBufferEXT", (PFN_xrVoidFunction*)&tableXr.GetPlanePolygonBufferEXT);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetRecommendedLayerResolutionMETA", (PFN_xrVoidFunction*)&tableXr.GetRecommendedLayerResolutionMETA);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetRenderModelPropertiesFB", (PFN_xrVoidFunction*)&tableXr.GetRenderModelPropertiesFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetSpaceBoundary2DFB", (PFN_xrVoidFunction*)&tableXr.GetSpaceBoundary2DFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetSpaceBoundingBox2DFB", (PFN_xrVoidFunction*)&tableXr.GetSpaceBoundingBox2DFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetSpaceBoundingBox3DFB", (PFN_xrVoidFunction*)&tableXr.GetSpaceBoundingBox3DFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetSpaceComponentStatusFB", (PFN_xrVoidFunction*)&tableXr.GetSpaceComponentStatusFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetSpaceContainerFB", (PFN_xrVoidFunction*)&tableXr.GetSpaceContainerFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetSpaceRoomLayoutFB", (PFN_xrVoidFunction*)&tableXr.GetSpaceRoomLayoutFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetSpaceSemanticLabelsFB", (PFN_xrVoidFunction*)&tableXr.GetSpaceSemanticLabelsFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetSpaceTriangleMeshMETA", (PFN_xrVoidFunction*)&tableXr.GetSpaceTriangleMeshMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetSpaceUserIdFB", (PFN_xrVoidFunction*)&tableXr.GetSpaceUserIdFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetSpaceUuidFB", (PFN_xrVoidFunction*)&tableXr.GetSpaceUuidFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetSwapchainStateFB", (PFN_xrVoidFunction*)&tableXr.GetSwapchainStateFB);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetVirtualKeyboardDirtyTexturesMETA", (PFN_xrVoidFunction*)&tableXr.GetVirtualKeyboardDirtyTexturesMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetVirtualKeyboardModelAnimationStatesMETA", (PFN_xrVoidFunction*)&tableXr.GetVirtualKeyboardModelAnimationStatesMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetVirtualKeyboardScaleMETA", (PFN_xrVoidFunction*)&tableXr.GetVirtualKeyboardScaleMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetVirtualKeyboardTextureDataMETA", (PFN_xrVoidFunction*)&tableXr.GetVirtualKeyboardTextureDataMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetVisibilityMaskKHR", (PFN_xrVoidFunction*)&tableXr.GetVisibilityMaskKHR);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrLoadRenderModelFB", (PFN_xrVoidFunction*)&tableXr.LoadRenderModelFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrLocateBodyJointsFB", (PFN_xrVoidFunction*)&tableXr.LocateBodyJointsFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrLocateHandJointsEXT", (PFN_xrVoidFunction*)&tableXr.LocateHandJointsEXT);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrLocateSpacesKHR", (PFN_xrVoidFunction*)&tableXr.LocateSpacesKHR);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrPassthroughLayerPauseFB", (PFN_xrVoidFunction*)&tableXr.PassthroughLayerPauseFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrPassthroughLayerResumeFB", (PFN_xrVoidFunction*)&tableXr.PassthroughLayerResumeFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrPassthroughLayerSetKeyboardHandsIntensityFB", (PFN_xrVoidFunction*)&tableXr.PassthroughLayerSetKeyboardHandsIntensityFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrPassthroughLayerSetStyleFB", (PFN_xrVoidFunction*)&tableXr.PassthroughLayerSetStyleFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrPassthroughPauseFB", (PFN_xrVoidFunction*)&tableXr.PassthroughPauseFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrPassthroughStartFB", (PFN_xrVoidFunction*)&tableXr.PassthroughStartFB);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrPerfSettingsSetPerformanceLevelEXT", (PFN_xrVoidFunction*)&tableXr.PerfSettingsSetPerformanceLevelEXT);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrPollFutureEXT", (PFN_xrVoidFunction*)&tableXr.PollFutureEXT);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrQueryPerformanceMetricsCounterMETA", (PFN_xrVoidFunction*)&tableXr.QueryPerformanceMetricsCounterMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrQuerySpacesFB", (PFN_xrVoidFunction*)&tableXr.QuerySpacesFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrQuerySystemTrackedKeyboardFB", (PFN_xrVoidFunction*)&tableXr.QuerySystemTrackedKeyboardFB);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrRequestDisplayRefreshRateFB", (PFN_xrVoidFunction*)&tableXr.RequestDisplayRefreshRateFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrRequestExitSession", (PFN_xrVoidFunction*)&tableXr.RequestExitSession);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrRequestSceneCaptureFB", (PFN_xrVoidFunction*)&tableXr.RequestSceneCaptureFB);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrRetrieveSpaceQueryResultsFB", (PFN_xrVoidFunction*)&tableXr.RetrieveSpaceQueryResultsFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSaveSpaceFB", (PFN_xrVoidFunction*)&tableXr.SaveSpaceFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSaveSpaceListFB", (PFN_xrVoidFunction*)&tableXr.SaveSpaceListFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSendVirtualKeyboardInputMETA", (PFN_xrVoidFunction*)&tableXr.SendVirtualKeyboardInputMETA);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSetColorSpaceFB", (PFN_xrVoidFunction*)&tableXr.SetColorSpaceFB);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSetDigitalLensControlALMALENCE", (PFN_xrVoidFunction*)&tableXr.SetDigitalLensControlALMALENCE);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSetInputDeviceActiveEXT", (PFN_xrVoidFunction*)&tableXr.SetInputDeviceActiveEXT);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSetInputDeviceLocationEXT", (PFN_xrVoidFunction*)&tableXr.SetInputDeviceLocationEXT);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSetInputDeviceStateBoolEXT", (PFN_xrVoidFunction*)&tableXr.SetInputDeviceStateBoolEXT);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSetInputDeviceStateFloatEXT", (PFN_xrVoidFunction*)&tableXr.SetInputDeviceStateFloatEXT);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSetInputDeviceStateVector2fEXT", (PFN_xrVoidFunction*)&tableXr.SetInputDeviceStateVector2fEXT);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSetPerformanceMetricsStateMETA", (PFN_xrVoidFunction*)&tableXr.SetPerformanceMetricsStateMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSetSpaceComponentStatusFB", (PFN_xrVoidFunction*)&tableXr.SetSpaceComponentStatusFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSetTrackingOptimizationSettingsHintQCOM", (PFN_xrVoidFunction*)&tableXr.SetTrackingOptimizationSettingsHintQCOM);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSetVirtualKeyboardModelVisibilityMETA", (PFN_xrVoidFunction*)&tableXr.SetVirtualKeyboardModelVisibilityMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrShareSpacesFB", (PFN_xrVoidFunction*)&tableXr.ShareSpacesFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrShareSpacesMETA", (PFN_xrVoidFunction*)&tableXr.ShareSpacesMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrStartColocationAdvertisementMETA", (PFN_xrVoidFunction*)&tableXr.StartColocationAdvertisementMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrStartColocationDiscoveryMETA", (PFN_xrVoidFunction*)&tableXr.StartColocationDiscoveryMETA);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrStopColocationAdvertisementMETA", (PFN_xrVoidFunction*)&tableXr.StopColocationAdvertisementMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrStopColocationDiscoveryMETA", (PFN_xrVoidFunction*)&tableXr.StopColocationDiscoveryMETA);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSuggestVirtualKeyboardLocationMETA", (PFN_xrVoidFunction*)&tableXr.SuggestVirtualKeyboardLocationMETA);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrThermalGetTemperatureTrendEXT", (PFN_xrVoidFunction*)&tableXr.ThermalGetTemperatureTrendEXT);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrTriangleMeshBeginUpdateFB", (PFN_xrVoidFunction*)&tableXr.TriangleMeshBeginUpdateFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrTriangleMeshBeginVertexBufferUpdateFB", (PFN_xrVoidFunction*)&tableXr.TriangleMeshBeginVertexBufferUpdateFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrTriangleMeshEndUpdateFB", (PFN_xrVoidFunction*)&tableXr.TriangleMeshEndUpdateFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrTriangleMeshEndVertexBufferUpdateFB", (PFN_xrVoidFunction*)&tableXr.TriangleMeshEndVertexBufferUpdateFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrTriangleMeshGetIndexBufferFB", (PFN_xrVoidFunction*)&tableXr.TriangleMeshGetIndexBufferFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrTriangleMeshGetVertexBufferFB", (PFN_xrVoidFunction*)&tableXr.TriangleMeshGetVertexBufferFB);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrUpdatePassthroughColorLutMETA", (PFN_xrVoidFunction*)&tableXr.UpdatePassthroughColorLutMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrUpdateSwapchainFB", (PFN_xrVoidFunction*)&tableXr.UpdateSwapchainFB);
+
+  // openxr_loader_negotiation
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateApiLayerInstance", (PFN_xrVoidFunction*)&tableXr.CreateApiLayerInstance);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrNegotiateLoaderApiLayerInterface", (PFN_xrVoidFunction*)&tableXr.NegotiateLoaderApiLayerInterface);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrNegotiateLoaderRuntimeInterface", (PFN_xrVoidFunction*)&tableXr.NegotiateLoaderRuntimeInterface);
+
+  // openxr_platform
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrConvertTimeToTimespecTimeKHR", (PFN_xrVoidFunction*)&tableXr.ConvertTimeToTimespecTimeKHR);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrConvertTimespecTimeToTimeKHR", (PFN_xrVoidFunction*)&tableXr.ConvertTimespecTimeToTimeKHR);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateSwapchainAndroidSurfaceKHR", (PFN_xrVoidFunction*)&tableXr.CreateSwapchainAndroidSurfaceKHR);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetVulkanDeviceExtensionsKHR", (PFN_xrVoidFunction*)&tableXr.GetVulkanDeviceExtensionsKHR);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetVulkanGraphicsDeviceKHR", (PFN_xrVoidFunction*)&tableXr.GetVulkanGraphicsDeviceKHR);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetVulkanGraphicsRequirementsKHR", (PFN_xrVoidFunction*)&tableXr.GetVulkanGraphicsRequirementsKHR);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetVulkanInstanceExtensionsKHR", (PFN_xrVoidFunction*)&tableXr.GetVulkanInstanceExtensionsKHR);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSetAndroidApplicationThreadKHR", (PFN_xrVoidFunction*)&tableXr.SetAndroidApplicationThreadKHR);
 
   return 1;
 }

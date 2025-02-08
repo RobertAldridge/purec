@@ -1004,7 +1004,8 @@ VkShaderModule VulkanTutorialCreateShaderModule(const std::vector<char>& code)
   VkShaderModuleCreateInfo createInfo {};
   createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
   createInfo.codeSize = code.size();
-  createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data() );
+
+  createInfo.pCode = (const uint32_t*)code.data();
 
   VkShaderModule shaderModule;
   if(tableVk.CreateShaderModule(device, &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
@@ -1034,7 +1035,8 @@ void initWindow()
 
 void framebufferResizeCallback(GLFWwindow* window, int width, int height)
 {
-  auto app = reinterpret_cast<HelloTriangleApplication*>(glfwGetWindowUserPointer(window) );
+  HelloTriangleApplication* app = (HelloTriangleApplication*)glfwGetWindowUserPointer(window);
+
   app->framebufferResized = true;
 }
 

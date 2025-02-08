@@ -496,7 +496,7 @@ try
   //   xrCreateInstance
 
 
-  if(InitOpenXr() )
+  if(InitOpenXr1() )
     Log::Write(Log::Level::Verbose, "xr 1");
 
   if(InitVulkan() )
@@ -511,27 +511,17 @@ try
   // nop
 
   // Initialize the loader for this platform
-  PFN_xrInitializeLoaderKHR initializeLoader = nullptr;
 
-  XrResult result = XR_ERROR_VALIDATION_FAILURE;
+  //XrResult result = XR_ERROR_VALIDATION_FAILURE;
 
-  if(tableXr.GetInstanceProcAddr)
-  {
-    result = tableXr.GetInstanceProcAddr(
-      XR_NULL_HANDLE,
-      "xrInitializeLoaderKHR",
-      (PFN_xrVoidFunction*) &initializeLoader
-    );
-  }
-
-  if(XR_SUCCEEDED(result) && initializeLoader)
   {
     XrLoaderInitInfoAndroidKHR loaderInitInfoAndroid = {XR_TYPE_LOADER_INIT_INFO_ANDROID_KHR};
 
     loaderInitInfoAndroid.applicationVM = app->activity->vm;
     loaderInitInfoAndroid.applicationContext = app->activity->clazz;
 
-    initializeLoader( (const XrLoaderInitInfoBaseHeaderKHR*) &loaderInitInfoAndroid);
+    if(tableXr.InitializeLoaderKHR)
+      tableXr.InitializeLoaderKHR( (const XrLoaderInitInfoBaseHeaderKHR*) &loaderInitInfoAndroid);
   }
 
   {
@@ -864,6 +854,9 @@ XR_YVR_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_YVR_controller_interaction"
 
     if(tableXr.CreateInstance)
       CHECK_XRCMD_CHECK(tableXr.CreateInstance( &createInfo, &gXrInstance) );
+
+    if(InitOpenXr2() )
+      Log::Write(Log::Level::Verbose, "xr 2");
   }
 
   CHECK_CHECK(gXrInstance != XR_NULL_HANDLE);
@@ -1149,25 +1142,11 @@ XR_YVR_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_YVR_controller_interaction"
   //   XrGraphicsRequirementsVulkan2KHR* graphicsRequirements
   // )
   {
-    PFN_xrGetVulkanGraphicsRequirements2KHR pfnGetVulkanGraphicsRequirements2KHR = nullptr;
     XrResult resultGraphicsRequirements = XR_ERROR_VALIDATION_FAILURE;
 
-    InitOpenXr();
-
-    if(tableXr.GetInstanceProcAddr)
+    if(tableXr.GetVulkanGraphicsRequirements2KHR)
     {
-      resultGraphicsRequirements = tableXr.GetInstanceProcAddr(
-        gXrInstance,
-        "xrGetVulkanGraphicsRequirements2KHR",
-        reinterpret_cast<PFN_xrVoidFunction*>( &pfnGetVulkanGraphicsRequirements2KHR)
-      );
-
-      CHECK_XRCMD_CHECK(resultGraphicsRequirements);
-    }
-
-    if(pfnGetVulkanGraphicsRequirements2KHR)
-    {
-      resultGraphicsRequirements = pfnGetVulkanGraphicsRequirements2KHR(
+      resultGraphicsRequirements = tableXr.GetVulkanGraphicsRequirements2KHR(
         gXrInstance,
         gXrSystemId,
         &graphicsRequirements
@@ -1175,8 +1154,6 @@ XR_YVR_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_YVR_controller_interaction"
     }
 
     CHECK_XRCMD_CHECK(resultGraphicsRequirements);
-
-    //return resultGraphicsRequirements;
   }
 
   VkResult err = VK_ERROR_OUT_OF_HOST_MEMORY;
@@ -1620,24 +1597,10 @@ VK_VALVE_MUTABLE_DESCRIPTOR_TYPE_EXTENSION_NAME "VK_VALVE_mutable_descriptor_typ
     //   VkResult* vulkanResult
     // )
     {
-      PFN_xrCreateVulkanInstanceKHR pfnCreateVulkanInstanceKHR = nullptr;
       XrResult result = XR_ERROR_VALIDATION_FAILURE;
 
-      InitOpenXr();
-
-      if(tableXr.GetInstanceProcAddr)
-      {
-        result = tableXr.GetInstanceProcAddr(
-          gXrInstance,
-          "xrCreateVulkanInstanceKHR",
-          reinterpret_cast<PFN_xrVoidFunction*>( &pfnCreateVulkanInstanceKHR)
-        );
-
-        CHECK_XRCMD_CHECK(result);
-      }
-
-      if(pfnCreateVulkanInstanceKHR)
-        result = pfnCreateVulkanInstanceKHR(gXrInstance, &createInfo, &gVkInstance, &err);
+      if(tableXr.CreateVulkanInstanceKHR)
+        result = tableXr.CreateVulkanInstanceKHR(gXrInstance, &createInfo, &gVkInstance, &err);
 
       CHECK_XRCMD_CHECK(result);
       CHECK_VULKANCMD(err);
@@ -1742,28 +1705,12 @@ struct VkExtensionProperties
     //   VkPhysicalDevice* vulkanPhysicalDevice
     // )
     {
-      PFN_xrGetVulkanGraphicsDevice2KHR pfnGetVulkanGraphicsDevice2KHR = nullptr;
       XrResult result = XR_ERROR_VALIDATION_FAILURE;
 
-      InitOpenXr();
-
-      if(tableXr.GetInstanceProcAddr)
-      {
-        result = tableXr.GetInstanceProcAddr(
-          gXrInstance,
-          "xrGetVulkanGraphicsDevice2KHR",
-          reinterpret_cast<PFN_xrVoidFunction*>( &pfnGetVulkanGraphicsDevice2KHR)
-        );
-
-        CHECK_XRCMD_CHECK(result);
-      }
-
-      if(pfnGetVulkanGraphicsDevice2KHR)
-        result = pfnGetVulkanGraphicsDevice2KHR(gXrInstance, &deviceGetInfo, &gVkPhysicalDevice);
+      if(tableXr.GetVulkanGraphicsDevice2KHR)
+        result = tableXr.GetVulkanGraphicsDevice2KHR(gXrInstance, &deviceGetInfo, &gVkPhysicalDevice);
 
       CHECK_XRCMD_CHECK(result);
-
-      //return result;
     }
   }
 
@@ -1833,24 +1780,10 @@ struct VkExtensionProperties
   //   VkResult* vulkanResult
   // )
   {
-    PFN_xrCreateVulkanDeviceKHR pfnCreateVulkanDeviceKHR = nullptr;
     XrResult result = XR_ERROR_VALIDATION_FAILURE;
 
-    InitOpenXr();
-
-    if(tableXr.GetInstanceProcAddr)
-    {
-      result = tableXr.GetInstanceProcAddr(
-        gXrInstance,
-        "xrCreateVulkanDeviceKHR",
-        reinterpret_cast<PFN_xrVoidFunction*>( &pfnCreateVulkanDeviceKHR)
-      );
-
-      CHECK_XRCMD_CHECK(result);
-    }
-
-    if(pfnCreateVulkanDeviceKHR)
-      result = pfnCreateVulkanDeviceKHR(gXrInstance, &deviceCreateInfo, &gVkDevice, &err);
+    if(tableXr.CreateVulkanDeviceKHR)
+      result = tableXr.CreateVulkanDeviceKHR(gXrInstance, &deviceCreateInfo, &gVkDevice, &err);
 
     CHECK_XRCMD_CHECK(result);
     CHECK_VULKANCMD(err);
@@ -4544,7 +4477,7 @@ XR_TYPE_COMPOSITION_LAYER_DEPTH_TEST_FB = 1000212000,
 XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
 #endif
 
-    if(gPassthroughFeature == XR_NULL_HANDLE || !gCreatePassthroughFB)
+    if(gPassthroughFeature == XR_NULL_HANDLE || gEnvironmentDepthProviderMETA == XR_NULL_HANDLE)
     {
       XrFrameEndInfo frameEndInfo {XR_TYPE_FRAME_END_INFO};
       frameEndInfo.displayTime = frameState.predictedDisplayTime;
@@ -4877,7 +4810,7 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
       //   XrEnvironmentDepthImageMETA* environmentDepthImage
       // );
 
-      //gAcquireEnvironmentDepthImageMETA(
+      //tableXr.AcquireEnvironmentDepthImageMETA(
       //  gEnvironmentDepthProviderMETA,
       //  &environmentDepthImageAcquireInfoMETA,
       //  &environmentDepthImageMETA
@@ -4929,23 +4862,12 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
 
     //XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT
 
-    if( !gCreatePassthroughFB)
+    if(gPassthroughFeature == XR_NULL_HANDLE)
     {
-      XrResult result = tableXr.GetInstanceProcAddr(
-        gXrInstance,
-        "xrCreatePassthroughFB",
-        (PFN_xrVoidFunction*) &gCreatePassthroughFB
-      );
-
-      if(XR_FAILED(result) )
-        Log::Write(Log::Level::Info, Fmt("failed to obtain the function pointer for xrCreatePassthroughFB") );
-      else
-        Log::Write(Log::Level::Info, Fmt("obtained the function pointer for xrCreatePassthroughFB") );
-
       XrPassthroughCreateInfoFB passthroughCreateInfo = {XR_TYPE_PASSTHROUGH_CREATE_INFO_FB};
       passthroughCreateInfo.flags = XR_PASSTHROUGH_IS_RUNNING_AT_CREATION_BIT_FB;
 
-      result = gCreatePassthroughFB(gXrSession, &passthroughCreateInfo, &gPassthroughFeature);
+      result = tableXr.CreatePassthroughFB(gXrSession, &passthroughCreateInfo, &gPassthroughFeature);
       if(XR_FAILED(result) )
         Log::Write(Log::Level::Info, Fmt("failed to create the passthrough feature") );
       else
@@ -4953,25 +4875,19 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
 
       // Create and run passthrough layer
 
-      result = tableXr.GetInstanceProcAddr(
-        gXrInstance,
-        "xrCreatePassthroughLayerFB",
-        (PFN_xrVoidFunction*) &gCreatePassthroughLayerFB
-      );
-
       XrPassthroughLayerCreateInfoFB layerCreateInfo = {XR_TYPE_PASSTHROUGH_LAYER_CREATE_INFO_FB};
       layerCreateInfo.passthrough = gPassthroughFeature;
       layerCreateInfo.purpose = XR_PASSTHROUGH_LAYER_PURPOSE_RECONSTRUCTION_FB;
       layerCreateInfo.flags = XR_PASSTHROUGH_IS_RUNNING_AT_CREATION_BIT_FB;
 
-      result = gCreatePassthroughLayerFB(gXrSession, &layerCreateInfo, &gPassthroughLayer);
+      result = tableXr.CreatePassthroughLayerFB(gXrSession, &layerCreateInfo, &gPassthroughLayer);
       if(XR_FAILED(result) )
         Log::Write(Log::Level::Info, Fmt("failed to create and start a passthrough layer") );
       else
         Log::Write(Log::Level::Info, Fmt("created and started a passthrough layer") );
     }
 
-    if( !gCreateEnvironmentDepthProviderMETA)
+    if(gEnvironmentDepthProviderMETA == XR_NULL_HANDLE)
     {
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // OpenXR Depth API Overview
@@ -5036,66 +4952,6 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
 
       // The following snippet initializes all the available functions:
 
-      tableXr.GetInstanceProcAddr(
-        gXrInstance,
-        "xrCreateEnvironmentDepthProviderMETA",
-        (PFN_xrVoidFunction*) &gCreateEnvironmentDepthProviderMETA
-      );
-
-      tableXr.GetInstanceProcAddr(
-        gXrInstance,
-        "xrDestroyEnvironmentDepthProviderMETA",
-        (PFN_xrVoidFunction*) &gDestroyEnvironmentDepthProviderMETA
-      );
-
-      tableXr.GetInstanceProcAddr(
-        gXrInstance,
-        "xrStartEnvironmentDepthProviderMETA",
-        (PFN_xrVoidFunction*) &gStartEnvironmentDepthProviderMETA
-      );
-
-      tableXr.GetInstanceProcAddr(
-        gXrInstance,
-        "xrStopEnvironmentDepthProviderMETA",
-        (PFN_xrVoidFunction*) &gStopEnvironmentDepthProviderMETA
-      );
-
-      tableXr.GetInstanceProcAddr(
-        gXrInstance,
-        "xrCreateEnvironmentDepthSwapchainMETA",
-        (PFN_xrVoidFunction*) &gCreateEnvironmentDepthSwapchainMETA
-      );
-
-      tableXr.GetInstanceProcAddr(
-        gXrInstance,
-        "xrDestroyEnvironmentDepthSwapchainMETA",
-        (PFN_xrVoidFunction*) &gDestroyEnvironmentDepthSwapchainMETA
-      );
-
-      tableXr.GetInstanceProcAddr(
-        gXrInstance,
-        "xrEnumerateEnvironmentDepthSwapchainImagesMETA",
-        (PFN_xrVoidFunction*) &gEnumerateEnvironmentDepthSwapchainImagesMETA
-      );
-
-      tableXr.GetInstanceProcAddr(
-        gXrInstance,
-        "xrGetEnvironmentDepthSwapchainStateMETA",
-        (PFN_xrVoidFunction*) &gGetEnvironmentDepthSwapchainStateMETA
-      );
-
-      tableXr.GetInstanceProcAddr(
-        gXrInstance,
-        "xrAcquireEnvironmentDepthImageMETA",
-        (PFN_xrVoidFunction*) &gAcquireEnvironmentDepthImageMETA
-      );
-
-      tableXr.GetInstanceProcAddr(
-        gXrInstance,
-        "xrSetEnvironmentDepthHandRemovalMETA",
-        (PFN_xrVoidFunction*) &gSetEnvironmentDepthHandRemovalMETA
-      );
-
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // Creating a depth provider
 
@@ -5126,7 +4982,7 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
 
       gEnvironmentDepthProviderMETA = XR_NULL_HANDLE;
 
-      XrResult result = gCreateEnvironmentDepthProviderMETA(
+      XrResult result = tableXr.CreateEnvironmentDepthProviderMETA(
         gXrSession,
         &gEnvironmentDepthProviderCreateInfoMETA,
         &gEnvironmentDepthProviderMETA
@@ -5174,7 +5030,7 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
       gEnvironmentDepthHandRemovalSetInfoMETA.next = nullptr;
       gEnvironmentDepthHandRemovalSetInfoMETA.enabled = true;
 
-      result = gSetEnvironmentDepthHandRemovalMETA(
+      result = tableXr.SetEnvironmentDepthHandRemovalMETA(
         gEnvironmentDepthProviderMETA,
         &gEnvironmentDepthHandRemovalSetInfoMETA
       );
@@ -5212,7 +5068,7 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
 
       gEnvironmentDepthSwapchainMETA = XR_NULL_HANDLE;
 
-      gCreateEnvironmentDepthSwapchainMETA(
+      tableXr.CreateEnvironmentDepthSwapchainMETA(
         gEnvironmentDepthProviderMETA,
         &gEnvironmentDepthSwapchainCreateInfoMETA,
         &gEnvironmentDepthSwapchainMETA
@@ -5240,7 +5096,7 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
       gEnvironmentDepthSwapchainStateMETA.width = 0;
       gEnvironmentDepthSwapchainStateMETA.height = 0;
 
-      gGetEnvironmentDepthSwapchainStateMETA(gEnvironmentDepthSwapchainMETA, &gEnvironmentDepthSwapchainStateMETA);
+      tableXr.GetEnvironmentDepthSwapchainStateMETA(gEnvironmentDepthSwapchainMETA, &gEnvironmentDepthSwapchainStateMETA);
 
       // In the same way as for a regular XrSwapchain, the XrEnvironmentDepthSwapchainMETA needs to be “enumerated” into
       // a graphics API specific array of texture handles. This is done by calling
@@ -5261,7 +5117,7 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
 
       gEnvironmentDepthSwapChainLength = 0;
 
-      gEnumerateEnvironmentDepthSwapchainImagesMETA(
+      tableXr.EnumerateEnvironmentDepthSwapchainImagesMETA(
         gEnvironmentDepthSwapchainMETA,
         0,
         &gEnvironmentDepthSwapChainLength,
@@ -5283,7 +5139,7 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
         gEnvironmentDepthImages.push_back(swapchainImageVulkanKHR);
       }
 
-      gEnumerateEnvironmentDepthSwapchainImagesMETA(
+      tableXr.EnumerateEnvironmentDepthSwapchainImagesMETA(
         gEnvironmentDepthSwapchainMETA,
         gEnvironmentDepthSwapChainLength,
         &gEnvironmentDepthSwapChainLength,
@@ -5308,7 +5164,7 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
 
       // XrResult xrStartEnvironmentDepthProviderMETA(XrEnvironmentDepthProviderMETA environmentDepthProvider);
 
-      gStartEnvironmentDepthProviderMETA(gEnvironmentDepthProviderMETA);
+      tableXr.StartEnvironmentDepthProviderMETA(gEnvironmentDepthProviderMETA);
 
       // To stop the asynchronous generation of depth maps, call xrStopEnvironmentDepthProviderMETA:
 

@@ -74,233 +74,214 @@ struct XrGeneratedDispatchTableCore
   PFN_xrSetDebugUtilsObjectNameEXT SetDebugUtilsObjectNameEXT;
   PFN_xrSubmitDebugUtilsMessageEXT SubmitDebugUtilsMessageEXT;
 
-#if 0
+  PFN_xrInitializeLoaderKHR InitializeLoaderKHR;
+
+  PFN_xrGetVulkanGraphicsRequirements2KHR GetVulkanGraphicsRequirements2KHR;
+  PFN_xrCreateVulkanInstanceKHR CreateVulkanInstanceKHR;
+  PFN_xrGetVulkanGraphicsDevice2KHR GetVulkanGraphicsDevice2KHR;
+  PFN_xrCreateVulkanDeviceKHR CreateVulkanDeviceKHR;
+
+  PFN_xrCreatePassthroughFB CreatePassthroughFB;
+  PFN_xrCreatePassthroughLayerFB CreatePassthroughLayerFB;
+
+  PFN_xrCreateEnvironmentDepthProviderMETA CreateEnvironmentDepthProviderMETA;
+  PFN_xrDestroyEnvironmentDepthProviderMETA DestroyEnvironmentDepthProviderMETA;
+  PFN_xrStartEnvironmentDepthProviderMETA StartEnvironmentDepthProviderMETA;
+  PFN_xrStopEnvironmentDepthProviderMETA StopEnvironmentDepthProviderMETA;
+  PFN_xrCreateEnvironmentDepthSwapchainMETA CreateEnvironmentDepthSwapchainMETA;
+  PFN_xrDestroyEnvironmentDepthSwapchainMETA DestroyEnvironmentDepthSwapchainMETA;
+  PFN_xrEnumerateEnvironmentDepthSwapchainImagesMETA EnumerateEnvironmentDepthSwapchainImagesMETA;
+  PFN_xrGetEnvironmentDepthSwapchainStateMETA GetEnvironmentDepthSwapchainStateMETA;
+  PFN_xrAcquireEnvironmentDepthImageMETA AcquireEnvironmentDepthImageMETA;
+  PFN_xrSetEnvironmentDepthHandRemovalMETA SetEnvironmentDepthHandRemovalMETA;
+
   // openxr.h
 
-  PFN_xrVoidFunction;
+  PFN_xrVoidFunction VoidFunction;
 
-  PFN_xrDebugUtilsMessengerCallbackEXT;
+  PFN_xrDebugUtilsMessengerCallbackEXT DebugUtilsMessengerCallbackEXT;
 
-  PFN_xrAcquireEnvironmentDepthImageMETA;
-  PFN_xrAcquireSwapchainImage;
-  PFN_xrApplyForceFeedbackCurlMNDX;
-  PFN_xrApplyHapticFeedback;
-  PFN_xrAttachSessionActionSets;
-  PFN_xrBeginFrame;
-  PFN_xrBeginPlaneDetectionEXT;
-  PFN_xrBeginSession;
-  PFN_xrCancelFutureEXT;
-  PFN_xrChangeVirtualKeyboardTextContextMETA;
-  PFN_xrCreateAction;
-  PFN_xrCreateActionSet;
-  PFN_xrCreateActionSpace;
-  PFN_xrCreateBodyTrackerFB;
-  PFN_xrCreateDebugUtilsMessengerEXT;
-  PFN_xrCreateEnvironmentDepthProviderMETA;
-  PFN_xrCreateEnvironmentDepthSwapchainMETA;
-  PFN_xrCreateEyeTrackerFB
-  PFN_xrCreateFaceTracker2FB
-  PFN_xrCreateFaceTrackerFB
-  PFN_xrCreateFoveationProfileFB
-  PFN_xrCreateGeometryInstanceFB
-  PFN_xrCreateHandTrackerEXT
-  PFN_xrCreateInstance
-  PFN_xrCreateKeyboardSpaceFB
-  PFN_xrCreatePassthroughColorLutMETA
-  PFN_xrCreatePassthroughFB
-  PFN_xrCreatePassthroughLayerFB
-  PFN_xrCreatePlaneDetectorEXT
-  PFN_xrCreateReferenceSpace
-  PFN_xrCreateSession
-  PFN_xrCreateSpaceUserFB
-  PFN_xrCreateSpatialAnchorFB
-  PFN_xrCreateSwapchain
-  PFN_xrCreateTriangleMeshFB
-  PFN_xrCreateVirtualKeyboardMETA
-  PFN_xrCreateVirtualKeyboardSpaceMETA
-  PFN_xrDestroyAction
-  PFN_xrDestroyActionSet
-  PFN_xrDestroyBodyTrackerFB
-  PFN_xrDestroyDebugUtilsMessengerEXT
-  PFN_xrDestroyEnvironmentDepthProviderMETA
-  PFN_xrDestroyEnvironmentDepthSwapchainMETA
-  PFN_xrDestroyEyeTrackerFB
-  PFN_xrDestroyFaceTracker2FB
-  PFN_xrDestroyFaceTrackerFB
-  PFN_xrDestroyFoveationProfileFB
-  PFN_xrDestroyGeometryInstanceFB
-  PFN_xrDestroyHandTrackerEXT
-  PFN_xrDestroyInstance
-  PFN_xrDestroyPassthroughColorLutMETA
-  PFN_xrDestroyPassthroughFB
-  PFN_xrDestroyPassthroughLayerFB
-  PFN_xrDestroyPlaneDetectorEXT
-  PFN_xrDestroySession
-  PFN_xrDestroySpace
-  PFN_xrDestroySpaceUserFB
-  PFN_xrDestroySwapchain
-  PFN_xrDestroyTriangleMeshFB
-  PFN_xrDestroyVirtualKeyboardMETA
-  PFN_xrEndFrame
-  PFN_xrEndSession
-  PFN_xrEnumerateApiLayerProperties
-  PFN_xrEnumerateBoundSourcesForAction
-  PFN_xrEnumerateColorSpacesFB
-  PFN_xrEnumerateDisplayRefreshRatesFB
-  PFN_xrEnumerateEnvironmentBlendModes
-  PFN_xrEnumerateEnvironmentDepthSwapchainImagesMETA
-  PFN_xrEnumerateExternalCamerasOCULUS
-  PFN_xrEnumerateInstanceExtensionProperties
-  PFN_xrEnumeratePerformanceMetricsCounterPathsMETA
-  PFN_xrEnumerateReferenceSpaces
-  PFN_xrEnumerateRenderModelPathsFB
-  PFN_xrEnumerateSpaceSupportedComponentsFB
-  PFN_xrEnumerateSwapchainFormats
-  PFN_xrEnumerateSwapchainImages
-  PFN_xrEnumerateViewConfigurationViews
-  PFN_xrEnumerateViewConfigurations
-  PFN_xrEraseSpaceFB
-  PFN_xrGeometryInstanceSetTransformFB
-  PFN_xrGetActionStateBoolean
-  PFN_xrGetActionStateFloat
-  PFN_xrGetActionStatePose
-  PFN_xrGetActionStateVector2f
-  PFN_xrGetBodySkeletonFB
-  PFN_xrGetCurrentInteractionProfile
-  PFN_xrGetDeviceSampleRateFB
-  PFN_xrGetDisplayRefreshRateFB
-  PFN_xrGetEnvironmentDepthSwapchainStateMETA
-  PFN_xrGetEyeGazesFB
-  PFN_xrGetFaceExpressionWeights2FB
-  PFN_xrGetFaceExpressionWeightsFB
-  PFN_xrGetFoveationEyeTrackedStateMETA
-  PFN_xrGetHandMeshFB
-  PFN_xrGetInputSourceLocalizedName
-  PFN_xrGetInstanceProcAddr
-  PFN_xrGetInstanceProperties
-  PFN_xrGetPassthroughPreferencesMETA
-  PFN_xrGetPerformanceMetricsStateMETA
-  PFN_xrGetPlaneDetectionStateEXT
-  PFN_xrGetPlaneDetectionsEXT
-  PFN_xrGetPlanePolygonBufferEXT
-  PFN_xrGetRecommendedLayerResolutionMETA
-  PFN_xrGetReferenceSpaceBoundsRect
-  PFN_xrGetRenderModelPropertiesFB
-  PFN_xrGetSpaceBoundary2DFB
-  PFN_xrGetSpaceBoundingBox2DFB
-  PFN_xrGetSpaceBoundingBox3DFB
-  PFN_xrGetSpaceComponentStatusFB
-  PFN_xrGetSpaceContainerFB
-  PFN_xrGetSpaceRoomLayoutFB
-  PFN_xrGetSpaceSemanticLabelsFB
-  PFN_xrGetSpaceTriangleMeshMETA
-  PFN_xrGetSpaceUserIdFB
-  PFN_xrGetSpaceUuidFB
-  PFN_xrGetSwapchainStateFB
-  PFN_xrGetSystem
-  PFN_xrGetSystemProperties
-  PFN_xrGetViewConfigurationProperties
-  PFN_xrGetVirtualKeyboardDirtyTexturesMETA
-  PFN_xrGetVirtualKeyboardModelAnimationStatesMETA
-  PFN_xrGetVirtualKeyboardScaleMETA
-  PFN_xrGetVirtualKeyboardTextureDataMETA
-  PFN_xrGetVisibilityMaskKHR
-  PFN_xrInitializeLoaderKHR
-  PFN_xrLoadRenderModelFB
-  PFN_xrLocateBodyJointsFB
-  PFN_xrLocateHandJointsEXT
-  PFN_xrLocateSpace
-  PFN_xrLocateSpaces
-  PFN_xrLocateSpacesKHR
-  PFN_xrLocateViews
-  PFN_xrPassthroughLayerPauseFB
-  PFN_xrPassthroughLayerResumeFB
-  PFN_xrPassthroughLayerSetKeyboardHandsIntensityFB
-  PFN_xrPassthroughLayerSetStyleFB
-  PFN_xrPassthroughPauseFB
-  PFN_xrPassthroughStartFB
-  PFN_xrPathToString
-  PFN_xrPerfSettingsSetPerformanceLevelEXT
-  PFN_xrPollEvent
-  PFN_xrPollFutureEXT
-  PFN_xrQueryPerformanceMetricsCounterMETA
-  PFN_xrQuerySpacesFB
-  PFN_xrQuerySystemTrackedKeyboardFB
-  PFN_xrReleaseSwapchainImage
-  PFN_xrRequestDisplayRefreshRateFB
-  PFN_xrRequestExitSession
-  PFN_xrRequestSceneCaptureFB
-  PFN_xrResultToString
-  PFN_xrRetrieveSpaceQueryResultsFB
-  PFN_xrSaveSpaceFB
-  PFN_xrSaveSpaceListFB
-  PFN_xrSendVirtualKeyboardInputMETA
-  PFN_xrSessionBeginDebugUtilsLabelRegionEXT
-  PFN_xrSessionEndDebugUtilsLabelRegionEXT
-  PFN_xrSessionInsertDebugUtilsLabelEXT
-  PFN_xrSetColorSpaceFB
-  PFN_xrSetDebugUtilsObjectNameEXT
-  PFN_xrSetDigitalLensControlALMALENCE
-  PFN_xrSetEnvironmentDepthHandRemovalMETA
-  PFN_xrSetInputDeviceActiveEXT
-  PFN_xrSetInputDeviceLocationEXT
-  PFN_xrSetInputDeviceStateBoolEXT
-  PFN_xrSetInputDeviceStateFloatEXT
-  PFN_xrSetInputDeviceStateVector2fEXT
-  PFN_xrSetPerformanceMetricsStateMETA
-  PFN_xrSetSpaceComponentStatusFB
-  PFN_xrSetTrackingOptimizationSettingsHintQCOM
-  PFN_xrSetVirtualKeyboardModelVisibilityMETA
-  PFN_xrShareSpacesFB
-  PFN_xrShareSpacesMETA
-  PFN_xrStartColocationAdvertisementMETA
-  PFN_xrStartColocationDiscoveryMETA
-  PFN_xrStartEnvironmentDepthProviderMETA
-  PFN_xrStopColocationAdvertisementMETA
-  PFN_xrStopColocationDiscoveryMETA
-  PFN_xrStopEnvironmentDepthProviderMETA
-  PFN_xrStopHapticFeedback
-  PFN_xrStringToPath
-  PFN_xrStructureTypeToString
-  PFN_xrSubmitDebugUtilsMessageEXT
-  PFN_xrSuggestInteractionProfileBindings
-  PFN_xrSuggestVirtualKeyboardLocationMETA
-  PFN_xrSyncActions
-  PFN_xrThermalGetTemperatureTrendEXT
-  PFN_xrTriangleMeshBeginUpdateFB
-  PFN_xrTriangleMeshBeginVertexBufferUpdateFB
-  PFN_xrTriangleMeshEndUpdateFB
-  PFN_xrTriangleMeshEndVertexBufferUpdateFB
-  PFN_xrTriangleMeshGetIndexBufferFB
-  PFN_xrTriangleMeshGetVertexBufferFB
-  PFN_xrUpdatePassthroughColorLutMETA
-  PFN_xrUpdateSwapchainFB
-  PFN_xrWaitFrame
-  PFN_xrWaitSwapchainImage
+  PFN_xrApplyForceFeedbackCurlMNDX ApplyForceFeedbackCurlMNDX;
+
+  PFN_xrBeginPlaneDetectionEXT BeginPlaneDetectionEXT;
+
+  PFN_xrCancelFutureEXT CancelFutureEXT;
+  PFN_xrChangeVirtualKeyboardTextContextMETA ChangeVirtualKeyboardTextContextMETA;
+
+  PFN_xrCreateBodyTrackerFB CreateBodyTrackerFB;
+
+  PFN_xrCreateEyeTrackerFB CreateEyeTrackerFB;
+  PFN_xrCreateFaceTracker2FB CreateFaceTracker2FB;
+  PFN_xrCreateFaceTrackerFB CreateFaceTrackerFB;
+  PFN_xrCreateFoveationProfileFB CreateFoveationProfileFB;
+  PFN_xrCreateGeometryInstanceFB CreateGeometryInstanceFB;
+  PFN_xrCreateHandTrackerEXT CreateHandTrackerEXT;
+
+  PFN_xrCreateKeyboardSpaceFB CreateKeyboardSpaceFB;
+  PFN_xrCreatePassthroughColorLutMETA CreatePassthroughColorLutMETA;
+
+  PFN_xrCreatePlaneDetectorEXT CreatePlaneDetectorEXT;
+
+  PFN_xrCreateSpaceUserFB CreateSpaceUserFB;
+  PFN_xrCreateSpatialAnchorFB CreateSpatialAnchorFB;
+
+  PFN_xrCreateTriangleMeshFB CreateTriangleMeshFB;
+  PFN_xrCreateVirtualKeyboardMETA CreateVirtualKeyboardMETA;
+  PFN_xrCreateVirtualKeyboardSpaceMETA CreateVirtualKeyboardSpaceMETA;
+
+  PFN_xrDestroyBodyTrackerFB DestroyBodyTrackerFB;
+
+  PFN_xrDestroyEyeTrackerFB DestroyEyeTrackerFB;
+  PFN_xrDestroyFaceTracker2FB DestroyFaceTracker2FB;
+  PFN_xrDestroyFaceTrackerFB DestroyFaceTrackerFB;
+  PFN_xrDestroyFoveationProfileFB DestroyFoveationProfileFB;
+  PFN_xrDestroyGeometryInstanceFB DestroyGeometryInstanceFB;
+  PFN_xrDestroyHandTrackerEXT DestroyHandTrackerEXT;
+
+  PFN_xrDestroyPassthroughColorLutMETA DestroyPassthroughColorLutMETA;
+  PFN_xrDestroyPassthroughFB DestroyPassthroughFB;
+  PFN_xrDestroyPassthroughLayerFB DestroyPassthroughLayerFB;
+  PFN_xrDestroyPlaneDetectorEXT DestroyPlaneDetectorEXT;
+
+  PFN_xrDestroySpaceUserFB DestroySpaceUserFB;
+
+  PFN_xrDestroyTriangleMeshFB DestroyTriangleMeshFB;
+  PFN_xrDestroyVirtualKeyboardMETA DestroyVirtualKeyboardMETA;
+
+  PFN_xrEnumerateColorSpacesFB EnumerateColorSpacesFB;
+  PFN_xrEnumerateDisplayRefreshRatesFB EnumerateDisplayRefreshRatesFB;
+
+  PFN_xrEnumerateExternalCamerasOCULUS EnumerateExternalCamerasOCULUS;
+
+  PFN_xrEnumeratePerformanceMetricsCounterPathsMETA EnumeratePerformanceMetricsCounterPathsMETA;
+
+  PFN_xrEnumerateRenderModelPathsFB EnumerateRenderModelPathsFB;
+  PFN_xrEnumerateSpaceSupportedComponentsFB EnumerateSpaceSupportedComponentsFB;
+
+  PFN_xrEraseSpaceFB EraseSpaceFB;
+  PFN_xrGeometryInstanceSetTransformFB GeometryInstanceSetTransformFB;
+
+  PFN_xrGetBodySkeletonFB GetBodySkeletonFB;
+
+  PFN_xrGetDeviceSampleRateFB GetDeviceSampleRateFB;
+  PFN_xrGetDisplayRefreshRateFB GetDisplayRefreshRateFB;
+
+  PFN_xrGetEyeGazesFB GetEyeGazesFB;
+  PFN_xrGetFaceExpressionWeights2FB GetFaceExpressionWeights2FB;
+  PFN_xrGetFaceExpressionWeightsFB GetFaceExpressionWeightsFB;
+  PFN_xrGetFoveationEyeTrackedStateMETA GetFoveationEyeTrackedStateMETA;
+  PFN_xrGetHandMeshFB GetHandMeshFB;
+
+  PFN_xrGetPassthroughPreferencesMETA GetPassthroughPreferencesMETA;
+  PFN_xrGetPerformanceMetricsStateMETA GetPerformanceMetricsStateMETA;
+  PFN_xrGetPlaneDetectionStateEXT GetPlaneDetectionStateEXT;
+  PFN_xrGetPlaneDetectionsEXT GetPlaneDetectionsEXT;
+  PFN_xrGetPlanePolygonBufferEXT GetPlanePolygonBufferEXT;
+  PFN_xrGetRecommendedLayerResolutionMETA GetRecommendedLayerResolutionMETA;
+
+  PFN_xrGetRenderModelPropertiesFB GetRenderModelPropertiesFB;
+  PFN_xrGetSpaceBoundary2DFB GetSpaceBoundary2DFB;
+  PFN_xrGetSpaceBoundingBox2DFB GetSpaceBoundingBox2DFB;
+  PFN_xrGetSpaceBoundingBox3DFB GetSpaceBoundingBox3DFB;
+  PFN_xrGetSpaceComponentStatusFB GetSpaceComponentStatusFB;
+  PFN_xrGetSpaceContainerFB GetSpaceContainerFB;
+  PFN_xrGetSpaceRoomLayoutFB GetSpaceRoomLayoutFB;
+  PFN_xrGetSpaceSemanticLabelsFB GetSpaceSemanticLabelsFB;
+  PFN_xrGetSpaceTriangleMeshMETA GetSpaceTriangleMeshMETA;
+  PFN_xrGetSpaceUserIdFB GetSpaceUserIdFB;
+  PFN_xrGetSpaceUuidFB GetSpaceUuidFB;
+  PFN_xrGetSwapchainStateFB GetSwapchainStateFB;
+
+  PFN_xrGetVirtualKeyboardDirtyTexturesMETA GetVirtualKeyboardDirtyTexturesMETA;
+  PFN_xrGetVirtualKeyboardModelAnimationStatesMETA GetVirtualKeyboardModelAnimationStatesMETA;
+  PFN_xrGetVirtualKeyboardScaleMETA GetVirtualKeyboardScaleMETA;
+  PFN_xrGetVirtualKeyboardTextureDataMETA GetVirtualKeyboardTextureDataMETA;
+  PFN_xrGetVisibilityMaskKHR GetVisibilityMaskKHR;
+
+  PFN_xrLoadRenderModelFB LoadRenderModelFB;
+  PFN_xrLocateBodyJointsFB LocateBodyJointsFB;
+  PFN_xrLocateHandJointsEXT LocateHandJointsEXT;
+
+  PFN_xrLocateSpacesKHR LocateSpacesKHR;
+
+  PFN_xrPassthroughLayerPauseFB PassthroughLayerPauseFB;
+  PFN_xrPassthroughLayerResumeFB PassthroughLayerResumeFB;
+  PFN_xrPassthroughLayerSetKeyboardHandsIntensityFB PassthroughLayerSetKeyboardHandsIntensityFB;
+  PFN_xrPassthroughLayerSetStyleFB PassthroughLayerSetStyleFB;
+  PFN_xrPassthroughPauseFB PassthroughPauseFB;
+  PFN_xrPassthroughStartFB PassthroughStartFB;
+
+  PFN_xrPerfSettingsSetPerformanceLevelEXT PerfSettingsSetPerformanceLevelEXT;
+
+  PFN_xrPollFutureEXT PollFutureEXT;
+  PFN_xrQueryPerformanceMetricsCounterMETA QueryPerformanceMetricsCounterMETA;
+  PFN_xrQuerySpacesFB QuerySpacesFB;
+  PFN_xrQuerySystemTrackedKeyboardFB QuerySystemTrackedKeyboardFB;
+
+  PFN_xrRequestDisplayRefreshRateFB RequestDisplayRefreshRateFB;
+
+  PFN_xrRequestSceneCaptureFB RequestSceneCaptureFB;
+
+  PFN_xrRetrieveSpaceQueryResultsFB RetrieveSpaceQueryResultsFB;
+  PFN_xrSaveSpaceFB SaveSpaceFB;
+  PFN_xrSaveSpaceListFB SaveSpaceListFB;
+  PFN_xrSendVirtualKeyboardInputMETA SendVirtualKeyboardInputMETA;
+
+  PFN_xrSetColorSpaceFB SetColorSpaceFB;
+
+  PFN_xrSetDigitalLensControlALMALENCE SetDigitalLensControlALMALENCE;
+
+  PFN_xrSetInputDeviceActiveEXT SetInputDeviceActiveEXT;
+  PFN_xrSetInputDeviceLocationEXT SetInputDeviceLocationEXT;
+  PFN_xrSetInputDeviceStateBoolEXT SetInputDeviceStateBoolEXT;
+  PFN_xrSetInputDeviceStateFloatEXT SetInputDeviceStateFloatEXT;
+  PFN_xrSetInputDeviceStateVector2fEXT SetInputDeviceStateVector2fEXT;
+  PFN_xrSetPerformanceMetricsStateMETA SetPerformanceMetricsStateMETA;
+  PFN_xrSetSpaceComponentStatusFB SetSpaceComponentStatusFB;
+  PFN_xrSetTrackingOptimizationSettingsHintQCOM SetTrackingOptimizationSettingsHintQCOM;
+  PFN_xrSetVirtualKeyboardModelVisibilityMETA SetVirtualKeyboardModelVisibilityMETA;
+  PFN_xrShareSpacesFB ShareSpacesFB;
+  PFN_xrShareSpacesMETA ShareSpacesMETA;
+  PFN_xrStartColocationAdvertisementMETA StartColocationAdvertisementMETA;
+  PFN_xrStartColocationDiscoveryMETA StartColocationDiscoveryMETA;
+
+  PFN_xrStopColocationAdvertisementMETA StopColocationAdvertisementMETA;
+  PFN_xrStopColocationDiscoveryMETA StopColocationDiscoveryMETA;
+
+  PFN_xrSuggestVirtualKeyboardLocationMETA SuggestVirtualKeyboardLocationMETA;
+
+  PFN_xrThermalGetTemperatureTrendEXT ThermalGetTemperatureTrendEXT;
+  PFN_xrTriangleMeshBeginUpdateFB TriangleMeshBeginUpdateFB;
+  PFN_xrTriangleMeshBeginVertexBufferUpdateFB TriangleMeshBeginVertexBufferUpdateFB;
+  PFN_xrTriangleMeshEndUpdateFB TriangleMeshEndUpdateFB;
+  PFN_xrTriangleMeshEndVertexBufferUpdateFB TriangleMeshEndVertexBufferUpdateFB;
+  PFN_xrTriangleMeshGetIndexBufferFB TriangleMeshGetIndexBufferFB;
+  PFN_xrTriangleMeshGetVertexBufferFB TriangleMeshGetVertexBufferFB;
+  PFN_xrUpdatePassthroughColorLutMETA UpdatePassthroughColorLutMETA;
+  PFN_xrUpdateSwapchainFB UpdateSwapchainFB;
 
   // openxr_loader_negotiation
 
-  PFN_xrCreateApiLayerInstance
-  PFN_xrCreateApiLayerInstance
-  PFN_xrGetInstanceProcAddr
-  PFN_xrNegotiateLoaderApiLayerInterface
-  PFN_xrNegotiateLoaderRuntimeInterface
+  PFN_xrCreateApiLayerInstance CreateApiLayerInstance;
+
+  PFN_xrNegotiateLoaderApiLayerInterface NegotiateLoaderApiLayerInterface;
+  PFN_xrNegotiateLoaderRuntimeInterface NegotiateLoaderRuntimeInterface;
 
   // openxr_platform
 
-  PFN_xrConvertTimeToTimespecTimeKHR
-  PFN_xrConvertTimespecTimeToTimeKHR
-  PFN_xrCreateSwapchainAndroidSurfaceKHR
-  PFN_xrCreateVulkanDeviceKHR
-  PFN_xrCreateVulkanInstanceKHR
-  PFN_xrGetVulkanDeviceExtensionsKHR
-  PFN_xrGetVulkanGraphicsDevice2KHR
-  PFN_xrGetVulkanGraphicsDeviceKHR
-  PFN_xrGetVulkanGraphicsRequirements2KHR
-  PFN_xrGetVulkanGraphicsRequirementsKHR
-  PFN_xrGetVulkanInstanceExtensionsKHR
-  PFN_xrSetAndroidApplicationThreadKHR
-#endif
+  PFN_xrConvertTimeToTimespecTimeKHR ConvertTimeToTimespecTimeKHR;
+  PFN_xrConvertTimespecTimeToTimeKHR ConvertTimespecTimeToTimeKHR;
+  PFN_xrCreateSwapchainAndroidSurfaceKHR CreateSwapchainAndroidSurfaceKHR;
+
+  PFN_xrGetVulkanDeviceExtensionsKHR GetVulkanDeviceExtensionsKHR;
+
+  PFN_xrGetVulkanGraphicsDeviceKHR GetVulkanGraphicsDeviceKHR;
+
+  PFN_xrGetVulkanGraphicsRequirementsKHR GetVulkanGraphicsRequirementsKHR;
+  PFN_xrGetVulkanInstanceExtensionsKHR GetVulkanInstanceExtensionsKHR;
+  PFN_xrSetAndroidApplicationThreadKHR SetAndroidApplicationThreadKHR;
 };
 
-int InitOpenXr();
+int InitOpenXr1();
+
+int InitOpenXr2();
