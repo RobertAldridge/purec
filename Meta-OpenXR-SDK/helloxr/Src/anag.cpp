@@ -2067,17 +2067,17 @@ struct VkExtensionProperties
     {2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Color) }
   };
 
-  uint32_t numCubeIdicies = sizeof(Geometry::c_cubeIndices) / sizeof(Geometry::c_cubeIndices[0] );
+  uint32_t numModelsIdicies = sizeof(Geometry::gModelsIndices) / sizeof(Geometry::gModelsIndices[0] );
 
-  uint32_t numCubeVerticies = sizeof(Geometry::c_cubeVertices) / sizeof(Geometry::c_cubeVertices[0] );
+  uint32_t numModelsVerticies = sizeof(Geometry::gModelsVertices) / sizeof(Geometry::gModelsVertices[0] );
 
-  //VertexBuffer_VertexBufferCreate(numCubeIdicies, numCubeVerticies);
+  //VertexBuffer_VertexBufferCreate(numModelsIdicies, numModelsVerticies);
   //bool VertexBuffer_VertexBufferCreate(uint32_t idxCount, uint32_t vtxCount)
   {
     VkBufferCreateInfo bufInfo {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
 
     bufInfo.usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
-    bufInfo.size = sizeof(uint16_t) * numCubeIdicies;
+    bufInfo.size = sizeof(uint16_t) * numModelsIdicies;
 
     if(tableVk.CreateBuffer)
       CHECK_VULKANCMD(tableVk.CreateBuffer(gVkDevice, &bufInfo, nullptr, &gVertexBufferBaseIdxBuf) );
@@ -2148,7 +2148,7 @@ struct VkExtensionProperties
       CHECK_VULKANCMD(tableVk.BindBufferMemory(gVkDevice, gVertexBufferBaseIdxBuf, gVertexBufferBaseIdxMem, 0) );
 
     bufInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-    bufInfo.size = sizeof(Geometry::Vertex) * numCubeVerticies;
+    bufInfo.size = sizeof(Geometry::Vertex) * numModelsVerticies;
 
     if(tableVk.CreateBuffer)
       CHECK_VULKANCMD(tableVk.CreateBuffer(gVkDevice, &bufInfo, nullptr, &gVertexBufferBaseVtxBuf) );
@@ -2222,12 +2222,12 @@ struct VkExtensionProperties
     gVertexBufferBaseBindDesc.stride = sizeof(Geometry::Vertex);
     gVertexBufferBaseBindDesc.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
-    gVertexBufferBaseCount = {numCubeIdicies, numCubeVerticies};
+    gVertexBufferBaseCount = {numModelsIdicies, numModelsVerticies};
 
     //return true;
   }
 
-  //VertexBuffer_VertexBufferUpdateIndices(Geometry::c_cubeIndices, numCubeIdicies, 0);
+  //VertexBuffer_VertexBufferUpdateIndices(Geometry::gModelsIndices, numModelsIdicies, 0);
   //void VertexBuffer_VertexBufferUpdateIndices(const uint16_t* data, uint32_t elements, uint32_t offset)
   {
     uint32_t offset = 0;
@@ -2239,20 +2239,20 @@ struct VkExtensionProperties
         gVkDevice,
         gVertexBufferBaseIdxMem,
         sizeof(map[0] ) * offset,
-        sizeof(map[0] ) * numCubeIdicies,
+        sizeof(map[0] ) * numModelsIdicies,
         0,
         (void**) &map
       ) );
     }
 
-    for(size_t i = 0; i < numCubeIdicies; ++i)
-      map[i] = Geometry::c_cubeIndices[i];
+    for(size_t i = 0; i < numModelsIdicies; ++i)
+      map[i] = Geometry::gModelsIndices[i];
 
     if(tableVk.UnmapMemory)
       tableVk.UnmapMemory(gVkDevice, gVertexBufferBaseIdxMem);
   }
 
-  //VertexBuffer_VertexBufferUpdateVertices(Geometry::c_cubeVertices, numCubeVerticies, 0);
+  //VertexBuffer_VertexBufferUpdateVertices(Geometry::gModelsVertices, numModelsVerticies, 0);
   //void VertexBuffer_VertexBufferUpdateVertices(const Geometry::Vertex* data, uint32_t elements, uint32_t offset)
   {
     uint32_t offset = 0;
@@ -2264,14 +2264,14 @@ struct VkExtensionProperties
         gVkDevice,
         gVertexBufferBaseVtxMem,
         sizeof(map[0] ) * offset,
-        sizeof(map[0] ) * numCubeVerticies,
+        sizeof(map[0] ) * numModelsVerticies,
         0,
         (void**) &map
       ) );
     }
 
-    for(size_t i = 0; i < numCubeVerticies; ++i)
-      map[i] = Geometry::c_cubeVertices[i];
+    for(size_t i = 0; i < numModelsVerticies; ++i)
+      map[i] = Geometry::gModelsVertices[i];
 
     if(tableVk.UnmapMemory)
       tableVk.UnmapMemory(gVkDevice, gVertexBufferBaseVtxMem);
@@ -4020,8 +4020,8 @@ struct VkExtensionProperties
 
         projectionLayerViews.resize(renderLayerViewCountOutput);
 
-        // For each locatable space that we want to visualize, render a 25cm cube.
-        std::vector<Cube> cubes;
+        // For each locatable space that we want to visualize, render a model.  The scale base is ~25cm
+        std::vector<Model> models;
 
         for(XrSpace visualizedSpace : gOpenXrProgramStdVector_XrSpace)
         {
@@ -4046,7 +4046,7 @@ struct VkExtensionProperties
               (spaceLocation.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0
             )
             {
-              cubes.push_back(Cube {spaceLocation.pose, {0.25f, 0.25f, 0.25f} } );
+              models.push_back(Model {1, spaceLocation.pose, {0.25f, 0.25f, 0.25f} } );
             }
           }
           else
@@ -4058,8 +4058,8 @@ struct VkExtensionProperties
           }
         }
 
-        // Render a 10cm cube scaled by grabAction for each hand. Note renderHand will only be
-        // true when the application has focus.
+        // Render a model scaled by grabAction for each hand. Note renderHand will only be
+        // true when the application has focus.  The scale base is ~10cm
         for(auto hand : {Side_LEFT, Side_RIGHT} )
         {
           XrSpaceLocation spaceLocation {XR_TYPE_SPACE_LOCATION};
@@ -4085,7 +4085,7 @@ struct VkExtensionProperties
             {
               float scale = 0.1f * gOpenXrProgramInputState_InputState_handScale[hand];
 
-              cubes.push_back(Cube {spaceLocation.pose, {scale, scale, scale} } );
+              models.push_back(Model {0, spaceLocation.pose, {scale, scale, scale} } );
             }
           }
           else
@@ -4137,13 +4137,13 @@ struct VkExtensionProperties
           // void VulkanGraphicsPlugin_VulkanGraphicsPluginRenderView(
           //   const XrCompositionLayerProjectionView& layerView,
           //   const XrSwapchainImageBaseHeader* swapchainImage,
-          //   int64_t /*swapchainFormat*/, const std::vector<Cube>& cubes)
+          //   int64_t /*swapchainFormat*/, const std::vector<Model>& models)
           //
           // VulkanGraphicsPlugin_VulkanGraphicsPluginRenderView(
           //   projectionLayerViews[i],
           //   swapchainImage,
           //   gOpenXrProgramColorSwapchainFormat,
-          //   cubes
+          //   models
           // );
           {
             CHECK_CHECK(projectionLayerViews[i].subImage.imageArrayIndex == 0); // Texture arrays not supported.
@@ -4547,8 +4547,8 @@ struct VkExtensionProperties
             // Note all matrixes (including OpenXR's) are column-major, right-handed.
             const auto& pose = projectionLayerViews[i].pose;
 
-            XrMatrix4x4f proj;
-            XrMatrix4x4f_CreateProjectionFov( &proj, GRAPHICS_VULKAN, projectionLayerViews[i].fov, 0.05f, 100.0f);
+            XrMatrix4x4f projectionMatrix;
+            XrMatrix4x4f_CreateProjectionFov( &projectionMatrix, GRAPHICS_VULKAN, projectionLayerViews[i].fov, 0.05f, 100.0f);
 
             XrMatrix4x4f toView;
             XrMatrix4x4f_CreateFromRigidTransform( &toView, &pose);
@@ -4556,23 +4556,25 @@ struct VkExtensionProperties
             XrMatrix4x4f view;
             XrMatrix4x4f_InvertRigidBody( &view, &toView);
 
-            XrMatrix4x4f vp;
-            XrMatrix4x4f_Multiply( &vp, &proj, &view);
+            XrMatrix4x4f viewProjectionMatrix;
+            XrMatrix4x4f_Multiply( &viewProjectionMatrix, &projectionMatrix, &view);
 
-            // render each cube
-            for(const Cube& cube : cubes)
+            // render each model
+            for(const Model& model : models)
             {
               // compute the model-view-projection transform and push it
-              XrMatrix4x4f model;
+              XrMatrix4x4f blahModelMatrix;
+
               XrMatrix4x4f_CreateTranslationRotationScale(
-                &model,
-                &cube.Pose.position,
-                &cube.Pose.orientation,
-                &cube.Scale
+                &blahModelMatrix,
+                &model.Pose.position,
+                &model.Pose.orientation,
+                &model.Scale
               );
 
-              XrMatrix4x4f mvp;
-              XrMatrix4x4f_Multiply( &mvp, &vp, &model);
+              XrMatrix4x4f modelViewProjectionMatrix;
+
+              XrMatrix4x4f_Multiply( &modelViewProjectionMatrix, &viewProjectionMatrix, &blahModelMatrix);
 
               if(tableVk.CmdPushConstants)
               {
@@ -4581,14 +4583,25 @@ struct VkExtensionProperties
                   gVkPipelineLayout,
                   VK_SHADER_STAGE_VERTEX_BIT,
                   0,
-                  sizeof(mvp.m),
-                  &mvp.m[0]
+                  sizeof(modelViewProjectionMatrix.m),
+                  &modelViewProjectionMatrix.m[0]
                 );
               }
 
-              // draw the cube
+              // draw the model
+
+// void vkCmdDrawIndexed(VkCommandBuffer commandBuffer, uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, int32_t vertexOffset, uint32_t firstInstance);
+
               if(tableVk.CmdDrawIndexed)
-                tableVk.CmdDrawIndexed(gCmdBufferBuffer, gVertexBufferBaseCount.idx, 1, 0, 0, 0);
+              {
+                // arrow 0 96
+                if(model.whoAmI == 0)
+                  tableVk.CmdDrawIndexed(gCmdBufferBuffer, 96/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 0/*firstIndex*/, 0/*vertexOffset*/, 0/*firstInstance*/);
+
+                // cube 96 72
+                if(model.whoAmI == 1)
+                  tableVk.CmdDrawIndexed(gCmdBufferBuffer, 72/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 96/*firstIndex*/, 0/*vertexOffset*/, 0/*firstInstance*/);
+              }
             }
 
             if(tableVk.CmdEndRenderPass)
@@ -4732,7 +4745,7 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
       //  projectionLayerViews[i],
       //  swapchainImage,
       //  gOpenXrProgramColorSwapchainFormat,
-      //  cubes
+      //  models
       //);
 
       //XrCompositionLayerProjection layer {XR_TYPE_COMPOSITION_LAYER_PROJECTION};

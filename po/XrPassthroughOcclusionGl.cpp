@@ -1217,13 +1217,13 @@ void AppRenderer::RenderScene(const FrameIn& frameIn)
     const Matrix4f pose(trackedController.Pose);
     const Matrix4f offset = Matrix4f::Translation(0, 0, -0.25);
     const Matrix4f scale = Matrix4f::Scaling(0.1, 0.1, 0.1);
-    const Matrix4f model = pose * offset * scale;
+    const Matrix4f blahModel = pose * offset * scale;
 
     glUniformMatrix4fv(
       scene.BoxDepthSpaceOcclusionProgram.GetUniformLocationOrDie(Uniform::Index::MODEL_MATRIX),
       1,
       GL_TRUE,
-      &model.M[0][0]
+      &blahModel.M[0][0]
     );
 
     GL(glDrawElements(GL_TRIANGLES, scene.Box.GetIndexCount(), GL_UNSIGNED_SHORT, NULL) );

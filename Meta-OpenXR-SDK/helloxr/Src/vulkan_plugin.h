@@ -34,8 +34,10 @@ enum class CmdBufferStateEnum
   Executing
 };
 
-struct Cube
+struct Model
 {
+  uint32_t whoAmI;
+
   XrPosef Pose;
   XrVector3f Scale;
 };
@@ -238,7 +240,9 @@ constexpr char SIX_DOF_VERTEX_SHADER[] =
 R"_(
 
   #define NUM_VIEWS 2
+
   #define VIEW_ID gl_ViewID_OVR
+
   #extension GL_OVR_multiview2 : require
 
   layout (num_views = NUM_VIEWS) in;
@@ -246,23 +250,25 @@ R"_(
   in vec3 vertexPosition;
   in vec4 vertexColor;
 
-  uniform mat4 ModelMatrix;
+  uniform mat4 modelMatrix;
 
-  uniform SceneMatrices
+  uniform sceneMatrices
   {
-    uniform mat4 ViewMatrix[NUM_VIEWS];
-    uniform mat4 ProjectionMatrix[NUM_VIEWS];
+    uniform mat4 viewMatrix[NUM_VIEWS];
 
-  }sm;
+    uniform mat4 projectionMatrix[NUM_VIEWS];
+
+  }sceneMatricesBlah;
 
   out vec4 fragmentColor;
-  out vec4 cubeWorldPosition;
+
+  out vec4 modelWorldPosition;
 
   void main()
   {
-    cubeWorldPosition = ModelMatrix * vec4(vertexPosition, 1.0f);
+    modelWorldPosition = modelMatrix * vec4(vertexPosition, 1.0f);
 
-    gl_Position = sm.ProjectionMatrix[VIEW_ID] * sm.ViewMatrix[VIEW_ID] * cubeWorldPosition;
+    gl_Position = sceneMatricesBlah.projectionMatrix[VIEW_ID] * sceneMatricesBlah.viewMatrix[VIEW_ID] * modelWorldPosition;
 
     fragmentColor = vertexColor;
   }
@@ -273,44 +279,57 @@ constexpr char SIX_DOF_FRAGMENT_SHADER[] =
 R"_(
 
   #define NUM_VIEWS 2
+
   #define VIEW_ID gl_ViewID_OVR
+
   #extension GL_OVR_multiview2 : require
+
   #extension GL_ARB_shading_language_420pack : enable
 
   in lowp vec4 fragmentColor;
-  in lowp vec4 cubeWorldPosition;
 
-  uniform highp mat4 DepthViewMatrix[NUM_VIEWS];
-  uniform highp mat4 DepthProjectionMatrix[NUM_VIEWS];
+  in lowp vec4 modelWorldPosition;
 
-  layout(binding = 0) uniform highp sampler2DArray EnvironmentDepthTexture;
+  uniform highp mat4 depthViewMatrix[NUM_VIEWS];
+
+  uniform highp mat4 depthProjectionMatrix[NUM_VIEWS];
+
+  layout(binding = 0) uniform highp sampler2DArray environmentDepthTexture;
 
   out lowp vec4 outColor;
 
   void main()
   {
     // Transform from world space to depth camera space using 6-DOF matrix
-    highp vec4 cubeDepthCameraPosition = DepthProjectionMatrix[VIEW_ID] * DepthViewMatrix[VIEW_ID] * cubeWorldPosition;
+
+    highp vec4 modelDepthCameraPosition = depthProjectionMatrix[VIEW_ID] * depthViewMatrix[VIEW_ID] * modelWorldPosition;
 
     // 3D point --> Homogeneous Coordinates --> Normalized Coordinates in [0, 1]
-    highp vec2 cubeDepthCameraPositionHC = cubeDepthCameraPosition.xy / cubeDepthCameraPosition.w;
-    cubeDepthCameraPositionHC = cubeDepthCameraPositionHC * 0.5f + 0.5f;
+
+    highp vec2 modelDepthCameraPositionHC = modelDepthCameraPosition.xy / modelDepthCameraPosition.w;
+
+    modelDepthCameraPositionHC = modelDepthCameraPositionHC * 0.5f + 0.5f;
 
     // Sample from Environment Depth API texture
-    highp vec3 depthViewCoord = vec3(cubeDepthCameraPositionHC, VIEW_ID);
-    highp float depthViewEyeZ = texture(EnvironmentDepthTexture, depthViewCoord).r;
+
+    highp vec3 depthViewCoord = vec3(modelDepthCameraPositionHC, VIEW_ID);
+
+    highp float depthViewEyeZ = texture(environmentDepthTexture, depthViewCoord).r;
 
     // Get virtual object depth
-    highp float cubeDepth = cubeDepthCameraPosition.z / cubeDepthCameraPosition.w;
-    cubeDepth = cubeDepth * 0.5f + 0.5f;
 
-    // Test virtual object depth with environment depth.
+    highp float modelDepth = modelDepthCameraPosition.z / modelDepthCameraPosition.w;
+
+    modelDepth = modelDepth * 0.5f + 0.5f;
+
+    // test virtual object depth with environment depth
     //
-    // If the virtual object is further away (occluded) output a transparent color so real scene content from PT layer
-    // is displayed.
+    // if the virtual object is further away (occluded) output a transparent color so real scene content from PT layer
+    // is displayed
+
     outColor = fragmentColor;
 
-    if(cubeDepth < depthViewEyeZ)
+    if(modelDepth < depthViewEyeZ)
     {
       outColor.a = 1.0f; // fully opaque
     }
@@ -320,7 +339,7 @@ R"_(
       outColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
     }
 
-    gl_FragDepth = cubeDepth;
+    gl_FragDepth = modelDepth;
   }
 
 )_";
