@@ -4559,10 +4559,10 @@ struct VkExtensionProperties
             XrMatrix4x4f vp;
             XrMatrix4x4f_Multiply( &vp, &proj, &view);
 
-            // Render each cube
+            // render each cube
             for(const Cube& cube : cubes)
             {
-              // Compute the model-view-projection transform and push it.
+              // compute the model-view-projection transform and push it
               XrMatrix4x4f model;
               XrMatrix4x4f_CreateTranslationRotationScale(
                 &model,

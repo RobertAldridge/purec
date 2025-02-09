@@ -103,46 +103,46 @@ constexpr XrVector3f NZZP {0, 0, 1};
 
 constexpr Vertex c_cubeVertices[] =
 {
-  { {-1.0 / 2.0, -1.0 / 2.0, -2.0}, NNPN, ColorDarkGrey}, { {1.0 / 2.0, -1.0 / 2.0, -2.0}, NNZZ, ColorDarkGrey}, { {0, 0, -3.0}, NZZP, ColorLightGrey}, // 3
-  { {1.0 / 2.0, -1.0 / 2.0, -2.0}, NNPN, ColorDarkGrey}, { {1.0 / 2.0, 1.0 / 2.0, -2.0}, NNZZ, ColorDarkGrey}, { {0, 0, -3.0}, NZZP, ColorLightGrey}, // 6
-  { {1.0 / 2.0, 1.0 / 2.0, -2.0}, NNPN, ColorDarkGrey}, { {-1.0 / 2.0, 1.0 / 2.0, -2.0}, NNZZ, ColorDarkGrey}, { {0, 0, -3.0}, NZZP, ColorLightGrey}, // 9
-  { {-1.0 / 2.0, 1.0 / 2.0, -2.0}, NNPN, ColorDarkGrey}, { {-1.0 / 2.0, -1.0 / 2.0, -2.0}, NNZZ, ColorDarkGrey}, { {0, 0, -3.0}, NZZP, ColorLightGrey}, // 12
+  { {-1.0 / 2.0, -1.0 / 2.0, -2.0}, NNPN, ColorDarkGrey}, { {1.0 / 2.0, -1.0 / 2.0, -2.0}, NNZZ, ColorDarkGrey}, { {0, 0, -3.0}, NZZP, ColorGrey}, // 3
+  { {1.0 / 2.0, -1.0 / 2.0, -2.0}, NNPN, ColorDarkGrey}, { {1.0 / 2.0, 1.0 / 2.0, -2.0}, NNZZ, ColorDarkGrey}, { {0, 0, -3.0}, NZZP, ColorGrey}, // 6
+  { {1.0 / 2.0, 1.0 / 2.0, -2.0}, NNPN, ColorDarkGrey}, { {-1.0 / 2.0, 1.0 / 2.0, -2.0}, NNZZ, ColorDarkGrey}, { {0, 0, -3.0}, NZZP, ColorGrey}, // 9
+  { {-1.0 / 2.0, 1.0 / 2.0, -2.0}, NNPN, ColorDarkGrey}, { {-1.0 / 2.0, -1.0 / 2.0, -2.0}, NNZZ, ColorDarkGrey}, { {0, 0, -3.0}, NZZP, ColorGrey}, // 12
 
-  { {-1.0 / 6.0, -1.0 / 2.0, -2.0}, NNPN, ColorDarkGrey}, { {-1.0 / 2.0, -1.0 / 2.0, -2.0}, NNZZ, ColorDarkGrey}, { {-1.0 / 2.0, 1.0 / 6.0, -2.0}, NZZP, ColorHalfBlue}, // 15
-  { {-1.0 / 2.0, 1.0 / 6.0, -2.0}, NNPN, ColorDarkGrey}, { {-1.0 / 6.0, 1.0 / 6.0, -2.0}, NNZZ, ColorDarkGrey}, { {-1.0 / 6.0, -1.0 / 2.0, -2.0}, NZZP, ColorHalfBlue}, // 18
+  { {-1.0 / 6.0, -1.0 / 2.0, -2.0}, NNPN, ColorGrey}, { {-1.0 / 2.0, -1.0 / 2.0, -2.0}, NNZZ, ColorGrey}, { {-1.0 / 2.0, 1.0 / 6.0, -2.0}, NZZP, ColorHalfBlue}, // 15
+  { {-1.0 / 2.0, 1.0 / 6.0, -2.0}, NNPN, ColorHalfBlue}, { {-1.0 / 6.0, 1.0 / 6.0, -2.0}, NNZZ, ColorHalfBlue}, { {-1.0 / 6.0, -1.0 / 2.0, -2.0}, NZZP, ColorGrey}, // 18
 
-  { {-1.0 / 2.0, 1.0 / 6.0, -2.0}, NNPN, ColorDarkGrey}, { {-1.0 / 2.0, 1.0 / 2.0, -2.0}, NNZZ, ColorDarkGrey}, { {1.0 / 6.0, 1.0 / 2.0, -2.0}, NZZP, ColorHalfYellow}, // 21
-  { {1.0 / 6.0, 1.0 / 2.0, -2.0}, NNPN, ColorDarkGrey}, { {1.0 / 6.0, 1.0 / 6.0, -2.0}, NNZZ, ColorDarkGrey}, { {-1.0 / 2.0, 1.0 / 6.0, -2.0}, NZZP, ColorHalfYellow}, // 24
+  { {-1.0 / 2.0, 1.0 / 6.0, -2.0}, NNPN, ColorGrey}, { {-1.0 / 2.0, 1.0 / 2.0, -2.0}, NNZZ, ColorGrey}, { {1.0 / 6.0, 1.0 / 2.0, -2.0}, NZZP, ColorHalfYellow}, // 21
+  { {1.0 / 6.0, 1.0 / 2.0, -2.0}, NNPN, ColorHalfYellow}, { {1.0 / 6.0, 1.0 / 6.0, -2.0}, NNZZ, ColorHalfYellow}, { {-1.0 / 2.0, 1.0 / 6.0, -2.0}, NZZP, ColorGrey}, // 24
 
-  { {1.0 / 6.0, 1.0 / 2.0, -2.0}, NNPN, ColorDarkGrey}, { {1.0 / 2.0, 1.0 / 2.0, -2.0}, NNZZ, ColorDarkGrey}, { {1.0 / 2.0, -1.0 / 6.0, -2.0}, NZZP, ColorHalfCyan}, // 27
-  { {1.0 / 2.0, -1.0 / 6.0, -2.0}, NNPN, ColorDarkGrey}, { {1.0 / 6.0, -1.0 / 6.0, -2.0}, NNZZ, ColorDarkGrey}, { {1.0 / 6.0, 1.0 / 2.0, -2.0}, NZZP, ColorHalfCyan}, // 30
+  { {1.0 / 6.0, 1.0 / 2.0, -2.0}, NNPN, ColorGrey}, { {1.0 / 2.0, 1.0 / 2.0, -2.0}, NNZZ, ColorGrey}, { {1.0 / 2.0, -1.0 / 6.0, -2.0}, NZZP, ColorHalfCyan}, // 27
+  { {1.0 / 2.0, -1.0 / 6.0, -2.0}, NNPN, ColorHalfCyan}, { {1.0 / 6.0, -1.0 / 6.0, -2.0}, NNZZ, ColorHalfCyan}, { {1.0 / 6.0, 1.0 / 2.0, -2.0}, NZZP, ColorGrey}, // 30
 
-  { {1.0 / 2.0, -1.0 / 6.0, -2.0}, NNPN, ColorDarkGrey}, { {1.0 / 2.0, -1.0 / 2.0, -2.0}, NNZZ, ColorDarkGrey}, { {-1.0 / 6.0, -1.0 / 2.0, -2.0}, NZZP, ColorHalfPurple}, // 33
-  { {-1.0 / 6.0, -1.0 / 2.0, -2.0}, NNPN, ColorDarkGrey}, { {-1.0 / 6.0, -1.0 / 6.0, -2.0}, NNZZ, ColorDarkGrey}, { {1.0 / 2.0, -1.0 / 6.0, -2.0}, NZZP, ColorHalfPurple}, // 36
+  { {1.0 / 2.0, -1.0 / 6.0, -2.0}, NNPN, ColorGrey}, { {1.0 / 2.0, -1.0 / 2.0, -2.0}, NNZZ, ColorGrey}, { {-1.0 / 6.0, -1.0 / 2.0, -2.0}, NZZP, ColorHalfPurple}, // 33
+  { {-1.0 / 6.0, -1.0 / 2.0, -2.0}, NNPN, ColorHalfPurple}, { {-1.0 / 6.0, -1.0 / 6.0, -2.0}, NNZZ, ColorHalfPurple}, { {1.0 / 2.0, -1.0 / 6.0, -2.0}, NZZP, ColorGrey}, // 36
 
   // -X
-  {PNNN, NNNN, ColorDarkGrey}, {PNZZ, NNZZ, ColorLightGrey}, {PNPN, NNPN, ColorDarkGrey}, {PNNP, NNNP, ColorDarkGrey}, {PNZZ, NNZZ, ColorLightGrey}, {PNNN, NNNN, ColorDarkGrey}, // 42
-  {PNZZ, NNZZ, ColorLightGrey}, {PNPP, NNPP, ColorDarkGrey}, {PNPN, NNPN, ColorDarkGrey}, {PNNP, NNNP, ColorDarkGrey}, {PNPP, NNPP, ColorDarkGrey}, {PNZZ, NNZZ, ColorLightGrey}, // 48
+  {PNNN, NNNN, ColorHalfBlue}, {PNZZ, NNZZ, ColorGrey}, {PNPN, NNPN, ColorHalfGreen}, {PNPN, NNPN, ColorHalfGreen}, {PNZZ, NNZZ, ColorGrey}, {PNPP, NNPP, ColorHalfRed}, // 42
+  {PNPP, NNPP, ColorHalfRed}, {PNZZ, NNZZ, ColorGrey}, {PNNP, NNNP, ColorHalfYellow}, {PNNP, NNNP, ColorHalfYellow}, {PNZZ, NNZZ, ColorGrey}, {PNNN, NNNN, ColorHalfBlue}, // 48
 
   // +X
-  {PPZZ, NPZZ, ColorLightGrey}, {PPNN, NPNN, ColorHalfBlue}, {PPPN, NPPN, ColorHalfBlue}, {PPNP, NPNP, ColorHalfBlue}, {PPNN, NPNN, ColorHalfBlue}, {PPZZ, NPZZ, ColorLightGrey}, // 54
-  {PPPP, NPPP, ColorHalfBlue}, {PPZZ, NPZZ, ColorLightGrey}, {PPPN, NPPN, ColorHalfBlue}, {PPNP, NPNP, ColorHalfBlue}, {PPZZ, NPZZ, ColorLightGrey}, {PPPP, NPPP, ColorHalfBlue}, // 60
+  {PPNN, NPNN, ColorHalfYellow}, {PPZZ, NPZZ, ColorGrey}, {PPNP, NPNP, ColorHalfYellow}, {PPNP, NPNP, ColorHalfYellow}, {PPZZ, NPZZ, ColorGrey}, {PPPP, NPPP, ColorHalfYellow}, // 54
+  {PPPP, NPPP, ColorHalfYellow}, {PPZZ, NPZZ, ColorGrey}, {PPPN, NPPN, ColorHalfYellow}, {PPPN, NPPN, ColorHalfYellow}, {PPZZ, NPZZ, ColorGrey}, {PPNN, NPNN, ColorHalfYellow}, // 60
 
   // -Y
-  {PZNZ, NZNZ, ColorLightGrey}, {PNNP, NNNP, ColorHalfGreen}, {PNNN, NNNN, ColorHalfGreen}, {PPNP, NPNP, ColorHalfGreen}, {PNNP, NNNP, ColorHalfGreen}, {PZNZ, NZNZ, ColorLightGrey}, // 66
-  {PPNN, NPNN, ColorHalfGreen}, {PZNZ, NZNZ, ColorLightGrey}, {PNNN, NNNN, ColorHalfGreen}, {PPNP, NPNP, ColorHalfGreen}, {PZNZ, NZNZ, ColorLightGrey}, {PPNN, NPNN, ColorHalfGreen}, // 72
+  {PNNN, NNNN, ColorDarkGrey}, {PZNZ, NZNZ, ColorGrey}, {PNNP, NNNP, ColorDarkGrey}, {PNNP, NNNP, ColorDarkGrey}, {PZNZ, NZNZ, ColorGrey}, {PPNP, NPNP, ColorDarkGrey}, // 66
+  {PPNP, NPNP, ColorDarkGrey}, {PZNZ, NZNZ, ColorGrey}, {PPNN, NPNN, ColorDarkGrey}, {PPNN, NPNN, ColorDarkGrey}, {PZNZ, NZNZ, ColorGrey}, {PNNN, NNNN, ColorDarkGrey}, // 72
 
   // +Y
-  {PZPZ, NZPZ, ColorLightGrey}, {PPPN, NPPN, ColorHalfRed}, {PNPN, NNPN, ColorHalfRed}, {PPPP, NPPP, ColorHalfRed}, {PPPN, NPPN, ColorHalfRed}, {PZPZ, NZPZ, ColorLightGrey}, // 78
-  {PNPP, NNPP, ColorHalfRed}, {PZPZ, NZPZ, ColorLightGrey}, {PNPN, NNPN, ColorHalfRed}, {PPPP, NPPP, ColorHalfRed}, {PZPZ, NZPZ, ColorLightGrey}, {PNPP, NNPP, ColorHalfRed}, // 84
+  {PNPP, NNPP, ColorLightGrey}, {PZPZ, NZPZ, ColorGrey}, {PNPN, NNPN, ColorLightGrey}, {PNPN, NNPN, ColorLightGrey}, {PZPZ, NZPZ, ColorGrey}, {PPPN, NPPN, ColorLightGrey}, // 78
+  {PPPN, NPPN, ColorLightGrey}, {PZPZ, NZPZ, ColorGrey}, {PPPP, NPPP, ColorLightGrey}, {PPPP, NPPP, ColorLightGrey}, {PZPZ, NZPZ, ColorGrey}, {PNPP, NNPP, ColorLightGrey}, // 84
 
   // -Z
-  {PZZN, NZZN, ColorLightGrey}, {PPNN, NPNN, ColorHalfCyan}, {PNNN, NNNN, ColorHalfCyan}, {PPPN, NPPN, ColorHalfCyan}, {PPNN, NPNN, ColorHalfCyan}, {PZZN, NZZN, ColorLightGrey}, // 90
-  {PNPN, NNPN, ColorHalfCyan}, {PZZN, NZZN, ColorLightGrey}, {PNNN, NNNN, ColorHalfCyan}, {PPPN, NPPN, ColorHalfCyan}, {PZZN, NZZN, ColorLightGrey}, {PNPN, NNPN, ColorHalfCyan}, // 96
+  {PNPN, NNPN, ColorHalfCyan}, {PZZN, NZZN, ColorGrey}, {PNNN, NNNN, ColorHalfCyan}, {PNNN, NNNN, ColorHalfCyan}, {PZZN, NZZN, ColorGrey}, {PPNN, NPNN, ColorHalfCyan}, // 90
+  {PPNN, NPNN, ColorHalfCyan}, {PZZN, NZZN, ColorGrey}, {PPPN, NPPN, ColorHalfCyan}, {PPPN, NPPN, ColorHalfCyan}, {PZZN, NZZN, ColorGrey}, {PNPN, NNPN, ColorHalfCyan}, // 96
 
   // +Z
-  //{PZZP, NZZP, ColorLightGrey}, {PNPP, NNPP, ColorHalfYellow}, {PNNP, NNNP, ColorHalfYellow}, {PPPP, NPPP, ColorHalfYellow}, {PNPP, NNPP, ColorHalfYellow}, {PZZP, NZZP, ColorLightGrey},
-  //{PPNP, NPNP, ColorHalfYellow}, {PZZP, NZZP, ColorLightGrey}, {PNNP, NNNP, ColorHalfYellow}, {PPPP, NPPP, ColorHalfYellow}, {PZZP, NZZP, ColorLightGrey}, {PPNP, NPNP, ColorHalfYellow}
+  {PNNP, NNNP, ColorHalfYellow}, {PZZP, NZZP, ColorGrey}, {PNPP, NNPP, ColorHalfYellow}, {PNPP, NNPP, ColorHalfYellow}, {PZZP, NZZP, ColorGrey}, {PPPP, NPPP, ColorHalfYellow}, // 102
+  {PPPP, NPPP, ColorHalfYellow}, {PZZP, NZZP, ColorGrey}, {PPNP, NPNP, ColorHalfYellow}, {PPNP, NPNP, ColorHalfYellow}, {PZZP, NZZP, ColorGrey}, {PNNP, NNNP, ColorHalfYellow} // 108
 };
 
 // Winding order is clockwise. Each side uses a different color.
@@ -176,7 +176,13 @@ constexpr unsigned short c_cubeIndices[] =
   87, 88, 89,
 
   90, 91, 92,
-  93, 94, 95
+  93, 94, 95,
+
+  96, 97, 98,
+  99, 100, 101,
+
+  102, 103, 104,
+  105, 106, 107
 };
 
 #if 0
