@@ -18,21 +18,6 @@
  * limitations under the License.
  */
 
-#pragma once
-
-#include <EGL/egl.h>
-#include <EGL/eglext.h>
-#include <GLES3/gl3.h>
-#include <GLES3/gl3ext.h>
-#define XR_USE_GRAPHICS_API_OPENGL_ES 1
-#define XR_USE_PLATFORM_ANDROID 1
-
-#include <openxr/openxr.h>
-#include <meta_openxr_preview/openxr_oculus_helpers.h>
-#include <openxr/openxr_platform.h>
-
-#include "XrPassthroughOcclusionGl.h"
-
 void OXR_CheckErrors(XrResult result, const char* function, bool failOnError);
 #define OXR(func) OXR_CheckErrors(func, #func, true);
 
@@ -55,22 +40,22 @@ inline OVR::Matrix4f OvrFromXr(const XrMatrix4x4f& x)
     x.m[0xd],
     x.m[0xe],
     x.m[0xf]
-    );
+  );
 }
 
 inline OVR::Quatf OvrFromXr(const XrQuaternionf& q)
 {
-    return OVR::Quatf(q.x, q.y, q.z, q.w);
+  return OVR::Quatf(q.x, q.y, q.z, q.w);
 }
 
 inline OVR::Vector3f OvrFromXr(const XrVector3f& v)
 {
-    return OVR::Vector3f(v.x, v.y, v.z);
+  return OVR::Vector3f(v.x, v.y, v.z);
 }
 
 inline OVR::Posef OvrFromXr(const XrPosef& p)
 {
-    return OVR::Posef(OvrFromXr(p.orientation), OvrFromXr(p.position) );
+  return OVR::Posef(OvrFromXr(p.orientation), OvrFromXr(p.position) );
 }
 
 /*
@@ -83,19 +68,22 @@ Egl
 
 class Egl
 {
-   public:
-    Egl() = default;
 
-    void CreateContext(const Egl* shareEgl);
-    void DestroyContext();
+public:
 
-    EGLint MajorVersion = 0;
-    EGLint MinorVersion = 0;
-    EGLDisplay Display = 0;
-    EGLConfig Config = 0;
-    EGLSurface TinySurface = EGL_NO_SURFACE;
-    EGLSurface MainSurface = EGL_NO_SURFACE;
-    EGLContext Context = EGL_NO_CONTEXT;
+Egl() = default;
+
+void CreateContext(const Egl* shareEgl);
+void DestroyContext();
+
+EGLint MajorVersion = 0;
+EGLint MinorVersion = 0;
+EGLDisplay Display = 0;
+EGLConfig Config = 0;
+EGLSurface TinySurface = EGL_NO_SURFACE;
+EGLSurface MainSurface = EGL_NO_SURFACE;
+EGLContext Context = EGL_NO_CONTEXT;
+
 };
 
 /*
@@ -108,57 +96,60 @@ App
 
 union CompositionLayerUnion
 {
-    XrCompositionLayerProjection Projection;
-    XrCompositionLayerQuad Quad;
-    XrCompositionLayerCylinderKHR Cylinder;
-    XrCompositionLayerCubeKHR Cube;
-    XrCompositionLayerEquirectKHR Equirect;
-    XrCompositionLayerPassthroughFB Passthrough;
+  XrCompositionLayerProjection Projection;
+  XrCompositionLayerQuad Quad;
+  XrCompositionLayerCylinderKHR Cylinder;
+  XrCompositionLayerCubeKHR Cube;
+  XrCompositionLayerEquirectKHR Equirect;
+  XrCompositionLayerPassthroughFB Passthrough;
 };
 
 class App
 {
-   public:
-    static constexpr int kNumEyes = 2;
-    static constexpr int kMaxLayerCount = 16;
 
-    App() = default;
+public:
 
-    void HandleSessionStateChanges(XrSessionState state);
-    void HandleXrEvents();
+static constexpr int kNumEyes = 2;
+static constexpr int kMaxLayerCount = 16;
 
-    Egl egl;
+App() = default;
 
-    bool Resumed = false;
+void HandleSessionStateChanges(XrSessionState state);
+void HandleXrEvents();
 
-    bool ShouldExit = false;
-    bool Focused = false;
+Egl egl;
 
-    XrInstance Instance = XR_NULL_HANDLE;
-    XrSession Session = XR_NULL_HANDLE;
-    XrViewConfigurationProperties ViewportConfig = {};
-    XrViewConfigurationView ViewConfigurationView[kNumEyes] = {};
-    XrSystemId SystemId = XR_NULL_SYSTEM_ID;
-    XrSpace HeadSpace = XR_NULL_HANDLE;
-    XrSpace LocalSpace = XR_NULL_HANDLE;
-    XrSpace StageSpace = XR_NULL_HANDLE;
-    bool SessionActive = false;
+bool Resumed = false;
 
-    int SwapInterval = 1;
-    int CpuLevel = 2;
-    int GpuLevel = 3;
-    // These threads will be marked as performance threads.
-    int MainThreadTid = 0;
-    int RenderThreadTid = 0;
-    CompositionLayerUnion Layers[kMaxLayerCount] = {};
-    int LayerCount = 0;
-    XrSwapchain ColorSwapchain = XR_NULL_HANDLE;
-    uint32_t SwapchainLength = 0;
+bool ShouldExit = false;
+bool Focused = false;
 
-    // Environment Depth Provider.
-    XrEnvironmentDepthProviderMETA EnvironmentDepthProvider = XR_NULL_HANDLE;
-    XrEnvironmentDepthSwapchainMETA EnvironmentDepthSwapchain = XR_NULL_HANDLE;
+XrInstance Instance = XR_NULL_HANDLE;
+XrSession Session = XR_NULL_HANDLE;
+XrViewConfigurationProperties ViewportConfig = {};
+XrViewConfigurationView ViewConfigurationView[kNumEyes] = {};
+XrSystemId SystemId = XR_NULL_SYSTEM_ID;
+XrSpace HeadSpace = XR_NULL_HANDLE;
+XrSpace LocalSpace = XR_NULL_HANDLE;
+XrSpace StageSpace = XR_NULL_HANDLE;
+bool SessionActive = false;
 
-    // Provided by XrPassthroughOcclusionGl, which is not aware of VrApi or OpenXR.
-    AppRenderer appRenderer;
+int SwapInterval = 1;
+int CpuLevel = 2;
+int GpuLevel = 3;
+// These threads will be marked as performance threads.
+int MainThreadTid = 0;
+int RenderThreadTid = 0;
+CompositionLayerUnion Layers[kMaxLayerCount] = {};
+int LayerCount = 0;
+XrSwapchain ColorSwapchain = XR_NULL_HANDLE;
+uint32_t SwapchainLength = 0;
+
+// Environment Depth Provider.
+XrEnvironmentDepthProviderMETA EnvironmentDepthProvider = XR_NULL_HANDLE;
+XrEnvironmentDepthSwapchainMETA EnvironmentDepthSwapchain = XR_NULL_HANDLE;
+
+// Provided by XrPassthroughOcclusionGl, which is not aware of VrApi or OpenXR.
+AppRenderer appRenderer;
+
 };

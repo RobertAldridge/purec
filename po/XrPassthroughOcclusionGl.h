@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  * All rights reserved.
@@ -16,183 +17,218 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
 
-#include <cstdint>
-#include <vector>
-#include <unordered_map>
+class Geometry
+{
 
-#include <GLES3/gl3.h>
+public:
 
-#include "OVR_Math.h"
+Geometry() = default;
 
-class Geometry {
-   public:
-    Geometry() = default;
+void CreateAxes();
+void CreatePlane();
+void CreateBox();
 
-    void CreateAxes();
-    void CreatePlane();
-    void CreateBox();
+void Destroy();
 
-    void Destroy();
+int GetIndexCount() const
+{
+  return IndexCount;
+}
 
-    int GetIndexCount() const {
-        return IndexCount;
-    }
-    GLuint GetVertexArrayObject() const {
-        return VertexArrayObject;
-    }
+GLuint GetVertexArrayObject() const
+{
+  return VertexArrayObject;
+}
 
-   private:
-    struct VertexAttribPointer {
-        GLint Index = 0;
-        GLint Size = 0;
-        GLenum Type = 0;
-        GLboolean Normalized = false;
-        GLsizei Stride = 0;
-        const GLvoid* Pointer = nullptr;
-    };
+private:
 
-    void CreateVAO();
-
-    GLuint VertexArrayObject = 0;
-    GLuint VertexBuffer = 0;
-    GLuint IndexBuffer = 0;
-    int VertexCount = 0;
-    int IndexCount = 0;
-    std::vector<VertexAttribPointer> VertexAttribs;
+struct VertexAttribPointer
+{
+  GLint Index = 0;
+  GLint Size = 0;
+  GLenum Type = 0;
+  GLboolean Normalized = false;
+  GLsizei Stride = 0;
+  const GLvoid* Pointer = nullptr;
 };
 
-class Program {
-   public:
-    Program() = default;
+void CreateVAO();
 
-    bool Create(const char* vertexSource, const char* fragmentSource);
-    void Destroy();
+GLuint VertexArrayObject = 0;
+GLuint VertexBuffer = 0;
+GLuint IndexBuffer = 0;
+int VertexCount = 0;
+int IndexCount = 0;
+std::vector<VertexAttribPointer> VertexAttribs;
 
-    int GetProgramId() const {
-        return Program_;
-    }
-
-    int GetUniformLocationOrDie(int uniformId) const;
-    int GetUniformBindingOrDie(int uniformId) const;
-
-   private:
-    GLuint Program_ = 0;
-    GLuint VertexShader = 0;
-    GLuint FragmentShader = 0;
-
-    // These will be -1 if not used by the program.
-    std::unordered_map<int, GLint> UniformLocation;
-    std::unordered_map<int, GLint> UniformBinding;
-    std::unordered_map<int, GLint> Textures;
 };
 
-class Framebuffer {
-   public:
-    Framebuffer() = default;
+class Program
+{
 
-    bool Create(
-        GLenum colorFormat,
-        int width,
-        int height,
-        int multisamples,
-        int swapChainLength,
-        GLuint* colorTextures);
-    void Destroy();
+public:
 
-    void Bind(int element);
-    void Unbind();
-    void Resolve();
+Program() = default;
 
-    int GetWidth() const {
-        return Width;
-    }
-    int GetHeight() const {
-        return Height;
-    }
+bool Create(const char* vertexSource, const char* fragmentSource);
 
-   private:
-    struct Element {
-        GLuint ColorTexture = 0;
-        GLuint DepthTexture = 0;
-        GLuint FrameBufferObject = 0;
-    };
+void Destroy();
 
-    int Width = 0;
-    int Height = 0;
-    int Multisamples = 0;
-    std::vector<Element> Elements;
+int GetProgramId() const
+{
+  return Program_;
+}
+
+int GetUniformLocationOrDie(int uniformId) const;
+int GetUniformBindingOrDie(int uniformId) const;
+
+private:
+
+GLuint Program_ = 0;
+GLuint VertexShader = 0;
+GLuint FragmentShader = 0;
+
+// These will be -1 if not used by the program.
+std::unordered_map<int, GLint> UniformLocation;
+std::unordered_map<int, GLint> UniformBinding;
+std::unordered_map<int, GLint> Textures;
+
 };
 
-class Scene {
-   public:
-    struct TrackedController {
-        OVR::Posef Pose;
-    };
+class Framebuffer
+{
 
-    Scene() = default;
+public:
 
-    void Create();
-    void Destroy();
+Framebuffer() = default;
 
-    bool IsCreated();
-    void SetClearColor(const float* c);
+bool Create(
+  GLenum colorFormat,
+  int width,
+  int height,
+  int multisamples,
+  int swapChainLength,
+  GLuint* colorTextures
+);
 
-    std::vector<TrackedController> TrackedControllers;
+void Destroy();
 
-    GLuint SceneMatrices = 0;
+void Bind(int element);
+void Unbind();
+void Resolve();
 
-    Program BoxDepthSpaceOcclusionProgram;
-    Geometry Box;
+int GetWidth() const
+{
+  return Width;
+}
 
-   private:
-    bool CreatedScene = false;
+int GetHeight() const
+{
+  return Height;
+}
+
+private:
+
+struct Element
+{
+  GLuint ColorTexture = 0;
+  GLuint DepthTexture = 0;
+  GLuint FrameBufferObject = 0;
 };
 
-class AppRenderer {
-   public:
-    struct FrameIn {
-        static constexpr int kNumEyes = 2;
+int Width = 0;
+int Height = 0;
+int Multisamples = 0;
+std::vector<Element> Elements;
 
-        int SwapChainIndex = 0;
-        OVR::Matrix4f View[kNumEyes];
-        OVR::Matrix4f Proj[kNumEyes];
+};
 
-        bool HasDepth = false;
+class Scene
+{
 
-        // Render target metadata:
-        float ScreenNearZ = 0.0f;
-        float ScreenFarZ = 0.0f;
+public:
 
-        // Depth texture metadata:
-        GLuint DepthTexture = 0;
-        float DepthNearZ = 0.0f;
-        float DepthFarZ = 0.0f;
+struct TrackedController
+{
+  OVR::Posef Pose;
+};
 
-        // Depth space transform matrices:
-        OVR::Matrix4f DepthViewMatrices[kNumEyes];
-        OVR::Matrix4f DepthProjectionMatrices[kNumEyes];
-    };
+Scene() = default;
 
-    AppRenderer() = default;
+void Create();
+void Destroy();
 
-    void Create(
-        GLenum format,
-        int width,
-        int height,
-        int numMultiSamples,
-        int swapChainLength,
-        GLuint* colorTextures);
-    void Destroy();
+bool IsCreated();
 
-    void RenderFrame(const FrameIn& frameIn);
+void SetClearColor(const float* c);
 
-    Scene scene;
+std::vector<TrackedController> TrackedControllers;
 
-   private:
-    void RenderScene(const FrameIn& frameIn);
+GLuint SceneMatrices = 0;
 
-    bool IsCreated = false;
-    Framebuffer framebuffer;
+Program BoxDepthSpaceOcclusionProgram;
+
+Geometry Box;
+
+private:
+
+bool CreatedScene = false;
+
+};
+
+class AppRenderer
+{
+
+public:
+
+struct FrameIn
+{
+  static constexpr int kNumEyes = 2;
+
+  int SwapChainIndex = 0;
+  OVR::Matrix4f View[kNumEyes];
+  OVR::Matrix4f Proj[kNumEyes];
+
+  bool HasDepth = false;
+
+  // Render target metadata:
+  float ScreenNearZ = 0.0f;
+  float ScreenFarZ = 0.0f;
+
+  // Depth texture metadata:
+  GLuint DepthTexture = 0;
+  float DepthNearZ = 0.0f;
+  float DepthFarZ = 0.0f;
+
+  // Depth space transform matrices:
+  OVR::Matrix4f DepthViewMatrices[kNumEyes];
+  OVR::Matrix4f DepthProjectionMatrices[kNumEyes];
+};
+
+AppRenderer() = default;
+
+void Create(
+  GLenum format,
+  int width,
+  int height,
+  int numMultiSamples,
+  int swapChainLength,
+  GLuint* colorTextures
+);
+
+void Destroy();
+
+void RenderFrame(const FrameIn& frameIn);
+
+Scene scene;
+
+private:
+
+void RenderScene(const FrameIn& frameIn);
+
+bool IsCreated = false;
+
+Framebuffer framebuffer;
+
 };

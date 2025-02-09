@@ -37,6 +37,7 @@ constexpr XrVector3f ColorGrey {0.5, 0.5, 0.5};
 constexpr XrVector3f ColorLightGrey {0.75, 0.75, 0.75};
 
 // Vertices for a 1x1x1 meter cube. (Left/Right, Top/Bottom, Front/Back)
+#if 0
 constexpr XrVector3f PNNN {-0.5, -0.5, -0.5};
 constexpr XrVector3f PNNP {-0.5, -0.5, 0.5};
 constexpr XrVector3f PNPN {-0.5, 0.5, -0.5};
@@ -45,6 +46,16 @@ constexpr XrVector3f PPNN {0.5, -0.5, -0.5};
 constexpr XrVector3f PPNP {0.5, -0.5, 0.5};
 constexpr XrVector3f PPPN {0.5, 0.5, -0.5};
 constexpr XrVector3f PPPP {0.5, 0.5, 0.5};
+#else
+constexpr XrVector3f PNNN {-1.0 / 6.0, -1.0 / 6.0, 0.0};
+constexpr XrVector3f PNNP {-1.0 / 6.0, -1.0 / 6.0, -2.0};
+constexpr XrVector3f PNPN {-1.0 / 6.0, 1.0 / 6.0, 0.0};
+constexpr XrVector3f PNPP {-1.0 / 6.0, 1.0 / 6.0, -2.0};
+constexpr XrVector3f PPNN {1.0 / 6.0, -1.0 / 6.0, 0.0};
+constexpr XrVector3f PPNP {1.0 / 6.0, -1.0 / 6.0, -2.0};
+constexpr XrVector3f PPPN {1.0 / 6.0, 1.0 / 6.0, 0.0};
+constexpr XrVector3f PPPP {1.0 / 6.0, 1.0 / 6.0, -2.0};
+#endif
 
 constexpr float N3RD {0.57735026918962576450914878050196};
 
@@ -57,6 +68,7 @@ constexpr XrVector3f NPNP {N3RD, -N3RD, N3RD};
 constexpr XrVector3f NPPN {N3RD, N3RD, -N3RD};
 constexpr XrVector3f NPPP {N3RD, N3RD, N3RD};
 
+#if 0
 constexpr XrVector3f PZZN {0, 0, -0.5};
 constexpr XrVector3f PZZP {0, 0, 0.5};
 
@@ -65,6 +77,16 @@ constexpr XrVector3f PZPZ {0, 0.5, 0};
 
 constexpr XrVector3f PNZZ {-0.5, 0, 0};
 constexpr XrVector3f PPZZ {0.5, 0, 0};
+#else
+constexpr XrVector3f PZZN {0.0, 0.0, 0.0};
+constexpr XrVector3f PZZP {0.0, 0.0, -2.0};
+
+constexpr XrVector3f PZNZ {0.0, -1.0 / 6.0, -1.0};
+constexpr XrVector3f PZPZ {0.0, 1.0 / 6.0, -1.0};
+
+constexpr XrVector3f PNZZ {-1.0 / 6.0, 0.0, -1.0};
+constexpr XrVector3f PPZZ {1.0 / 6.0, 0.0, -1.0};
+#endif
 
 constexpr XrVector3f NNZZ {-1, 0, 0};
 constexpr XrVector3f NPZZ {1, 0, 0};
@@ -79,6 +101,85 @@ constexpr XrVector3f NZZP {0, 0, 1};
 //
 // {-0.5, 0.5, -0.5}, {-0.5, 0.5, 0.5}, {-0.5, 0, 0}, {-0.5, 0, 0}, {-0.5, 0.5, 0.5}, {-0.5, -0.5, 0.5}
 
+constexpr Vertex c_cubeVertices[] =
+{
+  { {-1.0 / 2.0, -1.0 / 2.0, -2.0}, NNPN, ColorDarkGrey}, { {1.0 / 2.0, -1.0 / 2.0, -2.0}, NNZZ, ColorDarkGrey}, { {0, 0, -3.0}, NZZP, ColorLightGrey}, // 3
+  { {1.0 / 2.0, -1.0 / 2.0, -2.0}, NNPN, ColorDarkGrey}, { {1.0 / 2.0, 1.0 / 2.0, -2.0}, NNZZ, ColorDarkGrey}, { {0, 0, -3.0}, NZZP, ColorLightGrey}, // 6
+  { {1.0 / 2.0, 1.0 / 2.0, -2.0}, NNPN, ColorDarkGrey}, { {-1.0 / 2.0, 1.0 / 2.0, -2.0}, NNZZ, ColorDarkGrey}, { {0, 0, -3.0}, NZZP, ColorLightGrey}, // 9
+  { {-1.0 / 2.0, 1.0 / 2.0, -2.0}, NNPN, ColorDarkGrey}, { {-1.0 / 2.0, -1.0 / 2.0, -2.0}, NNZZ, ColorDarkGrey}, { {0, 0, -3.0}, NZZP, ColorLightGrey}, // 12
+
+  { {-1.0 / 6.0, -1.0 / 2.0, -2.0}, NNPN, ColorDarkGrey}, { {-1.0 / 2.0, -1.0 / 2.0, -2.0}, NNZZ, ColorDarkGrey}, { {-1.0 / 2.0, 1.0 / 6.0, -2.0}, NZZP, ColorHalfBlue}, // 15
+  { {-1.0 / 2.0, 1.0 / 6.0, -2.0}, NNPN, ColorDarkGrey}, { {-1.0 / 6.0, 1.0 / 6.0, -2.0}, NNZZ, ColorDarkGrey}, { {-1.0 / 6.0, -1.0 / 2.0, -2.0}, NZZP, ColorHalfBlue}, // 18
+
+  { {-1.0 / 2.0, 1.0 / 6.0, -2.0}, NNPN, ColorDarkGrey}, { {-1.0 / 2.0, 1.0 / 2.0, -2.0}, NNZZ, ColorDarkGrey}, { {1.0 / 6.0, 1.0 / 2.0, -2.0}, NZZP, ColorHalfYellow}, // 21
+  { {1.0 / 6.0, 1.0 / 2.0, -2.0}, NNPN, ColorDarkGrey}, { {1.0 / 6.0, 1.0 / 6.0, -2.0}, NNZZ, ColorDarkGrey}, { {-1.0 / 2.0, 1.0 / 6.0, -2.0}, NZZP, ColorHalfYellow}, // 24
+
+  { {1.0 / 6.0, 1.0 / 2.0, -2.0}, NNPN, ColorDarkGrey}, { {1.0 / 2.0, 1.0 / 2.0, -2.0}, NNZZ, ColorDarkGrey}, { {1.0 / 2.0, -1.0 / 6.0, -2.0}, NZZP, ColorHalfCyan}, // 27
+  { {1.0 / 2.0, -1.0 / 6.0, -2.0}, NNPN, ColorDarkGrey}, { {1.0 / 6.0, -1.0 / 6.0, -2.0}, NNZZ, ColorDarkGrey}, { {1.0 / 6.0, 1.0 / 2.0, -2.0}, NZZP, ColorHalfCyan}, // 30
+
+  { {1.0 / 2.0, -1.0 / 6.0, -2.0}, NNPN, ColorDarkGrey}, { {1.0 / 2.0, -1.0 / 2.0, -2.0}, NNZZ, ColorDarkGrey}, { {-1.0 / 6.0, -1.0 / 2.0, -2.0}, NZZP, ColorHalfPurple}, // 33
+  { {-1.0 / 6.0, -1.0 / 2.0, -2.0}, NNPN, ColorDarkGrey}, { {-1.0 / 6.0, -1.0 / 6.0, -2.0}, NNZZ, ColorDarkGrey}, { {1.0 / 2.0, -1.0 / 6.0, -2.0}, NZZP, ColorHalfPurple}, // 36
+
+  // -X
+  {PNNN, NNNN, ColorDarkGrey}, {PNZZ, NNZZ, ColorLightGrey}, {PNPN, NNPN, ColorDarkGrey}, {PNNP, NNNP, ColorDarkGrey}, {PNZZ, NNZZ, ColorLightGrey}, {PNNN, NNNN, ColorDarkGrey}, // 42
+  {PNZZ, NNZZ, ColorLightGrey}, {PNPP, NNPP, ColorDarkGrey}, {PNPN, NNPN, ColorDarkGrey}, {PNNP, NNNP, ColorDarkGrey}, {PNPP, NNPP, ColorDarkGrey}, {PNZZ, NNZZ, ColorLightGrey}, // 48
+
+  // +X
+  {PPZZ, NPZZ, ColorLightGrey}, {PPNN, NPNN, ColorHalfBlue}, {PPPN, NPPN, ColorHalfBlue}, {PPNP, NPNP, ColorHalfBlue}, {PPNN, NPNN, ColorHalfBlue}, {PPZZ, NPZZ, ColorLightGrey}, // 54
+  {PPPP, NPPP, ColorHalfBlue}, {PPZZ, NPZZ, ColorLightGrey}, {PPPN, NPPN, ColorHalfBlue}, {PPNP, NPNP, ColorHalfBlue}, {PPZZ, NPZZ, ColorLightGrey}, {PPPP, NPPP, ColorHalfBlue}, // 60
+
+  // -Y
+  {PZNZ, NZNZ, ColorLightGrey}, {PNNP, NNNP, ColorHalfGreen}, {PNNN, NNNN, ColorHalfGreen}, {PPNP, NPNP, ColorHalfGreen}, {PNNP, NNNP, ColorHalfGreen}, {PZNZ, NZNZ, ColorLightGrey}, // 66
+  {PPNN, NPNN, ColorHalfGreen}, {PZNZ, NZNZ, ColorLightGrey}, {PNNN, NNNN, ColorHalfGreen}, {PPNP, NPNP, ColorHalfGreen}, {PZNZ, NZNZ, ColorLightGrey}, {PPNN, NPNN, ColorHalfGreen}, // 72
+
+  // +Y
+  {PZPZ, NZPZ, ColorLightGrey}, {PPPN, NPPN, ColorHalfRed}, {PNPN, NNPN, ColorHalfRed}, {PPPP, NPPP, ColorHalfRed}, {PPPN, NPPN, ColorHalfRed}, {PZPZ, NZPZ, ColorLightGrey}, // 78
+  {PNPP, NNPP, ColorHalfRed}, {PZPZ, NZPZ, ColorLightGrey}, {PNPN, NNPN, ColorHalfRed}, {PPPP, NPPP, ColorHalfRed}, {PZPZ, NZPZ, ColorLightGrey}, {PNPP, NNPP, ColorHalfRed}, // 84
+
+  // -Z
+  {PZZN, NZZN, ColorLightGrey}, {PPNN, NPNN, ColorHalfCyan}, {PNNN, NNNN, ColorHalfCyan}, {PPPN, NPPN, ColorHalfCyan}, {PPNN, NPNN, ColorHalfCyan}, {PZZN, NZZN, ColorLightGrey}, // 90
+  {PNPN, NNPN, ColorHalfCyan}, {PZZN, NZZN, ColorLightGrey}, {PNNN, NNNN, ColorHalfCyan}, {PPPN, NPPN, ColorHalfCyan}, {PZZN, NZZN, ColorLightGrey}, {PNPN, NNPN, ColorHalfCyan}, // 96
+
+  // +Z
+  //{PZZP, NZZP, ColorLightGrey}, {PNPP, NNPP, ColorHalfYellow}, {PNNP, NNNP, ColorHalfYellow}, {PPPP, NPPP, ColorHalfYellow}, {PNPP, NNPP, ColorHalfYellow}, {PZZP, NZZP, ColorLightGrey},
+  //{PPNP, NPNP, ColorHalfYellow}, {PZZP, NZZP, ColorLightGrey}, {PNNP, NNNP, ColorHalfYellow}, {PPPP, NPPP, ColorHalfYellow}, {PZZP, NZZP, ColorLightGrey}, {PPNP, NPNP, ColorHalfYellow}
+};
+
+// Winding order is clockwise. Each side uses a different color.
+constexpr unsigned short c_cubeIndices[] =
+{
+  0,  1,  2,  3,  4,  5, // -X
+  6,  7,  8,  9,  10, 11,
+
+  12, 13, 14, 15, 16, 17, // +X
+  18, 19, 20, 21, 22, 23,
+
+  24, 25, 26, 27, 28, 29, // -Y
+  30, 31, 32, 33, 34, 35,
+
+  36, 37, 38, 39, 40, 41, // +Y
+  42, 43, 44, 45, 46, 47,
+
+  48, 49, 50, 51, 52, 53, // -Z
+  54, 55, 56, 57, 58, 59,
+
+  60, 61, 62, 63, 64, 65, // +Z
+  66, 67, 68, 69, 70, 71,
+
+  72, 73, 74,
+  75, 76, 77,
+
+  78, 79, 80,
+  81, 82, 83,
+
+  84, 85, 86,
+  87, 88, 89,
+
+  90, 91, 92,
+  93, 94, 95
+};
+
+#if 0
 constexpr Vertex c_cubeVertices[] =
 {
   // -X
@@ -105,6 +206,7 @@ constexpr Vertex c_cubeVertices[] =
   {PNNP, NNNP, ColorHalfYellow}, {PNPP, NNPP, ColorHalfYellow}, {PZZP, NZZP, ColorLightGrey}, {PZZP, NZZP, ColorLightGrey}, {PNPP, NNPP, ColorHalfYellow}, {PPPP, NPPP, ColorHalfYellow},
   {PNNP, NNNP, ColorHalfYellow}, {PZZP, NZZP, ColorLightGrey}, {PPNP, NPNP, ColorHalfYellow}, {PPNP, NPNP, ColorHalfYellow}, {PZZP, NZZP, ColorLightGrey}, {PPPP, NPPP, ColorHalfYellow}
 };
+#endif
 
 //#define CUBE_SIDE(V1, V2, V3, V4, V5, V6, COLOR) \
 //  {V1, COLOR}, {V2, COLOR}, {V3, COLOR}, {V4, COLOR}, {V5, COLOR}, {V6, COLOR}
@@ -176,6 +278,7 @@ vec4(0.54, 0.54, 0.54, 1.0),
 vec4(0.54, 0.54, 0.0, 1.0)
 #endif
 
+#if 0
 // Winding order is clockwise. Each side uses a different color.
 constexpr unsigned short c_cubeIndices[] =
 {
@@ -197,5 +300,6 @@ constexpr unsigned short c_cubeIndices[] =
   60, 61, 62, 63, 64, 65, // +Z
   66, 67, 68, 69, 70, 71
 };
+#endif
 
 } // namespace Geometry
