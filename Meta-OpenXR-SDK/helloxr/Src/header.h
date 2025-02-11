@@ -282,3 +282,12 @@ inline const char* to_string(XrFormFactor e);
 extern XrInstanceCreateInfoAndroidKHR instanceCreateInfoAndroid;
 
 #define countof(blah) (sizeof(blah) / sizeof(blah[0] ) )
+
+struct MatrixCmdPushConstants
+{
+  XrMatrix4x4f modelViewProjectionMatrix;
+
+  XrMatrix4x4f transpose_inverse_modelViewMatrix;
+
+  XrMatrix4x4f modelViewMatrix;
+};

@@ -4083,9 +4083,49 @@ struct VkExtensionProperties
               (spaceLocation.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0
             )
             {
-              float scale = 0.1f * gOpenXrProgramInputState_InputState_handScale[hand];
+              float scale = (0.125 / 32.0) * gOpenXrProgramInputState_InputState_handScale[hand];
 
-              models.push_back(Model {0, spaceLocation.pose, {scale, scale, scale} } );
+              //if(hand == Side_LEFT)
+              {
+                models.push_back(Model {4, spaceLocation.pose, {scale, scale, scale} } );
+
+                spaceLocation.pose.position.x += 8.0 * scale;
+
+                models.push_back(Model {5, spaceLocation.pose, {scale, scale, scale} } );
+
+                spaceLocation.pose.position.x += 8.0 * scale;
+
+                models.push_back(Model {6, spaceLocation.pose, {scale, scale, scale} } );
+
+                spaceLocation.pose.position.x += 8.0 * scale;
+
+                models.push_back(Model {7, spaceLocation.pose, {scale, scale, scale} } );
+
+                spaceLocation.pose.position.x += 8.0 * scale;
+
+                models.push_back(Model {8, spaceLocation.pose, {scale, scale, scale} } );
+
+                spaceLocation.pose.position.x += 8.0 * scale;
+
+                models.push_back(Model {9, spaceLocation.pose, {scale, scale, scale} } );
+
+                spaceLocation.pose.position.x += 8.0 * scale;
+
+                models.push_back(Model {10, spaceLocation.pose, {scale, scale, scale} } );
+
+                spaceLocation.pose.position.x += 8.0 * scale;
+
+                models.push_back(Model {11, spaceLocation.pose, {scale, scale, scale} } );
+
+                spaceLocation.pose.position.x += 8.0 * scale;
+
+                models.push_back(Model {12, spaceLocation.pose, {scale, scale, scale} } );
+              }
+              //else
+              //{
+                //models.push_back(Model {0, spaceLocation.pose, {scale, scale, scale} } );
+              //  models.push_back(Model {4, spaceLocation.pose, {scale, scale, scale} } );
+              //}
             }
           }
           else
@@ -4553,11 +4593,11 @@ struct VkExtensionProperties
             XrMatrix4x4f toView;
             XrMatrix4x4f_CreateFromRigidTransform( &toView, &pose);
 
-            XrMatrix4x4f view;
-            XrMatrix4x4f_InvertRigidBody( &view, &toView);
+            XrMatrix4x4f viewMatrix;
+            XrMatrix4x4f_InvertRigidBody( &viewMatrix, &toView);
 
             XrMatrix4x4f viewProjectionMatrix;
-            XrMatrix4x4f_Multiply( &viewProjectionMatrix, &projectionMatrix, &view);
+            XrMatrix4x4f_Multiply( &viewProjectionMatrix, &projectionMatrix, &viewMatrix);
 
             // render each model
             for(const Model& model : models)
@@ -4573,8 +4613,28 @@ struct VkExtensionProperties
               );
 
               XrMatrix4x4f modelViewProjectionMatrix;
-
               XrMatrix4x4f_Multiply( &modelViewProjectionMatrix, &viewProjectionMatrix, &blahModelMatrix);
+
+              XrMatrix4x4f modelViewMatrix;
+              XrMatrix4x4f_Multiply( &modelViewMatrix, &viewMatrix, &blahModelMatrix);
+
+              // void XrMatrix4x4f_Invert(XrMatrix4x4f* result, const XrMatrix4x4f* src)
+              //
+              // void XrMatrix4x4f_Transpose(XrMatrix4x4f* result, const XrMatrix4x4f* src)
+              //
+              // transpose(inverse(mat3(viewMatrix) ) )
+              //
+              // inverse_viewMatrix
+              //
+              // transpose_inverse_viewMatrix
+
+              XrMatrix4x4f inverse_modelViewMatrix;
+              XrMatrix4x4f_Invert( &inverse_modelViewMatrix, &modelViewMatrix);
+
+              XrMatrix4x4f transpose_inverse_modelViewMatrix;
+              XrMatrix4x4f_Transpose( &transpose_inverse_modelViewMatrix, &inverse_modelViewMatrix);
+
+              MatrixCmdPushConstants cmdPushConstants {modelViewProjectionMatrix, transpose_inverse_modelViewMatrix, modelViewMatrix};
 
               if(tableVk.CmdPushConstants)
               {
@@ -4583,8 +4643,8 @@ struct VkExtensionProperties
                   gVkPipelineLayout,
                   VK_SHADER_STAGE_VERTEX_BIT,
                   0,
-                  sizeof(modelViewProjectionMatrix.m),
-                  &modelViewProjectionMatrix.m[0]
+                  sizeof(MatrixCmdPushConstants),
+                  &cmdPushConstants
                 );
               }
 
@@ -4601,6 +4661,64 @@ struct VkExtensionProperties
                 // cube 96 72
                 if(model.whoAmI == 1)
                   tableVk.CmdDrawIndexed(gCmdBufferBuffer, 72/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 96/*firstIndex*/, 0/*vertexOffset*/, 0/*firstInstance*/);
+
+                // 'Z'
+                if(model.whoAmI == 2)
+                  tableVk.CmdDrawIndexed(gCmdBufferBuffer, 132/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 168/*firstIndex*/, 167/*vertexOffset*/, 0/*firstInstance*/);
+
+                if(model.whoAmI == 3)
+                {
+                  tableVk.CmdDrawIndexed(gCmdBufferBuffer, 228/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 300/*firstIndex*/, 192/*vertexOffset*/, 0/*firstInstance*/);
+
+                  tableVk.CmdDrawIndexed(gCmdBufferBuffer, 228/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 528/*firstIndex*/, 273/*vertexOffset*/, 0/*firstInstance*/);
+
+                  tableVk.CmdDrawIndexed(gCmdBufferBuffer, 480/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 756/*firstIndex*/, 192/*vertexOffset*/, 0/*firstInstance*/);
+                }
+
+                if(model.whoAmI == 4)
+                {
+                  tableVk.CmdDrawIndexed(gCmdBufferBuffer, 72 * 38/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 1236/*firstIndex*/, 354/*vertexOffset*/, 0/*firstInstance*/);
+                }
+
+                if(model.whoAmI == 5)
+                {
+                  tableVk.CmdDrawIndexed(gCmdBufferBuffer, 72 * 60/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 3972/*firstIndex*/, 354/*vertexOffset*/, 0/*firstInstance*/);
+                }
+
+                if(model.whoAmI == 6)
+                {
+                  tableVk.CmdDrawIndexed(gCmdBufferBuffer, 72 * 38/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 8292/*firstIndex*/, 354/*vertexOffset*/, 0/*firstInstance*/);
+                }
+
+                if(model.whoAmI == 7)
+                {
+                  tableVk.CmdDrawIndexed(gCmdBufferBuffer, 72 * 40/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 11028/*firstIndex*/, 354/*vertexOffset*/, 0/*firstInstance*/);
+                }
+
+                if(model.whoAmI == 8)
+                {
+                  tableVk.CmdDrawIndexed(gCmdBufferBuffer, 72 * 26/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 13908/*firstIndex*/, 354/*vertexOffset*/, 0/*firstInstance*/);
+                }
+
+                if(model.whoAmI == 9)
+                {
+                  tableVk.CmdDrawIndexed(gCmdBufferBuffer, 72 * 24/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 15780/*firstIndex*/, 354/*vertexOffset*/, 0/*firstInstance*/);
+                }
+
+                if(model.whoAmI == 10)
+                {
+                  tableVk.CmdDrawIndexed(gCmdBufferBuffer, 72 * 33/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 17508/*firstIndex*/, 354/*vertexOffset*/, 0/*firstInstance*/);
+                }
+
+                if(model.whoAmI == 11)
+                {
+                  tableVk.CmdDrawIndexed(gCmdBufferBuffer, 72 * 24/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 19884/*firstIndex*/, 354/*vertexOffset*/, 0/*firstInstance*/);
+                }
+
+                if(model.whoAmI == 12)
+                {
+                  tableVk.CmdDrawIndexed(gCmdBufferBuffer, 72 * 96/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 21612/*firstIndex*/, 354/*vertexOffset*/, 0/*firstInstance*/);
+                }
               }
             }
 

@@ -184,9 +184,13 @@ R"_(
 
   layout (std140, push_constant) uniform buf
   {
-    mat4 mvp;
+    mat4 modelViewProjectionMatrix;
 
-  }ubuf;
+    mat4 transpose_inverse_modelViewMatrix;
+
+    mat4 modelViewMatrix;
+
+  }uniformBuffer;
 
   layout (location = 0) in vec3 Position;
   layout (location = 1) in vec3 Normal;
@@ -208,10 +212,21 @@ R"_(
 
   void main()
   {
-    //fragColor = colors[gl_VertexIndex % 3];
-    fragColor = vec4(Color, 1.0);
+    vec4 transformedNormalReference = uniformBuffer.transpose_inverse_modelViewMatrix * vec4(Normal, 1.0);
+    float transformedNormalReferenceMagnitude = sqrt(transformedNormalReference.x * transformedNormalReference.x + transformedNormalReference.y * transformedNormalReference.y + transformedNormalReference.z * transformedNormalReference.z);
+    vec3 surfaceNormalN = vec3(transformedNormalReference.x / transformedNormalReferenceMagnitude, transformedNormalReference.y / transformedNormalReferenceMagnitude, transformedNormalReference.z / transformedNormalReferenceMagnitude);
 
-    gl_Position = ubuf.mvp * vec4(Position, 1.0);
+    float intensity = max(0.0, surfaceNormalN.z);
+
+    // normal from vertex to camera
+
+    //fragColor = colors[gl_VertexIndex % 3];
+    //fragColor = vec4(Color, 1.0);
+
+    fragColor = vec4(vec3(intensity * Color.x, intensity * Color.y, intensity * Color.z), 1.0);
+    //fragColor = vec4(vec3(intensity, intensity, intensity), 1.0);
+
+    gl_Position = uniformBuffer.modelViewProjectionMatrix * vec4(Position, 1.0);
   }
 
 )_";
