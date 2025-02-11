@@ -2077,7 +2077,7 @@ struct VkExtensionProperties
     VkBufferCreateInfo bufInfo {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
 
     bufInfo.usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
-    bufInfo.size = sizeof(uint16_t) * numModelsIdicies;
+    bufInfo.size = sizeof(uint32_t) * numModelsIdicies;
 
     if(tableVk.CreateBuffer)
       CHECK_VULKANCMD(tableVk.CreateBuffer(gVkDevice, &bufInfo, nullptr, &gVertexBufferBaseIdxBuf) );
@@ -2228,10 +2228,10 @@ struct VkExtensionProperties
   }
 
   //VertexBuffer_VertexBufferUpdateIndices(Geometry::gModelsIndices, numModelsIdicies, 0);
-  //void VertexBuffer_VertexBufferUpdateIndices(const uint16_t* data, uint32_t elements, uint32_t offset)
+  //void VertexBuffer_VertexBufferUpdateIndices(const uint32_t* data, uint32_t elements, uint32_t offset)
   {
     uint32_t offset = 0;
-    uint16_t* map = nullptr;
+    uint32_t* map = nullptr;
 
     if(tableVk.MapMemory)
     {
@@ -4046,7 +4046,7 @@ struct VkExtensionProperties
               (spaceLocation.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0
             )
             {
-              models.push_back(Model {1, spaceLocation.pose, {0.25f, 0.25f, 0.25f} } );
+              models.push_back(Model {257, spaceLocation.pose, {0.25f, 0.25f, 0.25f} } );
             }
           }
           else
@@ -4085,47 +4085,37 @@ struct VkExtensionProperties
             {
               float scale = (0.125 / 32.0) * gOpenXrProgramInputState_InputState_handScale[hand];
 
-              //if(hand == Side_LEFT)
+              //char testString[] = "omg Hello World!";
+              //char countOfTestString = strlen(testString);
+
+              spaceLocation.pose.position.x -= 8.0 * (8.0 * scale);
+
+              spaceLocation.pose.position.y += 8.0 * (1.5 * 8.0 * scale);
+
+              for(uint32_t indexCharacter = 0; indexCharacter < 256; indexCharacter++)
               {
-                models.push_back(Model {4, spaceLocation.pose, {scale, scale, scale} } );
+                //if(hand == Side_LEFT)
+                {
+                  // R o   b  e  r  t   [heart] T a  r a
+                  // 7 12  10 11 13 14     6    8 9 13 9
 
-                spaceLocation.pose.position.x += 8.0 * scale;
+                  models.push_back(Model {indexCharacter/*testString[indexCharacter]*/, spaceLocation.pose, {scale, scale, scale} } );
 
-                models.push_back(Model {5, spaceLocation.pose, {scale, scale, scale} } );
+                  spaceLocation.pose.position.x += 8.0 * scale;
 
-                spaceLocation.pose.position.x += 8.0 * scale;
+                  if(indexCharacter != 0 && (indexCharacter % 16) == 0)
+                  {
+                    spaceLocation.pose.position.x -= 16.0 * (8.0 * scale);
 
-                models.push_back(Model {6, spaceLocation.pose, {scale, scale, scale} } );
-
-                spaceLocation.pose.position.x += 8.0 * scale;
-
-                models.push_back(Model {7, spaceLocation.pose, {scale, scale, scale} } );
-
-                spaceLocation.pose.position.x += 8.0 * scale;
-
-                models.push_back(Model {8, spaceLocation.pose, {scale, scale, scale} } );
-
-                spaceLocation.pose.position.x += 8.0 * scale;
-
-                models.push_back(Model {9, spaceLocation.pose, {scale, scale, scale} } );
-
-                spaceLocation.pose.position.x += 8.0 * scale;
-
-                models.push_back(Model {10, spaceLocation.pose, {scale, scale, scale} } );
-
-                spaceLocation.pose.position.x += 8.0 * scale;
-
-                models.push_back(Model {11, spaceLocation.pose, {scale, scale, scale} } );
-
-                spaceLocation.pose.position.x += 8.0 * scale;
-
-                models.push_back(Model {12, spaceLocation.pose, {scale, scale, scale} } );
+                    spaceLocation.pose.position.y -= 1.5 * 8.0 * scale;
+                  }
+                }
+                //else
+                //{
+                  //models.push_back(Model {256, spaceLocation.pose, {scale, scale, scale} } );
+                //  models.push_back(Model {260, spaceLocation.pose, {scale, scale, scale} } );
+                //}
               }
-              //else
-              //{
-                //models.push_back(Model {0, spaceLocation.pose, {scale, scale, scale} } );
-              //  models.push_back(Model {4, spaceLocation.pose, {scale, scale, scale} } );
-              //}
             }
           }
           else
@@ -4576,7 +4566,7 @@ struct VkExtensionProperties
 
             // Bind indice and vertex buffers
             if(tableVk.CmdBindIndexBuffer)
-              tableVk.CmdBindIndexBuffer(gCmdBufferBuffer, gVertexBufferBaseIdxBuf, 0, VK_INDEX_TYPE_UINT16);
+              tableVk.CmdBindIndexBuffer(gCmdBufferBuffer, gVertexBufferBaseIdxBuf, 0, VK_INDEX_TYPE_UINT32);
 
             VkDeviceSize offset = 0;
 
@@ -4598,6 +4588,8 @@ struct VkExtensionProperties
 
             XrMatrix4x4f viewProjectionMatrix;
             XrMatrix4x4f_Multiply( &viewProjectionMatrix, &projectionMatrix, &viewMatrix);
+
+            bool foundHeart = false;
 
             // render each model
             for(const Model& model : models)
@@ -4636,6 +4628,35 @@ struct VkExtensionProperties
 
               MatrixCmdPushConstants cmdPushConstants {modelViewProjectionMatrix, transpose_inverse_modelViewMatrix, modelViewMatrix};
 
+#if 0
+              if( !foundHeart && model.whoAmI != 6)
+              {
+                cmdPushConstants.modelColor.x = 0.529;
+                cmdPushConstants.modelColor.y = 0.808;
+                cmdPushConstants.modelColor.z = 0.922;
+              }
+              else if( !foundHeart && model.whoAmI == 6)
+              {
+                cmdPushConstants.modelColor.x = 1.0;
+                cmdPushConstants.modelColor.y = 0.0;
+                cmdPushConstants.modelColor.z = 0.0;
+
+                foundHeart = true;
+              }
+              else if(foundHeart)
+              {
+                cmdPushConstants.modelColor.x = 143.0 / 255.0;
+                cmdPushConstants.modelColor.y = 0.0;
+                cmdPushConstants.modelColor.z = 1.0;
+
+                foundHeart = true;
+              }
+#else
+              cmdPushConstants.modelColor.x = 1.0;
+              cmdPushConstants.modelColor.y = 1.0;
+              cmdPushConstants.modelColor.z = 1.0;
+#endif
+
               if(tableVk.CmdPushConstants)
               {
                 tableVk.CmdPushConstants(
@@ -4655,18 +4676,18 @@ struct VkExtensionProperties
               if(tableVk.CmdDrawIndexed)
               {
                 // arrow 0 96
-                if(model.whoAmI == 0)
+                if(model.whoAmI == 256)
                   tableVk.CmdDrawIndexed(gCmdBufferBuffer, 96/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 0/*firstIndex*/, 0/*vertexOffset*/, 0/*firstInstance*/);
 
                 // cube 96 72
-                if(model.whoAmI == 1)
+                if(model.whoAmI == 257)
                   tableVk.CmdDrawIndexed(gCmdBufferBuffer, 72/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 96/*firstIndex*/, 0/*vertexOffset*/, 0/*firstInstance*/);
 
                 // 'Z'
-                if(model.whoAmI == 2)
+                if(model.whoAmI == 258)
                   tableVk.CmdDrawIndexed(gCmdBufferBuffer, 132/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 168/*firstIndex*/, 167/*vertexOffset*/, 0/*firstInstance*/);
 
-                if(model.whoAmI == 3)
+                if(model.whoAmI == 259)
                 {
                   tableVk.CmdDrawIndexed(gCmdBufferBuffer, 228/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 300/*firstIndex*/, 192/*vertexOffset*/, 0/*firstInstance*/);
 
@@ -4675,49 +4696,9 @@ struct VkExtensionProperties
                   tableVk.CmdDrawIndexed(gCmdBufferBuffer, 480/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 756/*firstIndex*/, 192/*vertexOffset*/, 0/*firstInstance*/);
                 }
 
-                if(model.whoAmI == 4)
+                if(model.whoAmI >= 0 && model.whoAmI <= 255)
                 {
-                  tableVk.CmdDrawIndexed(gCmdBufferBuffer, 72 * 38/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 1236/*firstIndex*/, 354/*vertexOffset*/, 0/*firstInstance*/);
-                }
-
-                if(model.whoAmI == 5)
-                {
-                  tableVk.CmdDrawIndexed(gCmdBufferBuffer, 72 * 60/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 3972/*firstIndex*/, 354/*vertexOffset*/, 0/*firstInstance*/);
-                }
-
-                if(model.whoAmI == 6)
-                {
-                  tableVk.CmdDrawIndexed(gCmdBufferBuffer, 72 * 38/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 8292/*firstIndex*/, 354/*vertexOffset*/, 0/*firstInstance*/);
-                }
-
-                if(model.whoAmI == 7)
-                {
-                  tableVk.CmdDrawIndexed(gCmdBufferBuffer, 72 * 40/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 11028/*firstIndex*/, 354/*vertexOffset*/, 0/*firstInstance*/);
-                }
-
-                if(model.whoAmI == 8)
-                {
-                  tableVk.CmdDrawIndexed(gCmdBufferBuffer, 72 * 26/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 13908/*firstIndex*/, 354/*vertexOffset*/, 0/*firstInstance*/);
-                }
-
-                if(model.whoAmI == 9)
-                {
-                  tableVk.CmdDrawIndexed(gCmdBufferBuffer, 72 * 24/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 15780/*firstIndex*/, 354/*vertexOffset*/, 0/*firstInstance*/);
-                }
-
-                if(model.whoAmI == 10)
-                {
-                  tableVk.CmdDrawIndexed(gCmdBufferBuffer, 72 * 33/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 17508/*firstIndex*/, 354/*vertexOffset*/, 0/*firstInstance*/);
-                }
-
-                if(model.whoAmI == 11)
-                {
-                  tableVk.CmdDrawIndexed(gCmdBufferBuffer, 72 * 24/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 19884/*firstIndex*/, 354/*vertexOffset*/, 0/*firstInstance*/);
-                }
-
-                if(model.whoAmI == 12)
-                {
-                  tableVk.CmdDrawIndexed(gCmdBufferBuffer, 72 * 96/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 21612/*firstIndex*/, 354/*vertexOffset*/, 0/*firstInstance*/);
+                  tableVk.CmdDrawIndexed(gCmdBufferBuffer, Geometry::gModelsAsciiIndexCount[model.whoAmI]/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, Geometry::gModelsAsciiIndexFirst[model.whoAmI]/*firstIndex*/, 354/*vertexOffset*/, 0/*firstInstance*/);
                 }
               }
             }

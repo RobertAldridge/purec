@@ -324,7 +324,7 @@ void Geometry::CreateBox()
   //   |/     |/
   //   0------1
 
-  const unsigned short cubeIndices[36] =
+  const uint32_t cubeIndices[36] =
   {
     0, 1, 3, 0, 3, 2,
 
@@ -402,7 +402,7 @@ void Geometry::CreateAxes()
     },
   };
 
-  static const unsigned short axesIndices[6] =
+  static const uint32_t axesIndices[6] =
   {
     0,
     1, // x axis - red
@@ -458,7 +458,7 @@ void Geometry::CreatePlane()
     {0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f}
   };
 
-  static const unsigned short kPlaneIndices[6] =
+  static const uint32_t kPlaneIndices[6] =
   {
     0, 1, 2, 2, 1, 3
   };

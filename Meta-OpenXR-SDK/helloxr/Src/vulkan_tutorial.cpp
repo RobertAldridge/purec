@@ -540,7 +540,7 @@ void VulkanTutorialRecordCommandBuffer(
   VkDeviceSize offsets[] = {0};
   tableVk.CmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
-  tableVk.CmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+  tableVk.CmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
   tableVk.CmdBindDescriptorSets(
     commandBuffer,

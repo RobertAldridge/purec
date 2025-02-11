@@ -35,7 +35,7 @@ const bool VulkanTutorialEnableValidationLayers = false;
 const bool VulkanTutorialEnableValidationLayers = true;
 #endif
 
-const std::vector<uint16_t> VulkanTutorialIndices =
+const std::vector<uint32_t> VulkanTutorialIndices =
 {
   0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4
 };

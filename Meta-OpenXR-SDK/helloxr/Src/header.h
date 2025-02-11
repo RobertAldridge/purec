@@ -290,4 +290,6 @@ struct MatrixCmdPushConstants
   XrMatrix4x4f transpose_inverse_modelViewMatrix;
 
   XrMatrix4x4f modelViewMatrix;
+
+  XrVector3f modelColor;
 };
