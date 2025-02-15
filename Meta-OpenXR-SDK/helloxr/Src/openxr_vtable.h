@@ -1,6 +1,11 @@
 
 // openxr_vtable.h
 
+// clear ascii characters
+// index 0
+// index 32
+// index 255
+
 #define XR_KHR_opengl_es_enable 1
 #define XR_KHR_opengl_es_enable_SPEC_VERSION 8
 #define XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME "XR_KHR_opengl_es_enable"

@@ -4102,16 +4102,19 @@ struct VkExtensionProperties
                   // R o   b  e  r  t   [heart] T a  r a
                   // 7 12  10 11 13 14     6    8 9 13 9
 
-                  models.push_back(Model {indexCharacter/*testString[indexCharacter]*/, spaceLocation.pose, {scale, scale, scale} } );
+                  //if(indexCharacter == 1 || indexCharacter == 33)
+                  //  spaceLocation.pose.position.x -= 8.0 * scale;
 
-                  spaceLocation.pose.position.x += 8.0 * scale;
-
-                  if(indexCharacter != 0 && (indexCharacter % 16) == 0)
+                  if(indexCharacter && (indexCharacter % 16) == 0)
                   {
                     spaceLocation.pose.position.x -= 16.0 * (8.0 * scale);
 
                     spaceLocation.pose.position.y -= 1.5 * 8.0 * scale;
                   }
+
+                  models.push_back(Model {indexCharacter/*testString[indexCharacter]*/, spaceLocation.pose, {scale, scale, scale} } );
+
+                  spaceLocation.pose.position.x += 8.0 * scale;
                 }
                 //else
                 //{
