@@ -245,10 +245,6 @@ extern XrSystemId gXrSystemId;
 
 #include "openxr_plugin.h"
 
-#include "openxr_vtable.h"
-
-extern struct XrGeneratedDispatchTableCore tableXr;
-
 inline std::string Fmt(const char* fmt, ...);
 
 inline const char* to_string(XrReferenceSpaceType e);
@@ -265,6 +261,28 @@ inline const char* to_string(XrFormFactor e);
 #include "object_info.h"
 
 #include "extra_algorithms.h"
+
+#include "meta_openxr_preview_extx1_event_channel.h"
+#include "meta_openxr_preview_meta_body_tracking_calibration.h"
+#include "meta_openxr_preview_meta_body_tracking_fidelity.h"
+#include "meta_openxr_preview_meta_body_tracking_full_body.h"
+#include "meta_openxr_preview_meta_boundary_visibility.h"
+#include "meta_openxr_preview_meta_colocation_discovery.h"
+#include "meta_openxr_preview_meta_detached_controllers.h"
+#include "meta_openxr_preview_meta_dynamic_object_tracker.h"
+#include "meta_openxr_preview_meta_dynamic_object_keyboard.h"
+#include "meta_openxr_preview_meta_hand_tracking_wide_motion_mode.h"
+#include "meta_openxr_preview_meta_simultaneous_hands_and_controllers.h"
+#include "meta_openxr_preview_meta_spatial_entity_discovery.h"
+#include "meta_openxr_preview_meta_spatial_entity_group_sharing.h"
+#include "meta_openxr_preview_meta_spatial_entity_persistence.h"
+#include "meta_openxr_preview_meta_spatial_entity_sharing.h"
+#include "meta_openxr_preview_openxr_extension_helpers.h"
+#include "meta_openxr_preview_openxr_oculus_helpers.h"
+
+#include "openxr_vtable.h"
+
+extern struct XrGeneratedDispatchTableCore tableXr;
 
 // todo
 #include "memory.h"

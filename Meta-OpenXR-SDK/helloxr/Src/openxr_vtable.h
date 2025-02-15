@@ -1,6 +1,26 @@
 
 // openxr_vtable.h
 
+struct XrGraphicsRequirementsOpenGLKHR
+{
+  XrStructureType type;
+  void* XR_MAY_ALIAS next;
+  XrVersion minApiVersionSupported;
+  XrVersion maxApiVersionSupported;
+};
+
+struct XrGraphicsRequirementsOpenGLESKHR
+{
+  XrStructureType type;
+  void* XR_MAY_ALIAS next;
+  XrVersion minApiVersionSupported;
+  XrVersion maxApiVersionSupported;
+};
+
+typedef XrResult (XRAPI_PTR *PFN_xrGetOpenGLGraphicsRequirementsKHR)(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsOpenGLKHR* graphicsRequirements);
+
+typedef XrResult (XRAPI_PTR *PFN_xrGetOpenGLESGraphicsRequirementsKHR)(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsOpenGLESKHR* graphicsRequirements);
+
 struct XrGeneratedDispatchTableCore
 {
   // ---- Core 1.0 commands
@@ -280,6 +300,37 @@ struct XrGeneratedDispatchTableCore
   PFN_xrGetVulkanGraphicsRequirementsKHR GetVulkanGraphicsRequirementsKHR;
   PFN_xrGetVulkanInstanceExtensionsKHR GetVulkanInstanceExtensionsKHR;
   PFN_xrSetAndroidApplicationThreadKHR SetAndroidApplicationThreadKHR;
+
+  PFN_xrCreateEventChannelEXTX1 CreateEventChannelEXTX1;
+  PFN_xrDestroyEventChannelEXTX1 DestroyEventChannelEXTX1;
+  PFN_xrPollEventChannelEXTX1 PollEventChannelEXTX1;
+  PFN_xrSelectEventChannelEXTX1 SelectEventChannelEXTX1;
+  PFN_xrSetDefaultEventChannelEXTX1 SetDefaultEventChannelEXTX1;
+
+  PFN_xrSuggestBodyTrackingCalibrationOverrideMETA SuggestBodyTrackingCalibrationOverrideMETA;
+  PFN_xrResetBodyTrackingCalibrationMETA ResetBodyTrackingCalibrationMETA;
+
+  PFN_xrRequestBodyTrackingFidelityMETA RequestBodyTrackingFidelityMETA;
+
+  PFN_xrRequestBoundaryVisibilityMETA RequestBoundaryVisibilityMETA;
+
+  PFN_xrCreateDynamicObjectTrackerMETA CreateDynamicObjectTrackerMETA;
+  PFN_xrDestroyDynamicObjectTrackerMETA DestroyDynamicObjectTrackerMETA;
+  PFN_xrSetDynamicObjectTrackedClassesMETA SetDynamicObjectTrackedClassesMETA;
+  PFN_xrGetSpaceDynamicObjectDataMETA GetSpaceDynamicObjectDataMETA;
+
+  PFN_xrResumeSimultaneousHandsAndControllersTrackingMETA ResumeSimultaneousHandsAndControllersTrackingMETA;
+  PFN_xrPauseSimultaneousHandsAndControllersTrackingMETA PauseSimultaneousHandsAndControllersTrackingMETA;
+
+  PFN_xrDiscoverSpacesMETA DiscoverSpacesMETA;
+  PFN_xrRetrieveSpaceDiscoveryResultsMETA RetrieveSpaceDiscoveryResultsMETA;
+
+  PFN_xrSaveSpacesMETA SaveSpacesMETA;
+  PFN_xrEraseSpacesMETA EraseSpacesMETA;
+
+  PFN_xrGetOpenGLGraphicsRequirementsKHR GetOpenGLGraphicsRequirementsKHR;
+
+  PFN_xrGetOpenGLESGraphicsRequirementsKHR GetOpenGLESGraphicsRequirementsKHR;
 };
 
 int InitOpenXr1();

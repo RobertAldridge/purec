@@ -11,6 +11,23 @@ set(
   header.h
   hex_and_handles.h
   logger.h
+  meta_openxr_preview_extx1_event_channel.h
+  meta_openxr_preview_meta_body_tracking_calibration.h
+  meta_openxr_preview_meta_body_tracking_fidelity.h
+  meta_openxr_preview_meta_body_tracking_full_body.h
+  meta_openxr_preview_meta_boundary_visibility.h
+  meta_openxr_preview_meta_colocation_discovery.h
+  meta_openxr_preview_meta_detached_controllers.h
+  meta_openxr_preview_meta_dynamic_object_keyboard.h
+  meta_openxr_preview_meta_dynamic_object_tracker.h
+  meta_openxr_preview_meta_hand_tracking_wide_motion_mode.h
+  meta_openxr_preview_meta_simultaneous_hands_and_controllers.h
+  meta_openxr_preview_meta_spatial_entity_discovery.h
+  meta_openxr_preview_meta_spatial_entity_group_sharing.h
+  meta_openxr_preview_meta_spatial_entity_persistence.h
+  meta_openxr_preview_meta_spatial_entity_sharing.h
+  meta_openxr_preview_openxr_extension_helpers.h
+  meta_openxr_preview_openxr_oculus_helpers.h
   object_info.h
   openxr.h
   openxr_linear.h

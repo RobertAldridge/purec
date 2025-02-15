@@ -494,7 +494,6 @@ try
   //   xrEnumerateApiLayerProperties
   //   xrCreateInstance
 
-
   if(InitOpenXr1() )
     Log::Write(Log::Level::Verbose, "xr 1");
 
@@ -3898,6 +3897,8 @@ struct VkExtensionProperties
           hapticActionInfo.action = gOpenXrProgramInputState_InputState_vibrateAction;
           hapticActionInfo.subactionPath = gOpenXrProgramInputState_InputState_handSubactionPath[hand];
 
+// turn off haptic feedback for now (it's annoying)
+#if 0
           if(tableXr.ApplyHapticFeedback)
           {
             CHECK_XRCMD_CHECK(tableXr.ApplyHapticFeedback(
@@ -3906,6 +3907,8 @@ struct VkExtensionProperties
               (XrHapticBaseHeader*) &vibration
             ) );
           }
+#endif
+
         }
       }
 

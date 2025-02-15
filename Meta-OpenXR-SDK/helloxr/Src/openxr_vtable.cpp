@@ -328,5 +328,36 @@ int InitOpenXr2()
   tableXr.GetInstanceProcAddr(gXrInstance, "xrGetVulkanInstanceExtensionsKHR", (PFN_xrVoidFunction*)&tableXr.GetVulkanInstanceExtensionsKHR);
   tableXr.GetInstanceProcAddr(gXrInstance, "xrSetAndroidApplicationThreadKHR", (PFN_xrVoidFunction*)&tableXr.SetAndroidApplicationThreadKHR);
 
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateEventChannelEXTX1", (PFN_xrVoidFunction*)&tableXr.CreateEventChannelEXTX1);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrDestroyEventChannelEXTX1", (PFN_xrVoidFunction*)&tableXr.DestroyEventChannelEXTX1);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrPollEventChannelEXTX1", (PFN_xrVoidFunction*)&tableXr.PollEventChannelEXTX1);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSelectEventChannelEXTX1", (PFN_xrVoidFunction*)&tableXr.SelectEventChannelEXTX1);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSetDefaultEventChannelEXTX1", (PFN_xrVoidFunction*)&tableXr.SetDefaultEventChannelEXTX1);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSuggestBodyTrackingCalibrationOverrideMETA", (PFN_xrVoidFunction*)&tableXr.SuggestBodyTrackingCalibrationOverrideMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrResetBodyTrackingCalibrationMETA", (PFN_xrVoidFunction*)&tableXr.ResetBodyTrackingCalibrationMETA);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrRequestBodyTrackingFidelityMETA", (PFN_xrVoidFunction*)&tableXr.RequestBodyTrackingFidelityMETA);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrRequestBoundaryVisibilityMETA", (PFN_xrVoidFunction*)&tableXr.RequestBoundaryVisibilityMETA);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrCreateDynamicObjectTrackerMETA", (PFN_xrVoidFunction*)&tableXr.CreateDynamicObjectTrackerMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrDestroyDynamicObjectTrackerMETA", (PFN_xrVoidFunction*)&tableXr.DestroyDynamicObjectTrackerMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSetDynamicObjectTrackedClassesMETA", (PFN_xrVoidFunction*)&tableXr.SetDynamicObjectTrackedClassesMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetSpaceDynamicObjectDataMETA", (PFN_xrVoidFunction*)&tableXr.GetSpaceDynamicObjectDataMETA);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrResumeSimultaneousHandsAndControllersTrackingMETA", (PFN_xrVoidFunction*)&tableXr.ResumeSimultaneousHandsAndControllersTrackingMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrPauseSimultaneousHandsAndControllersTrackingMETA", (PFN_xrVoidFunction*)&tableXr.PauseSimultaneousHandsAndControllersTrackingMETA);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrDiscoverSpacesMETA", (PFN_xrVoidFunction*)&tableXr.DiscoverSpacesMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrRetrieveSpaceDiscoveryResultsMETA", (PFN_xrVoidFunction*)&tableXr.RetrieveSpaceDiscoveryResultsMETA);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrSaveSpacesMETA", (PFN_xrVoidFunction*)&tableXr.SaveSpacesMETA);
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrEraseSpacesMETA", (PFN_xrVoidFunction*)&tableXr.EraseSpacesMETA);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetOpenGLGraphicsRequirementsKHR", (PFN_xrVoidFunction*)&tableXr.GetOpenGLGraphicsRequirementsKHR);
+
+  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetOpenGLESGraphicsRequirementsKHR", (PFN_xrVoidFunction*)&tableXr.GetOpenGLESGraphicsRequirementsKHR);
+
   return 1;
 }
