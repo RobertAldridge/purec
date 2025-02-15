@@ -225,8 +225,8 @@ R"_(
     //fragColor = colors[gl_VertexIndex % 3];
     //fragColor = vec4(Color, 1.0);
 
-    fragColor = vec4(vec3(intensity * uniformBuffer.modelColor.x, intensity * uniformBuffer.modelColor.y, intensity * uniformBuffer.modelColor.z), 1.0);
-    //fragColor = vec4(vec3(intensity * Color.x, intensity * Color.y, intensity * Color.z), 1.0);
+    //fragColor = vec4(vec3(intensity * uniformBuffer.modelColor.x, intensity * uniformBuffer.modelColor.y, intensity * uniformBuffer.modelColor.z), 1.0);
+    fragColor = vec4(vec3(intensity * Color.x, intensity * Color.y, intensity * Color.z), 1.0);
     //fragColor = vec4(vec3(uniformBuffer.modelColor.x * intensity, uniformBuffer.modelColor.y * intensity, uniformBuffer.modelColor.z * intensity), 1.0);
 
     gl_Position = uniformBuffer.modelViewProjectionMatrix * vec4(Position, 1.0);
