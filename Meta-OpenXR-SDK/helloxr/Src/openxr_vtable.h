@@ -1,12 +1,31 @@
 
 // openxr_vtable.h
 
-struct XrGraphicsRequirementsOpenGLKHR
+#define XR_KHR_opengl_es_enable 1
+#define XR_KHR_opengl_es_enable_SPEC_VERSION 8
+#define XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME "XR_KHR_opengl_es_enable"
+
+typedef void* EGLConfig;
+typedef void* EGLContext;
+typedef void* EGLDisplay;
+
+typedef unsigned int EGLenum;
+
+// XrGraphicsBindingOpenGLESAndroidKHR extends XrSessionCreateInfo
+struct XrGraphicsBindingOpenGLESAndroidKHR
+{
+  XrStructureType type;
+  const void* XR_MAY_ALIAS next;
+  EGLDisplay display;
+  EGLConfig config;
+  EGLContext context;
+};
+
+struct XrSwapchainImageOpenGLESKHR
 {
   XrStructureType type;
   void* XR_MAY_ALIAS next;
-  XrVersion minApiVersionSupported;
-  XrVersion maxApiVersionSupported;
+  uint32_t image;
 };
 
 struct XrGraphicsRequirementsOpenGLESKHR
@@ -17,9 +36,39 @@ struct XrGraphicsRequirementsOpenGLESKHR
   XrVersion maxApiVersionSupported;
 };
 
-typedef XrResult (XRAPI_PTR *PFN_xrGetOpenGLGraphicsRequirementsKHR)(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsOpenGLKHR* graphicsRequirements);
+#ifndef XR_NO_PROTOTYPES
+XRAPI_ATTR XrResult XRAPI_CALL xrGetOpenGLESGraphicsRequirementsKHR(
+  XrInstance instance,
+  XrSystemId systemId,
+  XrGraphicsRequirementsOpenGLESKHR* graphicsRequirements
+);
+#endif
 
-typedef XrResult (XRAPI_PTR *PFN_xrGetOpenGLESGraphicsRequirementsKHR)(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsOpenGLESKHR* graphicsRequirements);
+typedef XrResult (XRAPI_PTR *PFN_xrGetOpenGLESGraphicsRequirementsKHR)(
+  XrInstance instance,
+  XrSystemId systemId,
+  XrGraphicsRequirementsOpenGLESKHR* graphicsRequirements
+);
+
+#define XR_FB_swapchain_update_state_opengl_es 1
+#define XR_FB_swapchain_update_state_opengl_es_SPEC_VERSION 1
+#define XR_FB_SWAPCHAIN_UPDATE_STATE_OPENGL_ES_EXTENSION_NAME "XR_FB_swapchain_update_state_opengl_es"
+
+struct XrSwapchainStateSamplerOpenGLESFB
+{
+  XrStructureType type;
+  void* XR_MAY_ALIAS next;
+  EGLenum minFilter;
+  EGLenum magFilter;
+  EGLenum wrapModeS;
+  EGLenum wrapModeT;
+  EGLenum swizzleRed;
+  EGLenum swizzleGreen;
+  EGLenum swizzleBlue;
+  EGLenum swizzleAlpha;
+  float maxAnisotropy;
+  XrColor4f borderColor;
+};
 
 struct XrGeneratedDispatchTableCore
 {
@@ -327,8 +376,6 @@ struct XrGeneratedDispatchTableCore
 
   PFN_xrSaveSpacesMETA SaveSpacesMETA;
   PFN_xrEraseSpacesMETA EraseSpacesMETA;
-
-  PFN_xrGetOpenGLGraphicsRequirementsKHR GetOpenGLGraphicsRequirementsKHR;
 
   PFN_xrGetOpenGLESGraphicsRequirementsKHR GetOpenGLESGraphicsRequirementsKHR;
 };

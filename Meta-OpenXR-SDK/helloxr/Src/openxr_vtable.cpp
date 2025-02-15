@@ -355,8 +355,6 @@ int InitOpenXr2()
   tableXr.GetInstanceProcAddr(gXrInstance, "xrSaveSpacesMETA", (PFN_xrVoidFunction*)&tableXr.SaveSpacesMETA);
   tableXr.GetInstanceProcAddr(gXrInstance, "xrEraseSpacesMETA", (PFN_xrVoidFunction*)&tableXr.EraseSpacesMETA);
 
-  tableXr.GetInstanceProcAddr(gXrInstance, "xrGetOpenGLGraphicsRequirementsKHR", (PFN_xrVoidFunction*)&tableXr.GetOpenGLGraphicsRequirementsKHR);
-
   tableXr.GetInstanceProcAddr(gXrInstance, "xrGetOpenGLESGraphicsRequirementsKHR", (PFN_xrVoidFunction*)&tableXr.GetOpenGLESGraphicsRequirementsKHR);
 
   return 1;
