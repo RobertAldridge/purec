@@ -6,10 +6,21 @@ set(
   anag.h
   check.h
   common.h
+  egl_egl.h
+  egl_eglext.h
+  egl_eglext_angle.h
+  egl_eglplatform.h
+  egl_platform.h
   extra_algorithms.h
   geometry.h
+  gles3_gl3.h
+  gles3_gl3ext.h
+  gles3_gl3platform.h
+  gles3_gl31.h
+  gles3_gl32.h
   header.h
   hex_and_handles.h
+  khr_khrplatform.h
   logger.h
   meta_openxr_preview_extx1_event_channel.h
   meta_openxr_preview_meta_body_tracking_calibration.h
@@ -47,6 +58,9 @@ set(
   shaderc_hpp.h
   shaderc_status.h
   shaderc_visibility.h
+  stb_image.h
+  stb_image_write.h
+  stb_vorbis.h
   vk_icd.h
   vk_layer.h
   vk_platform.h
@@ -75,6 +89,9 @@ set(
   openxr_plugin.cpp
   openxr_vtable.cpp
   pch.cpp
+  stb_image.cpp
+  stb_image_write.cpp
+  stb_vorbis.cpp
   vulkan_plugin.cpp
   vulkan_tutorial.cpp
   vulkan_vtable.cpp

@@ -23,6 +23,8 @@ target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE
   C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libandroid.so
+  C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libEGL.so
+  C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libGLESv3.so
   C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/liblog.so
   C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libglslang.a
   C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libOGLCompiler.a
@@ -43,6 +45,8 @@ target_link_libraries(
   ${PROJECT_NAME}
   PUBLIC
   C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libandroid.so
+  C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libEGL.so
+  C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libGLESv3.so
   C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/liblog.so
   C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libglslang.a
   C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libOGLCompiler.a
@@ -63,6 +67,8 @@ target_link_libraries(
   ${PROJECT_NAME}
   INTERFACE
   C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libandroid.so
+  C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libEGL.so
+  C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libGLESv3.so
   C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/liblog.so
   C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libglslang.a
   C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libOGLCompiler.a
@@ -87,6 +93,8 @@ target_compile_definitions(
   __ANDROID__=1
   ANDROID_NDK=1
   DEFAULT_GRAPHICS_PLUGIN_VULKAN=1
+  EGL_NO_PROTOTYPES=1
+  GL_GLES_NO_PROTOTYPES=1
   USE_DEBUG_EXTENTIONS=1
   USE_ONLINE_VULKAN_SHADERC=1
   VK_ENABLE_BETA_EXTENSIONS=1

@@ -311,3 +311,24 @@ struct MatrixCmdPushConstants
 
   XrVector3f modelColor;
 };
+
+#include "khr_khrplatform.h"
+
+#include "gles3_gl3platform.h"
+
+#include "egl_eglplatform.h"
+#include "egl_egl.h"
+#include "egl_eglext.h"
+#include "egl_eglext_angle.h"
+
+#include "egl_platform.h"
+
+#include "gles3_gl3.h"
+#include "gles3_gl3ext.h"
+
+#include "gles3_gl31.h"
+#include "gles3_gl32.h"
+
+#include "stb_image.h"
+#include "stb_image_write.h"
+#include "stb_vorbis.h"

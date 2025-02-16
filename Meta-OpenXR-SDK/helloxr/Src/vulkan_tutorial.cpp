@@ -860,6 +860,8 @@ void VulkanTutorialRecreateSwapChain(
   {
     // todo
     //glfwGetFramebufferSize(window, &width, &height);
+
+    // todo
     //glfwWaitEvents();
   }
 
@@ -1024,19 +1026,29 @@ void run()
 
 void initWindow()
 {
+  // todo
   glfwInit();
 
+  // todo
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
+  // todo
   window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
+
+  // todo
   glfwSetWindowUserPointer(window, this);
+
+  // todo
   glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
 }
 
+// todo
 void framebufferResizeCallback(GLFWwindow* window, int width, int height)
 {
+  // todo
   HelloTriangleApplication* app = (HelloTriangleApplication*)glfwGetWindowUserPointer(window);
 
+  // todo
   app->framebufferResized = true;
 }
 
@@ -1069,9 +1081,12 @@ void initVulkan()
 
 void mainLoop()
 {
+  // todo
   while( !glfwWindowShouldClose(window) )
   {
+    // todo
     glfwPollEvents();
+
     drawFrame();
   }
 
@@ -1125,8 +1140,10 @@ void cleanup()
   vkDestroySurfaceKHR(instance, surface, nullptr);
   vkDestroyInstance(instance, nullptr);
 
+  // todo
   glfwDestroyWindow(window);
 
+  // todo
   glfwTerminate();
 }
 
@@ -1202,6 +1219,7 @@ void setupDebugMessenger()
 
 void createSurface()
 {
+  // todo
   if(glfwCreateWindowSurface(instance, window, nullptr, &surface) != VK_SUCCESS)
     throw std::runtime_error("failed to create window surface!");
 }
@@ -1452,7 +1470,10 @@ void createTextureImage()
   int texWidth = 0;
   int texHeight = 0;
   int texChannels = 0;
+
+  // todo
   stbi_uc* pixels = stbi_load("textures/texture.jpg", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+
   VkDeviceSize imageSize = texWidth * texHeight * 4;
 
   if( !pixels)
@@ -1460,6 +1481,7 @@ void createTextureImage()
 
   VkBuffer stagingBuffer;
   VkDeviceMemory stagingBufferMemory;
+
   createBuffer(
     imageSize,
     VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
@@ -1473,6 +1495,7 @@ void createTextureImage()
   memcpy(data, pixels, static_cast<size_t>(imageSize) );
   vkUnmapMemory(device, stagingBufferMemory);
 
+  // todo
   stbi_image_free(pixels);
 
   createImage(
