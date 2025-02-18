@@ -51,6 +51,15 @@ struct VertexBufferBaseBlah
 constexpr VkFlags MemoryAllocator_m_memoryAllocatorDefaultFlags =
   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
+extern VkImage gTextureVkImage;
+extern VkDeviceMemory gTextureVkDeviceMemory;
+extern VkImageView gTextureVkImageView;
+extern VkSampler gTextureVkSampler;
+
+extern VkDescriptorPool gTextureVkDescriptorPool;
+extern VkDescriptorSet gTextureVkDescriptorSet;
+extern VkDescriptorSetLayout gTextureVkDescriptorSetLayout;
+
 extern VkPipelineLayout gVkPipelineLayout;
 
 extern VkPhysicalDeviceMemoryProperties gMemoryAllocatorMemoryProperties;
@@ -179,8 +188,17 @@ R"_(
 constexpr char VertexShaderGlsl[] =
 R"_(
 
-  #version 430
+  #version 450
+
   #extension GL_ARB_separate_shader_objects : enable
+
+  //layout(binding = 0) uniform UniformBufferObject
+  //{
+  //  mat4 model;
+  //  mat4 view;
+  //  mat4 proj;
+  //
+  //}ubo;
 
   layout (std140, push_constant) uniform buf
   {
@@ -197,8 +215,10 @@ R"_(
   layout (location = 0) in vec3 Position;
   layout (location = 1) in vec3 Normal;
   layout (location = 2) in vec3 Color;
+  layout (location = 3) in vec2 TexCoord;
 
-  layout (location = 0) out vec4 fragColor;
+  layout(location = 0) out vec4 fragColor;
+  layout(location = 1) out vec2 fragTexCoord;
 
   out gl_PerVertex
   {
@@ -215,21 +235,32 @@ R"_(
   void main()
   {
     vec4 transformedNormalReference = uniformBuffer.transpose_inverse_modelViewMatrix * vec4(Normal, 1.0);
+
     float transformedNormalReferenceMagnitude = sqrt(transformedNormalReference.x * transformedNormalReference.x + transformedNormalReference.y * transformedNormalReference.y + transformedNormalReference.z * transformedNormalReference.z);
+
     vec3 surfaceNormalN = vec3(transformedNormalReference.x / transformedNormalReferenceMagnitude, transformedNormalReference.y / transformedNormalReferenceMagnitude, transformedNormalReference.z / transformedNormalReferenceMagnitude);
 
     float intensity = max(0.0, surfaceNormalN.z);
 
     // normal from vertex to camera
 
-    //fragColor = colors[gl_VertexIndex % 3];
+    //fragColor = Color;
+
     //fragColor = vec4(Color, 1.0);
 
+    //fragColor = colors[gl_VertexIndex % 3];
+
     //fragColor = vec4(vec3(intensity * uniformBuffer.modelColor.x, intensity * uniformBuffer.modelColor.y, intensity * uniformBuffer.modelColor.z), 1.0);
+
+    //fragColor = vec4(vec3(inTexCoord.x, inTexCoord.y, 1.0), 1.0);
+
     fragColor = vec4(vec3(intensity * Color.x, intensity * Color.y, intensity * Color.z), 1.0);
-    //fragColor = vec4(vec3(uniformBuffer.modelColor.x * intensity, uniformBuffer.modelColor.y * intensity, uniformBuffer.modelColor.z * intensity), 1.0);
+
+    //gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 0.0, 1.0);
 
     gl_Position = uniformBuffer.modelViewProjectionMatrix * vec4(Position, 1.0);
+
+    fragTexCoord = TexCoord;
   }
 
 )_";
@@ -237,19 +268,30 @@ R"_(
 constexpr char FragmentShaderGlsl[] =
 R"_(
 
-  #version 430
+  #version 450
+
   #extension GL_ARB_separate_shader_objects : enable
 
-  layout (location = 0) in vec4 oColor;
+  layout(location = 0) in vec4 fragColor;
+  layout(location = 1) in vec2 fragTexCoord;
 
-  layout (location = 0) out vec4 FragColor;
+  layout(location = 0) out vec4 outColor;
+
+  layout(binding = 2) uniform sampler2D texSampler;
 
   in vec4 gl_FragCoord;
 
   void main()
   {
-    FragColor = oColor;
-    //FragColor = vec4(min(abs(gl_FragCoord.w), 1.0), 0, 0, oColor.a);
+    vec4 textureColor = texture(texSampler, fragTexCoord);
+
+    //outColor = fragColor;
+
+    //outColor = texture(texSampler, fragTexCoord);
+
+    //outColor = vec4(min(abs(gl_FragCoord.w), 1.0), 0, 0, fragColor.a);
+
+    outColor = vec4(vec3(fragColor.r * textureColor.r, fragColor.g * textureColor.g, fragColor.b * textureColor.b), 1.0);
   }
 
 )_";

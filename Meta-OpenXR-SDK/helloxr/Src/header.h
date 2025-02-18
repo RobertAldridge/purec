@@ -241,7 +241,6 @@ extern XrSystemId gXrSystemId;
 #include "check.h"
 
 #include "vulkan_plugin.h"
-#include "vulkan_tutorial.h"
 
 #include "openxr_plugin.h"
 
@@ -255,6 +254,8 @@ inline const char* to_string(XrResult e);
 inline const char* to_string(XrFormFactor e);
 
 #include "openxr_linear.h"
+
+#include "vulkan_tutorial.h"
 
 #include "hex_and_handles.h"
 

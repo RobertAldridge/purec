@@ -8,19 +8,17 @@ struct XrGeneratedDispatchTableCore tableXr;
 // dispatch tableXr blah function
 int InitOpenXr1()
 {
-  void* libopenxr = 0;
-
   if(tableXr.CreateInstance)
     return 1;
 
-  libopenxr = dlopen("libopenxr_loader.so", RTLD_NOW | RTLD_LOCAL);
-  if( !libopenxr)
+  tableXr.libOpenXr = dlopen("libopenxr_loader.so", RTLD_NOW | RTLD_LOCAL);
+  if( !tableXr.libOpenXr)
     return 0;
 
   // ---- Core 1.0 commands
 
   // tableXr.GetInstanceProcAddr
-  tableXr.GetInstanceProcAddr = (PFN_xrGetInstanceProcAddr)dlsym(libopenxr, "xrGetInstanceProcAddr");
+  tableXr.GetInstanceProcAddr = (PFN_xrGetInstanceProcAddr)dlsym(tableXr.libOpenXr, "xrGetInstanceProcAddr");
 
   // tableXr.InitializeLoaderKHR
   tableXr.GetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction*)&tableXr.InitializeLoaderKHR);

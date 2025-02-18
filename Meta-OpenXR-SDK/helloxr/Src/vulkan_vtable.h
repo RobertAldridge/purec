@@ -3,6 +3,8 @@
 
 struct VkGeneratedDispatchTableCore
 {
+  void* libVulkan;
+
   PFN_vkGetInstanceProcAddr GetInstanceProcAddr;
 
   PFN_vkAllocateCommandBuffers AllocateCommandBuffers;

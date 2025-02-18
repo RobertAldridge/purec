@@ -116,21 +116,6 @@ publish, and distribute this file as you see fit.
 #define STB_IMAGE_WRITE_IMPLEMENTATION 1
 #include "header.h"
 
-#ifdef STB_IMAGE_WRITE_IMPLEMENTATION
-
-#ifdef _WIN32
-   #ifndef _CRT_SECURE_NO_WARNINGS
-   #define _CRT_SECURE_NO_WARNINGS
-   #endif
-   #ifndef _CRT_NONSTDC_NO_DEPRECATE
-   #define _CRT_NONSTDC_NO_DEPRECATE
-   #endif
-#endif
-
-#ifndef STBI_WRITE_NO_STDIO
-
-#endif // STBI_WRITE_NO_STDIO
-
 #if defined(STBIW_MALLOC) && defined(STBIW_FREE) && (defined(STBIW_REALLOC) || defined(STBIW_REALLOC_SIZED))
 // ok
 #elif !defined(STBIW_MALLOC) && !defined(STBIW_FREE) && !defined(STBIW_REALLOC) && !defined(STBIW_REALLOC_SIZED)
@@ -149,11 +134,9 @@ publish, and distribute this file as you see fit.
 #define STBIW_REALLOC_SIZED(p,oldsz,newsz) STBIW_REALLOC(p,newsz)
 #endif
 
-
 #ifndef STBIW_MEMMOVE
 #define STBIW_MEMMOVE(a,b,sz) memmove(a,b,sz)
 #endif
-
 
 #ifndef STBIW_ASSERT
 
@@ -175,8 +158,6 @@ static void stbi__start_write_callbacks(stbi__write_context *s, stbi_write_func 
    s->context = context;
 }
 
-#ifndef STBI_WRITE_NO_STDIO
-
 static void stbi__stdio_write(void *context, void *data, int size)
 {
    fwrite(data,1,size,(FILE*) context);
@@ -193,8 +174,6 @@ static void stbi__end_write_file(stbi__write_context *s)
 {
    fclose((FILE *)s->context);
 }
-
-#endif // !STBI_WRITE_NO_STDIO
 
 typedef unsigned int stbiw_uint32;
 typedef int stb_image_write_test[sizeof(stbiw_uint32)==4 ? 1 : -1];
@@ -336,7 +315,6 @@ STBIWDEF int stbi_write_bmp_to_func(stbi_write_func *func, void *context, int x,
    return stbi_write_bmp_core(&s, x, y, comp, data);
 }
 
-#ifndef STBI_WRITE_NO_STDIO
 STBIWDEF int stbi_write_bmp(char const *filename, int x, int y, int comp, const void *data)
 {
    stbi__write_context s;
@@ -347,7 +325,6 @@ STBIWDEF int stbi_write_bmp(char const *filename, int x, int y, int comp, const 
    } else
       return 0;
 }
-#endif //!STBI_WRITE_NO_STDIO
 
 static int stbi_write_tga_core(stbi__write_context *s, int x, int y, int comp, void *data)
 {
@@ -424,7 +401,6 @@ int stbi_write_tga_to_func(stbi_write_func *func, void *context, int x, int y, i
    return stbi_write_tga_core(&s, x, y, comp, (void *) data);
 }
 
-#ifndef STBI_WRITE_NO_STDIO
 int stbi_write_tga(char const *filename, int x, int y, int comp, const void *data)
 {
    stbi__write_context s;
@@ -435,12 +411,10 @@ int stbi_write_tga(char const *filename, int x, int y, int comp, const void *dat
    } else
       return 0;
 }
-#endif
 
 // *************************************************************************************************
 // Radiance RGBE HDR writer
 // by Baldur Karlsson
-#ifndef STBI_WRITE_NO_STDIO
 
 #define stbiw__max(a, b)  ((a) > (b) ? (a) : (b))
 
@@ -605,8 +579,6 @@ int stbi_write_hdr(char const *filename, int x, int y, int comp, const float *da
    } else
       return 0;
 }
-#endif // STBI_WRITE_NO_STDIO
-
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -953,7 +925,6 @@ unsigned char *stbi_write_png_to_mem(unsigned char *pixels, int stride_bytes, in
    return out;
 }
 
-#ifndef STBI_WRITE_NO_STDIO
 STBIWDEF int stbi_write_png(char const *filename, int x, int y, int comp, const void *data, int stride_bytes)
 {
    FILE *f;
@@ -967,7 +938,6 @@ STBIWDEF int stbi_write_png(char const *filename, int x, int y, int comp, const 
    STBIW_FREE(png);
    return 1;
 }
-#endif
 
 STBIWDEF int stbi_write_png_to_func(stbi_write_func *func, void *context, int x, int y, int comp, const void *data, int stride_bytes)
 {
@@ -978,8 +948,6 @@ STBIWDEF int stbi_write_png_to_func(stbi_write_func *func, void *context, int x,
    STBIW_FREE(png);
    return 1;
 }
-
-#endif // STB_IMAGE_WRITE_IMPLEMENTATION
 
 /* Revision history
       1.02 (2016-04-02)

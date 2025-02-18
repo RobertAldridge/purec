@@ -63,6 +63,33 @@ XrPassthroughLayerFB gPassthroughLayer = XR_NULL_HANDLE;
 
 XrEnvironmentDepthProviderMETA gEnvironmentDepthProviderMETA = XR_NULL_HANDLE;
 
+XrEnvironmentDepthSwapchainMETA gEnvironmentDepthSwapchainMETA = XR_NULL_HANDLE;
+
+XrEnvironmentDepthProviderCreateInfoMETA gEnvironmentDepthProviderCreateInfoMETA
+{
+  XR_TYPE_ENVIRONMENT_DEPTH_PROVIDER_CREATE_INFO_META
+};
+
+XrEnvironmentDepthHandRemovalSetInfoMETA gEnvironmentDepthHandRemovalSetInfoMETA
+{
+  XR_TYPE_ENVIRONMENT_DEPTH_HAND_REMOVAL_SET_INFO_META
+};
+
+XrEnvironmentDepthSwapchainCreateInfoMETA gEnvironmentDepthSwapchainCreateInfoMETA
+{
+  XR_TYPE_ENVIRONMENT_DEPTH_SWAPCHAIN_CREATE_INFO_META
+};
+
+XrEnvironmentDepthSwapchainStateMETA gEnvironmentDepthSwapchainStateMETA
+{
+  XR_TYPE_ENVIRONMENT_DEPTH_SWAPCHAIN_STATE_META
+};
+
+uint32_t gEnvironmentDepthSwapChainLength = 0;
+
+std::vector<XrSwapchainImageVulkanKHR> gEnvironmentDepthImages;
+std::vector<VkImage> gEnvironmentDepthTextures;
+
 std::string GetXrVersionString(XrVersion ver)
 {
   return Fmt("%d.%d.%d", XR_VERSION_MAJOR(ver), XR_VERSION_MINOR(ver), XR_VERSION_PATCH(ver) );

@@ -110,9 +110,15 @@ enum
   APP_CMD_DESTROY
 };
 
+extern JNIEnv* gEnvironment;
+
+extern struct android_app* gApplication;
+
 void AnagShowHelpBlah();
 
 bool AnagUpdateOptionsFromSystemProperties();
+
+unsigned char* AnagLoadFileBlah(const char* fileName, int* fileSize);
 
 /**
  * Process the next main command.

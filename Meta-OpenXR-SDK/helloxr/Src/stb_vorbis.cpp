@@ -56,8 +56,6 @@
 
 #include "header.h"
 
-#ifndef STB_VORBIS_HEADER_ONLY
-
 // global configuration settings (e.g. set these in the project/makefile),
 // or just set them in this file at the top (although ideally the first few
 // should be visible when the header file is compiled too, although it's not
@@ -183,9 +181,6 @@
 //     you'd ever want to do it except for debugging.
 // #define STB_VORBIS_NO_DEFER_FLOOR
 
-
-
-
 //////////////////////////////////////////////////////////////////////////////
 
 #ifdef STB_VORBIS_NO_PULLDATA_API
@@ -211,7 +206,6 @@
 
 #endif
 #endif
-
 
 #ifndef STB_VORBIS_NO_STDIO
 
@@ -258,7 +252,6 @@
 #error "Value of STB_VORBIS_FAST_HUFFMAN_LENGTH outside of allowed range"
 #endif
 
-
 #if 0
 
 #define CHECK(f)   _CrtIsValidHeapPointer(f->channel_buffers[1])
@@ -268,7 +261,6 @@
 
 #define MAX_BLOCKSIZE_LOG  13   // from specification
 #define MAX_BLOCKSIZE      (1 << MAX_BLOCKSIZE_LOG)
-
 
 typedef unsigned char  uint8;
 typedef   signed char   int8;
@@ -416,11 +408,10 @@ struct stb_vorbis
    unsigned int setup_temp_memory_required;
 
   // input config
-#ifndef STB_VORBIS_NO_STDIO
+
    FILE *f;
    uint32 f_start;
    int close_on_free;
-#endif
 
    uint8 *stream;
    uint8 *stream_start;
@@ -544,11 +535,13 @@ static int error(vorb *f, enum STBVorbisError e)
 #define array_size_required(count,size)  (count*(sizeof(void *)+(size)))
 
 #define temp_alloc(f,size)              (f->alloc.alloc_buffer ? setup_temp_malloc(f,size) : alloca(size))
+
 #ifdef dealloca
 #define temp_free(f,p)                  (f->alloc.alloc_buffer ? 0 : dealloca(size))
 #else
 #define temp_free(f,p)                  (void)0
 #endif
+
 #define temp_alloc_save(f)              ((f)->temp_offset)
 #define temp_alloc_restore(f,p)         ((f)->temp_offset = (p))
 
@@ -772,11 +765,7 @@ static void compute_accelerated_huffman(Codebook *c)
    }
 }
 
-#ifdef _MSC_VER
-#define STBV_CDECL __cdecl
-#else
 #define STBV_CDECL
-#endif
 
 static int STBV_CDECL uint32_compare(const void *p, const void *q)
 {
@@ -944,12 +933,7 @@ static int STBV_CDECL point_compare(const void *p, const void *q)
 //
 /////////////////////// END LEAF SETUP FUNCTIONS //////////////////////////
 
-
-#if defined(STB_VORBIS_NO_STDIO)
-   #define USE_MEMORY(z)    TRUE
-#else
-   #define USE_MEMORY(z)    ((z)->stream)
-#endif
+#define USE_MEMORY(z)    ((z)->stream)
 
 static uint8 get8(vorb *z)
 {
@@ -958,13 +942,11 @@ static uint8 get8(vorb *z)
       return *z->stream++;
    }
 
-   #ifndef STB_VORBIS_NO_STDIO
    {
    int c = fgetc(z->f);
    if (c == EOF) { z->eof = TRUE; return 0; }
    return c;
    }
-   #endif
 }
 
 static uint32 get32(vorb *f)
@@ -986,14 +968,12 @@ static int getn(vorb *z, uint8 *data, int n)
       return 1;
    }
 
-   #ifndef STB_VORBIS_NO_STDIO
    if (fread(data, n, 1, z->f) == 1)
       return 1;
    else {
       z->eof = 1;
       return 0;
    }
-   #endif
 }
 
 static void skip(vorb *z, int n)
@@ -1003,12 +983,11 @@ static void skip(vorb *z, int n)
       if (z->stream >= z->stream_end) z->eof = 1;
       return;
    }
-   #ifndef STB_VORBIS_NO_STDIO
+
    {
       long x = ftell(z->f);
       fseek(z->f, x+n, SEEK_SET);
    }
-   #endif
 }
 
 static int set_file_offset(stb_vorbis *f, unsigned int loc)
@@ -1027,7 +1006,7 @@ static int set_file_offset(stb_vorbis *f, unsigned int loc)
          return 1;
       }
    }
-   #ifndef STB_VORBIS_NO_STDIO
+
    if (loc + f->f_start < loc || loc >= 0x80000000) {
       loc = 0x7fffffff;
       f->eof = 1;
@@ -1039,7 +1018,6 @@ static int set_file_offset(stb_vorbis *f, unsigned int loc)
    f->eof = 1;
    fseek(f->f, f->f_start, SEEK_END);
    return 0;
-   #endif
 }
 
 
@@ -1366,11 +1344,6 @@ static int codebook_decode_scalar(vorb *f, Codebook *c)
 #else
   #define DECODE_VQ(var,f,c)   DECODE(var,f,c)
 #endif
-
-
-
-
-
 
 // CODEBOOK_ELEMENT_FAST is an optimization for the CODEBOOK_FLOATS case
 // where we avoid one addition
@@ -3820,9 +3793,8 @@ static void vorbis_deinit(stb_vorbis *p)
       setup_free(p, p->window[i]);
       setup_free(p, p->bit_reverse[i]);
    }
-   #ifndef STB_VORBIS_NO_STDIO
+
    if (p->close_on_free) fclose(p->f);
-   #endif
 }
 
 void stb_vorbis_close(stb_vorbis *p)
@@ -4586,8 +4558,6 @@ int stb_vorbis_get_frame_float(stb_vorbis *f, int *channels, float ***output)
    return len;
 }
 
-#ifndef STB_VORBIS_NO_STDIO
-
 stb_vorbis * stb_vorbis_open_file_section(FILE *file, int close_on_free, int *error, const stb_vorbis_alloc *alloc, unsigned int length)
 {
    stb_vorbis *f, p;
@@ -4627,7 +4597,6 @@ stb_vorbis * stb_vorbis_open_filename(const char *filename, int *error, const st
    if (error) *error = VORBIS_file_open_failure;
    return NULL;
 }
-#endif // STB_VORBIS_NO_STDIO
 
 stb_vorbis * stb_vorbis_open_memory(const unsigned char *data, int len, int *error, const stb_vorbis_alloc *alloc)
 {
@@ -4873,7 +4842,6 @@ int stb_vorbis_get_samples_short(stb_vorbis *f, int channels, short **buffer, in
    return n;
 }
 
-#ifndef STB_VORBIS_NO_STDIO
 int stb_vorbis_decode_filename(const char *filename, int *channels, int *sample_rate, short **output)
 {
    int data_len, offset, total, limit, error;
@@ -4912,7 +4880,6 @@ int stb_vorbis_decode_filename(const char *filename, int *channels, int *sample_
    stb_vorbis_close(v);
    return data_len;
 }
-#endif // NO_STDIO
 
 int stb_vorbis_decode_memory(const uint8 *mem, int len, int *channels, int *sample_rate, short **output)
 {
@@ -5059,5 +5026,3 @@ int stb_vorbis_get_samples_float(stb_vorbis *f, int channels, float **buffer, in
     0.91 - conditional compiles to omit parts of the API and the infrastructure to support them: STB_VORBIS_NO_PULLDATA_API, STB_VORBIS_NO_PUSHDATA_API, STB_VORBIS_NO_STDIO, STB_VORBIS_NO_INTEGER_CONVERSION
     0.90 - first public release
 */
-
-#endif // STB_VORBIS_HEADER_ONLY

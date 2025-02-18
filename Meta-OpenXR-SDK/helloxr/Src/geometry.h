@@ -1,15 +1,16 @@
 
 // geometry.h
 
-namespace Geometry
-{
-
-struct Vertex
+struct GeometryVertex
 {
   XrVector3f Position;
   XrVector3f Normal;
   XrVector3f Color;
+  XrVector2f Texture;
 };
+
+namespace Geometry
+{
 
 constexpr XrVector3f ColorRed {1.0, 0.0, 0.0};
 constexpr XrVector3f ColorHalfRed {0.5, 0.0, 0.0};
@@ -130,7 +131,7 @@ constexpr XrVector3f APP6P6N2 {1.0 / 6.0, 1.0 / 6.0, -2.0};
 constexpr XrVector3f APP6P2N2 {1.0 / 6.0, 1.0 / 2.0, -2.0};
 constexpr XrVector3f APP2N6N2 {1.0 / 2.0, -1.0 / 6.0, -2.0};
 
-constexpr Vertex gModelsVertices[] =
+constexpr GeometryVertex gModelsVertices[] =
 {
 
 // 0
@@ -182,7 +183,7 @@ constexpr Vertex gModelsVertices[] =
   {CPNNP, NNNP, ColorQuarterPurple}, {CPNZZ, NNZZ, ColorGrey}, {CPNPP, NNPP, ColorQuarterPurple}, {CPNNN, NNNN, ColorQuarterPurple}, {CPNZZ, NNZZ, ColorGrey}, {CPNNP, NNNP, ColorQuarterPurple}, // 108
 
   // +X
-  {CPPNP, NPNP, ColorHalfYellow}, {CPPZZ, NPZZ, ColorGrey}, {CPPNN, NPNN, ColorHalfYellow}, {CPPPP, NPPP, ColorHalfYellow}, {CPPZZ, NPZZ, ColorGrey}, {CPPNP, NPNP, ColorHalfYellow}, // 114
+  {CPPNP, NPNP, ColorHalfYellow, {0.0, 1.0} }, {CPPZZ, NPZZ, ColorGrey, {1.0, 0.0} }, {CPPNN, NPNN, ColorHalfYellow, {1.0, 1.0} }, {CPPPP, NPPP, ColorHalfYellow}, {CPPZZ, NPZZ, ColorGrey}, {CPPNP, NPNP, ColorHalfYellow}, // 114
   {CPPPN, NPPN, ColorHalfYellow}, {CPPZZ, NPZZ, ColorGrey}, {CPPPP, NPPP, ColorHalfYellow}, {CPPNN, NPNN, ColorHalfYellow}, {CPPZZ, NPZZ, ColorGrey}, {CPPPN, NPPN, ColorHalfYellow}, // 120
 
   // -Y

@@ -897,11 +897,12 @@ typedef struct XrSessionCreateInfo {
  XrSystemId systemId;
 } XrSessionCreateInfo;
 
-typedef struct XrVector3f {
- float x;
- float y;
- float z;
-} XrVector3f;
+struct XrVector3f
+{
+  float x;
+  float y;
+  float z;
+};
 
 // XrSpaceVelocity extends XrSpaceLocation
 typedef struct XrSpaceVelocity {
@@ -1141,10 +1142,11 @@ typedef struct XrActionStateFloat {
  XrBool32 isActive;
 } XrActionStateFloat;
 
-typedef struct XrVector2f {
- float x;
- float y;
-} XrVector2f;
+struct XrVector2f
+{
+  float x;
+  float y;
+};
 
 typedef struct XrActionStateVector2f {
  XrStructureType type;

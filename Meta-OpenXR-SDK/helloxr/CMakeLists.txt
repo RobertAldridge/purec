@@ -19,6 +19,12 @@ set_target_properties(OpenXR::openxr_loader PROPERTIES IMPORTED_LOCATION "C:/bus
 
 target_include_directories( ${PROJECT_NAME} PRIVATE C:/business/purec/Meta-OpenXR-SDK/helloxr/Src)
 
+add_library(VulkanLibrary SHARED IMPORTED)
+
+set_target_properties(VulkanLibrary PROPERTIES IMPORTED_LOCATION
+  C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libvulkan.so
+)
+
 target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE
@@ -36,7 +42,8 @@ target_link_libraries(
   C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libSPIRV-Tools.a
   C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libSPIRV-Tools-opt.a
   OpenXR::openxr_loader
-  C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libvulkan.so
+  VulkanLibrary
+  #C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libvulkan.so
 )
 
 target_include_directories( ${PROJECT_NAME} PUBLIC C:/business/purec/Meta-OpenXR-SDK/helloxr/Src)
@@ -58,7 +65,8 @@ target_link_libraries(
   C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libSPIRV-Tools.a
   C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libSPIRV-Tools-opt.a
   OpenXR::openxr_loader
-  C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libvulkan.so
+  VulkanLibrary
+  #C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libvulkan.so
 )
 
 target_include_directories( ${PROJECT_NAME} INTERFACE C:/business/purec/Meta-OpenXR-SDK/helloxr/Src)
@@ -80,7 +88,8 @@ target_link_libraries(
   C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libSPIRV-Tools.a
   C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libSPIRV-Tools-opt.a
   OpenXR::openxr_loader
-  C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libvulkan.so
+  VulkanLibrary
+  #C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libvulkan.so
 )
 
 set_target_properties( ${PROJECT_NAME} PROPERTIES LINK_FLAGS "-u ANativeActivity_onCreate")

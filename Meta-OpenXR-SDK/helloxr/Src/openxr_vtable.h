@@ -77,6 +77,8 @@ struct XrSwapchainStateSamplerOpenGLESFB
 
 struct XrGeneratedDispatchTableCore
 {
+  void* libOpenXr;
+
   // ---- Core 1.0 commands
   PFN_xrGetInstanceProcAddr GetInstanceProcAddr;
 

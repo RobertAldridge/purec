@@ -51,10 +51,12 @@ android {
   sourceSets {
     main {
       manifest.srcFile 'AndroidManifest.xml'
-      res.srcDir '../../android_resources'
+      res.srcDir '../../resources'
+      assets.srcDir '../../assets'
     }
+
     Vulkan {
-            res.srcDir '../../android_resources/vulkan'
+            res.srcDir '../../resources/vulkan'
         }
   }
 

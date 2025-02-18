@@ -3,32 +3,9 @@
 
 #include "header.h"
 
-XrEnvironmentDepthSwapchainMETA gEnvironmentDepthSwapchainMETA = XR_NULL_HANDLE;
+JNIEnv* gEnvironment = nullptr;
 
-XrEnvironmentDepthProviderCreateInfoMETA gEnvironmentDepthProviderCreateInfoMETA
-{
-  XR_TYPE_ENVIRONMENT_DEPTH_PROVIDER_CREATE_INFO_META
-};
-
-XrEnvironmentDepthHandRemovalSetInfoMETA gEnvironmentDepthHandRemovalSetInfoMETA
-{
-  XR_TYPE_ENVIRONMENT_DEPTH_HAND_REMOVAL_SET_INFO_META
-};
-
-XrEnvironmentDepthSwapchainCreateInfoMETA gEnvironmentDepthSwapchainCreateInfoMETA
-{
-  XR_TYPE_ENVIRONMENT_DEPTH_SWAPCHAIN_CREATE_INFO_META
-};
-
-XrEnvironmentDepthSwapchainStateMETA gEnvironmentDepthSwapchainStateMETA
-{
-  XR_TYPE_ENVIRONMENT_DEPTH_SWAPCHAIN_STATE_META
-};
-
-uint32_t gEnvironmentDepthSwapChainLength = 0;
-
-std::vector<XrSwapchainImageVulkanKHR> gEnvironmentDepthImages;
-std::vector<VkImage> gEnvironmentDepthTextures;
+struct android_app* gApplication = nullptr;
 
 void AnagShowHelpBlah()
 {
@@ -73,6 +50,52 @@ bool AnagUpdateOptionsFromSystemProperties()
   // nop
 
   return true;
+}
+
+// todo
+
+extern "C" {
+
+struct AAssetManager;
+
+/**
+ * Given a Dalvik AssetManager object, obtain the corresponding native AAssetManager
+ * object.  Note that the caller is responsible for obtaining and holding a VM reference
+ * to the jobject to prevent its being garbage collected while the native object is
+ * in use.
+ */
+AAssetManager* AAssetManager_fromJava(JNIEnv* environment, jobject assetManager);
+
+AAsset* AAssetManager_open(AAssetManager* mgr, const char* filename, int mode);
+
+}
+
+unsigned char* AnagLoadFileBlah(const char* fileName, int* fileSize)
+{
+  AAssetManager* manager = gApplication->activity->assetManager;
+
+  AAsset* asset = AAssetManager_open(manager, fileName, AASSET_MODE_UNKNOWN);
+
+  if(NULL == asset)
+  {
+    Log::Write(Log::Level::Info, Fmt("BlahLoadFile fail %s\n", fileName) );
+    return 0;
+  }
+
+  long size = AAsset_getLength(asset);
+
+  unsigned char* buffer = (unsigned char*)malloc(sizeof(unsigned char) * size);
+
+  AAsset_read(asset, buffer, size);
+
+  AAsset_close(asset);
+
+  Log::Write(Log::Level::Info, Fmt("BlahLoadFile yay %s %i\n", fileName, (int)size) );
+
+  if(fileSize)
+    *fileSize = (int)size;
+
+  return buffer;
 }
 
 /**
@@ -444,6 +467,8 @@ void* anag_android_app_entry(void* param)
   if( !app)
     return 0;
 
+  gApplication = app;
+
   app->config = AConfiguration_new();
   AConfiguration_fromAssetManager(app->config, app->activity->assetManager);
 
@@ -468,9 +493,7 @@ void* anag_android_app_entry(void* param)
 
 try
 {
-  JNIEnv* Env = 0;
-
-  app->activity->vm->AttachCurrentThread( &Env, nullptr);
+  app->activity->vm->AttachCurrentThread( &gEnvironment, nullptr);
 
   AndroidAppState appState = {};
 
@@ -839,6 +862,9 @@ XR_YVR_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_YVR_controller_interaction"
     extensions.push_back("XR_EXT_user_presence"); // SpecVersion = 1
     extensions.push_back("XR_KHR_visibility_mask"); // SpecVersion = 2
     extensions.push_back("XR_LOGITECH_mx_ink_stylus_interaction"); // SpecVersion = 1
+
+    //extensions.push_back("XR_METAX1_environment_depth");
+    //extensions.push_back("XR_METAX2_environment_depth");
 
     createInfo.enabledExtensionCount = (uint32_t)extensions.size();
     createInfo.enabledExtensionNames = extensions.data();
@@ -1741,7 +1767,8 @@ struct VkExtensionProperties
   std::vector<const char*> deviceExtensions;
 
   VkPhysicalDeviceFeatures features {};
-  // features.samplerAnisotropy = VK_TRUE;
+  // todo
+  //features.samplerAnisotropy = VK_TRUE;
 
   VkDeviceCreateInfo deviceInfo {VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO};
   deviceInfo.queueCreateInfoCount = 1;
@@ -2046,24 +2073,77 @@ struct VkExtensionProperties
     pcr.offset = 0;
     pcr.size = 4 * 4 * sizeof(float);
 
-    VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo {VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO};
+    //VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo {VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO};
+    //
+    //pipelineLayoutCreateInfo.pushConstantRangeCount = 1;
+    //pipelineLayoutCreateInfo.pPushConstantRanges = &pcr;
 
-    pipelineLayoutCreateInfo.pushConstantRangeCount = 1;
-    pipelineLayoutCreateInfo.pPushConstantRanges = &pcr;
+    // texture 1 of 4 start
+    {
+      const VkDescriptorSetLayoutBinding descriptorSetLayoutBinding =
+      {
+        .binding = 2,
+        .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+        .descriptorCount = 1/*TUTORIAL_TEXTURE_COUNT*/,
+        .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
+        .pImmutableSamplers = nullptr
+      };
 
-    if(tableVk.CreatePipelineLayout)
-      CHECK_VULKANCMD(tableVk.CreatePipelineLayout(gVkDevice, &pipelineLayoutCreateInfo, nullptr, &gVkPipelineLayout) );
+      const VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo =
+      {
+        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+        .pNext = nullptr,
+        .bindingCount = 1,
+        .pBindings = &descriptorSetLayoutBinding
+      };
+
+      if(tableVk.CreateDescriptorSetLayout)
+      {
+        tableVk.CreateDescriptorSetLayout(
+          gVkDevice,
+          &descriptorSetLayoutCreateInfo,
+          nullptr,
+          &gTextureVkDescriptorSetLayout
+        );
+      }
+
+      VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo =
+      {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+        .pNext = nullptr,
+        .setLayoutCount = 1,
+        .pSetLayouts = &gTextureVkDescriptorSetLayout,
+        .pushConstantRangeCount = 1,
+        .pPushConstantRanges = &pcr
+      };
+
+      if(tableVk.CreatePipelineLayout)
+        tableVk.CreatePipelineLayout(gVkDevice, &pipelineLayoutCreateInfo, nullptr, &gVkPipelineLayout);
+    }
+    // texture 1 of 4 finish
+
+    //if(tableVk.CreatePipelineLayout)
+    //{
+    //  CHECK_VULKANCMD(tableVk.CreatePipelineLayout(
+    //    gVkDevice,
+    //    &pipelineLayoutCreateInfo,
+    //    nullptr,
+    //    &gVkPipelineLayout
+    //  ) );
+    //}
   }
 
-  static_assert(sizeof(Geometry::Vertex) == 36, "Unexpected Vertex size");
+  static_assert(sizeof(GeometryVertex) == 44, "Unexpected GeometryVertex size");
 
   gVertexBufferBaseAttrDesc =
   {
-    {0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Position) },
+    {0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(GeometryVertex, Position) },
 
-    {1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Normal) },
+    {1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(GeometryVertex, Normal) },
 
-    {2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Geometry::Vertex, Color) }
+    {2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(GeometryVertex, Color) },
+
+    {3, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(GeometryVertex, Texture) }
   };
 
   uint32_t numModelsIdicies = sizeof(Geometry::gModelsIndices) / sizeof(Geometry::gModelsIndices[0] );
@@ -2118,7 +2198,7 @@ struct VkExtensionProperties
               (gMemoryAllocatorMemoryProperties.memoryTypes[offsetMemory].propertyFlags &
                 MemoryAllocator_m_memoryAllocatorDefaultFlags
               ) ==
-              MemoryAllocator_m_memoryAllocatorDefaultFlags
+                MemoryAllocator_m_memoryAllocatorDefaultFlags
             )
             {
               VkMemoryAllocateInfo memAlloc {VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr};
@@ -2147,7 +2227,7 @@ struct VkExtensionProperties
       CHECK_VULKANCMD(tableVk.BindBufferMemory(gVkDevice, gVertexBufferBaseIdxBuf, gVertexBufferBaseIdxMem, 0) );
 
     bufInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-    bufInfo.size = sizeof(Geometry::Vertex) * numModelsVerticies;
+    bufInfo.size = sizeof(GeometryVertex) * numModelsVerticies;
 
     if(tableVk.CreateBuffer)
       CHECK_VULKANCMD(tableVk.CreateBuffer(gVkDevice, &bufInfo, nullptr, &gVertexBufferBaseVtxBuf) );
@@ -2189,7 +2269,7 @@ struct VkExtensionProperties
               (gMemoryAllocatorMemoryProperties.memoryTypes[offsetMemory].propertyFlags &
                 MemoryAllocator_m_memoryAllocatorDefaultFlags
               ) ==
-              MemoryAllocator_m_memoryAllocatorDefaultFlags
+                MemoryAllocator_m_memoryAllocatorDefaultFlags
             )
             {
               VkMemoryAllocateInfo memAlloc {VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr};
@@ -2218,7 +2298,7 @@ struct VkExtensionProperties
       CHECK_VULKANCMD(tableVk.BindBufferMemory(gVkDevice, gVertexBufferBaseVtxBuf, gVertexBufferBaseVtxMem, 0) );
 
     gVertexBufferBaseBindDesc.binding = 0;
-    gVertexBufferBaseBindDesc.stride = sizeof(Geometry::Vertex);
+    gVertexBufferBaseBindDesc.stride = sizeof(GeometryVertex);
     gVertexBufferBaseBindDesc.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
     gVertexBufferBaseCount = {numModelsIdicies, numModelsVerticies};
@@ -2252,10 +2332,10 @@ struct VkExtensionProperties
   }
 
   //VertexBuffer_VertexBufferUpdateVertices(Geometry::gModelsVertices, numModelsVerticies, 0);
-  //void VertexBuffer_VertexBufferUpdateVertices(const Geometry::Vertex* data, uint32_t elements, uint32_t offset)
+  //void VertexBuffer_VertexBufferUpdateVertices(const GeometryVertex* data, uint32_t elements, uint32_t offset)
   {
     uint32_t offset = 0;
-    Geometry::Vertex* map = nullptr;
+    GeometryVertex* map = nullptr;
 
     if(tableVk.MapMemory)
     {
@@ -2298,6 +2378,52 @@ struct VkExtensionProperties
   }
 
   CHECK_CHECK(gXrSession != XR_NULL_HANDLE);
+
+  // texture 2 of 4 start
+  if(gTextureVkDescriptorSetLayout == VK_NULL_HANDLE)
+  {
+    /*VulkanTutorialCreateDescriptorSetLayout(gTextureVkDescriptorSetLayout);*/
+  }
+
+  if(gTextureVkSampler == VK_NULL_HANDLE && gTextureVkDescriptorSetLayout != VK_NULL_HANDLE)
+  {
+    VulkanTutorialCreateTextureImage(
+      "texture_bricks.jpg",
+      gVulkanGraphicsPluginVkQueue,
+      gCmdBufferPool,
+      gTextureVkImage,
+      gTextureVkDeviceMemory
+    );
+
+    if(gTextureVkImage != VK_NULL_HANDLE && gTextureVkDeviceMemory != VK_NULL_HANDLE)
+      Log::Write(Log::Level::Info, Fmt("VulkanTutorialCreateTextureImage success\n") );
+    else
+      Log::Write(Log::Level::Info, Fmt("VulkanTutorialCreateTextureImage failure\n") );
+
+    gTextureVkImageView = VulkanTutorialCreateImageView(
+      gTextureVkImage,
+      VK_FORMAT_R8G8B8A8_SRGB,
+      VK_IMAGE_ASPECT_COLOR_BIT
+    );
+
+    VulkanTutorialCreateTextureSampler(gTextureVkSampler);
+  }
+
+  if(
+    gTextureVkDescriptorSet == VK_NULL_HANDLE &&
+    gTextureVkSampler != VK_NULL_HANDLE &&
+    gTextureVkDescriptorSetLayout != VK_NULL_HANDLE
+  )
+  {
+    /*VulkanTutorialUpdateDescriptorSets(
+        gTextureVkImageView,
+        gTextureVkSampler,
+        gTextureVkDescriptorSetLayout,
+        gTextureVkDescriptorPool,
+        gTextureVkDescriptorSet
+    );*/
+  }
+  // texture 2 of 4 finish
 
   uint32_t spaceCount = 0;
 
@@ -3217,7 +3343,7 @@ struct VkExtensionProperties
                     (gMemoryAllocatorMemoryProperties.memoryTypes[offsetMemory].propertyFlags &
                       VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT/*flags*/
                     ) ==
-                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT/*flags*/
+                      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT/*flags*/
                   )
                   {
                     VkMemoryAllocateInfo memAlloc {VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr/*pNext*/};
@@ -3536,6 +3662,67 @@ struct VkExtensionProperties
             }
           }
 
+          // texture 3 of 4 start
+          //VkResult CreateDescriptorSet()
+          {
+            const VkDescriptorPoolSize descriptorPoolSize =
+            {
+              .type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+              .descriptorCount = 1/*TUTORIAL_TEXTURE_COUNT*/
+            };
+
+            const VkDescriptorPoolCreateInfo descriptorPoolCreateInfo =
+            {
+              .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
+              .pNext = nullptr,
+              .maxSets = 1,
+              .poolSizeCount = 1,
+              .pPoolSizes = &descriptorPoolSize
+            };
+
+            tableVk.CreateDescriptorPool(gVkDevice, &descriptorPoolCreateInfo, nullptr, &gTextureVkDescriptorPool);
+
+            VkDescriptorSetAllocateInfo descriptorSetAllocateInfo =
+            {
+              .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+              .pNext = nullptr,
+              .descriptorPool = gTextureVkDescriptorPool,
+              .descriptorSetCount = 1,
+              .pSetLayouts = &gTextureVkDescriptorSetLayout
+            };
+
+            tableVk.AllocateDescriptorSets(gVkDevice, &descriptorSetAllocateInfo, &gTextureVkDescriptorSet);
+
+            VkDescriptorImageInfo descriptorImageInfo[1/*TUTORIAL_TEXTURE_COUNT*/];
+            memset(descriptorImageInfo, 0, sizeof(VkDescriptorImageInfo) * 1/*TUTORIAL_TEXTURE_COUNT*/);
+
+            for(int32_t index = 0; index < 1/*TUTORIAL_TEXTURE_COUNT*/; index++)
+            {
+              descriptorImageInfo[index].sampler = gTextureVkSampler/*textures[index].sampler*/;
+              descriptorImageInfo[index].imageView = gTextureVkImageView/*textures[index].view*/;
+              descriptorImageInfo[index].imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+            }
+
+            VkWriteDescriptorSet writeDescriptorSet =
+            {
+              .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+              .pNext = nullptr,
+              .dstSet = gTextureVkDescriptorSet,
+              .dstBinding = 2,
+              .dstArrayElement = 0,
+              .descriptorCount = 1/*TUTORIAL_TEXTURE_COUNT*/,
+              .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+              .pImageInfo = descriptorImageInfo,
+              .pBufferInfo = nullptr,
+              .pTexelBufferView = nullptr
+            };
+
+            tableVk.UpdateDescriptorSets(gVkDevice, 1, &writeDescriptorSet, 0, nullptr);
+
+            //return VK_SUCCESS;
+          }
+          // texture 3 of 4 finish
+
           m_swapchainImageContextSwapchainImages[indice].resize(capacity);
 
           m_swapchainImageContextStdVector_renderTargetColorImage[indice].resize(capacity);
@@ -3752,11 +3939,11 @@ struct VkExtensionProperties
         };
 
         //void OpenXrProgram_OpenXrProgramLogActionSourceName(XrAction action, const std::string& actionName)
-        for(int index = 0; index < actionSourceNameCount; index++)
+        for(int actionSourceNameIndex = 0; actionSourceNameIndex < actionSourceNameCount; actionSourceNameIndex++)
         {
           XrBoundSourcesForActionEnumerateInfo getInfo = {XR_TYPE_BOUND_SOURCES_FOR_ACTION_ENUMERATE_INFO};
 
-          getInfo.action = gOpenXrProgramInputState_InputState_ActionBlah[index];
+          getInfo.action = gOpenXrProgramInputState_InputState_ActionBlah[actionSourceNameIndex];
 
           uint32_t pathCount = 0;
 
@@ -3777,7 +3964,7 @@ struct VkExtensionProperties
 
           std::string sourceName;
 
-          for(uint32_t i = 0; i < pathCount; ++i)
+          for(uint32_t pathIndex = 0; pathIndex < pathCount; ++pathIndex)
           {
             constexpr XrInputSourceLocalizedNameFlags all =
               XR_INPUT_SOURCE_LOCALIZED_NAME_USER_PATH_BIT |
@@ -3786,7 +3973,7 @@ struct VkExtensionProperties
 
             XrInputSourceLocalizedNameGetInfo nameInfo = {XR_TYPE_INPUT_SOURCE_LOCALIZED_NAME_GET_INFO};
 
-            nameInfo.sourcePath = paths[i];
+            nameInfo.sourcePath = paths[pathIndex];
             nameInfo.whichComponents = all;
 
             uint32_t size = 0;
@@ -3823,7 +4010,7 @@ struct VkExtensionProperties
             Log::Level::Info,
             Fmt(
               "%s action is bound to %s",
-              actionName[index].c_str(),
+              actionName[actionSourceNameIndex].c_str(),
               ( ( !sourceName.empty() ) ? sourceName.c_str() : "nothing")
             )
           );
@@ -4558,6 +4745,8 @@ struct VkExtensionProperties
               renderPassBeginInfo.renderArea.extent = m_swapchainImageContextSize[swapchainContextIndex];
             }
 
+            // todo
+
             if(tableVk.CmdBeginRenderPass)
               tableVk.CmdBeginRenderPass(gCmdBufferBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
@@ -4569,6 +4758,22 @@ struct VkExtensionProperties
                 m_swapchainImageContextPipe_pipelinePipe[swapchainContextIndex]
               );
             }
+
+            // texture 4 of 4 start
+            if(tableVk.CmdBindDescriptorSets)
+            {
+              tableVk.CmdBindDescriptorSets(
+                gCmdBufferBuffer,
+                VK_PIPELINE_BIND_POINT_GRAPHICS,
+                gVkPipelineLayout,
+                0,
+                1,
+                &gTextureVkDescriptorSet,
+                0,
+                nullptr
+              );
+            }
+            // texture 4 of 4 finish
 
             // Bind indice and vertex buffers
             if(tableVk.CmdBindIndexBuffer)
@@ -5157,11 +5362,14 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
       //   XrEnvironmentDepthImageMETA* environmentDepthImage
       // );
 
-      //tableXr.AcquireEnvironmentDepthImageMETA(
-      //  gEnvironmentDepthProviderMETA,
-      //  &environmentDepthImageAcquireInfoMETA,
-      //  &environmentDepthImageMETA
-      //);
+      // if(tableXr.AcquireEnvironmentDepthImageMETA)
+      // {
+      //   tableXr.AcquireEnvironmentDepthImageMETA(
+      //     gEnvironmentDepthProviderMETA,
+      //     &environmentDepthImageAcquireInfoMETA,
+      //     &environmentDepthImageMETA
+      //   );
+      // }
 
       // struct XrEnvironmentDepthImageAcquireInfoMETA
       // {
@@ -5214,7 +5422,10 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
       XrPassthroughCreateInfoFB passthroughCreateInfo = {XR_TYPE_PASSTHROUGH_CREATE_INFO_FB};
       passthroughCreateInfo.flags = XR_PASSTHROUGH_IS_RUNNING_AT_CREATION_BIT_FB;
 
-      result = tableXr.CreatePassthroughFB(gXrSession, &passthroughCreateInfo, &gPassthroughFeature);
+      result = XR_ERROR_VALIDATION_FAILURE;
+      if(tableXr.CreatePassthroughFB)
+        result = tableXr.CreatePassthroughFB(gXrSession, &passthroughCreateInfo, &gPassthroughFeature);
+
       if(XR_FAILED(result) )
         Log::Write(Log::Level::Info, Fmt("failed to create the passthrough feature") );
       else
@@ -5227,7 +5438,10 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
       layerCreateInfo.purpose = XR_PASSTHROUGH_LAYER_PURPOSE_RECONSTRUCTION_FB;
       layerCreateInfo.flags = XR_PASSTHROUGH_IS_RUNNING_AT_CREATION_BIT_FB;
 
-      result = tableXr.CreatePassthroughLayerFB(gXrSession, &layerCreateInfo, &gPassthroughLayer);
+      result = XR_ERROR_VALIDATION_FAILURE;
+      if(tableXr.CreatePassthroughLayerFB)
+        result = tableXr.CreatePassthroughLayerFB(gXrSession, &layerCreateInfo, &gPassthroughLayer);
+
       if(XR_FAILED(result) )
         Log::Write(Log::Level::Info, Fmt("failed to create and start a passthrough layer") );
       else
@@ -5329,11 +5543,16 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
 
       gEnvironmentDepthProviderMETA = XR_NULL_HANDLE;
 
-      XrResult result = tableXr.CreateEnvironmentDepthProviderMETA(
-        gXrSession,
-        &gEnvironmentDepthProviderCreateInfoMETA,
-        &gEnvironmentDepthProviderMETA
-      );
+      XrResult result = XR_ERROR_VALIDATION_FAILURE;
+
+      if(tableXr.CreateEnvironmentDepthProviderMETA)
+      {
+        result = tableXr.CreateEnvironmentDepthProviderMETA(
+          gXrSession,
+          &gEnvironmentDepthProviderCreateInfoMETA,
+          &gEnvironmentDepthProviderMETA
+        );
+      }
 
       if(XR_FAILED(result) )
         Log::Write(Log::Level::Info, Fmt("failed CreateEnvironmentDepthProviderMETA") );
@@ -5377,10 +5596,14 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
       gEnvironmentDepthHandRemovalSetInfoMETA.next = nullptr;
       gEnvironmentDepthHandRemovalSetInfoMETA.enabled = true;
 
-      result = tableXr.SetEnvironmentDepthHandRemovalMETA(
-        gEnvironmentDepthProviderMETA,
-        &gEnvironmentDepthHandRemovalSetInfoMETA
-      );
+      result = XR_ERROR_VALIDATION_FAILURE;
+      if(tableXr.SetEnvironmentDepthHandRemovalMETA)
+      {
+        result = tableXr.SetEnvironmentDepthHandRemovalMETA(
+          gEnvironmentDepthProviderMETA,
+          &gEnvironmentDepthHandRemovalSetInfoMETA
+        );
+      }
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // Creating and enumerating a depth swapchain
@@ -5415,11 +5638,14 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
 
       gEnvironmentDepthSwapchainMETA = XR_NULL_HANDLE;
 
-      tableXr.CreateEnvironmentDepthSwapchainMETA(
-        gEnvironmentDepthProviderMETA,
-        &gEnvironmentDepthSwapchainCreateInfoMETA,
-        &gEnvironmentDepthSwapchainMETA
-      );
+      if(tableXr.CreateEnvironmentDepthSwapchainMETA)
+      {
+        tableXr.CreateEnvironmentDepthSwapchainMETA(
+          gEnvironmentDepthProviderMETA,
+          &gEnvironmentDepthSwapchainCreateInfoMETA,
+          &gEnvironmentDepthSwapchainMETA
+        );
+      }
 
       // Once the swapchain is created the resolution can be queried by calling xrGetEnvironmentDepthSwapchainStateMETA:
 
@@ -5443,10 +5669,13 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
       gEnvironmentDepthSwapchainStateMETA.width = 0;
       gEnvironmentDepthSwapchainStateMETA.height = 0;
 
-      tableXr.GetEnvironmentDepthSwapchainStateMETA(
-        gEnvironmentDepthSwapchainMETA,
-        &gEnvironmentDepthSwapchainStateMETA
-      );
+      if(tableXr.GetEnvironmentDepthSwapchainStateMETA)
+      {
+        tableXr.GetEnvironmentDepthSwapchainStateMETA(
+          gEnvironmentDepthSwapchainMETA,
+          &gEnvironmentDepthSwapchainStateMETA
+        );
+      }
 
       // In the same way as for a regular XrSwapchain, the XrEnvironmentDepthSwapchainMETA needs to be “enumerated” into
       // a graphics API specific array of texture handles. This is done by calling
@@ -5467,12 +5696,15 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
 
       gEnvironmentDepthSwapChainLength = 0;
 
-      tableXr.EnumerateEnvironmentDepthSwapchainImagesMETA(
-        gEnvironmentDepthSwapchainMETA,
-        0,
-        &gEnvironmentDepthSwapChainLength,
-        nullptr
-      );
+      if(tableXr.EnumerateEnvironmentDepthSwapchainImagesMETA)
+      {
+        tableXr.EnumerateEnvironmentDepthSwapchainImagesMETA(
+          gEnvironmentDepthSwapchainMETA,
+          0,
+          &gEnvironmentDepthSwapChainLength,
+          nullptr
+        );
+      }
 
       //struct XrSwapchainImageVulkanKHR
       //{
@@ -5489,12 +5721,15 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
         gEnvironmentDepthImages.push_back(swapchainImageVulkanKHR);
       }
 
-      tableXr.EnumerateEnvironmentDepthSwapchainImagesMETA(
-        gEnvironmentDepthSwapchainMETA,
-        gEnvironmentDepthSwapChainLength,
-        &gEnvironmentDepthSwapChainLength,
-        (XrSwapchainImageBaseHeader*)gEnvironmentDepthImages.data()
-      );
+      if(tableXr.EnumerateEnvironmentDepthSwapchainImagesMETA)
+      {
+        tableXr.EnumerateEnvironmentDepthSwapchainImagesMETA(
+          gEnvironmentDepthSwapchainMETA,
+          gEnvironmentDepthSwapChainLength,
+          &gEnvironmentDepthSwapChainLength,
+          (XrSwapchainImageBaseHeader*)gEnvironmentDepthImages.data()
+        );
+      }
 
       gEnvironmentDepthTextures.clear();
 
@@ -5514,7 +5749,8 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
 
       // XrResult xrStartEnvironmentDepthProviderMETA(XrEnvironmentDepthProviderMETA environmentDepthProvider);
 
-      tableXr.StartEnvironmentDepthProviderMETA(gEnvironmentDepthProviderMETA);
+      if(tableXr.StartEnvironmentDepthProviderMETA)
+        tableXr.StartEnvironmentDepthProviderMETA(gEnvironmentDepthProviderMETA);
 
       // To stop the asynchronous generation of depth maps, call xrStopEnvironmentDepthProviderMETA:
 
