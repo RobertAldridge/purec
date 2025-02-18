@@ -3,26 +3,67 @@
 
 project(helloxr)
 
-file(GLOB_RECURSE SRC_FILES Src/*.c Src/*.cpp)
+file(
+  GLOB_RECURSE
+  SRC_FILES
+  Src/*.c
+  Src/*.cpp
+)
 
-file(TO_CMAKE_PATH "$ENV{VULKAN_SDK}" VULKAN_SDK)
+#file(
+#  TO_CMAKE_PATH
+#  "$ENV{VULKAN_SDK}"
+#  VULKAN_SDK
+#)
 
-add_library( ${PROJECT_NAME} MODULE ${SRC_FILES} )
+add_library(
+  ${PROJECT_NAME}
+  MODULE
+  ${SRC_FILES}
+)
 
-add_library(OpenXR::headers INTERFACE IMPORTED)
+add_library(
+  OpenXR::headers
+  INTERFACE
+  IMPORTED
+)
 
-set_target_properties(OpenXR::headers PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "C:/business/purec/Meta-OpenXR-SDK/helloxr/Src" INTERFACE_LINK_LIBRARIES "")
+set_target_properties(
+  OpenXR::headers
+  PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES "C:/business/purec/Meta-OpenXR-SDK/helloxr/Src"
+  INTERFACE_LINK_LIBRARIES ""
+)
 
-add_library(OpenXR::openxr_loader SHARED IMPORTED)
+add_library(
+  OpenXR::openxr_loader
+  SHARED
+  IMPORTED
+)
 
-set_target_properties(OpenXR::openxr_loader PROPERTIES IMPORTED_LOCATION "C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libopenxr_loader.so" INTERFACE_LINK_LIBRARIES "OpenXR::headers")
+set_target_properties(
+  OpenXR::openxr_loader
+  PROPERTIES
+  IMPORTED_LOCATION "C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libopenxr_loader.so"
+  INTERFACE_LINK_LIBRARIES "OpenXR::headers"
+)
 
-target_include_directories( ${PROJECT_NAME} PRIVATE C:/business/purec/Meta-OpenXR-SDK/helloxr/Src)
+add_library(
+  VulkanLibrary
+  SHARED
+  IMPORTED
+)
 
-add_library(VulkanLibrary SHARED IMPORTED)
+set_target_properties(
+  VulkanLibrary
+  PROPERTIES
+  IMPORTED_LOCATION C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libvulkan.so
+)
 
-set_target_properties(VulkanLibrary PROPERTIES IMPORTED_LOCATION
-  C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libvulkan.so
+target_include_directories(
+  ${PROJECT_NAME}
+  PRIVATE
+  C:/business/purec/Meta-OpenXR-SDK/helloxr/Src
 )
 
 target_link_libraries(
@@ -46,7 +87,11 @@ target_link_libraries(
   #C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libvulkan.so
 )
 
-target_include_directories( ${PROJECT_NAME} PUBLIC C:/business/purec/Meta-OpenXR-SDK/helloxr/Src)
+target_include_directories(
+  ${PROJECT_NAME}
+  PUBLIC
+  C:/business/purec/Meta-OpenXR-SDK/helloxr/Src
+)
 
 target_link_libraries(
   ${PROJECT_NAME}
@@ -69,7 +114,11 @@ target_link_libraries(
   #C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libvulkan.so
 )
 
-target_include_directories( ${PROJECT_NAME} INTERFACE C:/business/purec/Meta-OpenXR-SDK/helloxr/Src)
+target_include_directories(
+  ${PROJECT_NAME}
+  INTERFACE
+  C:/business/purec/Meta-OpenXR-SDK/helloxr/Src
+)
 
 target_link_libraries(
   ${PROJECT_NAME}
@@ -92,9 +141,17 @@ target_link_libraries(
   #C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libvulkan.so
 )
 
-set_target_properties( ${PROJECT_NAME} PROPERTIES LINK_FLAGS "-u ANativeActivity_onCreate")
+set_target_properties(
+  ${PROJECT_NAME}
+  PROPERTIES
+  LINK_FLAGS "-u ANativeActivity_onCreate"
+)
 
-target_include_directories(${PROJECT_NAME} PRIVATE Src)
+target_include_directories(
+  ${PROJECT_NAME}
+  PRIVATE
+  Src
+)
 
 target_compile_definitions(
   helloxr

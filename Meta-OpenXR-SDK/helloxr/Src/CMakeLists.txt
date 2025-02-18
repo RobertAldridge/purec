@@ -106,17 +106,53 @@ set(
   C:/business/purec/Meta-OpenXR-SDK/helloxr/Src/libshaderc_util.a
 )
 
-option(BUILD_FORCE_GENERATION "Force re-generation of files even in the presence of pre-generated copies, replacing those copies." OFF)
+option(
+  BUILD_FORCE_GENERATION
+  "Force re-generation of files even in the presence of pre-generated copies, replacing those copies."
+  OFF
+)
 
-add_library(helloxr MODULE ${LOCAL_SOURCE} ${LOCAL_HEADERS} )
+add_library(
+  helloxr
+  MODULE
+  ${LOCAL_SOURCE}
+  ${LOCAL_HEADERS}
+)
 
-set_target_properties(helloxr PROPERTIES FOLDER ${SAMPLES_FOLDER} LINK_FLAGS "-u ANativeActivity_onCreate")
+set_target_properties(
+  helloxr
+  PROPERTIES
+  FOLDER ${SAMPLES_FOLDER}
+  LINK_FLAGS "-u ANativeActivity_onCreate"
+)
 
-source_group("Headers" FILES ${LOCAL_HEADERS} )
+source_group(
+  "Headers"
+  FILES
+  ${LOCAL_HEADERS}
+)
 
-set_target_properties(helloxr PROPERTIES FOLDER ${SAMPLES_FOLDER} )
-source_group("Headers" FILES ${LOCAL_HEADERS} )
+set_target_properties(
+  helloxr
+  PROPERTIES
+  FOLDER ${SAMPLES_FOLDER}
+)
 
-target_include_directories(helloxr PRIVATE "${PROJECT_SOURCE_DIR}/src" "${CMAKE_CURRENT_BINARY_DIR}")
+source_group(
+  "Headers"
+  FILES
+  ${LOCAL_HEADERS}
+)
 
-target_include_directories(helloxr PRIVATE ${Vulkan_INCLUDE_DIRS} )
+target_include_directories(
+  helloxr
+  PRIVATE
+  "${PROJECT_SOURCE_DIR}/src"
+  "${CMAKE_CURRENT_BINARY_DIR}"
+)
+
+target_include_directories(
+  helloxr
+  PRIVATE
+  ${Vulkan_INCLUDE_DIRS}
+)
