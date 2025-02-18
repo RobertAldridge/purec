@@ -46,13 +46,20 @@ VkResult VulkanTutorialCreateDebugUtilsMessengerEXT(
   VkDebugUtilsMessengerEXT* pDebugMessenger
 )
 {
-  auto func =
-    (PFN_vkCreateDebugUtilsMessengerEXT)tableVk.GetInstanceProcAddr(gVkInstance, "vkCreateDebugUtilsMessengerEXT");
+  PFN_vkCreateDebugUtilsMessengerEXT createDebugUtilsMessengerEXT = nullptr;
 
-  if(func)
-    return func(gVkInstance, pCreateInfo, pAllocator, pDebugMessenger);
-  else
-    return VK_ERROR_EXTENSION_NOT_PRESENT;
+  if(tableVk.GetInstanceProcAddr)
+  {
+    createDebugUtilsMessengerEXT =
+      (PFN_vkCreateDebugUtilsMessengerEXT)tableVk.GetInstanceProcAddr(gVkInstance, "vkCreateDebugUtilsMessengerEXT");
+  }
+
+  VkResult result = VK_ERROR_EXTENSION_NOT_PRESENT;
+
+  if(createDebugUtilsMessengerEXT)
+    result = createDebugUtilsMessengerEXT(gVkInstance, pCreateInfo, pAllocator, pDebugMessenger);
+
+  return result;
 }
 
 void VulkanTutorialDestroyDebugUtilsMessengerEXT(
@@ -60,11 +67,16 @@ void VulkanTutorialDestroyDebugUtilsMessengerEXT(
   const VkAllocationCallbacks* pAllocator
 )
 {
-  auto func =
-    (PFN_vkDestroyDebugUtilsMessengerEXT)tableVk.GetInstanceProcAddr(gVkInstance, "vkDestroyDebugUtilsMessengerEXT");
+  PFN_vkDestroyDebugUtilsMessengerEXT destroyDebugUtilsMessengerEXT = nullptr;
 
-  if(func)
-    func(gVkInstance, debugMessenger, pAllocator);
+  if(tableVk.GetInstanceProcAddr)
+  {
+    destroyDebugUtilsMessengerEXT =
+      (PFN_vkDestroyDebugUtilsMessengerEXT)tableVk.GetInstanceProcAddr(gVkInstance, "vkDestroyDebugUtilsMessengerEXT");
+  }
+
+  if(destroyDebugUtilsMessengerEXT)
+    destroyDebugUtilsMessengerEXT(gVkInstance, debugMessenger, pAllocator);
 }
 
 bool VulkanTutorialQueueFamilyIndices_isComplete(
@@ -80,7 +92,9 @@ uint32_t VulkanTutorialFindMemoryType(
 )
 {
   VkPhysicalDeviceMemoryProperties memProperties;
-  tableVk.GetPhysicalDeviceMemoryProperties(gVkPhysicalDevice, &memProperties);
+
+  if(tableVk.GetPhysicalDeviceMemoryProperties)
+    tableVk.GetPhysicalDeviceMemoryProperties(gVkPhysicalDevice, &memProperties);
 
   for(uint32_t offset = 0; offset < memProperties.memoryTypeCount; offset++)
   {
@@ -118,22 +132,33 @@ void VulkanTutorialCreateImage(
   imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
   imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-  if(tableVk.CreateImage(gVkDevice, &imageInfo, nullptr, &image) != VK_SUCCESS)
-    throw std::runtime_error("failed to create image!");
+  if(tableVk.CreateImage)
+  {
+    if(tableVk.CreateImage(gVkDevice, &imageInfo, nullptr, &image) != VK_SUCCESS)
+      throw std::runtime_error("failed to create image!");
+  }
 
   VkMemoryRequirements memRequirements;
-  tableVk.GetImageMemoryRequirements(gVkDevice, image, &memRequirements);
+
+  if(tableVk.GetImageMemoryRequirements)
+    tableVk.GetImageMemoryRequirements(gVkDevice, image, &memRequirements);
 
   VkMemoryAllocateInfo allocInfo {};
   allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
   allocInfo.allocationSize = memRequirements.size;
   allocInfo.memoryTypeIndex = VulkanTutorialFindMemoryType(memRequirements.memoryTypeBits, properties);
 
-  if(tableVk.AllocateMemory(gVkDevice, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
-    throw std::runtime_error("failed to allocate image memory!");
+  if(tableVk.AllocateMemory)
+  {
+    if(tableVk.AllocateMemory(gVkDevice, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
+      throw std::runtime_error("failed to allocate image memory!");
+  }
 
-  if(tableVk.BindImageMemory(gVkDevice, image, imageMemory, 0) != VK_SUCCESS)
-    throw std::runtime_error("BindImageMemory failure");
+  if(tableVk.BindImageMemory)
+  {
+    if(tableVk.BindImageMemory(gVkDevice, image, imageMemory, 0) != VK_SUCCESS)
+      throw std::runtime_error("BindImageMemory failure");
+  }
 }
 
 VkImageView VulkanTutorialCreateImageView(
@@ -155,8 +180,12 @@ VkImageView VulkanTutorialCreateImageView(
   viewInfo.subresourceRange.layerCount = 1;
 
   VkImageView imageView;
-  if(tableVk.CreateImageView(gVkDevice, &viewInfo, nullptr, &imageView) != VK_SUCCESS)
-    throw std::runtime_error("failed to create image view!");
+
+  if(tableVk.CreateImageView)
+  {
+    if(tableVk.CreateImageView(gVkDevice, &viewInfo, nullptr, &imageView) != VK_SUCCESS)
+      throw std::runtime_error("failed to create image view!");
+  }
 
   return imageView;
 }
@@ -172,13 +201,16 @@ VkCommandBuffer VulkanTutorialsBeginSingleTimeCommands(
   allocInfo.commandBufferCount = 1;
 
   VkCommandBuffer commandBuffer;
-  tableVk.AllocateCommandBuffers(gVkDevice, &allocInfo, &commandBuffer);
+
+  if(tableVk.AllocateCommandBuffers)
+    tableVk.AllocateCommandBuffers(gVkDevice, &allocInfo, &commandBuffer);
 
   VkCommandBufferBeginInfo beginInfo {};
   beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
   beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
-  tableVk.BeginCommandBuffer(commandBuffer, &beginInfo);
+  if(tableVk.BeginCommandBuffer)
+    tableVk.BeginCommandBuffer(commandBuffer, &beginInfo);
 
   return commandBuffer;
 }
@@ -189,18 +221,22 @@ void VulkanTutorialEndSingleTimeCommands(
   VkCommandBuffer commandBuffer
 )
 {
-  tableVk.EndCommandBuffer(commandBuffer);
+  if(tableVk.EndCommandBuffer)
+    tableVk.EndCommandBuffer(commandBuffer);
 
   VkSubmitInfo submitInfo {};
   submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
   submitInfo.commandBufferCount = 1;
   submitInfo.pCommandBuffers = &commandBuffer;
 
-  tableVk.QueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+  if(tableVk.QueueSubmit)
+    tableVk.QueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
 
-  tableVk.QueueWaitIdle(graphicsQueue);
+  if(tableVk.QueueWaitIdle)
+    tableVk.QueueWaitIdle(graphicsQueue);
 
-  tableVk.FreeCommandBuffers(gVkDevice, commandPool, 1, &commandBuffer);
+  if(tableVk.FreeCommandBuffers)
+    tableVk.FreeCommandBuffers(gVkDevice, commandPool, 1, &commandBuffer);
 }
 
 void VulkanTutorialTransitionImageLayout(
@@ -251,7 +287,8 @@ void VulkanTutorialTransitionImageLayout(
     throw std::invalid_argument("unsupported layout transition!");
   }
 
-  tableVk.CmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+  if(tableVk.CmdPipelineBarrier)
+    tableVk.CmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
   VulkanTutorialEndSingleTimeCommands(graphicsQueue, commandPool, commandBuffer);
 }
@@ -265,7 +302,9 @@ VkFormat VulkanTutorialFindSupportedFormat(
   for(VkFormat format : candidates)
   {
     VkFormatProperties props;
-    tableVk.GetPhysicalDeviceFormatProperties(gVkPhysicalDevice, format, &props);
+
+    if(tableVk.GetPhysicalDeviceFormatProperties)
+      tableVk.GetPhysicalDeviceFormatProperties(gVkPhysicalDevice, format, &props);
 
     if(tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
       return format;
@@ -369,8 +408,11 @@ void VulkanTutorialCreateRenderPass(
   renderPassInfo.dependencyCount = 1;
   renderPassInfo.pDependencies = &dependency;
 
-  if(tableVk.CreateRenderPass(gVkDevice, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS)
-    throw std::runtime_error("failed to create render pass!");
+  if(tableVk.CreateRenderPass)
+  {
+    if(tableVk.CreateRenderPass(gVkDevice, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS)
+      throw std::runtime_error("failed to create render pass!");
+  }
 }
 
 void VulkanTutorialCreateFramebuffers(
@@ -396,8 +438,11 @@ void VulkanTutorialCreateFramebuffers(
     framebufferInfo.height = swapChainExtent.height;
     framebufferInfo.layers = 1;
 
-    if(tableVk.CreateFramebuffer(gVkDevice, &framebufferInfo, nullptr, &swapChainFramebuffers[i] ) != VK_SUCCESS)
-      throw std::runtime_error("failed to create framebuffer!");
+    if(tableVk.CreateFramebuffer)
+    {
+      if(tableVk.CreateFramebuffer(gVkDevice, &framebufferInfo, nullptr, &swapChainFramebuffers[i] ) != VK_SUCCESS)
+        throw std::runtime_error("failed to create framebuffer!");
+    }
   }
 }
 
@@ -418,8 +463,11 @@ void VulkanTutorialRecordCommandBuffer(
   VkCommandBufferBeginInfo beginInfo {};
   beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-  if(tableVk.BeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
-    throw std::runtime_error("failed to begin recording command buffer!");
+  if(tableVk.BeginCommandBuffer)
+  {
+    if(tableVk.BeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
+      throw std::runtime_error("failed to begin recording command buffer!");
+  }
 
   VkRenderPassBeginInfo renderPassInfo {};
   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -444,9 +492,11 @@ void VulkanTutorialRecordCommandBuffer(
   renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size() );
   renderPassInfo.pClearValues = clearValues.data();
 
-  tableVk.CmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+  if(tableVk.CmdBeginRenderPass)
+    tableVk.CmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-  tableVk.CmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+  if(tableVk.CmdBindPipeline)
+    tableVk.CmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
   VkViewport viewport {};
   viewport.x = 0.0f;
@@ -455,36 +505,51 @@ void VulkanTutorialRecordCommandBuffer(
   viewport.height = (float)swapChainExtent.height;
   viewport.minDepth = 0.0f;
   viewport.maxDepth = 1.0f;
-  tableVk.CmdSetViewport(commandBuffer, 0, 1, &viewport);
+
+  if(tableVk.CmdSetViewport)
+    tableVk.CmdSetViewport(commandBuffer, 0, 1, &viewport);
 
   VkRect2D scissor {};
   scissor.offset = {0, 0};
   scissor.extent = swapChainExtent;
-  tableVk.CmdSetScissor(commandBuffer, 0, 1, &scissor);
+
+  if(tableVk.CmdSetScissor)
+    tableVk.CmdSetScissor(commandBuffer, 0, 1, &scissor);
 
   VkBuffer vertexBuffers[] = {vertexBuffer};
   VkDeviceSize offsets[] = {0};
-  tableVk.CmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
-  tableVk.CmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+  if(tableVk.CmdBindVertexBuffers)
+    tableVk.CmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
-  tableVk.CmdBindDescriptorSets(
-    commandBuffer,
-    VK_PIPELINE_BIND_POINT_GRAPHICS,
-    pipelineLayout,
-    0,
-    1,
-    &descriptorSets[currentFrame],
-    0,
-    nullptr
-  );
+  if(tableVk.CmdBindIndexBuffer)
+    tableVk.CmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
-  tableVk.CmdDrawIndexed(commandBuffer, static_cast<uint32_t>(VulkanTutorialIndices.size() ), 1, 0, 0, 0);
+  if(tableVk.CmdBindDescriptorSets)
+  {
+    tableVk.CmdBindDescriptorSets(
+      commandBuffer,
+      VK_PIPELINE_BIND_POINT_GRAPHICS,
+      pipelineLayout,
+      0,
+      1,
+      &descriptorSets[currentFrame],
+      0,
+      nullptr
+    );
+  }
 
-  tableVk.CmdEndRenderPass(commandBuffer);
+  if(tableVk.CmdDrawIndexed)
+    tableVk.CmdDrawIndexed(commandBuffer, static_cast<uint32_t>(VulkanTutorialIndices.size() ), 1, 0, 0, 0);
 
-  if(tableVk.EndCommandBuffer(commandBuffer) != VK_SUCCESS)
-    throw std::runtime_error("failed to record command buffer!");
+  if(tableVk.CmdEndRenderPass)
+    tableVk.CmdEndRenderPass(commandBuffer);
+
+  if(tableVk.EndCommandBuffer)
+  {
+    if(tableVk.EndCommandBuffer(commandBuffer) != VK_SUCCESS)
+      throw std::runtime_error("failed to record command buffer!");
+  }
 }
 
 void VulkanTutorialCleanupSwapChain(
@@ -496,17 +561,29 @@ void VulkanTutorialCleanupSwapChain(
   VkImageView& depthImageView
 )
 {
-  tableVk.DestroyImageView(gVkDevice, depthImageView, nullptr);
-  tableVk.DestroyImage(gVkDevice, depthImage, nullptr);
-  tableVk.FreeMemory(gVkDevice, depthImageMemory, nullptr);
+  if(tableVk.DestroyImageView)
+    tableVk.DestroyImageView(gVkDevice, depthImageView, nullptr);
 
-  for(auto framebuffer : swapChainFramebuffers)
-    tableVk.DestroyFramebuffer(gVkDevice, framebuffer, nullptr);
+  if(tableVk.DestroyImage)
+    tableVk.DestroyImage(gVkDevice, depthImage, nullptr);
 
-  for(auto imageView : swapChainImageViews)
-    tableVk.DestroyImageView(gVkDevice, imageView, nullptr);
+  if(tableVk.FreeMemory)
+    tableVk.FreeMemory(gVkDevice, depthImageMemory, nullptr);
 
-  tableVk.DestroySwapchainKHR(gVkDevice, swapChain, nullptr);
+  for(const VkFramebuffer& framebuffer : swapChainFramebuffers)
+  {
+    if(tableVk.DestroyFramebuffer)
+      tableVk.DestroyFramebuffer(gVkDevice, framebuffer, nullptr);
+  }
+
+  for(const VkImageView& imageView : swapChainImageViews)
+  {
+    if(tableVk.DestroyImageView)
+      tableVk.DestroyImageView(gVkDevice, imageView, nullptr);
+  }
+
+  if(tableVk.DestroySwapchainKHR)
+    tableVk.DestroySwapchainKHR(gVkDevice, swapChain, nullptr);
 }
 
 VulkanTutorialSwapChainSupportDetails VulkanTutorialQuerySwapChainSupport(
@@ -515,30 +592,40 @@ VulkanTutorialSwapChainSupportDetails VulkanTutorialQuerySwapChainSupport(
 {
   VulkanTutorialSwapChainSupportDetails details;
 
-  tableVk.GetPhysicalDeviceSurfaceCapabilitiesKHR(gVkPhysicalDevice, surface, &details.capabilities);
+  if(tableVk.GetPhysicalDeviceSurfaceCapabilitiesKHR)
+    tableVk.GetPhysicalDeviceSurfaceCapabilitiesKHR(gVkPhysicalDevice, surface, &details.capabilities);
 
   uint32_t formatCount = 0;
-  tableVk.GetPhysicalDeviceSurfaceFormatsKHR(gVkPhysicalDevice, surface, &formatCount, nullptr);
+
+  if(tableVk.GetPhysicalDeviceSurfaceFormatsKHR)
+    tableVk.GetPhysicalDeviceSurfaceFormatsKHR(gVkPhysicalDevice, surface, &formatCount, nullptr);
 
   if(formatCount)
   {
     details.formats.resize(formatCount);
-    tableVk.GetPhysicalDeviceSurfaceFormatsKHR(gVkPhysicalDevice, surface, &formatCount, details.formats.data() );
+
+    if(tableVk.GetPhysicalDeviceSurfaceFormatsKHR)
+      tableVk.GetPhysicalDeviceSurfaceFormatsKHR(gVkPhysicalDevice, surface, &formatCount, details.formats.data() );
   }
 
   uint32_t presentModeCount = 0;
-  tableVk.GetPhysicalDeviceSurfacePresentModesKHR(gVkPhysicalDevice, surface, &presentModeCount, nullptr);
+
+  if(tableVk.GetPhysicalDeviceSurfacePresentModesKHR)
+    tableVk.GetPhysicalDeviceSurfacePresentModesKHR(gVkPhysicalDevice, surface, &presentModeCount, nullptr);
 
   if(presentModeCount)
   {
     details.presentModes.resize(presentModeCount);
 
-    tableVk.GetPhysicalDeviceSurfacePresentModesKHR(
-      gVkPhysicalDevice,
-      surface,
-      &presentModeCount,
-      details.presentModes.data()
-    );
+    if(tableVk.GetPhysicalDeviceSurfacePresentModesKHR)
+    {
+      tableVk.GetPhysicalDeviceSurfacePresentModesKHR(
+        gVkPhysicalDevice,
+        surface,
+        &presentModeCount,
+        details.presentModes.data()
+      );
+    }
   }
 
   return details;
@@ -611,10 +698,14 @@ VulkanTutorialQueueFamilyIndices VulkanTutorialFindQueueFamilies(
   VulkanTutorialQueueFamilyIndices indices;
 
   uint32_t queueFamilyCount = 0;
-  tableVk.GetPhysicalDeviceQueueFamilyProperties(gVkPhysicalDevice, &queueFamilyCount, nullptr);
+
+  if(tableVk.GetPhysicalDeviceQueueFamilyProperties)
+    tableVk.GetPhysicalDeviceQueueFamilyProperties(gVkPhysicalDevice, &queueFamilyCount, nullptr);
 
   std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
-  tableVk.GetPhysicalDeviceQueueFamilyProperties(gVkPhysicalDevice, &queueFamilyCount, queueFamilies.data() );
+
+  if(tableVk.GetPhysicalDeviceQueueFamilyProperties)
+    tableVk.GetPhysicalDeviceQueueFamilyProperties(gVkPhysicalDevice, &queueFamilyCount, queueFamilies.data() );
 
   int family = 0;
   for(const auto& queueFamily : queueFamilies)
@@ -623,7 +714,9 @@ VulkanTutorialQueueFamilyIndices VulkanTutorialFindQueueFamilies(
       indices.graphicsFamily = family;
 
     VkBool32 presentSupport = false;
-    tableVk.GetPhysicalDeviceSurfaceSupportKHR(gVkPhysicalDevice, family, surface, &presentSupport);
+
+    if(tableVk.GetPhysicalDeviceSurfaceSupportKHR)
+      tableVk.GetPhysicalDeviceSurfaceSupportKHR(gVkPhysicalDevice, family, surface, &presentSupport);
 
     if(presentSupport)
       indices.presentFamily = family;
@@ -641,10 +734,14 @@ bool VulkanTutorialCheckDeviceExtensionSupport(
 )
 {
   uint32_t extensionCount = 0;
-  tableVk.EnumerateDeviceExtensionProperties(gVkPhysicalDevice, nullptr, &extensionCount, nullptr);
+
+  if(tableVk.EnumerateDeviceExtensionProperties)
+    tableVk.EnumerateDeviceExtensionProperties(gVkPhysicalDevice, nullptr, &extensionCount, nullptr);
 
   std::vector<VkExtensionProperties> availableExtensions(extensionCount);
-  tableVk.EnumerateDeviceExtensionProperties(gVkPhysicalDevice, nullptr, &extensionCount, availableExtensions.data() );
+
+  if(tableVk.EnumerateDeviceExtensionProperties)
+    tableVk.EnumerateDeviceExtensionProperties(gVkPhysicalDevice, nullptr, &extensionCount, availableExtensions.data() );
 
   std::set<std::string> requiredExtensions(
     VulkanTutorialDeviceExtensions.begin(),
@@ -676,7 +773,9 @@ bool VulkanTutorialIsDeviceSuitable(
   }
 
   VkPhysicalDeviceFeatures supportedFeatures;
-  tableVk.GetPhysicalDeviceFeatures(gVkPhysicalDevice, &supportedFeatures);
+
+  if(tableVk.GetPhysicalDeviceFeatures)
+    tableVk.GetPhysicalDeviceFeatures(gVkPhysicalDevice, &supportedFeatures);
 
   bool result =
     VulkanTutorialQueueFamilyIndices_isComplete(indices) &&
@@ -737,12 +836,19 @@ void VulkanTutorialCreateSwapChain(
   createInfo.presentMode = presentMode;
   createInfo.clipped = VK_TRUE;
 
-  if(tableVk.CreateSwapchainKHR(gVkDevice, &createInfo, nullptr, &swapChain) != VK_SUCCESS)
-    throw std::runtime_error("failed to create swap chain!");
+  if(tableVk.CreateSwapchainKHR)
+  {
+    if(tableVk.CreateSwapchainKHR(gVkDevice, &createInfo, nullptr, &swapChain) != VK_SUCCESS)
+      throw std::runtime_error("failed to create swap chain!");
+  }
 
-  tableVk.GetSwapchainImagesKHR(gVkDevice, swapChain, &imageCount, nullptr);
+  if(tableVk.GetSwapchainImagesKHR)
+    tableVk.GetSwapchainImagesKHR(gVkDevice, swapChain, &imageCount, nullptr);
+
   swapChainImages.resize(imageCount);
-  tableVk.GetSwapchainImagesKHR(gVkDevice, swapChain, &imageCount, swapChainImages.data() );
+
+  if(tableVk.GetSwapchainImagesKHR)
+    tableVk.GetSwapchainImagesKHR(gVkDevice, swapChain, &imageCount, swapChainImages.data() );
 
   swapChainImageFormat = surfaceFormat.format;
   swapChainExtent = extent;
@@ -794,7 +900,8 @@ void VulkanTutorialRecreateSwapChain(
     //glfwWaitEvents();
   }
 
-  tableVk.DeviceWaitIdle(gVkDevice);
+  if(tableVk.DeviceWaitIdle)
+    tableVk.DeviceWaitIdle(gVkDevice);
 
   VulkanTutorialCleanupSwapChain(
     swapChain,
@@ -853,10 +960,14 @@ std::vector<const char*> VulkanTutorialGetRequiredExtensions()
 bool VulkanTutorialCheckValidationLayerSupport()
 {
   uint32_t layerCount = 0;
-  tableVk.EnumerateInstanceLayerProperties( &layerCount, nullptr);
+
+  if(tableVk.EnumerateInstanceLayerProperties)
+    tableVk.EnumerateInstanceLayerProperties( &layerCount, nullptr);
 
   std::vector<VkLayerProperties> availableLayers(layerCount);
-  tableVk.EnumerateInstanceLayerProperties( &layerCount, availableLayers.data() );
+
+  if(tableVk.EnumerateInstanceLayerProperties)
+    tableVk.EnumerateInstanceLayerProperties( &layerCount, availableLayers.data() );
 
   for(const char* layerName : VulkanTutorialValidationLayers)
   {
@@ -947,8 +1058,12 @@ VkShaderModule VulkanTutorialCreateShaderModule(
   createInfo.pCode = (const uint32_t*)code.data();
 
   VkShaderModule shaderModule;
-  if(tableVk.CreateShaderModule(gVkDevice, &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
-    throw std::runtime_error("failed to create shader module!");
+
+  if(tableVk.CreateShaderModule)
+  {
+    if(tableVk.CreateShaderModule(gVkDevice, &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
+      throw std::runtime_error("failed to create shader module!");
+  }
 
   return shaderModule;
 }
@@ -1050,7 +1165,8 @@ void mainLoop(
     drawFrame();
   }
 
-  tableVk.DeviceWaitIdle(gVkDevice);
+  if(tableVk.DeviceWaitIdle)
+    tableVk.DeviceWaitIdle(gVkDevice);
 }
 #endif
 
@@ -1061,48 +1177,80 @@ void VulkanTutorialCleanup(
 {
   cleanupSwapChain();
 
-  tableVk.DestroyPipeline(gVkDevice, graphicsPipeline, nullptr);
-  tableVk.DestroyPipelineLayout(gVkDevice, pipelineLayout, nullptr);
-  tableVk.DestroyRenderPass(gVkDevice, renderPass, nullptr);
+  if(tableVk.DestroyPipeline)
+    tableVk.DestroyPipeline(gVkDevice, graphicsPipeline, nullptr);
+
+  if(tableVk.DestroyPipelineLayout)
+    tableVk.DestroyPipelineLayout(gVkDevice, pipelineLayout, nullptr);
+
+  if(tableVk.DestroyRenderPass)
+    tableVk.DestroyRenderPass(gVkDevice, renderPass, nullptr);
 
   for(size_t i = 0; i < VULKAN_TUTORIAL_MAX_FRAMES_IN_FLIGHT; i++)
   {
-    tableVk.DestroyBuffer(gVkDevice, uniformBuffers[i], nullptr);
-    tableVk.FreeMemory(gVkDevice, uniformBuffersMemory[i], nullptr);
+    if(tableVk.DestroyBuffer)
+      tableVk.DestroyBuffer(gVkDevice, uniformBuffers[i], nullptr);
+
+    if(tableVk.FreeMemory)
+      tableVk.FreeMemory(gVkDevice, uniformBuffersMemory[i], nullptr);
   }
 
-  tableVk.DestroyDescriptorPool(gVkDevice, descriptorPool, nullptr);
+  if(tableVk.DestroyDescriptorPool)
+    tableVk.DestroyDescriptorPool(gVkDevice, descriptorPool, nullptr);
 
-  tableVk.DestroySampler(gVkDevice, textureSampler, nullptr);
-  tableVk.DestroyImageView(gVkDevice, textureImageView, nullptr);
+  if(tableVk.DestroySampler)
+    tableVk.DestroySampler(gVkDevice, textureSampler, nullptr);
 
-  tableVk.DestroyImage(gVkDevice, textureImage, nullptr);
-  tableVk.FreeMemory(gVkDevice, textureImageMemory, nullptr);
+  if(tableVk.DestroyImageView)
+    tableVk.DestroyImageView(gVkDevice, textureImageView, nullptr);
 
-  tableVk.DestroyDescriptorSetLayout(gVkDevice, descriptorSetLayout, nullptr);
+  if(tableVk.DestroyImage)
+    tableVk.DestroyImage(gVkDevice, textureImage, nullptr);
 
-  tableVk.DestroyBuffer(gVkDevice, indexBuffer, nullptr);
-  tableVk.FreeMemory(gVkDevice, indexBufferMemory, nullptr);
+  if(tableVk.FreeMemory)
+    tableVk.FreeMemory(gVkDevice, textureImageMemory, nullptr);
 
-  tableVk.DestroyBuffer(gVkDevice, vertexBuffer, nullptr);
-  tableVk.FreeMemory(gVkDevice, vertexBufferMemory, nullptr);
+  if(tableVk.DestroyDescriptorSetLayout)
+    tableVk.DestroyDescriptorSetLayout(gVkDevice, descriptorSetLayout, nullptr);
+
+  if(tableVk.DestroyBuffer)
+    tableVk.DestroyBuffer(gVkDevice, indexBuffer, nullptr);
+
+  if(tableVk.FreeMemory)
+    tableVk.FreeMemory(gVkDevice, indexBufferMemory, nullptr);
+
+  if(tableVk.DestroyBuffer)
+    tableVk.DestroyBuffer(gVkDevice, vertexBuffer, nullptr);
+
+  if(tableVk.FreeMemory)
+    tableVk.FreeMemory(gVkDevice, vertexBufferMemory, nullptr);
 
   for(size_t i = 0; i < VULKAN_TUTORIAL_MAX_FRAMES_IN_FLIGHT; i++)
   {
-    tableVk.DestroySemaphore(gVkDevice, renderFinishedSemaphores[i], nullptr);
-    tableVk.DestroySemaphore(gVkDevice, imageAvailableSemaphores[i], nullptr);
-    tableVk.DestroyFence(gVkDevice, inFlightFences[i], nullptr);
+    if(tableVk.DestroySemaphore)
+    {
+      tableVk.DestroySemaphore(gVkDevice, renderFinishedSemaphores[i], nullptr);
+      tableVk.DestroySemaphore(gVkDevice, imageAvailableSemaphores[i], nullptr);
+    }
+
+    if(tableVk.DestroyFence)
+      tableVk.DestroyFence(gVkDevice, inFlightFences[i], nullptr);
   }
 
-  tableVk.DestroyCommandPool(gVkDevice, commandPool, nullptr);
+  if(tableVk.DestroyCommandPool)
+    tableVk.DestroyCommandPool(gVkDevice, commandPool, nullptr);
 
-  tableVk.DestroyDevice(gVkDevice, nullptr);
+  if(tableVk.DestroyDevice)
+    tableVk.DestroyDevice(gVkDevice, nullptr);
 
   if(enableValidationLayers)
     DestroyDebugUtilsMessengerEXT(gVkInstance, debugMessenger, nullptr);
 
-  tableVk.DestroySurfaceKHR(gVkInstance, surface, nullptr);
-  tableVk.DestroyInstance(gVkInstance, nullptr);
+  if(tableVk.DestroySurfaceKHR)
+    tableVk.DestroySurfaceKHR(gVkInstance, surface, nullptr);
+
+  if(tableVk.DestroyInstance)
+    tableVk.DestroyInstance(gVkInstance, nullptr);
 
   // todo
   glfwDestroyWindow(window);
@@ -1150,8 +1298,11 @@ void createInstance(
     createInfo.pNext = nullptr;
   }
 
-  if(tableVk.CreateInstance( &createInfo, nullptr, &gVkInstance) != VK_SUCCESS)
-    throw std::runtime_error("failed to create instance!");
+  if(tableVk.CreateInstance)
+  {
+    if(tableVk.CreateInstance( &createInfo, nullptr, &gVkInstance) != VK_SUCCESS)
+      throw std::runtime_error("failed to create instance!");
+  }
 }
 #endif
 
@@ -1207,13 +1358,17 @@ void pickPhysicalDevice(
 )
 {
   uint32_t deviceCount = 0;
-  tableVk.EnumeratePhysicalDevices(gVkInstance, &deviceCount, nullptr);
+
+  if(tableVk.EnumeratePhysicalDevices)
+    tableVk.EnumeratePhysicalDevices(gVkInstance, &deviceCount, nullptr);
 
   if( !deviceCount)
     throw std::runtime_error("failed to find GPUs with Vulkan support!");
 
   std::vector<VkPhysicalDevice> physicalDevices(deviceCount);
-  tableVk.EnumeratePhysicalDevices(gVkInstance, &deviceCount, physicalDevices.data() );
+
+  if(tableVk.EnumeratePhysicalDevices)
+    tableVk.EnumeratePhysicalDevices(gVkInstance, &deviceCount, physicalDevices.data() );
 
   gVkPhysicalDevice = VK_NULL_HANDLE;
 
@@ -1278,11 +1433,17 @@ void createLogicalDevice(
     createInfo.enabledLayerCount = 0;
   }
 
-  if(tableVk.CreateDevice(gVkPhysicalDevice, &createInfo, nullptr, &gVkDevice) != VK_SUCCESS)
-    throw std::runtime_error("failed to create logical device!");
+  if(tableVk.CreateDevice)
+  {
+    if(tableVk.CreateDevice(gVkPhysicalDevice, &createInfo, nullptr, &gVkDevice) != VK_SUCCESS)
+      throw std::runtime_error("failed to create logical device!");
+  }
 
-  tableVk.GetDeviceQueue(gVkDevice, indices.graphicsFamily.value(), 0, &graphicsQueue);
-  tableVk.GetDeviceQueue(gVkDevice, indices.presentFamily.value(), 0, &presentQueue);
+  if(tableVk.GetDeviceQueue)
+  {
+    tableVk.GetDeviceQueue(gVkDevice, indices.graphicsFamily.value(), 0, &graphicsQueue);
+    tableVk.GetDeviceQueue(gVkDevice, indices.presentFamily.value(), 0, &presentQueue);
+  }
 }
 #endif
 
@@ -1310,8 +1471,11 @@ void VulkanTutorialCreateDescriptorSetLayout(
   layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size() );
   layoutInfo.pBindings = bindings.data();
 
-  if(tableVk.CreateDescriptorSetLayout(gVkDevice, &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS)
-    throw std::runtime_error("failed to create descriptor set layout!");
+  if(tableVk.CreateDescriptorSetLayout)
+  {
+    if(tableVk.CreateDescriptorSetLayout(gVkDevice, &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS)
+      throw std::runtime_error("failed to create descriptor set layout!");
+  }
 }
 
 #if 0
@@ -1411,8 +1575,11 @@ void createGraphicsPipeline()
   pipelineLayoutInfo.setLayoutCount = 1;
   pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
 
-  if(tableVk.CreatePipelineLayout(gVkDevice, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
-    throw std::runtime_error("failed to create pipeline layout!");
+  if(tableVk.CreatePipelineLayout)
+  {
+    if(tableVk.CreatePipelineLayout(gVkDevice, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
+      throw std::runtime_error("failed to create pipeline layout!");
+  }
 
   VkGraphicsPipelineCreateInfo pipelineInfo {};
   pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -1431,11 +1598,17 @@ void createGraphicsPipeline()
   pipelineInfo.subpass = 0;
   pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-  if(tableVk.CreateGraphicsPipelines(gVkDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS)
-    throw std::runtime_error("failed to create graphics pipeline!");
+  if(tableVk.CreateGraphicsPipelines)
+  {
+    if(tableVk.CreateGraphicsPipelines(gVkDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS)
+      throw std::runtime_error("failed to create graphics pipeline!");
+  }
 
-  tableVk.DestroyShaderModule(gVkDevice, fragShaderModule, nullptr);
-  tableVk.DestroyShaderModule(gVkDevice, vertShaderModule, nullptr);
+  if(tableVk.DestroyShaderModule)
+  {
+    tableVk.DestroyShaderModule(gVkDevice, fragShaderModule, nullptr);
+    tableVk.DestroyShaderModule(gVkDevice, vertShaderModule, nullptr);
+  }
 }
 #endif
 
@@ -1451,8 +1624,11 @@ void VulkanTutorialCreateCommandPool(
   poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
   poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
 
-  if(tableVk.CreateCommandPool(gVkDevice, &poolInfo, nullptr, &commandPool) != VK_SUCCESS)
-    throw std::runtime_error("failed to create graphics command pool!");
+  if(tableVk.CreateCommandPool)
+  {
+    if(tableVk.CreateCommandPool(gVkDevice, &poolInfo, nullptr, &commandPool) != VK_SUCCESS)
+      throw std::runtime_error("failed to create graphics command pool!");
+  }
 }
 
 #if 0
@@ -1491,8 +1667,8 @@ void VulkanTutorialCreateTextureImage(
       Log::Write(Log::Level::Info, Fmt("stbi_load_from_memory null pointer %s\n", stbi_failure_reason() ) );
 
     // todo
-    //free(buffer);
-    //buffer = 0;
+    free(buffer);
+    buffer = 0;
   }
 
   VkDeviceSize imageSize = texWidth * texHeight * 4;
@@ -1512,9 +1688,17 @@ void VulkanTutorialCreateTextureImage(
   );
 
   void* data = 0;
-  tableVk.MapMemory(gVkDevice, stagingBufferMemory, 0, imageSize, 0, &data);
-  memcpy(data, pixels, static_cast<size_t>(imageSize) );
-  tableVk.UnmapMemory(gVkDevice, stagingBufferMemory);
+
+  if(tableVk.MapMemory)
+  {
+    tableVk.MapMemory(gVkDevice, stagingBufferMemory, 0, imageSize, 0, &data);
+  }
+
+  if(data)
+    memcpy(data, pixels, static_cast<size_t>(imageSize) );
+
+  if(tableVk.UnmapMemory)
+    tableVk.UnmapMemory(gVkDevice, stagingBufferMemory);
 
   // todo
   stbi_image_free(pixels);
@@ -1557,8 +1741,11 @@ void VulkanTutorialCreateTextureImage(
     VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
   );
 
-  tableVk.DestroyBuffer(gVkDevice, stagingBuffer, nullptr);
-  tableVk.FreeMemory(gVkDevice, stagingBufferMemory, nullptr);
+  if(tableVk.DestroyBuffer)
+    tableVk.DestroyBuffer(gVkDevice, stagingBuffer, nullptr);
+
+  if(tableVk.FreeMemory)
+    tableVk.FreeMemory(gVkDevice, stagingBufferMemory, nullptr);
 }
 
 void VulkanTutorialCreateTextureSampler(
@@ -1566,7 +1753,9 @@ void VulkanTutorialCreateTextureSampler(
 )
 {
   VkPhysicalDeviceProperties properties {};
-  tableVk.GetPhysicalDeviceProperties(gVkPhysicalDevice, &properties);
+
+  if(tableVk.GetPhysicalDeviceProperties)
+    tableVk.GetPhysicalDeviceProperties(gVkPhysicalDevice, &properties);
 
   VkSamplerCreateInfo samplerInfo {};
   samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -1583,8 +1772,11 @@ void VulkanTutorialCreateTextureSampler(
   samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
   samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
 
-  if(tableVk.CreateSampler(gVkDevice, &samplerInfo, nullptr, &textureSampler) != VK_SUCCESS)
-    throw std::runtime_error("failed to create texture sampler!");
+  if(tableVk.CreateSampler)
+  {
+    if(tableVk.CreateSampler(gVkDevice, &samplerInfo, nullptr, &textureSampler) != VK_SUCCESS)
+      throw std::runtime_error("failed to create texture sampler!");
+  }
 }
 
 void VulkanTutorialCopyBufferToImage(
@@ -1609,7 +1801,8 @@ void VulkanTutorialCopyBufferToImage(
   region.imageOffset = {0, 0, 0};
   region.imageExtent = {width, height, 1};
 
-  tableVk.CmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+  if(tableVk.CmdCopyBufferToImage)
+    tableVk.CmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
   VulkanTutorialEndSingleTimeCommands(graphicsQueue, commandPool, commandBuffer);
 }
@@ -1631,9 +1824,15 @@ void createVertexBuffer()
   );
 
   void* data = 0;
-  tableVk.MapMemory(gVkDevice, stagingBufferMemory, 0, bufferSize, 0, &data);
-  memcpy(data, VulkanTutorialVertices.data(), (size_t)bufferSize);
-  tableVk.UnmapMemory(gVkDevice, stagingBufferMemory);
+
+  if(tableVk.MapMemory)
+    tableVk.MapMemory(gVkDevice, stagingBufferMemory, 0, bufferSize, 0, &data);
+
+  if(data)
+    memcpy(data, VulkanTutorialVertices.data(), (size_t)bufferSize);
+
+  if(tableVk.UnmapMemory)
+    tableVk.UnmapMemory(gVkDevice, stagingBufferMemory);
 
   createBuffer(
     bufferSize,
@@ -1645,8 +1844,11 @@ void createVertexBuffer()
 
   copyBuffer(stagingBuffer, vertexBuffer, bufferSize);
 
-  tableVk.DestroyBuffer(gVkDevice, stagingBuffer, nullptr);
-  tableVk.FreeMemory(gVkDevice, stagingBufferMemory, nullptr);
+  if(tableVk.DestroyBuffer)
+    tableVk.DestroyBuffer(gVkDevice, stagingBuffer, nullptr);
+
+  if(tableVk.FreeMemory)
+    tableVk.FreeMemory(gVkDevice, stagingBufferMemory, nullptr);
 }
 #endif
 
@@ -1666,9 +1868,15 @@ void createIndexBuffer()
   );
 
   void* data = 0;
-  tableVk.MapMemory(gVkDevice, stagingBufferMemory, 0, bufferSize, 0, &data);
-  memcpy(data, VulkanTutorialIndices.data(), (size_t) bufferSize);
-  tableVk.UnmapMemory(gVkDevice, stagingBufferMemory);
+
+  if(tableVk.MapMemory)
+    tableVk.MapMemory(gVkDevice, stagingBufferMemory, 0, bufferSize, 0, &data);
+
+  if(data)
+    memcpy(data, VulkanTutorialIndices.data(), (size_t) bufferSize);
+
+  if(tableVk.UnmapMemory)
+    tableVk.UnmapMemory(gVkDevice, stagingBufferMemory);
 
   createBuffer(
     bufferSize,
@@ -1680,8 +1888,11 @@ void createIndexBuffer()
 
   copyBuffer(stagingBuffer, indexBuffer, bufferSize);
 
-  tableVk.DestroyBuffer(gVkDevice, stagingBuffer, nullptr);
-  tableVk.FreeMemory(gVkDevice, stagingBufferMemory, nullptr);
+  if(tableVk.DestroyBuffer)
+    tableVk.DestroyBuffer(gVkDevice, stagingBuffer, nullptr);
+
+  if(tableVk.FreeMemory)
+    tableVk.FreeMemory(gVkDevice, stagingBufferMemory, nullptr);
 }
 #endif
 
@@ -1707,7 +1918,8 @@ void VulkanTutorialCreateUniformBuffers(
       uniformBuffersMemory[i]
     );
 
-    tableVk.MapMemory(gVkDevice, uniformBuffersMemory[i], 0, bufferSize, 0, &uniformBuffersMapped[i] );
+    if(tableVk.MapMemory)
+      tableVk.MapMemory(gVkDevice, uniformBuffersMemory[i], 0, bufferSize, 0, &uniformBuffersMapped[i] );
   }
 }
 
@@ -1729,8 +1941,11 @@ void VulkanTutorialCreateDescriptorPool(
   poolInfo.pPoolSizes = poolSizes.data();
   poolInfo.maxSets = static_cast<uint32_t>(VULKAN_TUTORIAL_MAX_FRAMES_IN_FLIGHT);
 
-  if(tableVk.CreateDescriptorPool(gVkDevice, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS)
-    throw std::runtime_error("failed to create descriptor pool!");
+  if(tableVk.CreateDescriptorPool)
+  {
+    if(tableVk.CreateDescriptorPool(gVkDevice, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS)
+      throw std::runtime_error("failed to create descriptor pool!");
+  }
 }
 
 void VulkanTutorialUpdateDescriptorSets(
@@ -1751,8 +1966,12 @@ void VulkanTutorialUpdateDescriptorSets(
   allocInfo.pSetLayouts = layouts.data();
 
   descriptorSets.resize(VULKAN_TUTORIAL_MAX_FRAMES_IN_FLIGHT);
-  if(tableVk.AllocateDescriptorSets(gVkDevice, &allocInfo, descriptorSets.data() ) != VK_SUCCESS)
-    throw std::runtime_error("failed to allocate descriptor sets!");
+
+  if(tableVk.AllocateDescriptorSets)
+  {
+    if(tableVk.AllocateDescriptorSets(gVkDevice, &allocInfo, descriptorSets.data() ) != VK_SUCCESS)
+      throw std::runtime_error("failed to allocate descriptor sets!");
+  }
 
   for(size_t i = 0; i < VULKAN_TUTORIAL_MAX_FRAMES_IN_FLIGHT; i++)
   {
@@ -1784,13 +2003,16 @@ void VulkanTutorialUpdateDescriptorSets(
     descriptorWrites[1].descriptorCount = 1;
     descriptorWrites[1].pImageInfo = &imageInfo;
 
-    tableVk.UpdateDescriptorSets(
-      gVkDevice,
-      static_cast<uint32_t>(descriptorWrites.size() ),
-      descriptorWrites.data(),
-      0,
-      nullptr
-    );
+    if(tableVk.UpdateDescriptorSets)
+    {
+      tableVk.UpdateDescriptorSets(
+        gVkDevice,
+        static_cast<uint32_t>(descriptorWrites.size() ),
+        descriptorWrites.data(),
+        0,
+        nullptr
+      );
+    }
   }
 }
 
@@ -1808,21 +2030,30 @@ void VulkanTutorialCreateBuffer(
   bufferInfo.usage = usage;
   bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-  if(tableVk.CreateBuffer(gVkDevice, &bufferInfo, nullptr, &buffer) != VK_SUCCESS)
-    throw std::runtime_error("failed to create buffer!");
+  if(tableVk.CreateBuffer)
+  {
+    if(tableVk.CreateBuffer(gVkDevice, &bufferInfo, nullptr, &buffer) != VK_SUCCESS)
+      throw std::runtime_error("failed to create buffer!");
+  }
 
   VkMemoryRequirements memRequirements;
-  tableVk.GetBufferMemoryRequirements(gVkDevice, buffer, &memRequirements);
+
+  if(tableVk.GetBufferMemoryRequirements)
+    tableVk.GetBufferMemoryRequirements(gVkDevice, buffer, &memRequirements);
 
   VkMemoryAllocateInfo allocInfo {};
   allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
   allocInfo.allocationSize = memRequirements.size;
   allocInfo.memoryTypeIndex = VulkanTutorialFindMemoryType(memRequirements.memoryTypeBits, properties);
 
-  if(tableVk.AllocateMemory(gVkDevice, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS)
-    throw std::runtime_error("failed to allocate buffer memory!");
+  if(tableVk.AllocateMemory)
+  {
+    if(tableVk.AllocateMemory(gVkDevice, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS)
+      throw std::runtime_error("failed to allocate buffer memory!");
+  }
 
-  tableVk.BindBufferMemory(gVkDevice, buffer, bufferMemory, 0);
+  if(tableVk.BindBufferMemory)
+    tableVk.BindBufferMemory(gVkDevice, buffer, bufferMemory, 0);
 }
 
 #if 0
@@ -1832,7 +2063,9 @@ void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
 
   VkBufferCopy copyRegion {};
   copyRegion.size = size;
-  tableVk.CmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+
+  if(tableVk.CmdCopyBuffer)
+    tableVk.CmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
 
   endSingleTimeCommands(commandBuffer);
 }
@@ -1851,8 +2084,11 @@ void VulkanTutorialCreateCommandBuffers(
   allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
   allocInfo.commandBufferCount = (uint32_t)commandBuffers.size();
 
-  if(tableVk.AllocateCommandBuffers(gVkDevice, &allocInfo, commandBuffers.data() ) != VK_SUCCESS)
-    throw std::runtime_error("failed to allocate command buffers!");
+  if(tableVk.AllocateCommandBuffers)
+  {
+    if(tableVk.AllocateCommandBuffers(gVkDevice, &allocInfo, commandBuffers.data() ) != VK_SUCCESS)
+      throw std::runtime_error("failed to allocate command buffers!");
+  }
 }
 
 void VulkanTutorialCreateSyncObjects(
@@ -1874,12 +2110,19 @@ void VulkanTutorialCreateSyncObjects(
 
   for(size_t i = 0; i < VULKAN_TUTORIAL_MAX_FRAMES_IN_FLIGHT; i++)
   {
-    if(tableVk.CreateSemaphore(gVkDevice, &semaphoreInfo, nullptr, &imageAvailableSemaphores[i] ) != VK_SUCCESS ||
-      tableVk.CreateSemaphore(gVkDevice, &semaphoreInfo, nullptr, &renderFinishedSemaphores[i] ) != VK_SUCCESS ||
-      tableVk.CreateFence(gVkDevice, &fenceInfo, nullptr, &inFlightFences[i] ) != VK_SUCCESS
-    )
+    if(tableVk.CreateSemaphore)
     {
-      throw std::runtime_error("failed to create synchronization objects for a frame!");
+      if(tableVk.CreateSemaphore(gVkDevice, &semaphoreInfo, nullptr, &imageAvailableSemaphores[i] ) != VK_SUCCESS)
+        throw std::runtime_error("failed to create synchronization objects for a frame!");
+
+      if(tableVk.CreateSemaphore(gVkDevice, &semaphoreInfo, nullptr, &renderFinishedSemaphores[i] ) != VK_SUCCESS)
+        throw std::runtime_error("failed to create synchronization objects for a frame!");
+    }
+
+    if(tableVk.CreateFence)
+    {
+      if(tableVk.CreateFence(gVkDevice, &fenceInfo, nullptr, &inFlightFences[i] ) != VK_SUCCESS)
+        throw std::runtime_error("failed to create synchronization objects for a frame!");
     }
   }
 }
@@ -1908,18 +2151,24 @@ void drawFrame()
 {
   do
   {
-    tableVk.WaitForFences(gVkDevice, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
+    if(tableVk.WaitForFences)
+      tableVk.WaitForFences(gVkDevice, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
     uint32_t imageIndex = 0;
 
-    VkResult result = tableVk.AcquireNextImageKHR(
-      gVkDevice,
-      swapChain,
-      UINT64_MAX,
-      imageAvailableSemaphores[currentFrame],
-      VK_NULL_HANDLE,
-      &imageIndex
-    );
+    VkResult result = XR_ERROR_VALIDATION_FAILURE;
+
+    if(tableVk.AcquireNextImageKHR)
+    {
+      result = tableVk.AcquireNextImageKHR(
+        gVkDevice,
+        swapChain,
+        UINT64_MAX,
+        imageAvailableSemaphores[currentFrame],
+        VK_NULL_HANDLE,
+        &imageIndex
+      );
+    }
 
     if(result == VK_ERROR_OUT_OF_DATE_KHR)
     {
@@ -1933,9 +2182,12 @@ void drawFrame()
 
     updateUniformBuffer(currentFrame);
 
-    tableVk.ResetFences(gVkDevice, 1, &inFlightFences[currentFrame] );
+    if(tableVk.ResetFences)
+      tableVk.ResetFences(gVkDevice, 1, &inFlightFences[currentFrame] );
 
-    tableVk.ResetCommandBuffer(commandBuffers[currentFrame], /*VkCommandBufferResetFlagBits*/0);
+    if(tableVk.ResetCommandBuffer)
+      tableVk.ResetCommandBuffer(commandBuffers[currentFrame], /*VkCommandBufferResetFlagBits*/0);
+
     recordCommandBuffer(commandBuffers[currentFrame], imageIndex);
 
     VkSubmitInfo submitInfo {};
@@ -1954,10 +2206,13 @@ void drawFrame()
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
 
-    if(tableVk.QueueSubmit(graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame] ) != VK_SUCCESS)
-      throw std::runtime_error("failed to submit draw command buffer!");
+    if(tableVk.QueueSubmit)
+    {
+      if(tableVk.QueueSubmit(graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame] ) != VK_SUCCESS)
+        throw std::runtime_error("failed to submit draw command buffer!");
+    }
 
-    VkPresentInfoKHR presentInfo{};
+    VkPresentInfoKHR presentInfo {};
     presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 
     presentInfo.waitSemaphoreCount = 1;
@@ -1969,7 +2224,10 @@ void drawFrame()
 
     presentInfo.pImageIndices = &imageIndex;
 
-    result = tableVk.QueuePresentKHR(presentQueue, &presentInfo);
+    result = XR_ERROR_VALIDATION_FAILURE;
+
+    if(tableVk.QueuePresentKHR)
+      result = tableVk.QueuePresentKHR(presentQueue, &presentInfo);
 
     if(result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || framebufferResized)
     {
