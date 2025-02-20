@@ -333,3 +333,5 @@ struct MatrixCmdPushConstants
 #include "stb_image.h"
 #include "stb_image_write.h"
 #include "stb_vorbis.h"
+
+#include "tiny_obj_loader.h"

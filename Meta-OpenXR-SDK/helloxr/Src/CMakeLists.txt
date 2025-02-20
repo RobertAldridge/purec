@@ -61,6 +61,8 @@ set(
   stb_image.h
   stb_image_write.h
   stb_vorbis.h
+  tiny_obj_loader.h
+  tinyobjloader_earcut.h
   vk_icd.h
   vk_layer.h
   vk_platform.h

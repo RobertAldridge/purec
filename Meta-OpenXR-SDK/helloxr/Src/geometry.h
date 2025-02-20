@@ -131,7 +131,27 @@ constexpr XrVector3f APP6P6N2 {1.0 / 6.0, 1.0 / 6.0, -2.0};
 constexpr XrVector3f APP6P2N2 {1.0 / 6.0, 1.0 / 2.0, -2.0};
 constexpr XrVector3f APP2N6N2 {1.0 / 2.0, -1.0 / 6.0, -2.0};
 
-constexpr GeometryVertex gModelsVertices[] =
+#if defined(GEOMETRY_H_IMPLEMENTATION)
+uint32_t gModelsVerticesDynamicCountOf = 0;
+GeometryVertex* gModelsVerticesDynamicData = nullptr;
+
+uint32_t gModelsIndicesDynamicCountOf = 0;
+uint32_t* gModelsIndicesDynamicData = nullptr;
+#else
+extern uint32_t gModelsVerticesDynamicCountOf;
+extern GeometryVertex* gModelsVerticesDynamicData;
+
+extern uint32_t gModelsIndicesDynamicCountOf;
+extern uint32_t* gModelsIndicesDynamicData;
+#endif
+
+// constexpr GeometryVertex gModelsVerticesStaticData[];
+// constexpr uint32_t gModelsIndicesStaticData[];
+
+// uint32_t gModelsIndexCount[];
+// uint32_t gModelsIndexFirst[];
+
+constexpr GeometryVertex gModelsVerticesStaticData[] =
 {
 
 // 0
@@ -4562,7 +4582,7 @@ vt 0.214291 0.726181
 };
 
 // winding order is clockwise. each side uses a different color
-constexpr uint32_t gModelsIndices[] =
+constexpr uint32_t gModelsIndicesStaticData[] =
 {
 
 // 0
@@ -8284,7 +8304,9 @@ DP(2, 3), DP(3, 3), DP(4, 3), DP(5, 3),
 DP(2, 2), DP(3, 2), DP(4, 2), DP(5, 2),
 
 // 255
-#else
+#endif
+
+#if 0
 // 0
 DG(0, 11), DG(1, 11), DG(2, 11), DG(3, 11), DG(4, 11), DG(5, 11), DG(6, 11), DG(7, 11),
 DG(0, 10), DG(1, 10), DG(2, 10), DG(3, 10), DG(4, 10), DG(5, 10), DG(6, 10), DG(7, 10),
@@ -11872,7 +11894,9 @@ DG(0, 0), DG(1, 0), DG(2, 0), DG(3, 0), DG(4, 0), DG(5, 0), DG(6, 0), DG(7, 0)
 
 };
 
-constexpr uint32_t gModelsAsciiIndexCount[] =
+#if defined(GEOMETRY_H_IMPLEMENTATION)
+//constexpr uint32_t gModelsAsciiIndexCount[] =
+uint32_t gModelsIndexCount[] =
 {
 
 #if 1
@@ -12387,8 +12411,10 @@ constexpr uint32_t gModelsAsciiIndexCount[] =
 // 254
 2304,
 // 255
-0
-#else
+0,
+#endif
+
+#if 0
 // 0
 6912,
 // 1
@@ -12900,12 +12926,16 @@ constexpr uint32_t gModelsAsciiIndexCount[] =
 // 254
 6912,
 // 255
-6912
+6912,
 #endif
+
+// placeholder for viking_room
+0
 
 };
 
-constexpr uint32_t gModelsAsciiIndexFirst[] =
+//constexpr uint32_t gModelsAsciiIndexFirst[] =
+uint32_t gModelsIndexFirst[] =
 {
 
 #if 1
@@ -13420,8 +13450,10 @@ constexpr uint32_t gModelsAsciiIndexFirst[] =
 // 254
 533172,
 // 255
-535476
-#else
+535476,
+#endif
+
+#if 0
 // 0
 1236,
 // 1
@@ -13933,9 +13965,13 @@ constexpr uint32_t gModelsAsciiIndexFirst[] =
 // 254
 1756884,
 // 255
-1763796
+1763796,
 #endif
 
+// placeholder for viking_room
+0
+
 };
+#endif
 
 } // namespace Geometry

@@ -254,7 +254,10 @@ R"_(
 
     //fragColor = vec4(vec3(inTexCoord.x, inTexCoord.y, 1.0), 1.0);
 
-    fragColor = vec4(vec3(intensity * Color.x, intensity * Color.y, intensity * Color.z), 1.0);
+    if(transformedNormalReferenceMagnitude < 0.01)
+      fragColor = vec4(vec3(Color.x, Color.y, Color.z), 1.0);
+    else
+      fragColor = vec4(vec3(intensity * Color.x, intensity * Color.y, intensity * Color.z), 1.0);
 
     //gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 0.0, 1.0);
 

@@ -1,7 +1,178 @@
 
 // anag.cpp
 
+// define this in only *one* .cc
+#define TINYOBJLOADER_IMPLEMENTATION
+
+// Optional. define TINYOBJLOADER_USE_MAPBOX_EARCUT gives robust triangulation. Requires C++11
+#define TINYOBJLOADER_USE_MAPBOX_EARCUT
+
+#define GEOMETRY_H_IMPLEMENTATION 1
+
 #include "header.h"
+
+void AnagTestTinyObjLoader()
+{
+
+  if(Geometry::gModelsIndicesDynamicData)
+    return;
+
+  tinyobj::ObjReaderConfig reader_config;
+
+  tinyobj::ObjReader reader;
+
+  int objFileSize = 0;
+  char* objFileBuffer = (char*)AnagLoadFileBlah("viking_room.obj", &objFileSize);
+
+  int mtlFileSize = 0;
+  char* mtlFileBuffer = (char*)AnagLoadFileBlah("viking_room.mtl", &mtlFileSize);
+
+  if( !reader.ParseFromString(objFileBuffer, mtlFileBuffer, reader_config) )
+  {
+    if( !reader.Error().empty() )
+    {
+        std::cerr << "TinyObjReader: " << reader.Error();
+    }
+
+    //exit(1);
+  }
+
+  if( !reader.Warning().empty() )
+  {
+    std::cout << "TinyObjReader: " << reader.Warning();
+  }
+
+  auto& attrib = reader.GetAttrib();
+  auto& shapes = reader.GetShapes();
+  auto& materials = reader.GetMaterials();
+
+  size_t shapes_size = shapes.size();
+  Log::Write(Log::Level::Info, Fmt("shapes_size %i\n", (int)shapes_size) );
+
+  size_t indices_size = shapes[0].mesh.indices.size();
+  Log::Write(Log::Level::Info, Fmt("indices_size %i\n", (int)indices_size) );
+
+  size_t attrib_vertices_size = attrib.vertices.size() / 3;
+  Log::Write(Log::Level::Info, Fmt("attrib_vertices_size %i\n", (int)attrib_vertices_size) );
+
+  size_t num_face = shapes[0].mesh.num_face_vertices.size();
+  Log::Write(Log::Level::Info, Fmt("num_face %i\n", (int)num_face) );
+
+#if 0
+uint32_t gModelsVerticesDynamicCountOf = 0;
+GeometryVertex* gModelsVerticesDynamicData = nullptr;
+
+uint32_t gModelsIndicesDynamicCountOf = 0;
+uint32_t* gModelsIndicesDynamicData = nullptr;
+
+// constexpr GeometryVertex gModelsVerticesStaticData[];
+// constexpr uint32_t gModelsIndicesStaticData[];
+
+// uint32_t gModelsIndexCount[];
+// uint32_t gModelsIndexFirst[];
+
+struct GeometryVertex
+{
+  XrVector3f Position;
+  XrVector3f Normal;
+  XrVector3f Color;
+  XrVector2f Texture;
+};
+#endif
+
+  uint32_t numModelsIdiciesStaticCountOf = sizeof(Geometry::gModelsIndicesStaticData) / sizeof(Geometry::gModelsIndicesStaticData[0] );
+  Geometry::gModelsIndicesDynamicCountOf = numModelsIdiciesStaticCountOf + 3 * num_face;
+
+  uint32_t numModelsVerticiesStaticCountOf = sizeof(Geometry::gModelsVerticesStaticData) / sizeof(Geometry::gModelsVerticesStaticData[0] );
+  Geometry::gModelsVerticesDynamicCountOf = numModelsVerticiesStaticCountOf + attrib_vertices_size;
+
+  Geometry::gModelsIndicesDynamicData = (uint32_t*)malloc(sizeof(uint32_t) * Geometry::gModelsIndicesDynamicCountOf);
+  memcpy(Geometry::gModelsIndicesDynamicData, Geometry::gModelsIndicesStaticData, sizeof(Geometry::gModelsIndicesStaticData) );
+
+  Geometry::gModelsVerticesDynamicData = (GeometryVertex*)malloc(sizeof(GeometryVertex) * Geometry::gModelsVerticesDynamicCountOf);
+  memcpy(Geometry::gModelsVerticesDynamicData, Geometry::gModelsVerticesStaticData, sizeof(Geometry::gModelsVerticesStaticData) );
+
+  Geometry::gModelsIndexFirst[256] = numModelsIdiciesStaticCountOf;
+  Geometry::gModelsIndexCount[256] = 3 * num_face;
+
+  // Loop over shapes
+  for(size_t s = 0; s < shapes_size; s++)
+  {
+    // Loop over faces(polygon)
+    size_t index_offset = 0;
+    for(size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++)
+    {
+      size_t fv = size_t(shapes[s].mesh.num_face_vertices[f] );
+
+      if(fv != 3)
+        Log::Write(Log::Level::Info, Fmt("fv!=3 %i\n", (int)fv) );
+
+      // Loop over vertices in the face.
+      for(size_t v = 0; v < fv; v++)
+      {
+        // access to vertex
+        tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
+
+        tinyobj::real_t vx = attrib.vertices[3 * size_t(idx.vertex_index) + 0];
+        tinyobj::real_t vy = attrib.vertices[3 * size_t(idx.vertex_index) + 1];
+        tinyobj::real_t vz = attrib.vertices[3 * size_t(idx.vertex_index) + 2];
+
+        Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Position.x = vx;
+        Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Position.y = vy;
+        Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Position.z = vz;
+
+        // Check if `normal_index` is zero or positive. negative = no normal data
+        if(idx.normal_index >= 0)
+        {
+          tinyobj::real_t nx = attrib.normals[3 * size_t(idx.normal_index) + 0];
+          tinyobj::real_t ny = attrib.normals[3 * size_t(idx.normal_index) + 1];
+          tinyobj::real_t nz = attrib.normals[3 * size_t(idx.normal_index) + 2];
+
+          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Normal.x = nx;
+          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Normal.y = ny;
+          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Normal.z = nz;
+        }
+
+        // Check if `texcoord_index` is zero or positive. negative = no texcoord data
+        if(idx.texcoord_index >= 0)
+        {
+          tinyobj::real_t tx = attrib.texcoords[2 * size_t(idx.texcoord_index) + 0];
+          tinyobj::real_t ty = attrib.texcoords[2 * size_t(idx.texcoord_index) + 1];
+
+          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Texture.x = tx;
+          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Texture.y = ty;
+        }
+
+        // Optional: vertex colors
+        tinyobj::real_t red = attrib.colors[3 * size_t(idx.vertex_index) + 0];
+        tinyobj::real_t green = attrib.colors[3 * size_t(idx.vertex_index) + 1];
+        tinyobj::real_t blue  = attrib.colors[3 * size_t(idx.vertex_index) + 2];
+
+        Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Color.x = red;
+        Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Color.y = green;
+        Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Color.z = blue;
+
+        Geometry::gModelsIndicesDynamicData[numModelsIdiciesStaticCountOf + v] = idx.vertex_index;
+      }
+
+      // invert clockwise/counter-clockwise direction
+      {
+        uint32_t index0 = Geometry::gModelsIndicesDynamicData[numModelsIdiciesStaticCountOf];
+
+        Geometry::gModelsIndicesDynamicData[numModelsIdiciesStaticCountOf] = Geometry::gModelsIndicesDynamicData[numModelsIdiciesStaticCountOf + 2];
+
+        Geometry::gModelsIndicesDynamicData[numModelsIdiciesStaticCountOf + 2] = index0;
+      }
+
+      index_offset += fv;
+
+      numModelsIdiciesStaticCountOf += 3;
+
+      // per-face material
+      shapes[s].mesh.material_ids[f];
+    }
+  }
+}
 
 JNIEnv* gEnvironment = nullptr;
 
@@ -1768,7 +1939,7 @@ struct VkExtensionProperties
 
   VkPhysicalDeviceFeatures features {};
   // todo
-  //features.samplerAnisotropy = VK_TRUE;
+  features.samplerAnisotropy = VK_TRUE;
 
   VkDeviceCreateInfo deviceInfo {VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO};
   deviceInfo.queueCreateInfoCount = 1;
@@ -2146,17 +2317,15 @@ struct VkExtensionProperties
     {3, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(GeometryVertex, Texture) }
   };
 
-  uint32_t numModelsIdicies = sizeof(Geometry::gModelsIndices) / sizeof(Geometry::gModelsIndices[0] );
+  AnagTestTinyObjLoader();
 
-  uint32_t numModelsVerticies = sizeof(Geometry::gModelsVertices) / sizeof(Geometry::gModelsVertices[0] );
-
-  //VertexBuffer_VertexBufferCreate(numModelsIdicies, numModelsVerticies);
+  //VertexBuffer_VertexBufferCreate(Geometry::gModelsIndicesDynamicCountOf, Geometry::gModelsVerticesDynamicCountOf);
   //bool VertexBuffer_VertexBufferCreate(uint32_t idxCount, uint32_t vtxCount)
   {
     VkBufferCreateInfo bufInfo {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
 
     bufInfo.usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
-    bufInfo.size = sizeof(uint32_t) * numModelsIdicies;
+    bufInfo.size = sizeof(uint32_t) * Geometry::gModelsIndicesDynamicCountOf;
 
     if(tableVk.CreateBuffer)
       CHECK_VULKANCMD(tableVk.CreateBuffer(gVkDevice, &bufInfo, nullptr, &gVertexBufferBaseIdxBuf) );
@@ -2227,7 +2396,7 @@ struct VkExtensionProperties
       CHECK_VULKANCMD(tableVk.BindBufferMemory(gVkDevice, gVertexBufferBaseIdxBuf, gVertexBufferBaseIdxMem, 0) );
 
     bufInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-    bufInfo.size = sizeof(GeometryVertex) * numModelsVerticies;
+    bufInfo.size = sizeof(GeometryVertex) * Geometry::gModelsVerticesDynamicCountOf;
 
     if(tableVk.CreateBuffer)
       CHECK_VULKANCMD(tableVk.CreateBuffer(gVkDevice, &bufInfo, nullptr, &gVertexBufferBaseVtxBuf) );
@@ -2301,12 +2470,12 @@ struct VkExtensionProperties
     gVertexBufferBaseBindDesc.stride = sizeof(GeometryVertex);
     gVertexBufferBaseBindDesc.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
-    gVertexBufferBaseCount = {numModelsIdicies, numModelsVerticies};
+    gVertexBufferBaseCount = {Geometry::gModelsIndicesDynamicCountOf, Geometry::gModelsVerticesDynamicCountOf};
 
     //return true;
   }
 
-  //VertexBuffer_VertexBufferUpdateIndices(Geometry::gModelsIndices, numModelsIdicies, 0);
+  //VertexBuffer_VertexBufferUpdateIndices(Geometry::gModelsIndicesDynamicData, Geometry::gModelsIndicesDynamicCountOf, 0);
   //void VertexBuffer_VertexBufferUpdateIndices(const uint32_t* data, uint32_t elements, uint32_t offset)
   {
     uint32_t offset = 0;
@@ -2318,20 +2487,20 @@ struct VkExtensionProperties
         gVkDevice,
         gVertexBufferBaseIdxMem,
         sizeof(map[0] ) * offset,
-        sizeof(map[0] ) * numModelsIdicies,
+        sizeof(map[0] ) * Geometry::gModelsIndicesDynamicCountOf,
         0,
         (void**) &map
       ) );
     }
 
-    for(size_t i = 0; i < numModelsIdicies; ++i)
-      map[i] = Geometry::gModelsIndices[i];
+    for(size_t i = 0; i < Geometry::gModelsIndicesDynamicCountOf; ++i)
+      map[i] = Geometry::gModelsIndicesDynamicData[i];
 
     if(tableVk.UnmapMemory)
       tableVk.UnmapMemory(gVkDevice, gVertexBufferBaseIdxMem);
   }
 
-  //VertexBuffer_VertexBufferUpdateVertices(Geometry::gModelsVertices, numModelsVerticies, 0);
+  //VertexBuffer_VertexBufferUpdateVertices(Geometry::gModelsVerticesDynamicData, Geometry::gModelsVerticesDynamicCountOf, 0);
   //void VertexBuffer_VertexBufferUpdateVertices(const GeometryVertex* data, uint32_t elements, uint32_t offset)
   {
     uint32_t offset = 0;
@@ -2343,14 +2512,14 @@ struct VkExtensionProperties
         gVkDevice,
         gVertexBufferBaseVtxMem,
         sizeof(map[0] ) * offset,
-        sizeof(map[0] ) * numModelsVerticies,
+        sizeof(map[0] ) * Geometry::gModelsVerticesDynamicCountOf,
         0,
         (void**) &map
       ) );
     }
 
-    for(size_t i = 0; i < numModelsVerticies; ++i)
-      map[i] = Geometry::gModelsVertices[i];
+    for(size_t i = 0; i < Geometry::gModelsVerticesDynamicCountOf; ++i)
+      map[i] = Geometry::gModelsVerticesDynamicData[i];
 
     if(tableVk.UnmapMemory)
       tableVk.UnmapMemory(gVkDevice, gVertexBufferBaseVtxMem);
@@ -2388,7 +2557,7 @@ struct VkExtensionProperties
   if(gTextureVkSampler == VK_NULL_HANDLE && gTextureVkDescriptorSetLayout != VK_NULL_HANDLE)
   {
     VulkanTutorialCreateTextureImage(
-      "texture_bricks.jpg",
+      "viking_room.png",
       gVulkanGraphicsPluginVkQueue,
       gCmdBufferPool,
       gTextureVkImage,
@@ -4236,7 +4405,8 @@ struct VkExtensionProperties
               (spaceLocation.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0
             )
             {
-              models.push_back(Model {257, spaceLocation.pose, {0.25f, 0.25f, 0.25f} } );
+              //models.push_back(Model {257, spaceLocation.pose, {0.25f, 0.25f, 0.25f} } );
+              models.push_back(Model {256, spaceLocation.pose, {0.25f, 0.25f, 0.25f} } );
             }
           }
           else
@@ -4887,18 +5057,18 @@ struct VkExtensionProperties
               if(tableVk.CmdDrawIndexed)
               {
                 // arrow 0 96
-                if(model.whoAmI == 256)
+                if(model.whoAmI == 257)
                   tableVk.CmdDrawIndexed(gCmdBufferBuffer, 96/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 0/*firstIndex*/, 0/*vertexOffset*/, 0/*firstInstance*/);
 
                 // cube 96 72
-                if(model.whoAmI == 257)
+                if(model.whoAmI == 258)
                   tableVk.CmdDrawIndexed(gCmdBufferBuffer, 72/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 96/*firstIndex*/, 0/*vertexOffset*/, 0/*firstInstance*/);
 
                 // 'Z'
-                if(model.whoAmI == 258)
+                if(model.whoAmI == 259)
                   tableVk.CmdDrawIndexed(gCmdBufferBuffer, 132/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 168/*firstIndex*/, 167/*vertexOffset*/, 0/*firstInstance*/);
 
-                if(model.whoAmI == 259)
+                if(model.whoAmI == 260)
                 {
                   tableVk.CmdDrawIndexed(gCmdBufferBuffer, 228/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, 300/*firstIndex*/, 192/*vertexOffset*/, 0/*firstInstance*/);
 
@@ -4909,7 +5079,14 @@ struct VkExtensionProperties
 
                 if(model.whoAmI >= 0 && model.whoAmI <= 255)
                 {
-                  tableVk.CmdDrawIndexed(gCmdBufferBuffer, Geometry::gModelsAsciiIndexCount[model.whoAmI]/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, Geometry::gModelsAsciiIndexFirst[model.whoAmI]/*firstIndex*/, 354/*vertexOffset*/, 0/*firstInstance*/);
+                  tableVk.CmdDrawIndexed(gCmdBufferBuffer, Geometry::gModelsIndexCount[model.whoAmI]/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, Geometry::gModelsIndexFirst[model.whoAmI]/*firstIndex*/, 354/*vertexOffset*/, 0/*firstInstance*/);
+                }
+
+                if(model.whoAmI == 256)
+                {
+                  uint32_t numModelsVerticiesStaticCountOf = sizeof(Geometry::gModelsVerticesStaticData) / sizeof(Geometry::gModelsVerticesStaticData[0] );
+
+                  tableVk.CmdDrawIndexed(gCmdBufferBuffer, Geometry::gModelsIndexCount[model.whoAmI]/*gVertexBufferBaseCount.idx*//*indexCount*/, 1/*instanceCount*/, Geometry::gModelsIndexFirst[model.whoAmI]/*firstIndex*/, numModelsVerticiesStaticCountOf/*vertexOffset*/, 0/*firstInstance*/);
                 }
               }
             }
