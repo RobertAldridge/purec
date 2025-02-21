@@ -22,10 +22,10 @@ void AnagTestTinyObjLoader()
   tinyobj::ObjReader reader;
 
   int objFileSize = 0;
-  char* objFileBuffer = (char*)AnagLoadFileBlah("viking_room.obj", &objFileSize);
+  char* objFileBuffer = (char*)AnagLoadFileBlah(/*"the-upper-vestibule.obj"*/"viking_room.obj", &objFileSize);
 
   int mtlFileSize = 0;
-  char* mtlFileBuffer = (char*)AnagLoadFileBlah("viking_room.mtl", &mtlFileSize);
+  char* mtlFileBuffer = (char*)AnagLoadFileBlah(/*"the-upper-vestibule.mtl"*/"viking_room.mtl", &mtlFileSize);
 
   if( !reader.ParseFromString(objFileBuffer, mtlFileBuffer, reader_config) )
   {
@@ -86,10 +86,10 @@ struct GeometryVertex
   uint32_t numModelsVerticiesStaticCountOf = sizeof(Geometry::gModelsVerticesStaticData) / sizeof(Geometry::gModelsVerticesStaticData[0] );
   Geometry::gModelsVerticesDynamicCountOf = numModelsVerticiesStaticCountOf + attrib_vertices_size;
 
-  Geometry::gModelsIndicesDynamicData = (uint32_t*)malloc(sizeof(uint32_t) * Geometry::gModelsIndicesDynamicCountOf);
+  Geometry::gModelsIndicesDynamicData = (uint32_t*)calloc(1, sizeof(uint32_t) * Geometry::gModelsIndicesDynamicCountOf);
   memcpy(Geometry::gModelsIndicesDynamicData, Geometry::gModelsIndicesStaticData, sizeof(Geometry::gModelsIndicesStaticData) );
 
-  Geometry::gModelsVerticesDynamicData = (GeometryVertex*)malloc(sizeof(GeometryVertex) * Geometry::gModelsVerticesDynamicCountOf);
+  Geometry::gModelsVerticesDynamicData = (GeometryVertex*)calloc(1, sizeof(GeometryVertex) * Geometry::gModelsVerticesDynamicCountOf);
   memcpy(Geometry::gModelsVerticesDynamicData, Geometry::gModelsVerticesStaticData, sizeof(Geometry::gModelsVerticesStaticData) );
 
   Geometry::gModelsIndexFirst[256] = numModelsIdiciesStaticCountOf;
@@ -117,9 +117,9 @@ struct GeometryVertex
         tinyobj::real_t vy = attrib.vertices[3 * size_t(idx.vertex_index) + 1];
         tinyobj::real_t vz = attrib.vertices[3 * size_t(idx.vertex_index) + 2];
 
-        Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Position.x = vx;
-        Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Position.y = vy;
-        Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Position.z = vz;
+        Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Position.x = vy/*vx*/;
+        Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Position.y = vz/*vy*/;
+        Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Position.z = vx/*vz*/;
 
         // Check if `normal_index` is zero or positive. negative = no normal data
         if(idx.normal_index >= 0)
@@ -128,9 +128,9 @@ struct GeometryVertex
           tinyobj::real_t ny = attrib.normals[3 * size_t(idx.normal_index) + 1];
           tinyobj::real_t nz = attrib.normals[3 * size_t(idx.normal_index) + 2];
 
-          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Normal.x = nx;
-          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Normal.y = ny;
-          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Normal.z = nz;
+          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Normal.x = ny/*nx*/;
+          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Normal.y = nz/*ny*/;
+          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Normal.z = nx/*nz*/;
         }
 
         // Check if `texcoord_index` is zero or positive. negative = no texcoord data
@@ -155,6 +155,7 @@ struct GeometryVertex
         Geometry::gModelsIndicesDynamicData[numModelsIdiciesStaticCountOf + v] = idx.vertex_index;
       }
 
+#if 1
       // invert clockwise/counter-clockwise direction
       {
         uint32_t index0 = Geometry::gModelsIndicesDynamicData[numModelsIdiciesStaticCountOf];
@@ -163,6 +164,7 @@ struct GeometryVertex
 
         Geometry::gModelsIndicesDynamicData[numModelsIdiciesStaticCountOf + 2] = index0;
       }
+#endif
 
       index_offset += fv;
 
@@ -2557,7 +2559,7 @@ struct VkExtensionProperties
   if(gTextureVkSampler == VK_NULL_HANDLE && gTextureVkDescriptorSetLayout != VK_NULL_HANDLE)
   {
     VulkanTutorialCreateTextureImage(
-      "viking_room.png",
+      /*"the-upper-vestibule.jpg"*/"viking_room.png",
       gVulkanGraphicsPluginVkQueue,
       gCmdBufferPool,
       gTextureVkImage,
