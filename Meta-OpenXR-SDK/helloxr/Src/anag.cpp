@@ -22,10 +22,10 @@ void AnagTestTinyObjLoader()
   tinyobj::ObjReader reader;
 
   int objFileSize = 0;
-  char* objFileBuffer = (char*)AnagLoadFileBlah(/*"the-upper-vestibule.obj"*/"viking_room.obj", &objFileSize);
+  char* objFileBuffer = (char*)AnagLoadFileBlah("viking_room.obj", &objFileSize);
 
   int mtlFileSize = 0;
-  char* mtlFileBuffer = (char*)AnagLoadFileBlah(/*"the-upper-vestibule.mtl"*/"viking_room.mtl", &mtlFileSize);
+  char* mtlFileBuffer = (char*)AnagLoadFileBlah("viking_room.mtl", &mtlFileSize);
 
   if( !reader.ParseFromString(objFileBuffer, mtlFileBuffer, reader_config) )
   {
@@ -46,17 +46,25 @@ void AnagTestTinyObjLoader()
   auto& shapes = reader.GetShapes();
   auto& materials = reader.GetMaterials();
 
-  size_t shapes_size = shapes.size();
+  size_t shapes_size = 0;
+  size_t indices_size = 0;
+  size_t attrib_vertices_size = 0;
+  size_t num_face = 0;
+
+  shapes_size = shapes.size();
   Log::Write(Log::Level::Info, Fmt("shapes_size %i\n", (int)shapes_size) );
 
-  size_t indices_size = shapes[0].mesh.indices.size();
-  Log::Write(Log::Level::Info, Fmt("indices_size %i\n", (int)indices_size) );
+  if(shapes_size == 1)
+  {
+    indices_size = shapes[0].mesh.indices.size();
+    Log::Write(Log::Level::Info, Fmt("indices_size %i\n", (int)indices_size) );
 
-  size_t attrib_vertices_size = attrib.vertices.size() / 3;
-  Log::Write(Log::Level::Info, Fmt("attrib_vertices_size %i\n", (int)attrib_vertices_size) );
+    attrib_vertices_size = attrib.vertices.size() / 3;
+    Log::Write(Log::Level::Info, Fmt("attrib_vertices_size %i\n", (int)attrib_vertices_size) );
 
-  size_t num_face = shapes[0].mesh.num_face_vertices.size();
-  Log::Write(Log::Level::Info, Fmt("num_face %i\n", (int)num_face) );
+    num_face = shapes[0].mesh.num_face_vertices.size();
+    Log::Write(Log::Level::Info, Fmt("num_face %i\n", (int)num_face) );
+  }
 
 #if 0
 uint32_t gModelsVerticesDynamicCountOf = 0;
@@ -2559,7 +2567,7 @@ struct VkExtensionProperties
   if(gTextureVkSampler == VK_NULL_HANDLE && gTextureVkDescriptorSetLayout != VK_NULL_HANDLE)
   {
     VulkanTutorialCreateTextureImage(
-      /*"the-upper-vestibule.jpg"*/"viking_room.png",
+      "viking_room.png",
       gVulkanGraphicsPluginVkQueue,
       gCmdBufferPool,
       gTextureVkImage,
