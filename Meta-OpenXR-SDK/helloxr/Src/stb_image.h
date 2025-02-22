@@ -14,8 +14,7 @@
    #inc_lude "stb_image.h"
 
    You can #define STBI_ASSERT(x) before the #inc_lude to avoid using assert.h.
-   And #define STBI_MALLOC, STBI_REALLOC, and STBI_FREE to avoid using malloc,realloc,free
-
+   And #define STBI_MALLOC, STBI_REALLOC, and STBI_FREE to avoid using malloc, realloc, free
 
    QUICK NOTES:
       Primarily of interest to game developers and other people who can
@@ -170,7 +169,7 @@
       2.00  (2014-12-25) optimize JPEG, including x86 SSE2 & ARM NEON SIMD
                          progressive JPEG
                          PGM/PPM support
-                         STBI_MALLOC,STBI_REALLOC,STBI_FREE
+                         STBI_MALLOC, STBI_REALLOC, STBI_FREE
                          STBI_NO_*, STBI_ONLY_*
                          GIF bugfix
 
@@ -410,7 +409,7 @@ extern "C" {
 #define STBIDEF extern
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 //
 // PRIMARY API - works on images of any type
 //
@@ -421,8 +420,8 @@ extern "C" {
 
 typedef struct
 {
-   int      (*read)  (void *user,char *data,int size);   // fill 'data' with 'size' bytes.  return number of bytes actually read
-   void     (*skip)  (void *user,int n);                 // skip the next 'n' bytes, or 'unget' the last -n bytes if negative
+   int      (*read)  (void *user, char *data, int size);   // fill 'data' with 'size' bytes.  return number of bytes actually read
+   void     (*skip)  (void *user, int n);                 // skip the next 'n' bytes, or 'unget' the last -n bytes if negative
    int      (*eof)   (void *user);                       // returns nonzero if we are at end of file/data
 } stbi_io_callbacks;
 
@@ -436,11 +435,11 @@ STBIDEF stbi_uc* stbi_load_from_file(FILE* f, int* x, int* y, int* comp, int req
 
 // for stbi_load_from_file, file pointer is left pointing immediately after image
 
-   STBIDEF float *stbi_loadf                 (char const *filename,           int *x, int *y, int *comp, int req_comp);
+   STBIDEF float *stbi_loadf                 (char const *filename, int *x, int *y, int *comp, int req_comp);
    STBIDEF float *stbi_loadf_from_memory     (stbi_uc const *buffer, int len, int *x, int *y, int *comp, int req_comp);
    STBIDEF float *stbi_loadf_from_callbacks  (stbi_io_callbacks const *clbk, void *user, int *x, int *y, int *comp, int req_comp);
 
-   STBIDEF float *stbi_loadf_from_file  (FILE *f,                int *x, int *y, int *comp, int req_comp);
+   STBIDEF float *stbi_loadf_from_file  (FILE *f, int *x, int *y, int *comp, int req_comp);
 
    STBIDEF void   stbi_hdr_to_ldr_gamma(float gamma);
    STBIDEF void   stbi_hdr_to_ldr_scale(float scale);
@@ -466,8 +465,8 @@ STBIDEF void     stbi_image_free      (void *retval_from_stbi_load);
 STBIDEF int      stbi_info_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *comp);
 STBIDEF int      stbi_info_from_callbacks(stbi_io_callbacks const *clbk, void *user, int *x, int *y, int *comp);
 
-STBIDEF int      stbi_info            (char const *filename,     int *x, int *y, int *comp);
-STBIDEF int      stbi_info_from_file  (FILE *f,                  int *x, int *y, int *comp);
+STBIDEF int      stbi_info            (char const *filename, int *x, int *y, int *comp);
+STBIDEF int      stbi_info_from_file  (FILE *f, int *x, int *y, int *comp);
 
 // for image formats that explicitly notate that they have premultiplied alpha,
 // we just return the colors as stored in the file. set this flag to force

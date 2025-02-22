@@ -100,7 +100,7 @@
 #elif defined (__SYMBIAN32__)
 #   define KHRONOS_APICALL IMPORT_C
 #elif defined(ANDROID)
-#   define KHRONOS_APICALL __attribute__((visibility("default")))
+#   define KHRONOS_APICALL __attribute__( (visibility("default") ) )
 #else
 #   define KHRONOS_APICALL
 #endif
@@ -132,7 +132,7 @@
 /*-------------------------------------------------------------------------
  * basic type definitions
  *-----------------------------------------------------------------------*/
-#if (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L) || defined(__GNUC__) || defined(__SCO__) || defined(__USLC__)
+#if(defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L) || defined(__GNUC__) || defined(__SCO__) || defined(__USLC__)
 
 typedef int32_t                 khronos_int32_t;
 typedef uint32_t                khronos_uint32_t;

@@ -25,7 +25,7 @@ BUILDING:
 
    You can #define STBIW_ASSERT(x) before the #inc_lude to avoid using assert.h.
    You can #define STBIW_MALLOC(), STBIW_REALLOC(), and STBIW_FREE() to replace
-   malloc,realloc,free.
+   malloc, realloc, free.
    You can define STBIW_MEMMOVE() to replace memmove()
 
 USAGE:

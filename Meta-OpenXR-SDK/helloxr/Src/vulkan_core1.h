@@ -17,7 +17,7 @@ extern "C" {
 #endif
 
 #ifndef VK_DEFINE_NON_DISPATCHABLE_HANDLE
- #if (VK_USE_64_BIT_PTR_DEFINES==1)
+ #if(VK_USE_64_BIT_PTR_DEFINES==1)
  #define VK_NULL_HANDLE nullptr
  #else
  #define VK_NULL_HANDLE 0ULL
@@ -28,7 +28,7 @@ extern "C" {
 #endif
 
 #ifndef VK_DEFINE_NON_DISPATCHABLE_HANDLE
- #if (VK_USE_64_BIT_PTR_DEFINES==1)
+ #if(VK_USE_64_BIT_PTR_DEFINES==1)
  #define VK_DEFINE_NON_DISPATCHABLE_HANDLE(object) typedef struct object##_T *object;
  #else
  #define VK_DEFINE_NON_DISPATCHABLE_HANDLE(object) typedef uint64_t object;

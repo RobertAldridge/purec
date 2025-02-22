@@ -286,15 +286,22 @@ R"_(
 
   void main()
   {
-    vec4 textureColor = texture(texSampler, fragTexCoord);
-
     //outColor = fragColor;
 
     //outColor = texture(texSampler, fragTexCoord);
 
     //outColor = vec4(min(abs(gl_FragCoord.w), 1.0), 0, 0, fragColor.a);
 
-    outColor = vec4(vec3(fragColor.r * textureColor.r, fragColor.g * textureColor.g, fragColor.b * textureColor.b), 1.0);
+    if(fragTexCoord.x < -0.5)
+    {
+      outColor = vec4(vec3(fragColor.r, fragColor.g, fragColor.b), 1.0);
+    }
+    else
+    {
+      vec4 textureColor = texture(texSampler, fragTexCoord);
+
+      outColor = vec4(vec3(fragColor.r * textureColor.r, fragColor.g * textureColor.g, fragColor.b * textureColor.b), 1.0);
+    }
   }
 
 )_";
@@ -406,8 +413,6 @@ R"_(
   }
 
 )_";
-
-//////////
 
 std::string BlahVkResultString(VkResult res);
 

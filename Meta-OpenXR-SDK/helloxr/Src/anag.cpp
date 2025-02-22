@@ -94,14 +94,20 @@ struct GeometryVertex
   uint32_t numModelsVerticiesStaticCountOf = sizeof(Geometry::gModelsVerticesStaticData) / sizeof(Geometry::gModelsVerticesStaticData[0] );
   Geometry::gModelsVerticesDynamicCountOf = numModelsVerticiesStaticCountOf + attrib_vertices_size;
 
-  Geometry::gModelsIndicesDynamicData = (uint32_t*)calloc(1, sizeof(uint32_t) * Geometry::gModelsIndicesDynamicCountOf);
+  Geometry::gModelsIndicesDynamicData = (uint32_t*)calloc(Geometry::gModelsIndicesDynamicCountOf, sizeof(uint32_t) );
   memcpy(Geometry::gModelsIndicesDynamicData, Geometry::gModelsIndicesStaticData, sizeof(Geometry::gModelsIndicesStaticData) );
 
-  Geometry::gModelsVerticesDynamicData = (GeometryVertex*)calloc(1, sizeof(GeometryVertex) * Geometry::gModelsVerticesDynamicCountOf);
+  Geometry::gModelsVerticesDynamicData = (GeometryVertex*)calloc(Geometry::gModelsVerticesDynamicCountOf, sizeof(GeometryVertex) );
   memcpy(Geometry::gModelsVerticesDynamicData, Geometry::gModelsVerticesStaticData, sizeof(Geometry::gModelsVerticesStaticData) );
+
+  XrVector3f* normalData = (XrVector3f*)calloc(num_face, sizeof(XrVector3f) );
 
   Geometry::gModelsIndexFirst[256] = numModelsIdiciesStaticCountOf;
   Geometry::gModelsIndexCount[256] = 3 * num_face;
+
+  tinyobj::real_t texture = 0.0;
+
+  tinyobj::real_t color = 0.0;
 
   // Loop over shapes
   for(size_t s = 0; s < shapes_size; s++)
@@ -149,6 +155,9 @@ struct GeometryVertex
 
           Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Texture.x = tx;
           Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Texture.y = ty;
+
+          texture += tx;
+          texture += ty;
         }
 
         // Optional: vertex colors
@@ -160,6 +169,10 @@ struct GeometryVertex
         Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Color.y = green;
         Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Color.z = blue;
 
+        color += red;
+        color += green;
+        color += blue;
+
         Geometry::gModelsIndicesDynamicData[numModelsIdiciesStaticCountOf + v] = idx.vertex_index;
       }
 
@@ -168,7 +181,8 @@ struct GeometryVertex
       {
         uint32_t index0 = Geometry::gModelsIndicesDynamicData[numModelsIdiciesStaticCountOf];
 
-        Geometry::gModelsIndicesDynamicData[numModelsIdiciesStaticCountOf] = Geometry::gModelsIndicesDynamicData[numModelsIdiciesStaticCountOf + 2];
+        Geometry::gModelsIndicesDynamicData[numModelsIdiciesStaticCountOf] =
+          Geometry::gModelsIndicesDynamicData[numModelsIdiciesStaticCountOf + 2];
 
         Geometry::gModelsIndicesDynamicData[numModelsIdiciesStaticCountOf + 2] = index0;
       }
@@ -182,6 +196,80 @@ struct GeometryVertex
       shapes[s].mesh.material_ids[f];
     }
   }
+
+  // if the color of all vertices are black, change to white
+  if(fabs(color) <= 1E-5)
+  {
+    for(int index = numModelsVerticiesStaticCountOf; index < Geometry::gModelsVerticesDynamicCountOf; index++)
+    {
+      Geometry::gModelsVerticesDynamicData[index].Color.x = 1.0;
+      Geometry::gModelsVerticesDynamicData[index].Color.y = 1.0;
+      Geometry::gModelsVerticesDynamicData[index].Color.z = 1.0;
+    }
+  }
+
+  // set texture coordinates for all vertices before model to negative
+  for(int index = 0; index < numModelsVerticiesStaticCountOf; index++)
+  {
+    Geometry::gModelsVerticesDynamicData[index].Texture.x = -1.0;
+    Geometry::gModelsVerticesDynamicData[index].Texture.y = -1.0;
+  }
+
+  // if the texture coordinates of all vertices is zero, change to negative
+  if(fabs(texture) <= 1E-5)
+  {
+    for(int index = numModelsVerticiesStaticCountOf; index < Geometry::gModelsVerticesDynamicCountOf; index++)
+    {
+      Geometry::gModelsVerticesDynamicData[index].Texture.x = -1.0;
+      Geometry::gModelsVerticesDynamicData[index].Texture.y = -1.0;
+    }
+  }
+
+  if(numModelsIdiciesStaticCountOf != Geometry::gModelsIndicesDynamicCountOf)
+    Log::Write(Log::Level::Info, Fmt("numModelsIdiciesStaticCountOf blah\n") );
+
+  numModelsIdiciesStaticCountOf = Geometry::gModelsIndicesDynamicCountOf - 3 * num_face;
+
+// recalculate normals
+#if 0
+  for(int index = 0; index < num_face; index++)
+  {
+    uint32_t vertexIndex0 = Geometry::gModelsIndicesDynamicData[numModelsIdiciesStaticCountOf + 3 * index];
+    uint32_t vertexIndex1 = Geometry::gModelsIndicesDynamicData[numModelsIdiciesStaticCountOf + 3 * index + 1];
+    uint32_t vertexIndex2 = Geometry::gModelsIndicesDynamicData[numModelsIdiciesStaticCountOf + 3 * index + 2];
+
+    XrVector3f vertex0 = Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + vertexIndex0].Position;
+    XrVector3f vertex1 = Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + vertexIndex1].Position;
+    XrVector3f vertex2 = Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + vertexIndex2].Position;
+
+    XrVector3f rhs = {vertex2.x - vertex1.x, vertex2.y - vertex1.y, vertex2.z - vertex1.z};
+    XrVector3f_Blah_Normalize( &rhs);
+
+    XrVector3f lhs = {vertex0.x - vertex1.x, vertex0.y - vertex1.y, vertex0.z - vertex1.z};
+    XrVector3f_Blah_Normalize( &lhs);
+
+    XrVector3f normal = {0.0, 0.0, 0.0};
+    XrVector3f_Cross(&normal, &lhs, &rhs);
+
+    float area = XrVector3f_Length( &normal) / 2.0;
+
+    XrVector3f_Blah_Normalize( &normal);
+
+    normalData[index].x += area * normal.x;
+    normalData[index].y += area * normal.y;
+    normalData[index].z += area * normal.z;
+  }
+
+  for(int index = 0; index < attrib_vertices_size; index++)
+  {
+    XrVector3f_Blah_Normalize( &normalData[index] );
+
+    Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + index].Normal = normalData[index];
+  }
+#endif
+
+  free(normalData);
+  normalData = 0;
 }
 
 JNIEnv* gEnvironment = nullptr;
@@ -265,7 +353,7 @@ unsigned char* AnagLoadFileBlah(const char* fileName, int* fileSize)
 
   long size = AAsset_getLength(asset);
 
-  unsigned char* buffer = (unsigned char*)malloc(sizeof(unsigned char) * size);
+  unsigned char* buffer = (unsigned char*)calloc(size, sizeof(unsigned char) );
 
   AAsset_read(asset, buffer, size);
 
@@ -370,6 +458,7 @@ void anag_free_saved_state(struct android_app* app)
   {
     free(app->savedState);
     app->savedState = 0;
+
     app->savedStateSize = 0;
   }
 
@@ -6075,10 +6164,12 @@ struct android_app* anag_android_app_create(ANativeActivity* activity, void* sav
 
   if(savedState)
   {
-    app->savedState = malloc(savedStateSize);
+    app->savedState = calloc(1, savedStateSize);
     if( !app->savedState)
     {
       free(app);
+      app = 0;
+
       return 0;
     }
 
@@ -6091,8 +6182,13 @@ struct android_app* anag_android_app_create(ANativeActivity* activity, void* sav
   if(pipe(msgpipe) )
   {
     ANAG_LOGE("could not create pipe: %s", strerror(errno) );
+
     free(app->savedState);
+    app->savedState = 0;
+
     free(app);
+    app = 0;
+
     return 0;
   }
 
@@ -6194,7 +6290,9 @@ void anag_android_app_free(struct android_app* app)
   close(app->msgwrite);
   pthread_cond_destroy( &app->cond);
   pthread_mutex_destroy( &app->mutex);
+
   free(app);
+  app = 0;
 }
 
 struct android_app* AnagToApp(ANativeActivity* activity)
@@ -6330,7 +6428,7 @@ void anagOnContentRectChanged(ANativeActivity* activity, const ARect* r)
   struct android_app* app = 0;
 
   if(r)
-    ANAG_LOGV("ContentRectChanged: l=%d,t=%d,r=%d,b=%d", r->left, r->top, r->right, r->bottom);
+    ANAG_LOGV("ContentRectChanged: l=%d, t=%d, r=%d, b=%d", r->left, r->top, r->right, r->bottom);
 
   app = AnagToApp(activity);
 

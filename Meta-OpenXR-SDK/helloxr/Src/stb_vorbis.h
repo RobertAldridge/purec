@@ -55,29 +55,21 @@
 // See end of file for full version history.
 
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 //
-//  HEADER BEGINS HERE
+// HEADER BEGINS HERE
 //
-
-#if defined(STB_VORBIS_NO_CRT) && !defined(STB_VORBIS_NO_STDIO)
-#define STB_VORBIS_NO_STDIO 1
-#endif
-
-#ifndef STB_VORBIS_NO_STDIO
-
-#endif
 
 extern "C" {
 
-///////////   THREAD SAFETY
+/////////// THREAD SAFETY //////////////////////////////////////////////////////
 
 // Individual stb_vorbis* handles are not thread-safe; you cannot decode from
 // them from multiple threads at the same time. However, you can have multiple
 // stb_vorbis* handles and decode from them independently in multiple thrads.
 
 
-///////////   MEMORY ALLOCATION
+/////////// MEMORY ALLOCATION //////////////////////////////////////////////////
 
 // normally stb_vorbis uses malloc() to allocate memory at startup,
 // and alloca() to allocate temporary memory during a frame on the
@@ -97,16 +89,15 @@ extern "C" {
 //
 // If you pass in a non-NULL buffer of the type below, allocation
 // will occur from it as described above. Otherwise just pass NULL
-// to use malloc()/alloca()
+// to use malloc() / alloca()
 
-typedef struct
+struct stb_vorbis_alloc
 {
-   char *alloc_buffer;
-   int   alloc_buffer_length_in_bytes;
-} stb_vorbis_alloc;
+  char* alloc_buffer;
+  int alloc_buffer_length_in_bytes;
+};
 
-
-///////////   FUNCTIONS USEABLE WITH ALL INPUT MODES
+/////////// FUNCTIONS USEABLE WITH ALL INPUT MODES /////////////////////////////
 
 typedef struct stb_vorbis stb_vorbis;
 
@@ -142,7 +133,7 @@ extern int stb_vorbis_get_sample_offset(stb_vorbis *f);
 // of the memory buffer. In pushdata mode it returns 0.
 extern unsigned int stb_vorbis_get_file_offset(stb_vorbis *f);
 
-///////////   PUSHDATA API
+/////////// PUSHDATA API ///////////////////////////////////////////////////////
 
 #ifndef STB_VORBIS_NO_PUSHDATA_API
 
@@ -170,8 +161,8 @@ extern stb_vorbis *stb_vorbis_open_pushdata(
 extern int stb_vorbis_decode_frame_pushdata(
          stb_vorbis *f,
          const unsigned char *datablock, int datablock_length_in_bytes,
-         int *channels,             // place to write number of float * buffers
-         float ***output,           // place to write float ** array of float * buffers
+         int *channels, // place to write number of float * buffers
+         float ***output, // place to write float ** array of float * buffers
          int *samples               // place to write number of output samples
      );
 // decode a frame of audio sample data if possible from the passed-in data block
@@ -182,7 +173,7 @@ extern int stb_vorbis_decode_frame_pushdata(
 //     0 bytes used, 0 samples output (need more data)
 //     N bytes used, 0 samples output (resynching the stream, keep going)
 //     N bytes used, M samples output (one frame of data)
-// note that after opening a file, you will ALWAYS get one N-bytes,0-sample
+// note that after opening a file, you will ALWAYS get one N-bytes, 0-sample
 // frame, because Vorbis always "discards" the first frame.
 //
 // Note that on resynch, stb_vorbis will rarely consume all of the buffer,
@@ -211,7 +202,7 @@ extern void stb_vorbis_flush_pushdata(stb_vorbis *f);
 #endif
 
 
-//////////   PULLING INPUT API
+////////// PULLING INPUT API ///////////////////////////////////////////////////
 
 #ifndef STB_VORBIS_NO_PULLDATA_API
 // This API assumes stb_vorbis is allowed to pull data from a source--
@@ -221,9 +212,10 @@ extern void stb_vorbis_flush_pushdata(stb_vorbis *f);
 // of callback to your code. (But if you don't support seeking, you may
 // just want to go ahead and use pushdata.)
 
-#if !defined(STB_VORBIS_NO_STDIO) && !defined(STB_VORBIS_NO_INTEGER_CONVERSION)
+#if !defined(STB_VORBIS_NO_INTEGER_CONVERSION)
 extern int stb_vorbis_decode_filename(const char *filename, int *channels, int *sample_rate, short **output);
 #endif
+
 #if !defined(STB_VORBIS_NO_INTEGER_CONVERSION)
 extern int stb_vorbis_decode_memory(const unsigned char *mem, int len, int *channels, int *sample_rate, short **output);
 #endif
@@ -237,7 +229,6 @@ extern stb_vorbis * stb_vorbis_open_memory(const unsigned char *data, int len,
 // create an ogg vorbis decoder from an ogg vorbis stream in memory (note
 // this must be the entire stream!). on failure, returns NULL and sets *error
 
-#ifndef STB_VORBIS_NO_STDIO
 extern stb_vorbis * stb_vorbis_open_filename(const char *filename,
                                   int *error, const stb_vorbis_alloc *alloc_buffer);
 // create an ogg vorbis decoder from a filename via fopen(). on failure,
@@ -260,7 +251,6 @@ extern stb_vorbis * stb_vorbis_open_file_section(FILE *f, int close_handle_on_cl
 // on failure, returns NULL and sets *error. note that stb_vorbis must "own"
 // this stream; if you seek it in between calls to stb_vorbis, it will become
 // confused.
-#endif
 
 extern int stb_vorbis_seek_frame(stb_vorbis *f, unsigned int sample_number);
 extern int stb_vorbis_seek(stb_vorbis *f, unsigned int sample_number);
@@ -272,7 +262,7 @@ extern int stb_vorbis_seek(stb_vorbis *f, unsigned int sample_number);
 // you can also use seek_frame().
 
 extern void stb_vorbis_seek_start(stb_vorbis *f);
-// this function is equivalent to stb_vorbis_seek(f,0)
+// this function is equivalent to stb_vorbis_seek(f, 0)
 
 extern unsigned int stb_vorbis_stream_length_in_samples(stb_vorbis *f);
 extern float        stb_vorbis_stream_length_in_seconds(stb_vorbis *f);
@@ -336,23 +326,23 @@ extern int stb_vorbis_get_samples_short(stb_vorbis *f, int channels, short **buf
 
 #endif
 
-////////   ERROR CODES
+//////// ERROR CODES ///////////////////////////////////////////////////////////
 
 enum STBVorbisError
 {
    VORBIS__no_error,
 
-   VORBIS_need_more_data=1,             // not a real error
+   VORBIS_need_more_data=1, // not a real error
 
-   VORBIS_invalid_api_mixing,           // can't mix API modes
-   VORBIS_outofmem,                     // not enough memory
-   VORBIS_feature_not_supported,        // uses floor 0
-   VORBIS_too_many_channels,            // STB_VORBIS_MAX_CHANNELS is too small
-   VORBIS_file_open_failure,            // fopen() failed
-   VORBIS_seek_without_length,          // can't seek in unknown-length file
+   VORBIS_invalid_api_mixing, // can't mix API modes
+   VORBIS_outofmem, // not enough memory
+   VORBIS_feature_not_supported, // uses floor 0
+   VORBIS_too_many_channels, // STB_VORBIS_MAX_CHANNELS is too small
+   VORBIS_file_open_failure, // fopen() failed
+   VORBIS_seek_without_length, // can't seek in unknown-length file
 
-   VORBIS_unexpected_eof=10,            // file is truncated?
-   VORBIS_seek_invalid,                 // seek past EOF
+   VORBIS_unexpected_eof=10, // file is truncated?
+   VORBIS_seek_invalid, // seek past EOF
 
    // decoding errors (corrupt/invalid stream) -- you probably
    // don't care about the exact details of these

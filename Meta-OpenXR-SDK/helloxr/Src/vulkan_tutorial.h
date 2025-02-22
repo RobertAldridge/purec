@@ -133,8 +133,6 @@ const std::vector<VkFormat> VulkanTutorialDepthFormatCandidates =
   VK_FORMAT_D24_UNORM_S8_UINT
 };
 
-//////////
-
 uint32_t VulkanTutorialFindMemoryType(
   uint32_t typeFilter,
   VkMemoryPropertyFlags properties

@@ -115,6 +115,11 @@ inline static void XrVector3f_Cross(XrVector3f* result, const XrVector3f* a, con
   result->z = a->x * b->y - a->y * b->x;
 }
 
+inline static float XrVector3f_Length(const XrVector3f* v)
+{
+  return sqrtf(v->x * v->x + v->y * v->y + v->z * v->z);
+}
+
 inline static void XrVector3f_Normalize(XrVector3f* v)
 {
   const float lengthRcp = XrRcpSqrt(v->x * v->x + v->y * v->y + v->z * v->z);
@@ -124,9 +129,13 @@ inline static void XrVector3f_Normalize(XrVector3f* v)
   v->z *= lengthRcp;
 }
 
-inline static float XrVector3f_Length(const XrVector3f* v)
+inline static void XrVector3f_Blah_Normalize(XrVector3f* v)
 {
-  return sqrtf(v->x * v->x + v->y * v->y + v->z * v->z);
+  const float length = XrVector3f_Length(v);
+
+  v->x /= length;
+  v->y /= length;
+  v->z /= length;
 }
 
 inline static void XrQuaternionf_CreateIdentity(XrQuaternionf* q)
