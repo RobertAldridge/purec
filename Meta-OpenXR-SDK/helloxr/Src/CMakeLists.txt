@@ -20,6 +20,7 @@ set(
   gles3_gl32.h
   header.h
   hex_and_handles.h
+  json_hpp.h
   khr_khrplatform.h
   logger.h
   meta_openxr_preview_extx1_event_channel.h
@@ -61,6 +62,7 @@ set(
   stb_image.h
   stb_image_write.h
   stb_vorbis.h
+  tiny_gltf.h
   tiny_obj_loader.h
   tinyobjloader_earcut.h
   vk_icd.h

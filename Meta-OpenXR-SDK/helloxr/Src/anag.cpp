@@ -9,6 +9,9 @@
 
 #define GEOMETRY_H_IMPLEMENTATION 1
 
+#define TINYGLTF_IMPLEMENTATION 1
+// #define TINYGLTF_NOEXCEPTION // optional. disable exception handling.
+
 #include "header.h"
 
 #if 1
