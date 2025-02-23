@@ -11,6 +11,725 @@
 
 #include "header.h"
 
+#if 1
+#define OBJ_SHAPES_INDEX {0}
+
+#define OBJ_WITH_TEXTURE {0}
+
+#define OBJ_FILENAME "stardew_farm.obj"
+#define OBJ_MTL_FILENAME "stardew_farm.mtl"
+#define OBJ_IMAGE_FILENAME "stardew_farm.png"
+
+#define OBJ_SCALE 256.0
+#define OBJ_HAND_SCALE 1.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+#if 0
+#define OBJ_SHAPES_INDEX {1}
+
+#define OBJ_WITH_TEXTURE {1}
+
+#define OBJ_FILENAME "neo_tokyo.obj"
+#define OBJ_MTL_FILENAME "neo_tokyo.mtl"
+#define OBJ_IMAGE_FILENAME "neo_tokyo.png"
+
+#define OBJ_SCALE 256.0
+#define OBJ_HAND_SCALE 2.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE true
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+#if 0
+#define OBJ_SHAPES_INDEX {0}
+
+#define OBJ_WITH_TEXTURE {0}
+
+#define OBJ_FILENAME "viking_room.obj"
+#define OBJ_MTL_FILENAME "viking_room.mtl"
+#define OBJ_IMAGE_FILENAME "viking_room.png"
+
+#define OBJ_SCALE 2.0
+#define OBJ_HAND_SCALE 2.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE true
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+#if 0
+#define OBJ_SHAPES_INDEX {0}
+
+#define OBJ_WITH_TEXTURE {0}
+
+#define OBJ_FILENAME "room_07.obj"
+#define OBJ_MTL_FILENAME "room_07.mtl"
+#define OBJ_IMAGE_FILENAME "room_07.png"
+
+#define OBJ_SCALE 128.0
+#define OBJ_HAND_SCALE 2.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+#if 0
+#define OBJ_SHAPES_INDEX {0}
+
+#define OBJ_WITH_TEXTURE {0}
+
+#define OBJ_FILENAME "woman_posing.obj"
+#define OBJ_MTL_FILENAME "woman_posing.mtl"
+#define OBJ_IMAGE_FILENAME "woman_posing.png"
+
+#define OBJ_SCALE 4.0
+#define OBJ_HAND_SCALE 1.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+#if 0
+#define OBJ_SHAPES_INDEX {1, 2, 3}
+
+#define OBJ_WITH_TEXTURE {1, 2}
+
+#define OBJ_FILENAME "chiku_sus_tetas_pose.obj"
+#define OBJ_MTL_FILENAME "chiku_sus_tetas_pose.mtl"
+#define OBJ_IMAGE_FILENAME "chiku_sus_tetas_pose.png"
+
+#define OBJ_SCALE 64.0
+#define OBJ_HAND_SCALE 2.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+#if 0
+#define OBJ_SHAPES_INDEX {7, 8}
+
+#define OBJ_WITH_TEXTURE {7, 8}
+
+#define OBJ_FILENAME "chiku-nsfw-pose.obj"
+#define OBJ_MTL_FILENAME "chiku-nsfw-pose.mtl"
+#define OBJ_IMAGE_FILENAME "chiku-nsfw-pose.png"
+
+#define OBJ_SCALE 64.0
+#define OBJ_HAND_SCALE 2.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+// texture issue; honda-shadow-rs-2010
+#if 0
+#define OBJ_SHAPES_INDEX {0}
+
+#define OBJ_WITH_TEXTURE {0}
+
+#define OBJ_FILENAME "honda-shadow-rs-2010.obj"
+#define OBJ_MTL_FILENAME "honda-shadow-rs-2010.mtl"
+#define OBJ_IMAGE_FILENAME "honda-shadow-rs-2010.png"
+
+#define OBJ_SCALE 2.0
+#define OBJ_HAND_SCALE 2.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+#if 0
+#define OBJ_SHAPES_INDEX {0, 3}
+
+#define OBJ_WITH_TEXTURE {0, 3}
+
+#define OBJ_FILENAME "sexy-goblin.obj"
+#define OBJ_MTL_FILENAME "sexy-goblin.mtl"
+#define OBJ_IMAGE_FILENAME "sexy-goblin.png"
+
+#define OBJ_SCALE 8.0
+#define OBJ_HAND_SCALE 2.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+// texture is for scene not body; sadmeal
+#if 0
+#define OBJ_SHAPES_INDEX {0, 1, 2}
+
+#define OBJ_WITH_TEXTURE {2}
+
+#define OBJ_FILENAME "sadmeal.obj"
+#define OBJ_MTL_FILENAME "sadmeal.mtl"
+#define OBJ_IMAGE_FILENAME "sadmeal.png"
+
+#define OBJ_SCALE 8.0
+#define OBJ_HAND_SCALE 2.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+// only face is textured; anime-girl-model-3
+#if 0
+#define OBJ_SHAPES_INDEX {0, 1, 3}
+
+#define OBJ_WITH_TEXTURE {1}
+
+#define OBJ_FILENAME "anime-girl-model-3.obj"
+#define OBJ_MTL_FILENAME "anime-girl-model-3.mtl"
+#define OBJ_IMAGE_FILENAME "anime-girl-model-3.png"
+
+#define OBJ_SCALE 128.0
+#define OBJ_HAND_SCALE 2.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+// only body texture is loaded; lopunny-pose-butt-ass
+#if 0
+#define OBJ_SHAPES_INDEX {0, 1, 2, 3, 4, 5, 8}
+
+#define OBJ_WITH_TEXTURE {0, 1, 2, 3, 4, 5, 8}
+
+#define OBJ_FILENAME "lopunny-pose-butt-ass.obj"
+#define OBJ_MTL_FILENAME "lopunny-pose-butt-ass.mtl"
+#define OBJ_IMAGE_FILENAME "lopunny-pose-butt-ass.png"
+
+#define OBJ_SCALE 2.0
+#define OBJ_HAND_SCALE 1.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+#if 0
+#define OBJ_SHAPES_INDEX {0}
+
+#define OBJ_WITH_TEXTURE {0}
+
+#define OBJ_FILENAME "interior-study.obj"
+#define OBJ_MTL_FILENAME "interior-study.mtl"
+#define OBJ_IMAGE_FILENAME "interior-study.png"
+
+#define OBJ_SCALE 128.0
+#define OBJ_HAND_SCALE 2.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+// clothes missing texture; chiku-se-sienta-su-nalga-en-la-tierra-pose
+#if 0
+#define OBJ_SHAPES_INDEX {0, 1, 2}
+
+#define OBJ_WITH_TEXTURE {0, 1}
+
+#define OBJ_FILENAME "chiku-se-sienta-su-nalga-en-la-tierra-pose.obj"
+#define OBJ_MTL_FILENAME "chiku-se-sienta-su-nalga-en-la-tierra-pose.mtl"
+#define OBJ_IMAGE_FILENAME "chiku-se-sienta-su-nalga-en-la-tierra-pose.png"
+
+#define OBJ_SCALE 64.0
+#define OBJ_HAND_SCALE 2.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+#if 0
+#define OBJ_SHAPES_INDEX {1, 2, 5, 6}
+
+#define OBJ_WITH_TEXTURE {1, 2, 5, 6}
+
+#define OBJ_FILENAME "ankha-pose-butt-naked.obj"
+#define OBJ_MTL_FILENAME "ankha-pose-butt-naked.mtl"
+#define OBJ_IMAGE_FILENAME "ankha-pose-butt-naked.png"
+
+#define OBJ_SCALE 8.0
+#define OBJ_HAND_SCALE 2.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+#if 0
+#define OBJ_SHAPES_INDEX {0, 1, 3, 4}
+
+#define OBJ_WITH_TEXTURE {0, 1, 3, 4}
+
+#define OBJ_FILENAME "momscarada-pose.obj"
+#define OBJ_MTL_FILENAME "momscarada-pose.mtl"
+#define OBJ_IMAGE_FILENAME "momscarada-pose.png"
+
+#define OBJ_SCALE 2.0
+#define OBJ_HAND_SCALE 2.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+// head is not textured; km-pinki
+#if 0
+#define OBJ_SHAPES_INDEX {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}
+
+#define OBJ_WITH_TEXTURE {0, 1}
+
+#define OBJ_FILENAME "km-pinki.obj"
+#define OBJ_MTL_FILENAME "km-pinki.mtl"
+#define OBJ_IMAGE_FILENAME "km-pinki.png"
+
+#define OBJ_SCALE 4.0
+#define OBJ_HAND_SCALE 2.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+#if 0
+#define OBJ_SHAPES_INDEX {0}
+
+#define OBJ_WITH_TEXTURE {0}
+
+#define OBJ_FILENAME "sword-of-artorias.obj"
+#define OBJ_MTL_FILENAME "sword-of-artorias.mtl"
+#define OBJ_IMAGE_FILENAME "sword-of-artorias.jpg"
+
+#define OBJ_SCALE 16.0
+#define OBJ_HAND_SCALE 2.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+// face messed up because it is using the body texture; elf-girl
+#if 0
+#define OBJ_SHAPES_INDEX {0}
+
+#define OBJ_WITH_TEXTURE {0}
+
+#define OBJ_FILENAME "elf-girl.obj"
+#define OBJ_MTL_FILENAME "elf-girl.mtl"
+#define OBJ_IMAGE_FILENAME "elf-girl.png"
+
+#define OBJ_SCALE 32.0
+#define OBJ_HAND_SCALE 2.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+#if 0
+#define OBJ_SHAPES_INDEX {0, 1, 2, 3, 4, 5}
+
+#define OBJ_WITH_TEXTURE {0, 1, 2, 3, 4, 5}
+
+#define OBJ_FILENAME "battle-bus.obj"
+#define OBJ_MTL_FILENAME "battle-bus.mtl"
+#define OBJ_IMAGE_FILENAME "battle-bus.png"
+
+#define OBJ_SCALE 512.0
+#define OBJ_HAND_SCALE 2.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+#if 0
+#define OBJ_SHAPES_INDEX {0}
+
+#define OBJ_WITH_TEXTURE {0}
+
+#define OBJ_FILENAME "trailer.obj"
+#define OBJ_MTL_FILENAME "trailer.mtl"
+#define OBJ_IMAGE_FILENAME "trailer.png"
+
+#define OBJ_SCALE 256.0
+#define OBJ_HAND_SCALE 1.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+// face not textured; just-a-girl
+#if 0
+#define OBJ_SHAPES_INDEX {0, 1, 2, 4}
+
+#define OBJ_WITH_TEXTURE {4}
+
+#define OBJ_FILENAME "just-a-girl.obj"
+#define OBJ_MTL_FILENAME "just-a-girl.mtl"
+#define OBJ_IMAGE_FILENAME "just-a-girl.png"
+
+#define OBJ_SCALE 128.0
+#define OBJ_HAND_SCALE 1.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+// no texture
+#if 0
+#define OBJ_SHAPES_INDEX \
+{ \
+  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, \
+  32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, \
+  64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, \
+  96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, \
+  128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, \
+  160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, \
+  192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, \
+  224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246 \
+}
+
+#define OBJ_WITH_TEXTURE {247}
+
+#define OBJ_FILENAME "vendels-workshop.obj"
+#define OBJ_MTL_FILENAME "vendels-workshop.mtl"
+#define OBJ_IMAGE_FILENAME "just-a-girl.png"
+
+#define OBJ_SCALE 4.0
+#define OBJ_HAND_SCALE 2.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+// no texture for eyes; solarfare-butt-pose
+#if 0
+#define OBJ_SHAPES_INDEX {2, 3, 4, 5, 6, 10}
+
+#define OBJ_WITH_TEXTURE {2, 3, 4, 5, 6, 10}
+
+#define OBJ_FILENAME "solarfare-butt-pose.obj"
+#define OBJ_MTL_FILENAME "solarfare-butt-pose.mtl"
+#define OBJ_IMAGE_FILENAME "solarfare-butt-pose.png"
+
+#define OBJ_SCALE 64.0
+#define OBJ_HAND_SCALE 2.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+#if 0
+#define OBJ_SHAPES_INDEX {0}
+
+#define OBJ_WITH_TEXTURE {0}
+
+#define OBJ_FILENAME "sea-house.obj"
+#define OBJ_MTL_FILENAME "sea-house.mtl"
+#define OBJ_IMAGE_FILENAME "sea-house.png"
+
+#define OBJ_SCALE 512.0
+#define OBJ_HAND_SCALE 1.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+#if 0
+#define OBJ_SHAPES_INDEX {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18}
+
+#define OBJ_WITH_TEXTURE {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18}
+
+#define OBJ_FILENAME "minecraft-bastion.obj"
+#define OBJ_MTL_FILENAME "minecraft-bastion.mtl"
+#define OBJ_IMAGE_FILENAME "minecraft-bastion.png"
+
+#define OBJ_SCALE 2.0
+#define OBJ_HAND_SCALE 2.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+#if 0
+#define OBJ_SHAPES_INDEX {0, 1}
+
+#define OBJ_WITH_TEXTURE {0, 1}
+
+#define OBJ_FILENAME "mayan-temple.obj"
+#define OBJ_MTL_FILENAME "mayan-temple.mtl"
+#define OBJ_IMAGE_FILENAME "mayan-temple.jpg"
+
+#define OBJ_SCALE 16.0
+#define OBJ_HAND_SCALE 2.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+#if 0
+#define OBJ_SHAPES_INDEX \
+{ \
+  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, \
+  32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52 \
+}
+
+#define OBJ_WITH_TEXTURE \
+{ \
+  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, \
+  32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52 \
+}
+
+#define OBJ_FILENAME "a-minecraft-village.obj"
+#define OBJ_MTL_FILENAME "a-minecraft-village.mtl"
+#define OBJ_IMAGE_FILENAME "a-minecraft-village.png"
+
+#define OBJ_SCALE 8.0
+#define OBJ_HAND_SCALE 1.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+#if 0
+#define OBJ_SHAPES_INDEX {0}
+
+#define OBJ_WITH_TEXTURE {0}
+
+#define OBJ_FILENAME "minecraft-3d-map-big-village.obj"
+#define OBJ_MTL_FILENAME "minecraft-3d-map-big-village.mtl"
+#define OBJ_IMAGE_FILENAME "minecraft-3d-map-big-village.png"
+
+#define OBJ_SCALE 512.0
+#define OBJ_HAND_SCALE 0.5
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+// local coordinate system origin is messed up; girl-sitting
+#if 0
+#define OBJ_SHAPES_INDEX {0}
+
+#define OBJ_WITH_TEXTURE {0}
+
+#define OBJ_FILENAME "girl-sitting.obj"
+#define OBJ_MTL_FILENAME "girl-sitting.mtl"
+#define OBJ_IMAGE_FILENAME "girl-sitting.jpeg"
+
+#define OBJ_SCALE 4.0
+#define OBJ_HAND_SCALE 1.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
 void AnagTestTinyObjLoader()
 {
 
@@ -22,10 +741,10 @@ void AnagTestTinyObjLoader()
   tinyobj::ObjReader reader;
 
   int objFileSize = 0;
-  char* objFileBuffer = (char*)AnagLoadFileBlah("viking_room.obj", &objFileSize);
+  char* objFileBuffer = (char*)AnagLoadFileBlah(OBJ_FILENAME, &objFileSize);
 
   int mtlFileSize = 0;
-  char* mtlFileBuffer = (char*)AnagLoadFileBlah("viking_room.mtl", &mtlFileSize);
+  char* mtlFileBuffer = (char*)AnagLoadFileBlah(OBJ_MTL_FILENAME, &mtlFileSize);
 
   if( !reader.ParseFromString(objFileBuffer, mtlFileBuffer, reader_config) )
   {
@@ -54,17 +773,30 @@ void AnagTestTinyObjLoader()
   shapes_size = shapes.size();
   Log::Write(Log::Level::Info, Fmt("shapes_size %i\n", (int)shapes_size) );
 
-  if(shapes_size == 1)
+  size_t object_shapes_index[] = OBJ_SHAPES_INDEX;
+
+  size_t object_with_texture[] = OBJ_WITH_TEXTURE;
+
+  for(size_t s_index = 0; shapes_size > 0 && s_index < countof(object_shapes_index); s_index++)
   {
-    indices_size = shapes[0].mesh.indices.size();
+    size_t s = object_shapes_index[s_index];
+
+    indices_size += shapes[s].mesh.indices.size();
+
+    num_face += shapes[s].mesh.num_face_vertices.size();
+  }
+
+  if(shapes_size > 0)
+  {
     Log::Write(Log::Level::Info, Fmt("indices_size %i\n", (int)indices_size) );
 
     attrib_vertices_size = attrib.vertices.size() / 3;
     Log::Write(Log::Level::Info, Fmt("attrib_vertices_size %i\n", (int)attrib_vertices_size) );
 
-    num_face = shapes[0].mesh.num_face_vertices.size();
     Log::Write(Log::Level::Info, Fmt("num_face %i\n", (int)num_face) );
   }
+
+  attrib_vertices_size = 3 * num_face;
 
 #if 0
 uint32_t gModelsVerticesDynamicCountOf = 0;
@@ -100,7 +832,7 @@ struct GeometryVertex
   Geometry::gModelsVerticesDynamicData = (GeometryVertex*)calloc(Geometry::gModelsVerticesDynamicCountOf, sizeof(GeometryVertex) );
   memcpy(Geometry::gModelsVerticesDynamicData, Geometry::gModelsVerticesStaticData, sizeof(Geometry::gModelsVerticesStaticData) );
 
-  XrVector3f* normalData = (XrVector3f*)calloc(num_face, sizeof(XrVector3f) );
+  //XrVector3f* normalData = (XrVector3f*)calloc(num_face, sizeof(XrVector3f) );
 
   Geometry::gModelsIndexFirst[256] = numModelsIdiciesStaticCountOf;
   Geometry::gModelsIndexCount[256] = 3 * num_face;
@@ -109,14 +841,31 @@ struct GeometryVertex
 
   tinyobj::real_t color = 0.0;
 
+  size_t index_offset_all_shapes = 0;
+
+  float pxMin = 0.0;
+  float pxMax = 0.0;
+
+  float pyMin = 0.0;
+  float pyMax = 0.0;
+
+  float pzMin = 0.0;
+  float pzMax = 0.0;
+
+  float pxCen = 0.0;
+  float pyCen = 0.0;
+  float pzCen = 0.0;
+
   // Loop over shapes
-  for(size_t s = 0; s < shapes_size; s++)
+  for(size_t s_index = 0; shapes_size > 0 && s_index < countof(object_shapes_index); s_index++)
   {
+    size_t si = object_shapes_index[s_index];
+
     // Loop over faces(polygon)
-    size_t index_offset = 0;
-    for(size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++)
+    size_t index_offset_per_shape = 0;
+    for(size_t f = 0; f < shapes[si].mesh.num_face_vertices.size(); f++)
     {
-      size_t fv = size_t(shapes[s].mesh.num_face_vertices[f] );
+      size_t fv = size_t(shapes[si].mesh.num_face_vertices[f] );
 
       if(fv != 3)
         Log::Write(Log::Level::Info, Fmt("fv!=3 %i\n", (int)fv) );
@@ -125,15 +874,56 @@ struct GeometryVertex
       for(size_t v = 0; v < fv; v++)
       {
         // access to vertex
-        tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
+        tinyobj::index_t idx = shapes[si].mesh.indices[index_offset_per_shape + v];
 
         tinyobj::real_t vx = attrib.vertices[3 * size_t(idx.vertex_index) + 0];
         tinyobj::real_t vy = attrib.vertices[3 * size_t(idx.vertex_index) + 1];
         tinyobj::real_t vz = attrib.vertices[3 * size_t(idx.vertex_index) + 2];
 
-        Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Position.x = vy/*vx*/;
-        Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Position.y = vz/*vy*/;
-        Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Position.z = vx/*vz*/;
+        if(OBJ_ROTATE)
+        {
+          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Position.x = vy/*vx*/;
+          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Position.y = vz/*vy*/;
+          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Position.z = vx/*vz*/;
+        }
+        else
+        {
+          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Position.x = vx;
+          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Position.y = vy;
+          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Position.z = vz;
+        }
+
+        if( !index_offset_all_shapes)
+        {
+          pxMin = Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Position.x;
+          pxMax = Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Position.x;
+
+          pyMin = Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Position.y;
+          pyMax = Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Position.y;
+
+          pzMin = Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Position.y;
+          pzMax = Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Position.y;
+        }
+        else
+        {
+          if(Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Position.x < pxMin)
+            pxMin = Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Position.x;
+
+          if(Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Position.x > pxMax)
+            pxMax = Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Position.x;
+
+          if(Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Position.y < pyMin)
+            pyMin = Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Position.y;
+
+          if(Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Position.y > pyMax)
+            pyMax = Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Position.y;
+
+          if(Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Position.z < pzMin)
+            pzMin = Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Position.z;
+
+          if(Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Position.z > pzMax)
+            pzMax = Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Position.z;
+        }
 
         // Check if `normal_index` is zero or positive. negative = no normal data
         if(idx.normal_index >= 0)
@@ -142,9 +932,25 @@ struct GeometryVertex
           tinyobj::real_t ny = attrib.normals[3 * size_t(idx.normal_index) + 1];
           tinyobj::real_t nz = attrib.normals[3 * size_t(idx.normal_index) + 2];
 
-          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Normal.x = ny/*nx*/;
-          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Normal.y = nz/*ny*/;
-          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Normal.z = nx/*nz*/;
+          if(OBJ_NORMAL_NEGATIVE)
+          {
+            nx = -nx;
+            ny = -ny;
+            nz = -nz;
+          }
+
+          if(OBJ_ROTATE)
+          {
+            Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Normal.x = ny;
+            Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Normal.y = nz;
+            Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Normal.z = nx;
+          }
+          else
+          {
+            Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Normal.x = nx;
+            Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Normal.y = ny;
+            Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Normal.z = nz;
+          }
         }
 
         // Check if `texcoord_index` is zero or positive. negative = no texcoord data
@@ -153,11 +959,39 @@ struct GeometryVertex
           tinyobj::real_t tx = attrib.texcoords[2 * size_t(idx.texcoord_index) + 0];
           tinyobj::real_t ty = attrib.texcoords[2 * size_t(idx.texcoord_index) + 1];
 
-          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Texture.x = tx;
-          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Texture.y = ty;
+          bool texture_found = false;
 
-          texture += tx;
-          texture += ty;
+          for(size_t t_index = 0; t_index < countof(object_with_texture); t_index++)
+          {
+            size_t ti = object_with_texture[t_index];
+
+            if(ti == si)
+            {
+              Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Texture.x = tx;
+
+              if(OBJ_IMAGE_FLIP_Y)
+                Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Texture.y = 1.0 - ty;
+              else
+                Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Texture.y = ty;
+
+              texture += tx;
+              texture += ty;
+
+              texture_found = true;
+
+              break;
+            }
+          }
+
+          if( !texture_found)
+          {
+            Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Texture.x = -1.0;
+            Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Texture.y = -1.0;
+
+            //Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Color.x = 1.0;
+            //Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Color.y = 1.0;
+            //Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Color.z = 1.0;
+          }
         }
 
         // Optional: vertex colors
@@ -165,15 +999,15 @@ struct GeometryVertex
         tinyobj::real_t green = attrib.colors[3 * size_t(idx.vertex_index) + 1];
         tinyobj::real_t blue  = attrib.colors[3 * size_t(idx.vertex_index) + 2];
 
-        Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Color.x = red;
-        Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Color.y = green;
-        Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + idx.vertex_index].Color.z = blue;
+        Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Color.x = red;
+        Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Color.y = green;
+        Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Color.z = blue;
 
         color += red;
         color += green;
         color += blue;
 
-        Geometry::gModelsIndicesDynamicData[numModelsIdiciesStaticCountOf + v] = idx.vertex_index;
+        Geometry::gModelsIndicesDynamicData[numModelsIdiciesStaticCountOf + v] = index_offset_all_shapes + v/*idx.vertex_index*/;
       }
 
 #if 1
@@ -188,14 +1022,32 @@ struct GeometryVertex
       }
 #endif
 
-      index_offset += fv;
+      index_offset_per_shape += fv;
+
+      index_offset_all_shapes += fv;
 
       numModelsIdiciesStaticCountOf += 3;
 
+      numModelsVerticiesStaticCountOf += 3;
+
       // per-face material
-      shapes[s].mesh.material_ids[f];
+      shapes[si].mesh.material_ids[f];
     }
   }
+
+  pxCen = (pxMin + pxMax) / 2.0;
+  pyCen = (pyMin + pyMax) / 2.0;
+  pzCen = (pzMin + pzMax) / 2.0;
+
+  if(numModelsIdiciesStaticCountOf != Geometry::gModelsIndicesDynamicCountOf)
+    Log::Write(Log::Level::Info, Fmt("numModelsIdiciesStaticCountOf blah\n") );
+
+  numModelsIdiciesStaticCountOf = Geometry::gModelsIndicesDynamicCountOf - 3 * num_face;
+
+  if(numModelsVerticiesStaticCountOf != Geometry::gModelsVerticesDynamicCountOf)
+    Log::Write(Log::Level::Info, Fmt("numModelsVerticiesStaticCountOf blah\n") );
+
+  numModelsVerticiesStaticCountOf = Geometry::gModelsVerticesDynamicCountOf - 3 * num_face;
 
   // if the color of all vertices are black, change to white
   if(fabs(color) <= 1E-5)
@@ -225,13 +1077,20 @@ struct GeometryVertex
     }
   }
 
-  if(numModelsIdiciesStaticCountOf != Geometry::gModelsIndicesDynamicCountOf)
-    Log::Write(Log::Level::Info, Fmt("numModelsIdiciesStaticCountOf blah\n") );
+// center and scale
+  for(int index = 0; index < 3 * num_face; index++)
+  {
+    Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + index].Position.x -= pxCen;
+    Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + index].Position.y -= pyCen;
+    Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + index].Position.z -= pzCen;
 
-  numModelsIdiciesStaticCountOf = Geometry::gModelsIndicesDynamicCountOf - 3 * num_face;
+    Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + index].Position.x /= OBJ_SCALE;
+    Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + index].Position.y /= OBJ_SCALE;
+    Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + index].Position.z /= OBJ_SCALE;
+  }
 
 // recalculate normals
-#if 0
+#if 1
   for(int index = 0; index < num_face; index++)
   {
     uint32_t vertexIndex0 = Geometry::gModelsIndicesDynamicData[numModelsIdiciesStaticCountOf + 3 * index];
@@ -249,17 +1108,22 @@ struct GeometryVertex
     XrVector3f_Blah_Normalize( &lhs);
 
     XrVector3f normal = {0.0, 0.0, 0.0};
-    XrVector3f_Cross(&normal, &lhs, &rhs);
+    XrVector3f_Cross( &normal, &lhs, &rhs);
 
-    float area = XrVector3f_Length( &normal) / 2.0;
+    //float area = XrVector3f_Length( &normal) / 2.0;
 
     XrVector3f_Blah_Normalize( &normal);
 
-    normalData[index].x += area * normal.x;
-    normalData[index].y += area * normal.y;
-    normalData[index].z += area * normal.z;
+    //normalData[index].x += area * normal.x;
+    //normalData[index].y += area * normal.y;
+    //normalData[index].z += area * normal.z;
+
+    Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + 3 * index + 0].Normal = normal;
+    Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + 3 * index + 1].Normal = normal;
+    Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + 3 * index + 2].Normal = normal;
   }
 
+#if 0
   for(int index = 0; index < attrib_vertices_size; index++)
   {
     XrVector3f_Blah_Normalize( &normalData[index] );
@@ -268,8 +1132,10 @@ struct GeometryVertex
   }
 #endif
 
-  free(normalData);
-  normalData = 0;
+#endif
+
+  //free(normalData);
+  //normalData = 0;
 }
 
 JNIEnv* gEnvironment = nullptr;
@@ -2656,7 +3522,7 @@ struct VkExtensionProperties
   if(gTextureVkSampler == VK_NULL_HANDLE && gTextureVkDescriptorSetLayout != VK_NULL_HANDLE)
   {
     VulkanTutorialCreateTextureImage(
-      "viking_room.png",
+      OBJ_IMAGE_FILENAME,
       gVulkanGraphicsPluginVkQueue,
       gCmdBufferPool,
       gTextureVkImage,
@@ -4542,6 +5408,7 @@ struct VkExtensionProperties
               (spaceLocation.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0
             )
             {
+#if 0
               float scale = (0.125 / 32.0) * gOpenXrProgramInputState_InputState_handScale[hand];
 
               //char testString[] = "omg Hello World!";
@@ -4578,6 +5445,15 @@ struct VkExtensionProperties
                 //  models.push_back(Model {260, spaceLocation.pose, {scale, scale, scale} } );
                 //}
               }
+#else
+              float scale = gOpenXrProgramInputState_InputState_handScale[hand] / OBJ_HAND_SCALE;
+
+              spaceLocation.pose.position.x += OBJ_HAND_TRANSLATE_X;
+              spaceLocation.pose.position.y += OBJ_HAND_TRANSLATE_Y;
+              spaceLocation.pose.position.z += OBJ_HAND_TRANSLATE_Z;
+
+              models.push_back(Model {256, spaceLocation.pose, {scale, scale, scale} } );
+#endif
             }
           }
           else
