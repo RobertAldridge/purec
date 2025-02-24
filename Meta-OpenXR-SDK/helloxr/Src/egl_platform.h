@@ -9,7 +9,7 @@
 #define EGL_PLATFORM_ANGLE_PLATFORM_METHODS_ANGLEX 0x3482
 
 #if defined(__GNUC__) || defined(__clang__)
-#define ANGLE_PLATFORM_EXPORT __attribute__((visibility ("default")))
+#define ANGLE_PLATFORM_EXPORT __attribute__( (visibility ("default") ) )
 #endif
 
 #if !defined(ANGLE_PLATFORM_EXPORT)
@@ -275,7 +275,7 @@ struct ANGLE_PLATFORM_EXPORT PlatformMethods
 #undef ANGLE_PLATFORM_METHOD_DEF
 
 // Subtract one to account for the context pointer.
-constexpr unsigned int g_NumPlatformMethods = (sizeof(PlatformMethods) / sizeof(uintptr_t)) - 1;
+constexpr unsigned int g_NumPlatformMethods = (sizeof(PlatformMethods) / sizeof(uintptr_t) ) - 1;
 
 #define ANGLE_PLATFORM_METHOD_STRING(Name) #Name
 #define ANGLE_PLATFORM_METHOD_STRING2(Name, CapsName) ANGLE_PLATFORM_METHOD_STRING(Name),

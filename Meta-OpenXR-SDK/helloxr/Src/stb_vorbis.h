@@ -54,7 +54,6 @@
 //
 // See end of file for full version history.
 
-
 ////////////////////////////////////////////////////////////////////////////////
 //
 // HEADER BEGINS HERE
@@ -67,7 +66,6 @@ extern "C" {
 // Individual stb_vorbis* handles are not thread-safe; you cannot decode from
 // them from multiple threads at the same time. However, you can have multiple
 // stb_vorbis* handles and decode from them independently in multiple thrads.
-
 
 /////////// MEMORY ALLOCATION //////////////////////////////////////////////////
 
@@ -200,7 +198,6 @@ extern void stb_vorbis_flush_pushdata(stb_vorbis *f);
 // decoding is returning you data, call stb_vorbis_get_sample_offset, and
 // if you don't like the result, seek your file again and repeat.
 #endif
-
 
 ////////// PULLING INPUT API ///////////////////////////////////////////////////
 

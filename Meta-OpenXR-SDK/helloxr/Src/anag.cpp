@@ -10,6 +10,7 @@
 #define GEOMETRY_H_IMPLEMENTATION 1
 
 #define TINYGLTF_IMPLEMENTATION 1
+#define TINYGLTF_ANDROID_LOAD_FROM_ASSETS 1
 // #define TINYGLTF_NOEXCEPTION // optional. disable exception handling.
 
 #include "header.h"
@@ -24,7 +25,7 @@
 #define OBJ_IMAGE_FILENAME "stardew_farm.png"
 
 #define OBJ_SCALE 256.0
-#define OBJ_HAND_SCALE 1.0
+#define OBJ_HAND_SCALE 2.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -47,7 +48,7 @@
 #define OBJ_IMAGE_FILENAME "neo_tokyo.png"
 
 #define OBJ_SCALE 256.0
-#define OBJ_HAND_SCALE 2.0
+#define OBJ_HAND_SCALE 4.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -70,7 +71,7 @@
 #define OBJ_IMAGE_FILENAME "viking_room.png"
 
 #define OBJ_SCALE 2.0
-#define OBJ_HAND_SCALE 2.0
+#define OBJ_HAND_SCALE 4.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -93,7 +94,7 @@
 #define OBJ_IMAGE_FILENAME "room_07.png"
 
 #define OBJ_SCALE 128.0
-#define OBJ_HAND_SCALE 2.0
+#define OBJ_HAND_SCALE 4.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -116,7 +117,7 @@
 #define OBJ_IMAGE_FILENAME "woman_posing.png"
 
 #define OBJ_SCALE 4.0
-#define OBJ_HAND_SCALE 1.0
+#define OBJ_HAND_SCALE 2.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -139,7 +140,7 @@
 #define OBJ_IMAGE_FILENAME "chiku_sus_tetas_pose.png"
 
 #define OBJ_SCALE 64.0
-#define OBJ_HAND_SCALE 2.0
+#define OBJ_HAND_SCALE 4.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -162,7 +163,7 @@
 #define OBJ_IMAGE_FILENAME "chiku-nsfw-pose.png"
 
 #define OBJ_SCALE 64.0
-#define OBJ_HAND_SCALE 2.0
+#define OBJ_HAND_SCALE 4.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -186,7 +187,7 @@
 #define OBJ_IMAGE_FILENAME "honda-shadow-rs-2010.png"
 
 #define OBJ_SCALE 2.0
-#define OBJ_HAND_SCALE 2.0
+#define OBJ_HAND_SCALE 4.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -209,7 +210,7 @@
 #define OBJ_IMAGE_FILENAME "sexy-goblin.png"
 
 #define OBJ_SCALE 8.0
-#define OBJ_HAND_SCALE 2.0
+#define OBJ_HAND_SCALE 4.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -233,7 +234,7 @@
 #define OBJ_IMAGE_FILENAME "sadmeal.png"
 
 #define OBJ_SCALE 8.0
-#define OBJ_HAND_SCALE 2.0
+#define OBJ_HAND_SCALE 4.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -257,7 +258,7 @@
 #define OBJ_IMAGE_FILENAME "anime-girl-model-3.png"
 
 #define OBJ_SCALE 128.0
-#define OBJ_HAND_SCALE 2.0
+#define OBJ_HAND_SCALE 4.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -281,7 +282,7 @@
 #define OBJ_IMAGE_FILENAME "lopunny-pose-butt-ass.png"
 
 #define OBJ_SCALE 2.0
-#define OBJ_HAND_SCALE 1.0
+#define OBJ_HAND_SCALE 2.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -304,7 +305,7 @@
 #define OBJ_IMAGE_FILENAME "interior-study.png"
 
 #define OBJ_SCALE 128.0
-#define OBJ_HAND_SCALE 2.0
+#define OBJ_HAND_SCALE 4.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -328,7 +329,7 @@
 #define OBJ_IMAGE_FILENAME "chiku-se-sienta-su-nalga-en-la-tierra-pose.png"
 
 #define OBJ_SCALE 64.0
-#define OBJ_HAND_SCALE 2.0
+#define OBJ_HAND_SCALE 4.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -351,7 +352,7 @@
 #define OBJ_IMAGE_FILENAME "ankha-pose-butt-naked.png"
 
 #define OBJ_SCALE 8.0
-#define OBJ_HAND_SCALE 2.0
+#define OBJ_HAND_SCALE 4.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -374,7 +375,7 @@
 #define OBJ_IMAGE_FILENAME "momscarada-pose.png"
 
 #define OBJ_SCALE 2.0
-#define OBJ_HAND_SCALE 2.0
+#define OBJ_HAND_SCALE 4.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -398,7 +399,7 @@
 #define OBJ_IMAGE_FILENAME "km-pinki.png"
 
 #define OBJ_SCALE 4.0
-#define OBJ_HAND_SCALE 2.0
+#define OBJ_HAND_SCALE 4.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -421,7 +422,7 @@
 #define OBJ_IMAGE_FILENAME "sword-of-artorias.jpg"
 
 #define OBJ_SCALE 16.0
-#define OBJ_HAND_SCALE 2.0
+#define OBJ_HAND_SCALE 4.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -445,7 +446,7 @@
 #define OBJ_IMAGE_FILENAME "elf-girl.png"
 
 #define OBJ_SCALE 32.0
-#define OBJ_HAND_SCALE 2.0
+#define OBJ_HAND_SCALE 4.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -468,7 +469,7 @@
 #define OBJ_IMAGE_FILENAME "battle-bus.png"
 
 #define OBJ_SCALE 512.0
-#define OBJ_HAND_SCALE 2.0
+#define OBJ_HAND_SCALE 4.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -491,7 +492,7 @@
 #define OBJ_IMAGE_FILENAME "trailer.png"
 
 #define OBJ_SCALE 256.0
-#define OBJ_HAND_SCALE 1.0
+#define OBJ_HAND_SCALE 2.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -515,7 +516,7 @@
 #define OBJ_IMAGE_FILENAME "just-a-girl.png"
 
 #define OBJ_SCALE 128.0
-#define OBJ_HAND_SCALE 1.0
+#define OBJ_HAND_SCALE 2.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -549,7 +550,7 @@
 #define OBJ_IMAGE_FILENAME "just-a-girl.png"
 
 #define OBJ_SCALE 4.0
-#define OBJ_HAND_SCALE 2.0
+#define OBJ_HAND_SCALE 4.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -573,7 +574,7 @@
 #define OBJ_IMAGE_FILENAME "solarfare-butt-pose.png"
 
 #define OBJ_SCALE 64.0
-#define OBJ_HAND_SCALE 2.0
+#define OBJ_HAND_SCALE 4.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -596,7 +597,7 @@
 #define OBJ_IMAGE_FILENAME "sea-house.png"
 
 #define OBJ_SCALE 512.0
-#define OBJ_HAND_SCALE 1.0
+#define OBJ_HAND_SCALE 2.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -619,7 +620,7 @@
 #define OBJ_IMAGE_FILENAME "minecraft-bastion.png"
 
 #define OBJ_SCALE 2.0
-#define OBJ_HAND_SCALE 2.0
+#define OBJ_HAND_SCALE 4.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -642,7 +643,7 @@
 #define OBJ_IMAGE_FILENAME "mayan-temple.jpg"
 
 #define OBJ_SCALE 16.0
-#define OBJ_HAND_SCALE 2.0
+#define OBJ_HAND_SCALE 4.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -673,7 +674,7 @@
 #define OBJ_IMAGE_FILENAME "a-minecraft-village.png"
 
 #define OBJ_SCALE 8.0
-#define OBJ_HAND_SCALE 1.0
+#define OBJ_HAND_SCALE 2.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -696,7 +697,7 @@
 #define OBJ_IMAGE_FILENAME "minecraft-3d-map-big-village.png"
 
 #define OBJ_SCALE 512.0
-#define OBJ_HAND_SCALE 0.5
+#define OBJ_HAND_SCALE 1.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -720,7 +721,7 @@
 #define OBJ_IMAGE_FILENAME "girl-sitting.jpeg"
 
 #define OBJ_SCALE 4.0
-#define OBJ_HAND_SCALE 1.0
+#define OBJ_HAND_SCALE 2.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -5208,7 +5209,7 @@ struct VkExtensionProperties
       if(grabValue.isActive == XR_TRUE)
       {
         // Scale the rendered hand by 1.0f (open) to 0.5f (fully squeezed).
-        gOpenXrProgramInputState_InputState_handScale[hand] = 1.0f - 0.5f * grabValue.currentState;
+        gOpenXrProgramInputState_InputState_handScale[hand] = 1.0f + 1.0f * grabValue.currentState;
 
         if(grabValue.currentState > 0.9f)
         {
@@ -6605,17 +6606,17 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
 
     if(gEnvironmentDepthProviderMETA == XR_NULL_HANDLE)
     {
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
       // OpenXR Depth API Overview
 
       // Health and Safety Recommendation: While building mixed reality experiences, we highly recommend that you
       // evaluate your content to offer your users a comfortable and safe experience. Please refer to the Health and
       // Safety and Design guidelines before designing and developing your app using Depth.
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
       // Overview
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
       // What is Depth API?
 
       // The Depth API provides real-time depth maps that apps can use to sense the environment. Primarily, it enhances
@@ -6623,7 +6624,7 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
       // them appear integrated into the actual environment. Occlusion is crucial because it prevents virtual content
       // from appearing as a layer over the real world, which can disrupt immersion.
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
       // Why use Depth API?
 
       // The Scene Model enables the creation of room-scale, mixed reality experiences featuring realistic occlusion.
@@ -6631,14 +6632,14 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
       // hands, limbs, other people, and pets. To achieve realistic occlusion with these dynamic elements, you must also
       // use the Depth API.
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
       // Requesting user permission
 
       // An app that wants to use Depth API needs to request and be granted spatial data permission
       // (com.oculus.permission.USE_SCENE) before accessing any of the functions in the XR_META_environment_depth
       // extension. See the Spatial Data Permission guide for how to set up the app and how to request this permission.
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
       // Enabling the extension
 
       // The Depth API is defined in the XR_META_environment_depth OpenXR extension. All extensions should be explicitly
@@ -6660,7 +6661,7 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
       // xrGetSystemProperties to query for a XrSystemEnvironmentDepthPropertiesMETA struct and check that
       // supportsEnvironmentDepth is true.
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
       // Getting the extension function pointers
 
       // You must retrieve pointers to all the functions in the extension before calling them. For more details, see
@@ -6668,7 +6669,7 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
 
       // The following snippet initializes all the available functions:
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
       // Creating a depth provider
 
       // You can create a depth provider by using the xrCreateEnvironmentDepthProviderMETA function.
@@ -6719,7 +6720,7 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
 
       // XrResult xrDestroyEnvironmentDepthProviderMETA(XrEnvironmentDepthProviderMETA environmentDepthProvider);
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
       // Toggling hand removal
 
       // The Depth API supports removing hands from depth maps and replacing them with estimated background depth.
@@ -6760,7 +6761,7 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
         );
       }
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
       // Creating and enumerating a depth swapchain
 
       // Depth maps are provided to the app through a special “readable swapchain” type XrEnvironmentDepthSwapchainMETA.
@@ -6896,7 +6897,7 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
 
       // XrResult xrDestroyEnvironmentDepthSwapchainMETA(XrEnvironmentDepthSwapchainMETA swapchain);
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
       // Starting and stopping the depth provider
 
       // The depth provider is created in a stopped state by default.
@@ -6911,7 +6912,7 @@ XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_HTC = 1000317004,
 
       // XrResult xrStopEnvironmentDepthProviderMETA(XrEnvironmentDepthProviderMETA environmentDepthProvider);
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
       // Acquiring depth maps
 
       // Depth maps should only be accessed between the xrBeginFrame and xrEndFrame calls.  To acquire a lock on the

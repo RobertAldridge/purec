@@ -41,7 +41,6 @@
 
    Full documentation under "DOCUMENTATION" below.
 
-
    Revision 2.00 release notes:
 
       - Progressive JPEG is now supported.
@@ -144,7 +143,6 @@
         removed in future versions of the library. It is only intended for
         near-term back-compatibility use.
 
-
    Latest revision history:
       2.12  (2016-04-02) fix typo in 2.11 PSD fix that caused crashes
       2.11  (2016-04-02) 16-bit PNGS; enable SSE2 in non-gcc x64
@@ -174,7 +172,6 @@
                          GIF bugfix
 
    See end of file for full revision history.
-
 
  ============================    Contributors    =========================
 
@@ -206,7 +203,6 @@
     Ryamond Barbiero        Paul Du Bois       Engin Manap        snagar@github
     Michaelangel007@github  Oriol Ferrer Mesia socks-the-fox
     Blazej Dariusz Roszkowski
-
 
 LICENSE
 

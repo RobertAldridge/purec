@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  * All rights reserved.
@@ -16,25 +17,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
 
-#include <vector>
-#include <openxr/openxr.h>
+class SpatialAnchorExternalDataHandler
+{
 
-class SpatialAnchorExternalDataHandler {
-   public:
-    virtual ~SpatialAnchorExternalDataHandler() {}
+public:
 
-    // LoadShareUserList loads the list of FBIDs of users with whom to share Spatial Anchors.
-    virtual bool LoadShareUserList(std::vector<XrSpaceUserIdFB>& userIdList) = 0;
+virtual ~SpatialAnchorExternalDataHandler()
+{
+}
 
-    // LoadInboundSpatialAnchorList loads the list of Spatial Anchors that have
-    // been shared with the current user.
-    virtual bool LoadInboundSpatialAnchorList(std::vector<XrUuidEXT>& spatialAnchorList) = 0;
+// LoadShareUserList loads the list of FBIDs of users with whom to share Spatial Anchors.
+virtual bool LoadShareUserList(std::vector<XrSpaceUserIdFB>& userIdList) = 0;
 
-    // WriteSharedSpatialAnchorList emits the list of Spatial Anchors shared by the current user
-    // to the specified list of users.
-    virtual bool WriteSharedSpatialAnchorList(
-        const std::vector<XrUuidEXT>& spatialAnchorList,
-        const std::vector<XrSpaceUserIdFB>& userIdList) = 0;
+// LoadInboundSpatialAnchorList loads the list of Spatial Anchors that have
+// been shared with the current user.
+virtual bool LoadInboundSpatialAnchorList(std::vector<XrUuidEXT>& spatialAnchorList) = 0;
+
+// WriteSharedSpatialAnchorList emits the list of Spatial Anchors shared by the current user
+// to the specified list of users.
+virtual bool WriteSharedSpatialAnchorList(
+  const std::vector<XrUuidEXT>& spatialAnchorList,
+  const std::vector<XrSpaceUserIdFB>& userIdList
+
+) = 0;
+
 };

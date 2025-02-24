@@ -28,51 +28,9 @@ Copyright : Copyright (c) Meta Platforms, Inc. and affiliates. All rights reserv
 
 *************************************************************************************/
 
-#include <atomic>
-#include <thread>
-#include <unordered_map>
-#include <vector>
-
-#include <cmath>
-#include <cassert>
-#include <cmath>
-#include <cstdbool>
-#include <cstddef>
-#include <cstdint>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring> // for memset
-#include <ctime>
-
-#include <unistd.h>
-#include <pthread.h>
-#include <sys/prctl.h> // for prctl(PR_SET_NAME)
-#include <android/log.h>
-#include <android/native_window_jni.h> // for native window JNI
-#include <android/input.h>
-
-#include <sys/system_properties.h>
-
-#include "anag.h"
-
-#include <EGL/egl.h>
-#include <EGL/eglext.h>
-#include <GLES3/gl3.h>
-#include <GLES3/gl3ext.h>
-
 #include "XrPassthroughOcclusion.h"
-
-#define XR_USE_GRAPHICS_API_OPENGL_ES 1
-#define XR_USE_PLATFORM_ANDROID 1
-
-#include <openxr/openxr.h>
-#include <meta_openxr_preview/openxr_oculus_helpers.h>
-#include <openxr/openxr_platform.h>
-
 #include "OVR_Math.h"
-
 #include "XrPassthroughOcclusionGl.h"
-
 #include "XrPassthroughOcclusionInput.h"
 
 using namespace OVR;

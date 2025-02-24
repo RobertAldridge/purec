@@ -25,13 +25,13 @@
 
 #ifndef EGL_ANGLE_software_display
 #define EGL_ANGLE_software_display 1
-#define EGL_SOFTWARE_DISPLAY_ANGLE ((EGLNativeDisplayType)-1)
+#define EGL_SOFTWARE_DISPLAY_ANGLE ( (EGLNativeDisplayType)-1)
 #endif /* EGL_ANGLE_software_display */
 
 #ifndef EGL_ANGLE_direct3d_display
 #define EGL_ANGLE_direct3d_display 1
-#define EGL_D3D11_ELSE_D3D9_DISPLAY_ANGLE ((EGLNativeDisplayType)-2)
-#define EGL_D3D11_ONLY_DISPLAY_ANGLE ((EGLNativeDisplayType)-3)
+#define EGL_D3D11_ELSE_D3D9_DISPLAY_ANGLE ( (EGLNativeDisplayType)-2)
+#define EGL_D3D11_ONLY_DISPLAY_ANGLE ( (EGLNativeDisplayType)-3)
 #endif /* EGL_ANGLE_direct3d_display */
 
 #ifndef EGL_ANGLE_direct_composition

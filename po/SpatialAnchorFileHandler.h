@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  * All rights reserved.
@@ -16,35 +17,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
 
-#include "SpatialAnchorExternalDataHandler.h"
-#include <string>
-#include <vector>
-#include <openxr/openxr.h>
+class SpatialAnchorFileHandler : public SpatialAnchorExternalDataHandler
+{
 
-class SpatialAnchorFileHandler : public SpatialAnchorExternalDataHandler {
-   public:
-    SpatialAnchorFileHandler();
+public:
 
-    // LoadShareUserList loads the list of FBIDs of users with whom to share Spatial Anchors.
-    bool LoadShareUserList(std::vector<XrSpaceUserIdFB>& userIdList) override;
-    bool LoadInboundSpatialAnchorList(std::vector<XrUuidEXT>& spatialAnchorList) override;
-    bool WriteSharedSpatialAnchorList(
-        const std::vector<XrUuidEXT>& spatialAnchorList,
-        const std::vector<XrSpaceUserIdFB>& userIdList) override;
+SpatialAnchorFileHandler();
 
-   private:
-    std::string dataDir;
-    const char* kShareUserListFilename = "shareUserList.txt";
-    const char* kInboundSpatialAnchorListFilename = "inboundSpatialAnchorList.txt";
-    const char* kSharedSpatialAnchorListFilename = "sharedSpatialAnchorList.txt";
+// LoadShareUserList loads the list of FBIDs of users with whom to share Spatial Anchors.
+bool LoadShareUserList(std::vector<XrSpaceUserIdFB>& userIdList) override;
+
+bool LoadInboundSpatialAnchorList(std::vector<XrUuidEXT>& spatialAnchorList) override;
+
+bool WriteSharedSpatialAnchorList(
+  const std::vector<XrUuidEXT>& spatialAnchorList,
+  const std::vector<XrSpaceUserIdFB>& userIdList
+
+) override;
+
+private:
+
+std::string dataDir;
+
+const char* kShareUserListFilename = "shareUserList.txt";
+
+const char* kInboundSpatialAnchorListFilename = "inboundSpatialAnchorList.txt";
+
+const char* kSharedSpatialAnchorListFilename = "sharedSpatialAnchorList.txt";
 
 // Replace this value with the path you want the named files above to be.
 // Make sure to include the trailing slash (backslash for Windows).
-#ifdef WIN32
-    const char* kDefaultDataPath = "C:\\temp_SpatialAnchorXr\\";
-#else
-    const char* kDefaultDataPath = "/sdcard/Android/data/com.oculus.sdk.spatialanchor/files/";
-#endif
+
+const char* kDefaultDataPath = "/sdcard/Android/data/com.oculus.sdk.spatialanchor/files/";
+
 };

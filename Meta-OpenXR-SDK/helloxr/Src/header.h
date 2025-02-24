@@ -137,6 +137,8 @@
 #include <android/looper.h>
 #include <android/native_activity.h>
 
+#include <android/input.h>
+
 #include <android/log.h>
 
 #include <unistd.h>
@@ -152,6 +154,8 @@ typedef _jobject* jobject;
 #include "anag.h"
 
 #include <jni.h>
+
+#include <sys/prctl.h> // for prctl( PR_SET_NAME )
 
 #include <sys/stat.h>
 
