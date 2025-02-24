@@ -294,13 +294,13 @@ R"_(
 
     if(fragTexCoord.x < -0.5)
     {
-      outColor = vec4(vec3(fragColor.r, fragColor.g, fragColor.b), 1.0);
+      outColor = vec4(vec3(fragColor.r, fragColor.g, fragColor.b), fragColor.a);
     }
     else
     {
       vec4 textureColor = texture(texSampler, fragTexCoord);
 
-      outColor = vec4(vec3(fragColor.r * textureColor.r, fragColor.g * textureColor.g, fragColor.b * textureColor.b), 1.0);
+      outColor = vec4(vec3(fragColor.r * textureColor.r, fragColor.g * textureColor.g, fragColor.b * textureColor.b), fragColor.a * textureColor.a);
     }
   }
 

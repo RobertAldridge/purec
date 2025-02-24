@@ -734,6 +734,113 @@
 #define OBJ_IMAGE_FLIP_Y true
 #endif
 
+// clothing is using skin texture
+#if 0
+#define OBJ_SHAPES_INDEX {0}
+
+#define OBJ_WITH_TEXTURE {0}
+
+#define OBJ_FILENAME "pride-bonfie-by-tristy-artist.obj"
+#define OBJ_MTL_FILENAME "pride-bonfie-by-tristy-artist.mtl"
+#define OBJ_IMAGE_FILENAME "pride-bonfie-by-tristy-artist.png"
+
+#define OBJ_SCALE 4.0
+#define OBJ_HAND_SCALE 2.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+#if 0
+#define OBJ_SHAPES_INDEX {0}
+
+#define OBJ_WITH_TEXTURE {0}
+
+#define OBJ_FILENAME "naked_woman.obj"
+#define OBJ_MTL_FILENAME "naked_woman.mtl"
+#define OBJ_IMAGE_FILENAME "naked_woman.jpeg"
+
+#define OBJ_SCALE 2.0
+#define OBJ_HAND_SCALE 2.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+#if 0
+#define OBJ_SHAPES_INDEX \
+{ \
+  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, \
+  32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46 \
+}
+
+#define OBJ_WITH_TEXTURE \
+{ \
+  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, \
+  32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46 \
+}
+
+#define OBJ_FILENAME "plaza_night_time.obj"
+#define OBJ_MTL_FILENAME "plaza_night_time.mtl"
+#define OBJ_IMAGE_FILENAME "plaza_night_time.png"
+
+#define OBJ_SCALE 128.0
+#define OBJ_HAND_SCALE 1.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
+#if 0
+#define OBJ_SHAPES_INDEX \
+{ \
+  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, /**/13, /**/14, 15, /**/16, /**/17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27 /*28; windows*/ \
+}
+
+#define OBJ_WITH_TEXTURE \
+{ \
+  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, /**/13, /**/14, 15, /**/16, /**/17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27 /*28; windows*/ \
+}
+
+#define OBJ_FILENAME "cathedral.obj"
+#define OBJ_MTL_FILENAME "cathedral.mtl"
+#define OBJ_IMAGE_FILENAME "cathedral.jpeg"
+
+#define OBJ_SCALE 64.0
+#define OBJ_HAND_SCALE 2.0
+
+#define OBJ_HAND_TRANSLATE_X 0.0
+#define OBJ_HAND_TRANSLATE_Y 0.0
+#define OBJ_HAND_TRANSLATE_Z 0.0
+
+#define OBJ_ROTATE false
+
+#define OBJ_NORMAL_NEGATIVE false
+
+#define OBJ_IMAGE_FLIP_Y true
+#endif
+
 void AnagTestTinyObjLoader()
 {
 
