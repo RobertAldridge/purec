@@ -1,35 +1,5 @@
 
-/*
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- * All rights reserved.
- *
- * Licensed under the Oculus SDK License Agreement (the "License");
- * you may not use the Oculus SDK except in compliance with the License,
- * which is provided at the time of installation or download, or which
- * otherwise accompanies this software in either electronic or hard copy form.
- *
- * You may obtain a copy of the License at
- * https://developer.oculus.com/licenses/oculussdk/
- *
- * Unless required by applicable law or agreed to in writing, the Oculus SDK
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-/************************************************************************************
-
-Filename  :  SpatialAnchor.cpp
-Content    :  This sample is derived from VrCubeWorld_SurfaceView.
-                When used in room scale mode, it draws a "carpet" under the
-                user to indicate where it is safe to walk around.
-Created    :  July, 2020
-Authors    :  Cass Everitt
-
-Copyright  :  Copyright (c) Meta Platforms, Inc. and its affiliates. All rights reserved.
-
-*************************************************************************************/
+// SpatialAnchorGl.cpp
 
 #define NUM_EYES 2
 
@@ -221,12 +191,21 @@ static void GLCheckErrors(int line)
 }
 
 #define GL(func) \
-  func; \
-  GLCheckErrors(__LINE__);
+  do \
+  { \
+    func; \
+    GLCheckErrors(__LINE__); \
+  \
+  }while(0)
 
 #else // CHECK_GL_ERRORS
 
-#define GL(func) func;
+#define GL(func) \
+  do \
+  { \
+    func; \
+  \
+  }while(0)
 
 #endif // CHECK_GL_ERRORS
 
@@ -359,7 +338,12 @@ void ovrGeometry::CreateAxes()
   {
     // positions
     {
-      {0, 0, 0}, {1, 0, 0}, {0, 0, 0}, {0, 1, 0}, {0, 0, 0}, {0, 0, 1}
+      {0, 0, 0},
+      {1, 0, 0},
+      {0, 0, 0},
+      {0, 1, 0},
+      {0, 0, 0},
+      {0, 0, 1}
     },
 
     // colors
@@ -647,23 +631,23 @@ bool ovrProgram::Create(const char* vertexSource, const char* fragmentSource)
 
 void ovrProgram::Destroy()
 {
-    if(Program != 0)
-    {
-        GL(glDeleteProgram(Program) );
-        Program = 0;
-    }
+  if(Program != 0)
+  {
+    GL(glDeleteProgram(Program) );
+    Program = 0;
+  }
 
-    if(VertexShader != 0)
-    {
-        GL(glDeleteShader(VertexShader) );
-        VertexShader = 0;
-    }
+  if(VertexShader != 0)
+  {
+    GL(glDeleteShader(VertexShader) );
+    VertexShader = 0;
+  }
 
-    if(FragmentShader != 0)
-    {
-        GL(glDeleteShader(FragmentShader) );
-        FragmentShader = 0;
-    }
+  if(FragmentShader != 0)
+  {
+    GL(glDeleteShader(FragmentShader) );
+    FragmentShader = 0;
+  }
 }
 
 static const char CUBE_VERTEX_SHADER[] =

@@ -485,8 +485,8 @@
                 android:value="helloxr" />
 
             <meta-data
-            android:name="com.oculus.trade_cpu_for_gpu_amount"
-            android:value="1" />
+              android:name="com.oculus.trade_cpu_for_gpu_amount"
+              android:value="1" />
 
             <!-- This filter lets the apk show up as a launchable icon. -->
             <intent-filter>
@@ -496,6 +496,18 @@
             </intent-filter>
 
         </activity>
+
+        <meta-data
+          android:name="com.oculus.trade_cpu_for_gpu_amount"
+          android:value="1"
+        />
+
+        <!--<meta-data
+          android:name="com.oculus.supportedDevices"
+          android:value="quest3"
+          tools:replace="android:value"
+        />-->
+
     </application>
 
 </manifest>

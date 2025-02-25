@@ -23,16 +23,7 @@
  \brief     Implementation of 3D primitives such as vectors, matrices.
  *************************************************************************************/
 
-#if defined(_MSC_VER)
-#pragma warning(push)
-#pragma warning(disable : 4127) // conditional expression is constant
-#endif
-
-#if defined(_MSC_VER)
-#define OVRMath_sprintf sprintf_s
-#else
 #define OVRMath_sprintf snprintf
-#endif
 
 //-------------------------------------------------------------------------------------
 // ***** OVR_MATH_DEBUG_BREAK
@@ -41,13 +32,11 @@
 
 #if !defined(OVR_MATH_DEBUG_BREAK)
 #if defined(_DEBUG)
-#if defined(_MSC_VER)
-#define OVR_MATH_DEBUG_BREAK __debugbreak()
-#else
+
 #define OVR_MATH_DEBUG_BREAK __builtin_trap()
-#endif
+
 #else
-#define OVR_MATH_DEBUG_BREAK ((void)0)
+#define OVR_MATH_DEBUG_BREAK ( (void)0)
 #endif
 #endif
 
@@ -58,14 +47,15 @@
 
 #if !defined(OVR_MATH_ASSERT)
 #if defined(OVR_GTEST)
-#define OVR_MATH_ASSERT(p) EXPECT_TRUE((p));
+#define OVR_MATH_ASSERT(p) EXPECT_TRUE( (p) );
 #elif defined(_DEBUG)
-#define OVR_MATH_ASSERT(p)    \
-    if (!(p)) {               \
-        OVR_MATH_DEBUG_BREAK; \
-    }
+#define OVR_MATH_ASSERT(p) \
+  if( !(p) ) \
+  { \
+    OVR_MATH_DEBUG_BREAK; \
+  }
 #else
-#define OVR_MATH_ASSERT(p) ((void)0)
+#define OVR_MATH_ASSERT(p) ( (void)0)
 #endif
 #endif
 
@@ -75,14 +65,14 @@
 // Independent OVR_MATH_ASSERT implementation for OVR_Math.h.
 
 #if !defined(OVR_MATH_STATIC_ASSERT)
-#if defined(__cplusplus) &&                                                                       \
-    ((defined(_MSC_VER) && (defined(_MSC_VER) >= 1600)) || defined(__GXX_EXPERIMENTAL_CXX0X__) || \
-     (__cplusplus >= 201103L))
+
+#if defined(__cplusplus) && ( defined(__GXX_EXPERIMENTAL_CXX0X__) || (__cplusplus >= 201103L) )
+
 #define OVR_MATH_STATIC_ASSERT static_assert
 #else
 #if !defined(OVR_SA_UNUSED)
 #if defined(__GNUC__) || defined(__clang__)
-#define OVR_SA_UNUSED __attribute__((unused))
+#define OVR_SA_UNUSED __attribute__( (unused) )
 #else
 #define OVR_SA_UNUSED
 #endif
@@ -91,8 +81,8 @@
 #endif
 
 #define OVR_MATH_STATIC_ASSERT(expression, msg) \
-    typedef char OVR_SA_HELP(                   \
-        compileTimeAssert, __LINE__)[((expression) != 0) ? 1 : -1] OVR_SA_UNUSED
+  typedef char OVR_SA_HELP( \
+    compileTimeAssert, __LINE__)[ ( (expression) != 0) ? 1 : -1] OVR_SA_UNUSED
 #endif
 #endif
 
@@ -102,46 +92,54 @@
 // Independent OVR_MATH_UNUSED implementation for OVR_Math.h.
 
 #if defined(__GNUC__) || defined(__clang__)
-#define OVR_MATH_UNUSED(a)                                 \
-    do {                                                   \
-        __typeof__(&a) __attribute__((unused)) __tmp = &a; \
-    } while (0)
+#define OVR_MATH_UNUSED(a) \
+  do \
+  { \
+    __typeof__(&a) __attribute__( (unused) ) __tmp = &a; \
+  \
+  }while(0)
 #else
 #define OVR_MATH_UNUSED(a) (a)
 #endif
 
-namespace OVR {
-
+namespace OVR
+{
 template <class T>
-const T OVRMath_Min(const T a, const T b) {
-    return (a < b) ? a : b;
+const T OVRMath_Min(const T a, const T b)
+{
+  return (a < b) ? a : b;
 }
 
 template <class T>
-const T OVRMath_Max(const T a, const T b) {
-    return (b < a) ? a : b;
+const T OVRMath_Max(const T a, const T b)
+{
+  return (b < a) ? a : b;
 }
 
 template <class T>
-const T OVRMath_Clamp(const T v, const T minVal, const T maxVal) {
-    return OVRMath_Max<T>(minVal, OVRMath_Min<T>(v, maxVal));
+const T OVRMath_Clamp(const T v, const T minVal, const T maxVal)
+{
+  return OVRMath_Max<T>(minVal, OVRMath_Min<T>(v, maxVal) );
 }
 
 template <class T>
-void OVRMath_Swap(T& a, T& b) {
-    T temp(a);
-    a = b;
-    b = temp;
+void OVRMath_Swap(T& a, T& b)
+{
+  T temp(a);
+  a = b;
+  b = temp;
 }
 
 template <typename T, typename F = float>
-T OVRMath_Lerp(T a, T b, F f) {
+T OVRMath_Lerp(T a, T b, F f)
+{
     return (b - a) * f + a;
 }
 
 template <typename T, typename F = float>
-F OVRMath_InvLerp(T a, T b, T c) {
-    return (c - a) / (b - a);
+F OVRMath_InvLerp(T a, T b, T c)
+{
+  return (c - a) / (b - a);
 }
 
 //-------------------------------------------------------------------------------------
@@ -163,7 +161,8 @@ enum RotateDirection { Rotate_CCW = 1, Rotate_CW = -1 };
 enum HandedSystem { Handed_R = 1, Handed_L = -1 };
 
 // AxisDirection describes which way the coordinate axis points. Used by WorldAxes.
-enum AxisDirection {
+enum AxisDirection
+{
     Axis_Up = 2,
     Axis_Down = -2,
     Axis_Right = 1,
@@ -172,11 +171,13 @@ enum AxisDirection {
     Axis_Out = -3
 };
 
-struct WorldAxes {
+struct WorldAxes
+{
     AxisDirection XAxis, YAxis, ZAxis;
 
-    WorldAxes(AxisDirection x, AxisDirection y, AxisDirection z) : XAxis(x), YAxis(y), ZAxis(z) {
-        OVR_MATH_ASSERT(abs(x) != abs(y) && abs(y) != abs(z) && abs(z) != abs(x));
+    WorldAxes(AxisDirection x, AxisDirection y, AxisDirection z) : XAxis(x), YAxis(y), ZAxis(z)
+    {
+        OVR_MATH_ASSERT(abs(x) != abs(y) && abs(y) != abs(z) && abs(z) != abs(x) );
     }
 };
 
@@ -467,17 +468,17 @@ typedef Math<double> Mathd;
 // From The Art of Computer Programming: Seminumerical algorithms (Knuth)
 inline bool EssentiallyEqual(float a, float b) {
     return fabs(a - b) <=
-        ((fabs(a) > fabs(b) ? fabs(b) : fabs(a)) * std::numeric_limits<float>::epsilon());
+        ( (fabs(a) > fabs(b) ? fabs(b) : fabs(a) ) * std::numeric_limits<float>::epsilon() );
 }
 
 inline bool DefinitelyGreaterThan(float a, float b) {
     return (a - b) >
-        ((fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * std::numeric_limits<float>::epsilon());
+        ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a) ) * std::numeric_limits<float>::epsilon() );
 }
 
 inline bool DefinitelyLessThan(float a, float b) {
     return (b - a) >
-        ((fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * std::numeric_limits<float>::epsilon());
+        ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a) ) * std::numeric_limits<float>::epsilon() );
 }
 
 // Conversion functions between degrees and radians
@@ -506,7 +507,7 @@ inline T Sqr(T x) {
 // Safe reciprocal square root.
 template <class T>
 T RcpSqrt(const T f) {
-    return (f >= Math<T>::SmallestNonDenormal()) ? static_cast<T>(1.0 / sqrt(f))
+    return (f >= Math<T>::SmallestNonDenormal() ) ? static_cast<T>(1.0 / sqrt(f) )
                                                  : Math<T>::HugeNumber();
 }
 // MERGE_MOBILE_SDK
@@ -514,7 +515,7 @@ T RcpSqrt(const T f) {
 // Sign: returns 0 if x == 0, -1 if x < 0, and 1 if x > 0
 template <class T>
 inline T Sign(T x) {
-    return (x != T(0)) ? (x < T(0) ? T(-1) : T(1)) : T(0);
+    return (x != T(0) ) ? (x < T(0) ? T(-1) : T(1) ) : T(0);
 }
 
 // Numerically stable acos function
@@ -526,7 +527,7 @@ inline double Acos(double x) {
 }
 template <class T>
 T Acos(T x) {
-    return static_cast<T>(Acos(static_cast<double>(x)));
+    return static_cast<T>(Acos(static_cast<double>(x) ) );
 }
 
 // Numerically stable asin function
@@ -538,7 +539,7 @@ inline double Asin(double x) {
 }
 template <class T>
 T Asin(T x) {
-    return static_cast<T>(Asin(static_cast<double>(x)));
+    return static_cast<T>(Asin(static_cast<double>(x) ) );
 }
 
 inline float Atan2(float o, float a) {
@@ -549,14 +550,8 @@ inline double Atan2(double o, double a) {
 }
 template <class T>
 T Atan2(T o, T a) {
-    return static_cast<T>(Atan2(static_cast<double>(o), static_cast<double>(a)));
+    return static_cast<T>(Atan2(static_cast<double>(o), static_cast<double>(a) ) );
 }
-
-#if defined(_MSC_VER)
-inline int isnan(double x) {
-    return ::_isnan(x);
-}
-#endif
 
 template <class T>
 class Quat;
@@ -579,7 +574,7 @@ class Vector2 {
     Vector2(T x_, T y_) : x(x_), y(y_) {}
     explicit Vector2(T s) : x(s), y(s) {}
     explicit Vector2(const Vector2<typename Math<T>::OtherFloatType>& src)
-        : x((T)src.x), y((T)src.y) {}
+        : x( (T)src.x), y( (T)src.y) {}
 
     static const Vector2 ZERO;
 
@@ -648,26 +643,26 @@ class Vector2 {
     }
 
     static Vector2 Min(const Vector2& a, const Vector2& b) {
-        return Vector2((a.x < b.x) ? a.x : b.x, (a.y < b.y) ? a.y : b.y);
+        return Vector2( (a.x < b.x) ? a.x : b.x, (a.y < b.y) ? a.y : b.y);
     }
     static Vector2 Max(const Vector2& a, const Vector2& b) {
-        return Vector2((a.x > b.x) ? a.x : b.x, (a.y > b.y) ? a.y : b.y);
+        return Vector2( (a.x > b.x) ? a.x : b.x, (a.y > b.y) ? a.y : b.y);
     }
 
     Vector2 Clamped(T maxMag) const {
         T magSquared = LengthSq();
-        if (magSquared <= Sqr(maxMag))
+        if (magSquared <= Sqr(maxMag) )
             return *this;
         else
-            return *this * (maxMag / sqrt(magSquared));
+            return *this * (maxMag / sqrt(magSquared) );
     }
 
     // Compare two vectors for equality with tolerance. Returns true if vectors match within
     // tolerance.
-    bool IsEqual(const Vector2& b, T tolerance = Math<T>::Tolerance()) const {
+    bool IsEqual(const Vector2& b, T tolerance = Math<T>::Tolerance() ) const {
         return (fabs(b.x - x) <= tolerance) && (fabs(b.y - y) <= tolerance);
     }
-    bool Compare(const Vector2& b, T tolerance = Math<T>::Tolerance()) const {
+    bool Compare(const Vector2& b, T tolerance = Math<T>::Tolerance() ) const {
         return IsEqual(b, tolerance);
     }
 
@@ -704,8 +699,8 @@ class Vector2 {
     // Returns the angle from this vector to b, in radians.
     T Angle(const Vector2& b) const {
         T div = LengthSq() * b.LengthSq();
-        OVR_MATH_ASSERT(div != T(0));
-        T result = static_cast<T>(Acos((this->Dot(b)) / sqrt(div)));
+        OVR_MATH_ASSERT(div != T(0) );
+        T result = static_cast<T>(Acos( (this->Dot(b) ) / sqrt(div) ) );
         return result;
     }
 
@@ -716,7 +711,7 @@ class Vector2 {
 
     // Return vector length.
     T Length() const {
-        return static_cast<T>(sqrt(LengthSq()));
+        return static_cast<T>(sqrt(LengthSq() ) );
     }
 
     // Returns squared distance between two points represented by vectors.
@@ -731,13 +726,13 @@ class Vector2 {
 
     // Determine if this a unit vector.
     bool IsNormalized() const {
-        return fabs(LengthSq() - T(1)) < Math<T>::Tolerance();
+        return fabs(LengthSq() - T(1) ) < Math<T>::Tolerance();
     }
 
     // Normalize, convention vector length to 1.
     void Normalize() {
         T s = Length();
-        if (s != T(0))
+        if (s != T(0) )
             s = T(1) / s;
         *this *= s;
     }
@@ -745,7 +740,7 @@ class Vector2 {
     // Returns normalized (unit) version of the vector without modifying itself.
     Vector2 Normalized() const {
         T s = Length();
-        if (s != T(0))
+        if (s != T(0) )
             s = T(1) / s;
         return *this * s;
     }
@@ -760,7 +755,7 @@ class Vector2 {
     // A.Project(B) returns projection of vector A onto B.
     Vector2 ProjectTo(const Vector2& b) const {
         T l2 = b.LengthSq();
-        OVR_MATH_ASSERT(l2 != T(0));
+        OVR_MATH_ASSERT(l2 != T(0) );
         return b * (Dot(b) / l2);
     }
 
@@ -771,7 +766,7 @@ class Vector2 {
 
     template <typename U>
     Vector2<U> CastTo() const {
-        return Vector2<U>(static_cast<U>(x), static_cast<U>(y));
+        return Vector2<U>(static_cast<U>(x), static_cast<U>(y) );
     }
 };
 
@@ -809,7 +804,7 @@ class Vector3 {
     constexpr Vector3(T x_, T y_, T z_ = 0) : x(x_), y(y_), z(z_) {}
     constexpr explicit Vector3(T s) : x(s), y(s), z(s) {}
     constexpr explicit Vector3(const Vector3<typename Math<T>::OtherFloatType>& src)
-        : x((T)src.x), y((T)src.y), z((T)src.z) {}
+        : x( (T)src.x), y( (T)src.y), z( (T)src.z) {}
     // MERGE_MOBILE_SDK
     constexpr Vector3(const Vector2<T>& xy, const T z_) : x(xy.x), y(xy.y), z(z_) {}
     // MERGE_MOBILE_SDK
@@ -885,27 +880,27 @@ class Vector3 {
     }
 
     static Vector3 Min(const Vector3& a, const Vector3& b) {
-        return Vector3((a.x < b.x) ? a.x : b.x, (a.y < b.y) ? a.y : b.y, (a.z < b.z) ? a.z : b.z);
+        return Vector3( (a.x < b.x) ? a.x : b.x, (a.y < b.y) ? a.y : b.y, (a.z < b.z) ? a.z : b.z);
     }
     static Vector3 Max(const Vector3& a, const Vector3& b) {
-        return Vector3((a.x > b.x) ? a.x : b.x, (a.y > b.y) ? a.y : b.y, (a.z > b.z) ? a.z : b.z);
+        return Vector3( (a.x > b.x) ? a.x : b.x, (a.y > b.y) ? a.y : b.y, (a.z > b.z) ? a.z : b.z);
     }
 
     Vector3 Clamped(T maxMag) const {
         T magSquared = LengthSq();
-        if (magSquared <= Sqr(maxMag))
+        if (magSquared <= Sqr(maxMag) )
             return *this;
         else
-            return *this * (maxMag / sqrt(magSquared));
+            return *this * (maxMag / sqrt(magSquared) );
     }
 
     // Compare two vectors for equality with tolerance. Returns true if vectors match within
     // tolerance.
-    bool IsEqual(const Vector3& b, T tolerance = Math<T>::Tolerance()) const {
+    bool IsEqual(const Vector3& b, T tolerance = Math<T>::Tolerance() ) const {
         return (fabs(b.x - x) <= tolerance) && (fabs(b.y - y) <= tolerance) &&
             (fabs(b.z - z) <= tolerance);
     }
-    bool Compare(const Vector3& b, T tolerance = Math<T>::Tolerance()) const {
+    bool Compare(const Vector3& b, T tolerance = Math<T>::Tolerance() ) const {
         return IsEqual(b, tolerance);
     }
 
@@ -950,8 +945,8 @@ class Vector3 {
     // Returns the angle from this vector to b, in radians.
     T Angle(const Vector3& b) const {
         T div = LengthSq() * b.LengthSq();
-        OVR_MATH_ASSERT(div != T(0));
-        T result = static_cast<T>(Acos((this->Dot(b)) / sqrt(div)));
+        OVR_MATH_ASSERT(div != T(0) );
+        T result = static_cast<T>(Acos( (this->Dot(b) ) / sqrt(div) ) );
         return result;
     }
 
@@ -962,7 +957,7 @@ class Vector3 {
 
     // Return vector length.
     T Length() const {
-        return (T)sqrt(LengthSq());
+        return (T)sqrt(LengthSq() );
     }
 
     // Returns squared distance between two points represented by vectors.
@@ -976,13 +971,13 @@ class Vector3 {
     }
 
     bool IsNormalized() const {
-        return fabs(LengthSq() - T(1)) < Math<T>::Tolerance();
+        return fabs(LengthSq() - T(1) ) < Math<T>::Tolerance();
     }
 
     // Normalize, convention vector length to 1.
     void Normalize() {
         T s = Length();
-        if (s != T(0))
+        if (s != T(0) )
             s = T(1) / s;
         *this *= s;
     }
@@ -990,7 +985,7 @@ class Vector3 {
     // Returns normalized (unit) version of the vector without modifying itself.
     Vector3 Normalized() const {
         T s = Length();
-        if (s != T(0))
+        if (s != T(0) )
             s = T(1) / s;
         return *this * s;
     }
@@ -1005,7 +1000,7 @@ class Vector3 {
     // A.Project(B) returns projection of vector A onto B.
     Vector3 ProjectTo(const Vector3& b) const {
         T l2 = b.LengthSq();
-        OVR_MATH_ASSERT(l2 != T(0));
+        OVR_MATH_ASSERT(l2 != T(0) );
         return b * (Dot(b) / l2);
     }
 
@@ -1030,7 +1025,7 @@ class Vector3 {
 
     template <typename U>
     Vector3<U> CastTo() const {
-        return Vector3<U>(static_cast<U>(x), static_cast<U>(y), static_cast<U>(z));
+        return Vector3<U>(static_cast<U>(x), static_cast<U>(y), static_cast<U>(z) );
     }
 };
 
@@ -1050,9 +1045,9 @@ typedef Vector3<float> Vector3f;
 typedef Vector3<double> Vector3d;
 typedef Vector3<int32_t> Vector3i;
 
-OVR_MATH_STATIC_ASSERT((sizeof(Vector3f) == 3 * sizeof(float)), "sizeof(Vector3f) failure");
-OVR_MATH_STATIC_ASSERT((sizeof(Vector3d) == 3 * sizeof(double)), "sizeof(Vector3d) failure");
-OVR_MATH_STATIC_ASSERT((sizeof(Vector3i) == 3 * sizeof(int32_t)), "sizeof(Vector3i) failure");
+OVR_MATH_STATIC_ASSERT( (sizeof(Vector3f) == 3 * sizeof(float) ), "sizeof(Vector3f) failure");
+OVR_MATH_STATIC_ASSERT( (sizeof(Vector3d) == 3 * sizeof(double) ), "sizeof(Vector3d) failure");
+OVR_MATH_STATIC_ASSERT( (sizeof(Vector3i) == 3 * sizeof(int32_t) ), "sizeof(Vector3i) failure");
 
 typedef Vector3<float> Point3f;
 typedef Vector3<double> Point3d;
@@ -1079,10 +1074,10 @@ class Vector4 {
     constexpr Vector4() : x(0), y(0), z(0), w(0) {}
     constexpr Vector4(T x_, T y_, T z_, T w_) : x(x_), y(y_), z(z_), w(w_) {}
     constexpr explicit Vector4(T s) : x(s), y(s), z(s), w(s) {}
-    constexpr explicit Vector4(const Vector3<T>& v, const T w_ = T(1))
+    constexpr explicit Vector4(const Vector3<T>& v, const T w_ = T(1) )
         : x(v.x), y(v.y), z(v.z), w(w_) {}
     constexpr explicit Vector4(const Vector4<typename Math<T>::OtherFloatType>& src)
-        : x((T)src.x), y((T)src.y), z((T)src.z), w((T)src.w) {}
+        : x( (T)src.x), y( (T)src.y), z( (T)src.z), w( (T)src.w) {}
 
     static const Vector4 ZERO;
 
@@ -1178,19 +1173,19 @@ class Vector4 {
 
     Vector4 Clamped(T maxMag) const {
         T magSquared = LengthSq();
-        if (magSquared <= Sqr(maxMag))
+        if (magSquared <= Sqr(maxMag) )
             return *this;
         else
-            return *this * (maxMag / sqrt(magSquared));
+            return *this * (maxMag / sqrt(magSquared) );
     }
 
     // Compare two vectors for equality with tolerance. Returns true if vectors match within
     // tolerance.
-    bool IsEqual(const Vector4& b, T tolerance = Math<T>::Tolerance()) const {
+    bool IsEqual(const Vector4& b, T tolerance = Math<T>::Tolerance() ) const {
         return (fabs(b.x - x) <= tolerance) && (fabs(b.y - y) <= tolerance) &&
             (fabs(b.z - z) <= tolerance) && (fabs(b.w - w) <= tolerance);
     }
-    bool Compare(const Vector4& b, T tolerance = Math<T>::Tolerance()) const {
+    bool Compare(const Vector4& b, T tolerance = Math<T>::Tolerance() ) const {
         return IsEqual(b, tolerance);
     }
 
@@ -1246,17 +1241,17 @@ class Vector4 {
 
     // Return vector length.
     T Length() const {
-        return sqrt(LengthSq());
+        return sqrt(LengthSq() );
     }
 
     bool IsNormalized() const {
-        return fabs(LengthSq() - T(1)) < Math<T>::Tolerance();
+        return fabs(LengthSq() - T(1) ) < Math<T>::Tolerance();
     }
 
     // Normalize, convention vector length to 1.
     void Normalize() {
         T s = Length();
-        if (s != T(0))
+        if (s != T(0) )
             s = T(1) / s;
         *this *= s;
     }
@@ -1264,7 +1259,7 @@ class Vector4 {
     // Returns normalized (unit) version of the vector without modifying itself.
     Vector4 Normalized() const {
         T s = Length();
-        if (s != T(0))
+        if (s != T(0) )
             s = T(1) / s;
         return *this * s;
     }
@@ -1278,7 +1273,7 @@ class Vector4 {
     template <typename U>
     Vector4<U> CastTo() const {
         return Vector4<U>(
-            static_cast<U>(x), static_cast<U>(y), static_cast<U>(z), static_cast<U>(w));
+            static_cast<U>(x), static_cast<U>(y), static_cast<U>(z), static_cast<U>(w) );
     }
 };
 
@@ -1363,7 +1358,7 @@ class Bounds3 {
             OVRMath_Min(a.b[0].z, b.b[0].z),
             OVRMath_Max(a.b[1].x, b.b[1].x),
             OVRMath_Max(a.b[1].y, b.b[1].y),
-            OVRMath_Max(a.b[1].z, b.b[1].z));
+            OVRMath_Max(a.b[1].z, b.b[1].z) );
     }
     // MERGE_MOBILE_SDK
 
@@ -1409,36 +1404,36 @@ class Bounds3 {
     // returns the axial aligned bounds of inputBounds after transformation by pose
     static Bounds3 Transform(const Pose<T>& pose, const Bounds3<T>& inBounds) {
         const Matrix3<T> rotation(pose.Rotation);
-        const Vector3<T> center = (inBounds.b[0] + inBounds.b[1]) * 0.5f;
+        const Vector3<T> center = (inBounds.b[0] + inBounds.b[1] ) * 0.5f;
         const Vector3<T> extents = inBounds.b[1] - center;
         const Vector3<T> newCenter = pose.Translation + rotation * center;
         const Vector3<T> newExtents(
             static_cast<T>(
-                fabs(extents[0] * rotation.M[0][0]) + fabs(extents[1] * rotation.M[0][1]) +
-                fabs(extents[2] * rotation.M[0][2])),
+                fabs(extents[0] * rotation.M[0][0] ) + fabs(extents[1] * rotation.M[0][1] ) +
+                fabs(extents[2] * rotation.M[0][2] ) ),
             static_cast<T>(
-                fabs(extents[0] * rotation.M[1][0]) + fabs(extents[1] * rotation.M[1][1]) +
-                fabs(extents[2] * rotation.M[1][2])),
+                fabs(extents[0] * rotation.M[1][0] ) + fabs(extents[1] * rotation.M[1][1] ) +
+                fabs(extents[2] * rotation.M[1][2] ) ),
             static_cast<T>(
-                fabs(extents[0] * rotation.M[2][0]) + fabs(extents[1] * rotation.M[2][1]) +
-                fabs(extents[2] * rotation.M[2][2])));
+                fabs(extents[0] * rotation.M[2][0] ) + fabs(extents[1] * rotation.M[2][1] ) +
+                fabs(extents[2] * rotation.M[2][2] ) ) );
         return Bounds3<T>(newCenter - newExtents, newCenter + newExtents);
     }
 
     static Bounds3 Transform(const Matrix4<T>& matrix, const Bounds3<T>& inBounds) {
-        const Vector3<T> center = (inBounds.b[0] + inBounds.b[1]) * 0.5f;
+        const Vector3<T> center = (inBounds.b[0] + inBounds.b[1] ) * 0.5f;
         const Vector3<T> extents = inBounds.b[1] - center;
         const Vector3<T> newCenter = matrix.Transform(center);
         const Vector3<T> newExtents(
             static_cast<T>(
-                fabs(extents[0] * matrix.M[0][0]) + fabs(extents[1] * matrix.M[0][1]) +
-                fabs(extents[2] * matrix.M[0][2])),
+                fabs(extents[0] * matrix.M[0][0] ) + fabs(extents[1] * matrix.M[0][1] ) +
+                fabs(extents[2] * matrix.M[0][2] ) ),
             static_cast<T>(
-                fabs(extents[0] * matrix.M[1][0]) + fabs(extents[1] * matrix.M[1][1]) +
-                fabs(extents[2] * matrix.M[1][2])),
+                fabs(extents[0] * matrix.M[1][0] ) + fabs(extents[1] * matrix.M[1][1] ) +
+                fabs(extents[2] * matrix.M[1][2] ) ),
             static_cast<T>(
-                fabs(extents[0] * matrix.M[2][0]) + fabs(extents[1] * matrix.M[2][1]) +
-                fabs(extents[2] * matrix.M[2][2])));
+                fabs(extents[0] * matrix.M[2][0] ) + fabs(extents[1] * matrix.M[2][1] ) +
+                fabs(extents[2] * matrix.M[2][2] ) ) );
         return Bounds3<T>(newCenter - newExtents, newCenter + newExtents);
     }
 
@@ -1466,7 +1461,7 @@ class Size {
     Size() : w(0), h(0) {}
     Size(T w_, T h_) : w(w_), h(h_) {}
     explicit Size(T s) : w(s), h(s) {}
-    explicit Size(const Size<typename Math<T>::OtherFloatType>& src) : w((T)src.w), h((T)src.h) {}
+    explicit Size(const Size<typename Math<T>::OtherFloatType>& src) : w( (T)src.w), h( (T)src.h) {}
 
     // C-interop support.
     typedef typename CompatibleTypes<Size<T>>::Type CompatibleType;
@@ -1541,10 +1536,10 @@ class Size {
     }
 
     static Size Min(const Size& a, const Size& b) {
-        return Size((a.w < b.w) ? a.w : b.w, (a.h < b.h) ? a.h : b.h);
+        return Size( (a.w < b.w) ? a.w : b.w, (a.h < b.h) ? a.h : b.h);
     }
     static Size Max(const Size& a, const Size& b) {
-        return Size((a.w > b.w) ? a.w : b.w, (a.h > b.h) ? a.h : b.h);
+        return Size( (a.w > b.w) ? a.w : b.w, (a.h > b.h) ? a.h : b.h);
     }
 
     T Area() const {
@@ -1615,12 +1610,12 @@ typedef Rect<float> Rectf;
 
 template <typename T>
 T CosineOfHalfAngleFromCosineOfAngle(const T cosineOfAngle) {
-    return (T)(sqrt(((T)1.0 + cosineOfAngle) * (T)0.5));
+    return (T)(sqrt( ( (T)1.0 + cosineOfAngle) * (T)0.5) );
 }
 
 template <typename T>
 T SineOfHalfAngleFromCosineOfAngle(const T cosineOfAngle) {
-    return (T)(sqrtf(((T)1.0 - cosineOfAngle) * (T)0.5));
+    return (T)(sqrtf( ( (T)1.0 - cosineOfAngle) * (T)0.5) );
 }
 
 //-------------------------------------------------------------------------------------//
@@ -1643,7 +1638,7 @@ class Quat {
     Quat() : x(0), y(0), z(0), w(1) {}
     Quat(T x_, T y_, T z_, T w_) : x(x_), y(y_), z(z_), w(w_) {}
     explicit Quat(const Quat<typename Math<T>::OtherFloatType>& src)
-        : x((T)src.x), y((T)src.y), z((T)src.z), w((T)src.w) {
+        : x( (T)src.x), y( (T)src.y), z( (T)src.z), w( (T)src.w) {
         // NOTE: Converting a normalized Quat<float> to Quat<double>
         // will generally result in an un-normalized quaternion.
         // But we don't normalize here in case the quaternion
@@ -1668,18 +1663,18 @@ class Quat {
     // Constructs quaternion for rotation around the axis by an angle.
     Quat(const Vector3<T>& axis, T angle) {
         // Make sure we don't divide by zero.
-        if (axis.LengthSq() == T(0)) {
+        if (axis.LengthSq() == T(0) ) {
             // Assert if the axis is zero, but the angle isn't
-            OVR_MATH_ASSERT(angle == T(0));
+            OVR_MATH_ASSERT(angle == T(0) );
             x = y = z = T(0);
             w = T(1);
             return;
         }
 
         Vector3<T> unitAxis = axis.Normalized();
-        T sinHalfAngle = static_cast<T>(sin(angle * T(0.5)));
+        T sinHalfAngle = static_cast<T>(sin(angle * T(0.5) ) );
 
-        w = static_cast<T>(cos(angle * T(0.5)));
+        w = static_cast<T>(cos(angle * T(0.5) ) );
         x = unitAxis.x * sinHalfAngle;
         y = unitAxis.y * sinHalfAngle;
         z = unitAxis.z * sinHalfAngle;
@@ -1689,12 +1684,12 @@ class Quat {
     Quat(Axis A, T angle, RotateDirection dEnum = Rotate_CCW, HandedSystem sEnum = Handed_R) {
         const T d = static_cast<T>(dEnum);
         const T s = static_cast<T>(sEnum);
-        T sinHalfAngle = s * d * static_cast<T>(sin(angle * T(0.5)));
+        T sinHalfAngle = s * d * static_cast<T>(sin(angle * T(0.5) ) );
         T v[3];
         v[0] = v[1] = v[2] = T(0);
         v[A] = sinHalfAngle;
 
-        w = static_cast<T>(cos(angle * T(0.5)));
+        w = static_cast<T>(cos(angle * T(0.5) ) );
         x = v[0];
         y = v[1];
         z = v[2];
@@ -1709,36 +1704,36 @@ class Quat {
         const T cosineOfAngle,
         const RotateDirection dir) {
         OVR_MATH_ASSERT(axis.LengthSq() > 1e-8f);
-        OVR_MATH_ASSERT(axis.IsNormalized());
+        OVR_MATH_ASSERT(axis.IsNormalized() );
 
         const T sineHalfAngle = SineOfHalfAngleFromCosineOfAngle(cosineOfAngle) * (T)(-dir);
         return Quat(
             axis.x * sineHalfAngle,
             axis.y * sineHalfAngle,
             axis.z * sineHalfAngle,
-            CosineOfHalfAngleFromCosineOfAngle(cosineOfAngle));
+            CosineOfHalfAngleFromCosineOfAngle(cosineOfAngle) );
     }
 
     static Quat LookRotation(const Vector3<T>& fwd, const Vector3<T>& up) {
-        return Quat(Matrix4<T>::LookAtRH(Vector3<T>((T)0, (T)0, (T)0), fwd, up)).Inverted();
+        return Quat(Matrix4<T>::LookAtRH(Vector3<T>( (T)0, (T)0, (T)0), fwd, up) ).Inverted();
     }
     // from basis vectors
     static Quat
     FromBasisVectors(const Vector3<T>& fwd, const Vector3<T>& right, const Vector3<T>& /*up*/) {
-        const T dot = fwd.Dot(Vector3<T>((T)0, (T)0, (T)-1));
+        const T dot = fwd.Dot(Vector3<T>( (T)0, (T)0, (T)-1) );
         const RotateDirection dir =
-            right.Dot(Vector3<T>((T)0, (T)0, (T)-1)) < (T)0 ? Rotate_CCW : Rotate_CW;
-        return FromAxisAndCosineOfAngle(Vector3<T>((T)0, (T)1, (T)0), dot, dir);
+            right.Dot(Vector3<T>( (T)0, (T)0, (T)-1) ) < (T)0 ? Rotate_CCW : Rotate_CW;
+        return FromAxisAndCosineOfAngle(Vector3<T>( (T)0, (T)1, (T)0), dot, dir);
     }
 
     static Quat FromEulerAngles(T rx, T ry, T rz) {
         // Calculate trigonometry of half Euler angles
-        T cy = cos(rz * T(0.5));
-        T sy = sin(rz * T(0.5));
-        T cr = cos(ry * T(0.5));
-        T sr = sin(ry * T(0.5));
-        T cp = cos(rx * T(0.5));
-        T sp = sin(rx * T(0.5));
+        T cy = cos(rz * T(0.5) );
+        T sy = sin(rz * T(0.5) );
+        T cr = cos(ry * T(0.5) );
+        T sr = sin(ry * T(0.5) );
+        T cp = cos(rx * T(0.5) );
+        T sp = sin(rx * T(0.5) );
 
         // Calculate quaternion components
         T w = cy * cr * cp + sy * sr * sp;
@@ -1758,16 +1753,16 @@ class Quat {
 
     // Compute axis and angle from quaternion
     void GetAxisAngle(Vector3<T>* axis, T* angle) const {
-        if (x * x + y * y + z * z > Math<T>::Tolerance() * Math<T>::Tolerance()) {
+        if (x * x + y * y + z * z > Math<T>::Tolerance() * Math<T>::Tolerance() ) {
             *axis = Vector3<T>(x, y, z).Normalized();
             *angle = 2 * Acos(w);
-            if (*angle > ((T)MATH_DOUBLE_PI)) // Reduce the magnitude of the angle, if necessary
+            if (*angle > ( (T)MATH_DOUBLE_PI) ) // Reduce the magnitude of the angle, if necessary
             {
-                *angle = ((T)MATH_DOUBLE_TWOPI) - *angle;
+                *angle = ( (T)MATH_DOUBLE_TWOPI) - *angle;
                 *axis = *axis * (-1);
             }
         } else {
-            *axis = Vector3<T>(static_cast<T>(1), static_cast<T>(0), static_cast<T>(0));
+            *axis = Vector3<T>(static_cast<T>(1), static_cast<T>(0), static_cast<T>(0) );
             *angle = T(0);
         }
     }
@@ -1781,7 +1776,7 @@ class Quat {
         OVR_MATH_ASSERT(IsNormalized() || LengthSq() == 0);
         T s = T(0);
         T sinHalfAngle = (T)sqrt(x * x + y * y + z * z);
-        if (sinHalfAngle > T(0)) {
+        if (sinHalfAngle > T(0) ) {
             T cosHalfAngle = w;
             T halfAngle = (T)atan2(sinHalfAngle, cosHalfAngle);
 
@@ -1797,10 +1792,10 @@ class Quat {
     // Faster version of the above, optimized for use with small rotations, where rotation angle ~=
     // sin(angle)
     inline OVR::Vector3<T> FastToRotationVector() const {
-        OVR_MATH_ASSERT(IsNormalized());
+        OVR_MATH_ASSERT(IsNormalized() );
         T s;
         T sinHalfSquared = x * x + y * y + z * z;
-        if (sinHalfSquared < T(.0037)) // =~ sin(7/2 degrees)^2
+        if (sinHalfSquared < T(.0037) ) // =~ sin(7/2 degrees)^2
         {
             // Max rotation magnitude error is about .062% at 7 degrees rotation, or about .0043
             // degrees
@@ -1820,15 +1815,15 @@ class Quat {
     }
 
     // Given a rotation vector of form unitRotationAxis * angle,
-    // returns the equivalent quaternion (unitRotationAxis * sin(angle), cos(Angle)).
+    // returns the equivalent quaternion (unitRotationAxis * sin(angle), cos(Angle) ).
     static Quat FromRotationVector(const Vector3<T>& v) {
         T angleSquared = v.LengthSq();
         T s = T(0);
         T c = T(1);
-        if (angleSquared > T(0)) {
-            T angle = static_cast<T>(sqrt(angleSquared));
-            s = static_cast<T>(sin(angle * T(0.5))) / angle; // normalize
-            c = static_cast<T>(cos(angle * T(0.5)));
+        if (angleSquared > T(0) ) {
+            T angle = static_cast<T>(sqrt(angleSquared) );
+            s = static_cast<T>(sin(angle * T(0.5) ) ) / angle; // normalize
+            c = static_cast<T>(cos(angle * T(0.5) ) );
         }
         return Quat(s * v.x, s * v.y, s * v.z, c);
     }
@@ -1839,7 +1834,7 @@ class Quat {
     inline static Quat FastFromRotationVector(const OVR::Vector3<T>& v, bool normalize = true) {
         T s, c;
         T angleSquared = v.LengthSq();
-        if (angleSquared < T(0.0076)) // =~ (5 degrees*pi/180)^2
+        if (angleSquared < T(0.0076) ) // =~ (5 degrees*pi/180)^2
         {
             s = T(0.5);
             c = T(1.0);
@@ -1847,14 +1842,14 @@ class Quat {
             // rotation, or .0032 degrees
             if (normalize && angleSquared > 0) {
                 // sin(angle/2)^2 ~= (angle/2)^2 and cos(angle/2)^2 ~= 1
-                T invLen = T(1) / sqrt(angleSquared * T(0.25) + T(1)); // normalize
+                T invLen = T(1) / sqrt(angleSquared * T(0.25) + T(1) ); // normalize
                 s = s * invLen;
                 c = c * invLen;
             }
         } else {
             T angle = sqrt(angleSquared);
-            s = sin(angle * T(0.5)) / angle;
-            c = cos(angle * T(0.5));
+            s = sin(angle * T(0.5) ) / angle;
+            c = cos(angle * T(0.5) );
         }
         return Quat(s * v.x, s * v.y, s * v.z, c);
     }
@@ -1866,32 +1861,32 @@ class Quat {
         // In almost all cases, the first part is executed.
         // However, if the trace is not positive, the other
         // cases arise.
-        if (trace > T(0)) {
-            T s = static_cast<T>(sqrt(trace + T(1))) * T(2); // s=4*qw
+        if (trace > T(0) ) {
+            T s = static_cast<T>(sqrt(trace + T(1) ) ) * T(2); // s=4*qw
             w = T(0.25) * s;
-            x = (m.M[2][1] - m.M[1][2]) / s;
-            y = (m.M[0][2] - m.M[2][0]) / s;
-            z = (m.M[1][0] - m.M[0][1]) / s;
-        } else if ((m.M[0][0] > m.M[1][1]) && (m.M[0][0] > m.M[2][2])) {
-            T s = static_cast<T>(sqrt(T(1) + m.M[0][0] - m.M[1][1] - m.M[2][2])) * T(2);
-            w = (m.M[2][1] - m.M[1][2]) / s;
+            x = (m.M[2][1] - m.M[1][2] ) / s;
+            y = (m.M[0][2] - m.M[2][0] ) / s;
+            z = (m.M[1][0] - m.M[0][1] ) / s;
+        } else if ( (m.M[0][0] > m.M[1][1] ) && (m.M[0][0] > m.M[2][2] ) ) {
+            T s = static_cast<T>(sqrt(T(1) + m.M[0][0] - m.M[1][1] - m.M[2][2] ) ) * T(2);
+            w = (m.M[2][1] - m.M[1][2] ) / s;
             x = T(0.25) * s;
-            y = (m.M[0][1] + m.M[1][0]) / s;
-            z = (m.M[2][0] + m.M[0][2]) / s;
-        } else if (m.M[1][1] > m.M[2][2]) {
-            T s = static_cast<T>(sqrt(T(1) + m.M[1][1] - m.M[0][0] - m.M[2][2])) * T(2); // S=4*qy
-            w = (m.M[0][2] - m.M[2][0]) / s;
-            x = (m.M[0][1] + m.M[1][0]) / s;
+            y = (m.M[0][1] + m.M[1][0] ) / s;
+            z = (m.M[2][0] + m.M[0][2] ) / s;
+        } else if (m.M[1][1] > m.M[2][2] ) {
+            T s = static_cast<T>(sqrt(T(1) + m.M[1][1] - m.M[0][0] - m.M[2][2] ) ) * T(2); // S=4*qy
+            w = (m.M[0][2] - m.M[2][0] ) / s;
+            x = (m.M[0][1] + m.M[1][0] ) / s;
             y = T(0.25) * s;
-            z = (m.M[1][2] + m.M[2][1]) / s;
+            z = (m.M[1][2] + m.M[2][1] ) / s;
         } else {
-            T s = static_cast<T>(sqrt(T(1) + m.M[2][2] - m.M[0][0] - m.M[1][1])) * T(2); // S=4*qz
-            w = (m.M[1][0] - m.M[0][1]) / s;
-            x = (m.M[0][2] + m.M[2][0]) / s;
-            y = (m.M[1][2] + m.M[2][1]) / s;
+            T s = static_cast<T>(sqrt(T(1) + m.M[2][2] - m.M[0][0] - m.M[1][1] ) ) * T(2); // S=4*qz
+            w = (m.M[1][0] - m.M[0][1] ) / s;
+            x = (m.M[0][2] + m.M[2][0] ) / s;
+            y = (m.M[1][2] + m.M[2][1] ) / s;
             z = T(0.25) * s;
         }
-        OVR_MATH_ASSERT(IsNormalized()); // Ensure input matrix is orthogonal
+        OVR_MATH_ASSERT(IsNormalized() ); // Ensure input matrix is orthogonal
     }
 
     // Constructs the quaternion from a rotation matrix
@@ -1901,32 +1896,32 @@ class Quat {
         // In almost all cases, the first part is executed.
         // However, if the trace is not positive, the other
         // cases arise.
-        if (trace > T(0)) {
-            T s = static_cast<T>(sqrt(trace + T(1))) * T(2); // s=4*qw
+        if (trace > T(0) ) {
+            T s = static_cast<T>(sqrt(trace + T(1) ) ) * T(2); // s=4*qw
             w = T(0.25) * s;
-            x = (m.M[2][1] - m.M[1][2]) / s;
-            y = (m.M[0][2] - m.M[2][0]) / s;
-            z = (m.M[1][0] - m.M[0][1]) / s;
-        } else if ((m.M[0][0] > m.M[1][1]) && (m.M[0][0] > m.M[2][2])) {
-            T s = static_cast<T>(sqrt(T(1) + m.M[0][0] - m.M[1][1] - m.M[2][2])) * T(2);
-            w = (m.M[2][1] - m.M[1][2]) / s;
+            x = (m.M[2][1] - m.M[1][2] ) / s;
+            y = (m.M[0][2] - m.M[2][0] ) / s;
+            z = (m.M[1][0] - m.M[0][1] ) / s;
+        } else if ( (m.M[0][0] > m.M[1][1] ) && (m.M[0][0] > m.M[2][2] ) ) {
+            T s = static_cast<T>(sqrt(T(1) + m.M[0][0] - m.M[1][1] - m.M[2][2] ) ) * T(2);
+            w = (m.M[2][1] - m.M[1][2] ) / s;
             x = T(0.25) * s;
-            y = (m.M[0][1] + m.M[1][0]) / s;
-            z = (m.M[2][0] + m.M[0][2]) / s;
-        } else if (m.M[1][1] > m.M[2][2]) {
-            T s = static_cast<T>(sqrt(T(1) + m.M[1][1] - m.M[0][0] - m.M[2][2])) * T(2); // S=4*qy
-            w = (m.M[0][2] - m.M[2][0]) / s;
-            x = (m.M[0][1] + m.M[1][0]) / s;
+            y = (m.M[0][1] + m.M[1][0] ) / s;
+            z = (m.M[2][0] + m.M[0][2] ) / s;
+        } else if (m.M[1][1] > m.M[2][2] ) {
+            T s = static_cast<T>(sqrt(T(1) + m.M[1][1] - m.M[0][0] - m.M[2][2] ) ) * T(2); // S=4*qy
+            w = (m.M[0][2] - m.M[2][0] ) / s;
+            x = (m.M[0][1] + m.M[1][0] ) / s;
             y = T(0.25) * s;
-            z = (m.M[1][2] + m.M[2][1]) / s;
+            z = (m.M[1][2] + m.M[2][1] ) / s;
         } else {
-            T s = static_cast<T>(sqrt(T(1) + m.M[2][2] - m.M[0][0] - m.M[1][1])) * T(2); // S=4*qz
-            w = (m.M[1][0] - m.M[0][1]) / s;
-            x = (m.M[0][2] + m.M[2][0]) / s;
-            y = (m.M[1][2] + m.M[2][1]) / s;
+            T s = static_cast<T>(sqrt(T(1) + m.M[2][2] - m.M[0][0] - m.M[1][1] ) ) * T(2); // S=4*qz
+            w = (m.M[1][0] - m.M[0][1] ) / s;
+            x = (m.M[0][2] + m.M[2][0] ) / s;
+            y = (m.M[1][2] + m.M[2][1] ) / s;
             z = T(0.25) * s;
         }
-        OVR_MATH_ASSERT(IsNormalized()); // Ensure input matrix is orthogonal
+        OVR_MATH_ASSERT(IsNormalized() ); // Ensure input matrix is orthogonal
     }
 
     // MERGE_MOBILE_SDK
@@ -1937,9 +1932,9 @@ class Quat {
         const T cz = from.x * to.y - from.y * to.x;
         const T dot = from.x * to.x + from.y * to.y + from.z * to.z;
         const T crossLengthSq = cx * cx + cy * cy + cz * cz;
-        const T magnitude = static_cast<T>(sqrt(crossLengthSq + dot * dot));
+        const T magnitude = static_cast<T>(sqrt(crossLengthSq + dot * dot) );
         const T cw = dot + magnitude;
-        if (cw < Math<T>::SmallestNonDenormal()) {
+        if (cw < Math<T>::SmallestNonDenormal() ) {
             const T sx = to.y * to.y + to.z * to.z;
             const T sz = to.x * to.x + to.y * to.y;
             if (sx > sz) {
@@ -2018,15 +2013,15 @@ class Quat {
 
     // Compare two quats for equality within tolerance. Returns true if quats match within
     // tolerance.
-    bool IsEqual(const Quat& b, T tolerance = Math<T>::Tolerance()) const {
-        return Abs(Dot(b)) >= T(1) - tolerance;
+    bool IsEqual(const Quat& b, T tolerance = Math<T>::Tolerance() ) const {
+        return Abs(Dot(b) ) >= T(1) - tolerance;
     }
 
     // Compare two quats for equality within tolerance while checking matching hemispheres. Returns
     // true if quats match within tolerance.
-    bool IsEqualMatchHemisphere(Quat b, T tolerance = Math<T>::Tolerance()) const {
+    bool IsEqualMatchHemisphere(Quat b, T tolerance = Math<T>::Tolerance() ) const {
         b.EnsureSameHemisphere(*this);
-        return Abs(Dot(b)) >= T(1) - tolerance;
+        return Abs(Dot(b) ) >= T(1) - tolerance;
     }
 
     static T Abs(const T v) {
@@ -2040,7 +2035,7 @@ class Quat {
 
     // Get quaternion length.
     T Length() const {
-        return static_cast<T>(sqrt(LengthSq()));
+        return static_cast<T>(sqrt(LengthSq() ) );
     }
 
     // Get quaternion length squared.
@@ -2067,29 +2062,29 @@ class Quat {
 
     // Angle between two quaternions in radians
     T Angle(const Quat& q) const {
-        return T(2) * Acos(Abs(Dot(q)));
+        return T(2) * Acos(Abs(Dot(q) ) );
     }
 
     // Angle of quaternion
     T Angle() const {
-        return T(2) * Acos(Abs(w));
+        return T(2) * Acos(Abs(w) );
     }
 
     // Normalize
     bool IsNormalized() const {
-        return fabs(LengthSq() - T(1)) < Math<T>::Tolerance();
+        return fabs(LengthSq() - T(1) ) < Math<T>::Tolerance();
     }
 
     void Normalize() {
         T s = Length();
-        if (s != T(0))
+        if (s != T(0) )
             s = T(1) / s;
         *this *= s;
     }
 
     Quat Normalized() const {
         T s = Length();
-        if (s != T(0))
+        if (s != T(0) )
             s = T(1) / s;
         return *this * s;
     }
@@ -2102,7 +2097,7 @@ class Quat {
     }
 
     inline void EnsureSameHemisphere(const Quat& o) {
-        if (Dot(o) < T(0)) {
+        if (Dot(o) < T(0) ) {
             ChangeHemisphere();
         }
     }
@@ -2144,29 +2139,29 @@ class Quat {
     // Compute quaternion that rotates v into alignTo: alignTo = Quat::Align(alignTo, v).Rotate(v).
     // NOTE: alignTo and v must be normalized.
     static Quat Align(const Vector3<T>& alignTo, const Vector3<T>& v) {
-        OVR_MATH_ASSERT(alignTo.IsNormalized() && v.IsNormalized());
+        OVR_MATH_ASSERT(alignTo.IsNormalized() && v.IsNormalized() );
         Vector3<T> bisector = (v + alignTo);
         bisector.Normalize();
         T cosHalfAngle = v.Dot(bisector); // 0..1
-        if (cosHalfAngle > T(0)) {
+        if (cosHalfAngle > T(0) ) {
             Vector3<T> imag = v.Cross(bisector);
             return Quat(imag.x, imag.y, imag.z, cosHalfAngle);
         } else {
             // cosHalfAngle == 0: a 180 degree rotation.
             // sinHalfAngle == 1, rotation axis is any axis perpendicular
             // to alignTo.  Choose axis to include largest magnitude components
-            if (fabs(v.x) > fabs(v.y)) {
+            if (fabs(v.x) > fabs(v.y) ) {
                 // x or z is max magnitude component
-                // = Cross(v, (0,1,0)).Normalized();
+                // = Cross(v, (0,1,0) ).Normalized();
                 T invLen = sqrt(v.x * v.x + v.z * v.z);
-                if (invLen > T(0))
+                if (invLen > T(0) )
                     invLen = T(1) / invLen;
                 return Quat(-v.z * invLen, 0, v.x * invLen, 0);
             } else {
                 // y or z is max magnitude component
-                // = Cross(v, (1,0,0)).Normalized();
+                // = Cross(v, (1,0,0) ).Normalized();
                 T invLen = sqrt(v.y * v.y + v.z * v.z);
-                if (invLen > T(0))
+                if (invLen > T(0) )
                     invLen = T(1) / invLen;
                 return Quat(0, v.z * invLen, -v.y * invLen, 0);
             }
@@ -2178,19 +2173,19 @@ class Quat {
     // when the angle between the *this and b is large.
     // Use FastSlerp() or Slerp() instead.
     Quat Lerp(const Quat& b, T s) const {
-        return (*this * (T(1) - s) + b * (Dot(b) < 0 ? -s : s)).Normalized();
+        return (*this * (T(1) - s) + b * (Dot(b) < 0 ? -s : s) ).Normalized();
     }
 
     // Spherical linear interpolation between rotations
     Quat Slerp(const Quat& b, T s) const {
-        Vector3<T> delta = (b * this->Inverted()).ToRotationVector();
+        Vector3<T> delta = (b * this->Inverted() ).ToRotationVector();
         return FromRotationVector(delta * s) * *this;
     }
 
     // Spherical linear interpolation: much faster for small rotations, accurate for large
     // rotations. See FastTo/FromRotationVector
     Quat FastSlerp(const Quat& b, T s) const {
-        Vector3<T> delta = (b * this->Inverted()).FastToRotationVector();
+        Vector3<T> delta = (b * this->Inverted() ).FastToRotationVector();
         return (FastFromRotationVector(delta * s, false) * *this).Normalized();
     }
 
@@ -2199,14 +2194,14 @@ class Quat {
     // Leaving it as a gift for future generations to deal with.
     Quat Nlerp(const Quat& other, T a) const {
         T sign = (Dot(other) >= 0.0f) ? 1.0f : -1.0f;
-        return (*this * sign * a + other * (1 - a)).Normalized();
+        return (*this * sign * a + other * (1 - a) ).Normalized();
     }
     // MERGE_MOBILE_SDK
 
     // Rotate transforms vector in a manner that matches Matrix rotations (counter-clockwise,
     // assuming negative direction of the axis). Standard formula: q(t) * V * q(t)^-1.
     Vector3<T> Rotate(const Vector3<T>& v) const {
-        return ((*this * Quat<T>(v.x, v.y, v.z, T(0))) * Inverted()).Imag();
+        return ( (*this * Quat<T>(v.x, v.y, v.z, T(0) ) ) * Inverted() ).Imag();
     }
 
     // Rotation by inverse of *this
@@ -2231,7 +2226,7 @@ class Quat {
     // Time integration of constant angular velocity over dt
     Quat TimeIntegrate(const Vector3<T>& angularVelocity, T dt) const {
         // solution is: this * exp( omega*dt/2 ); FromRotationVector(v) gives exp(v*.5).
-        return (*this * FastFromRotationVector(angularVelocity * dt, false)).Normalized();
+        return (*this * FastFromRotationVector(angularVelocity * dt, false) ).Normalized();
     }
 
     // Time integration of constant angular acceleration and velocity over dt
@@ -2243,7 +2238,7 @@ class Quat {
     //  W1 = (omega + omega1)*dt/2
     //  W2 = cross(omega, omega1)/12*dt^2 % (= -cross(omega_dot, omega)/12*dt^3)
     // Terms 3 and beyond are vanishingly small:
-    //  W3 = cross(omega_dot, cross(omega_dot, omega))/240*dt^5
+    //  W3 = cross(omega_dot, cross(omega_dot, omega) )/240*dt^5
     //
     Quat TimeIntegrate(
         const Vector3<T>& angularVelocity,
@@ -2253,10 +2248,10 @@ class Quat {
         const Vector3<T>& omegaDot = angularAcceleration;
 
         Vector3<T> omega1 = (omega + omegaDot * dt);
-        Vector3<T> W = ((omega + omega1) + omega.Cross(omega1) * (dt / T(6))) * (dt / T(2));
+        Vector3<T> W = ( (omega + omega1) + omega.Cross(omega1) * (dt / T(6) ) ) * (dt / T(2) );
 
         // FromRotationVector(v) is exp(v*.5)
-        return (*this * FastFromRotationVector(W, false)).Normalized();
+        return (*this * FastFromRotationVector(W, false) ).Normalized();
     }
 
     // Decompose rotation into three rotations:
@@ -2278,7 +2273,7 @@ class Quat {
     //
     template <Axis A1, Axis A2, Axis A3, RotateDirection Denum, HandedSystem Senum>
     void GetEulerAngles(T* a, T* b, T* c) const {
-        OVR_MATH_ASSERT(IsNormalized());
+        OVR_MATH_ASSERT(IsNormalized() );
         OVR_MATH_STATIC_ASSERT(
             (A1 != A2) && (A2 != A3) && (A1 != A3), "(A1 != A2) && (A2 != A3) && (A1 != A3)");
 
@@ -2294,41 +2289,41 @@ class Quat {
 
         T psign = T(-1);
         // Determine whether even permutation
-        if (((A1 + 1) % 3 == A2) && ((A2 + 1) % 3 == A3))
+        if ( ( (A1 + 1) % 3 == A2) && ( (A2 + 1) % 3 == A3) )
             psign = T(1);
 
-        T s2 = psign * T(2) * (psign * w * Q[A2] + Q[A1] * Q[A3]);
+        T s2 = psign * T(2) * (psign * w * Q[A2] + Q[A1] * Q[A3] );
 
         T singularityRadius = Math<T>::SingularityRadius();
         if (s2 < T(-1) + singularityRadius) { // South pole singularity
             if (a)
                 *a = T(0);
             if (b)
-                *b = -S * D * ((T)MATH_DOUBLE_PIOVER2);
+                *b = -S * D * ( (T)MATH_DOUBLE_PIOVER2);
             if (c)
                 *c = S * D *
                     static_cast<T>(
-                         atan2(T(2) * (psign * Q[A1] * Q[A2] + w * Q[A3]), ww + Q22 - Q11 - Q33));
+                         atan2(T(2) * (psign * Q[A1] * Q[A2] + w * Q[A3] ), ww + Q22 - Q11 - Q33) );
         } else if (s2 > T(1) - singularityRadius) { // North pole singularity
             if (a)
                 *a = T(0);
             if (b)
-                *b = S * D * ((T)MATH_DOUBLE_PIOVER2);
+                *b = S * D * ( (T)MATH_DOUBLE_PIOVER2);
             if (c)
                 *c = S * D *
                     static_cast<T>(
-                         atan2(T(2) * (psign * Q[A1] * Q[A2] + w * Q[A3]), ww + Q22 - Q11 - Q33));
+                         atan2(T(2) * (psign * Q[A1] * Q[A2] + w * Q[A3] ), ww + Q22 - Q11 - Q33) );
         } else {
             if (a)
                 *a = -S * D *
                     static_cast<T>(
-                        atan2(T(-2) * (w * Q[A1] - psign * Q[A2] * Q[A3]), ww + Q33 - Q11 - Q22));
+                        atan2(T(-2) * (w * Q[A1] - psign * Q[A2] * Q[A3] ), ww + Q33 - Q11 - Q22) );
             if (b)
-                *b = S * D * static_cast<T>(asin(s2));
+                *b = S * D * static_cast<T>(asin(s2) );
             if (c)
                 *c = S * D *
                     static_cast<T>(
-                         atan2(T(2) * (w * Q[A3] - psign * Q[A1] * Q[A2]), ww + Q11 - Q22 - Q33));
+                         atan2(T(2) * (w * Q[A3] - psign * Q[A1] * Q[A2] ), ww + Q11 - Q22 - Q33) );
         }
     }
 
@@ -2352,7 +2347,7 @@ class Quat {
     // Rotations are CCW or CW (D) in LH or RH coordinate system (S)
     template <Axis A1, Axis A2, RotateDirection Denum, HandedSystem Senum>
     void GetEulerAnglesABA(T* a, T* b, T* c) const {
-        OVR_MATH_ASSERT(IsNormalized());
+        OVR_MATH_ASSERT(IsNormalized() );
         OVR_MATH_STATIC_ASSERT(A1 != A2, "A1 != A2");
 
         const T D = static_cast<T>(Denum);
@@ -2369,7 +2364,7 @@ class Quat {
         T Qmm = Q[m] * Q[m];
 
         T psign = T(-1);
-        if ((A1 + 1) % 3 == A2) // Determine whether even permutation
+        if ( (A1 + 1) % 3 == A2) // Determine whether even permutation
         {
             psign = T(1);
         }
@@ -2380,11 +2375,11 @@ class Quat {
             if (a)
                 *a = T(0);
             if (b)
-                *b = S * D * ((T)MATH_DOUBLE_PI);
+                *b = S * D * ( (T)MATH_DOUBLE_PI);
             if (c)
                 *c = S * D *
                     static_cast<T>(
-                         atan2(T(2) * (w * Q[A1] - psign * Q[A2] * Q[m]), ww + Q22 - Q11 - Qmm));
+                         atan2(T(2) * (w * Q[A1] - psign * Q[A2] * Q[m] ), ww + Q22 - Q11 - Qmm) );
         } else if (c2 > T(1) - singularityRadius) { // North pole singularity
             if (a)
                 *a = T(0);
@@ -2393,18 +2388,18 @@ class Quat {
             if (c)
                 *c = S * D *
                     static_cast<T>(
-                         atan2(T(2) * (w * Q[A1] - psign * Q[A2] * Q[m]), ww + Q22 - Q11 - Qmm));
+                         atan2(T(2) * (w * Q[A1] - psign * Q[A2] * Q[m] ), ww + Q22 - Q11 - Qmm) );
         } else {
             if (a)
                 *a = S * D *
                     static_cast<T>(
-                         atan2(psign * w * Q[m] + Q[A1] * Q[A2], w * Q[A2] - psign * Q[A1] * Q[m]));
+                         atan2(psign * w * Q[m] + Q[A1] * Q[A2], w * Q[A2] - psign * Q[A1] * Q[m] ) );
             if (b)
-                *b = S * D * static_cast<T>(acos(c2));
+                *b = S * D * static_cast<T>(acos(c2) );
             if (c)
                 *c = S * D *
                     static_cast<T>(atan2(
-                        -psign * w * Q[m] + Q[A1] * Q[A2], w * Q[A2] + psign * Q[A1] * Q[m]));
+                        -psign * w * Q[m] + Q[A1] * Q[A2], w * Q[A2] + psign * Q[A1] * Q[m] ) );
         }
     }
 
@@ -2450,8 +2445,8 @@ Vector3<T> operator*(const Vector3<T>& v, const Quat<T>& q) {
 typedef Quat<float> Quatf;
 typedef Quat<double> Quatd;
 
-OVR_MATH_STATIC_ASSERT((sizeof(Quatf) == 4 * sizeof(float)), "sizeof(Quatf) failure");
-OVR_MATH_STATIC_ASSERT((sizeof(Quatd) == 4 * sizeof(double)), "sizeof(Quatd) failure");
+OVR_MATH_STATIC_ASSERT( (sizeof(Quatf) == 4 * sizeof(float) ), "sizeof(Quatf) failure");
+OVR_MATH_STATIC_ASSERT( (sizeof(Quatd) == 4 * sizeof(double) ), "sizeof(Quatd) failure");
 
 //-------------------------------------------------------------------------------------
 // ***** Pose
@@ -2472,7 +2467,7 @@ class Pose {
 
     Pose(const Pose& s) : Rotation(s.Rotation), Translation(s.Translation) {}
 
-    Pose(const Matrix3<T>& R, const Vector3<T>& t) : Rotation((Quat<T>)R), Translation(t) {}
+    Pose(const Matrix3<T>& R, const Vector3<T>& t) : Rotation( (Quat<T>)R), Translation(t) {}
 
     Pose(const CompatibleType& s) : Rotation(s.Orientation), Translation(s.Position) {}
 
@@ -2481,7 +2476,7 @@ class Pose {
     explicit Pose(const Pose<typename Math<T>::OtherFloatType>& s)
         : Rotation(s.Rotation), Translation(s.Translation) {
         // Ensure normalized rotation if converting from float to double
-        if (sizeof(T) > sizeof(typename Math<T>::OtherFloatType))
+        if (sizeof(T) > sizeof(typename Math<T>::OtherFloatType) )
             Rotation.Normalize();
     }
 
@@ -2493,10 +2488,10 @@ class Pose {
         return *this;
     }
 
-    explicit Pose(const Matrix4<T>& m) : Rotation(m), Translation(m.GetTranslation()) {}
+    explicit Pose(const Matrix4<T>& m) : Rotation(m), Translation(m.GetTranslation() ) {}
 
     static Pose Identity() {
-        return Pose(Quat<T>(0, 0, 0, 1), Vector3<T>(0, 0, 0));
+        return Pose(Quat<T>(0, 0, 0, 1), Vector3<T>(0, 0, 0) );
     }
 
     void SetIdentity() {
@@ -2510,12 +2505,12 @@ class Pose {
         Translation = Vector3<T>(NAN, NAN, NAN);
     }
 
-    bool IsEqual(const Pose& b, T tolerance = Math<T>::Tolerance()) const {
+    bool IsEqual(const Pose& b, T tolerance = Math<T>::Tolerance() ) const {
         return Translation.IsEqual(b.Translation, tolerance) &&
             Rotation.IsEqual(b.Rotation, tolerance);
     }
 
-    bool IsEqualMatchHemisphere(const Pose& b, T tolerance = Math<T>::Tolerance()) const {
+    bool IsEqualMatchHemisphere(const Pose& b, T tolerance = Math<T>::Tolerance() ) const {
         return Translation.IsEqual(b.Translation, tolerance) &&
             Rotation.IsEqualMatchHemisphere(b.Rotation, tolerance);
     }
@@ -2531,8 +2526,8 @@ class Pose {
     Vector3<T> Translation;
 
     OVR_MATH_STATIC_ASSERT(
-        (sizeof(T) == sizeof(double) || sizeof(T) == sizeof(float)),
-        "(sizeof(T) == sizeof(double) || sizeof(T) == sizeof(float))");
+        (sizeof(T) == sizeof(double) || sizeof(T) == sizeof(float) ),
+        "(sizeof(T) == sizeof(double) || sizeof(T) == sizeof(float) )");
 
     void ToArray(T* arr) const {
         T temp[7] = {
@@ -2548,8 +2543,8 @@ class Pose {
     }
 
     static Pose<T> FromArray(const T* v) {
-        Quat<T> rotation(v[0], v[1], v[2], v[3]);
-        Vector3<T> translation(v[4], v[5], v[6]);
+        Quat<T> rotation(v[0], v[1], v[2], v[3] );
+        Vector3<T> translation(v[4], v[5], v[6] );
         // Ensure rotation is normalized, in case it was originally a float, stored in a .json file,
         // etc.
         return Pose<T>(rotation.Normalized(), translation);
@@ -2580,30 +2575,30 @@ class Pose {
     }
 
     Pose operator*(const Pose& other) const {
-        return Pose(Rotation * other.Rotation, Apply(other.Translation));
+        return Pose(Rotation * other.Rotation, Apply(other.Translation) );
     }
 
     Pose Inverted() const {
         Quat<T> inv = Rotation.Inverted();
-        return Pose(inv, inv.Rotate(-Translation));
+        return Pose(inv, inv.Rotate(-Translation) );
     }
 
     // Interpolation between two poses: translation is interpolated with Lerp(),
     // and rotations are interpolated with Slerp().
     Pose Lerp(const Pose& b, T s) const {
-        return Pose(Rotation.Slerp(b.Rotation, s), Translation.Lerp(b.Translation, s));
+        return Pose(Rotation.Slerp(b.Rotation, s), Translation.Lerp(b.Translation, s) );
     }
 
     // Similar to Lerp above, except faster in case of small rotation differences.  See
     // Quat<T>::FastSlerp.
     Pose FastLerp(const Pose& b, T s) const {
-        return Pose(Rotation.FastSlerp(b.Rotation, s), Translation.Lerp(b.Translation, s));
+        return Pose(Rotation.FastSlerp(b.Rotation, s), Translation.Lerp(b.Translation, s) );
     }
 
     Pose TimeIntegrate(const Vector3<T>& linearVelocity, const Vector3<T>& angularVelocity, T dt)
         const {
         return Pose(
-            (Rotation * Quat<T>::FastFromRotationVector(angularVelocity * dt, false)).Normalized(),
+            (Rotation * Quat<T>::FastFromRotationVector(angularVelocity * dt, false) ).Normalized(),
             Translation + linearVelocity * dt);
     }
 
@@ -2615,7 +2610,7 @@ class Pose {
         T dt) const {
         return Pose(
             Rotation.TimeIntegrate(angularVelocity, angularAcceleration, dt),
-            Translation + linearVelocity * dt + linearAcceleration * dt * dt * T(0.5));
+            Translation + linearVelocity * dt + linearAcceleration * dt * dt * T(0.5) );
     }
 
     bool IsNan() const {
@@ -2627,10 +2622,10 @@ typedef Pose<float> Posef;
 typedef Pose<double> Posed;
 
 OVR_MATH_STATIC_ASSERT(
-    (sizeof(Posed) == sizeof(Quatd) + sizeof(Vector3d)),
+    (sizeof(Posed) == sizeof(Quatd) + sizeof(Vector3d) ),
     "sizeof(Posed) failure");
 OVR_MATH_STATIC_ASSERT(
-    (sizeof(Posef) == sizeof(Quatf) + sizeof(Vector3f)),
+    (sizeof(Posef) == sizeof(Quatf) + sizeof(Vector3f) ),
     "sizeof(Posef) failure");
 
 //-------------------------------------------------------------------------------------
@@ -2758,7 +2753,7 @@ class Matrix4 {
     }
 
     explicit Matrix4(const Quat<T>& q) {
-        OVR_MATH_ASSERT(q.IsNormalized());
+        OVR_MATH_ASSERT(q.IsNormalized() );
         T ww = q.w * q.w;
         T xx = q.x * q.x;
         T yy = q.y * q.y;
@@ -2798,14 +2793,14 @@ class Matrix4 {
     // C-interop support.
     Matrix4(const typename CompatibleTypes<Matrix4<T>>::Type& s) {
         OVR_MATH_STATIC_ASSERT(sizeof(s) == sizeof(Matrix4), "sizeof(s) == sizeof(Matrix4)");
-        memcpy(M, s.M, sizeof(M));
+        memcpy(M, s.M, sizeof(M) );
     }
 
     operator typename CompatibleTypes<Matrix4<T>>::Type() const {
         typename CompatibleTypes<Matrix4<T>>::Type result;
         OVR_MATH_STATIC_ASSERT(
             sizeof(result) == sizeof(Matrix4), "sizeof(result) == sizeof(Matrix4)");
-        memcpy(result.M, M, sizeof(M));
+        memcpy(result.M, M, sizeof(M) );
         return result;
     }
 
@@ -2813,7 +2808,7 @@ class Matrix4 {
         size_t pos = 0;
         for (int r = 0; r < 4; r++) {
             for (int c = 0; c < 4; c++) {
-                pos += OVRMath_sprintf(dest + pos, destsize - pos, "%g ", M[r][c]);
+                pos += OVRMath_sprintf(dest + pos, destsize - pos, "%g ", M[r][c] );
             }
         }
     }
@@ -2853,7 +2848,7 @@ class Matrix4 {
         M[2][0] = v.z;
     }
     Vector3<T> GetXBasis() const {
-        return Vector3<T>(M[0][0], M[1][0], M[2][0]);
+        return Vector3<T>(M[0][0], M[1][0], M[2][0] );
     }
 
     void SetYBasis(const Vector3<T>& v) {
@@ -2862,7 +2857,7 @@ class Matrix4 {
         M[2][1] = v.z;
     }
     Vector3<T> GetYBasis() const {
-        return Vector3<T>(M[0][1], M[1][1], M[2][1]);
+        return Vector3<T>(M[0][1], M[1][1], M[2][1] );
     }
 
     void SetZBasis(const Vector3<T>& v) {
@@ -2871,7 +2866,7 @@ class Matrix4 {
         M[2][2] = v.z;
     }
     Vector3<T> GetZBasis() const {
-        return Vector3<T>(M[0][2], M[1][2], M[2][2]);
+        return Vector3<T>(M[0][2], M[1][2], M[2][2] );
     }
 
     T operator()(int i, int j) const {
@@ -2885,7 +2880,7 @@ class Matrix4 {
         bool isEqual = true;
         for (int i = 0; i < 4; i++)
             for (int j = 0; j < 4; j++)
-                isEqual &= (M[i][j] == b.M[i][j]);
+                isEqual &= (M[i][j] == b.M[i][j] );
 
         return isEqual;
     }
@@ -2918,7 +2913,7 @@ class Matrix4 {
 
     // Multiplies two matrices into destination with minimum copying.
     static Matrix4& Multiply(Matrix4* d, const Matrix4& a, const Matrix4& b) {
-        OVR_MATH_ASSERT((d != &a) && (d != &b));
+        OVR_MATH_ASSERT( (d != &a) && (d != &b) );
         int i = 0;
         do {
             d->M[i][0] = a.M[i][0] * b.M[0][0] + a.M[i][1] * b.M[1][0] + a.M[i][2] * b.M[2][0] +
@@ -2929,7 +2924,7 @@ class Matrix4 {
                 a.M[i][3] * b.M[3][2];
             d->M[i][3] = a.M[i][0] * b.M[0][3] + a.M[i][1] * b.M[1][3] + a.M[i][2] * b.M[2][3] +
                 a.M[i][3] * b.M[3][3];
-        } while ((++i) < 4);
+        } while ( (++i) < 4);
 
         return *d;
     }
@@ -2975,13 +2970,13 @@ class Matrix4 {
     }
 
     Vector3<T> Transform(const Vector3<T>& v) const {
-        const T w = (M[3][0] * v.x + M[3][1] * v.y + M[3][2] * v.z + M[3][3]);
-        OVR_MATH_ASSERT(fabs(w) >= Math<T>::SmallestNonDenormal());
+        const T w = (M[3][0] * v.x + M[3][1] * v.y + M[3][2] * v.z + M[3][3] );
+        OVR_MATH_ASSERT(fabs(w) >= Math<T>::SmallestNonDenormal() );
         const T rcpW = T(1) / w;
         return Vector3<T>(
-            (M[0][0] * v.x + M[0][1] * v.y + M[0][2] * v.z + M[0][3]) * rcpW,
-            (M[1][0] * v.x + M[1][1] * v.y + M[1][2] * v.z + M[1][3]) * rcpW,
-            (M[2][0] * v.x + M[2][1] * v.y + M[2][2] * v.z + M[2][3]) * rcpW);
+            (M[0][0] * v.x + M[0][1] * v.y + M[0][2] * v.z + M[0][3] ) * rcpW,
+            (M[1][0] * v.x + M[1][1] * v.y + M[1][2] * v.z + M[1][3] ) * rcpW,
+            (M[2][0] * v.x + M[2][1] * v.y + M[2][2] * v.z + M[2][3] ) * rcpW);
     }
 
     Vector4<T> Transform(const Vector4<T>& v) const {
@@ -3009,7 +3004,7 @@ class Matrix4 {
             M[0][3],
             M[1][3],
             M[2][3],
-            M[3][3]);
+            M[3][3] );
     }
 
     void Transpose() {
@@ -3017,19 +3012,19 @@ class Matrix4 {
     }
 
     T SubDet(const size_t* rows, const size_t* cols) const {
-        return M[rows[0]][cols[0]] *
-            (M[rows[1]][cols[1]] * M[rows[2]][cols[2]] -
-             M[rows[1]][cols[2]] * M[rows[2]][cols[1]]) -
-            M[rows[0]][cols[1]] *
-            (M[rows[1]][cols[0]] * M[rows[2]][cols[2]] -
-             M[rows[1]][cols[2]] * M[rows[2]][cols[0]]) +
-            M[rows[0]][cols[2]] *
-            (M[rows[1]][cols[0]] * M[rows[2]][cols[1]] - M[rows[1]][cols[1]] * M[rows[2]][cols[0]]);
+        return M[rows[0] ][cols[0] ] *
+            (M[rows[1] ][cols[1] ] * M[rows[2] ][cols[2] ] -
+             M[rows[1] ][cols[2] ] * M[rows[2] ][cols[1] ] ) -
+            M[rows[0] ][cols[1] ] *
+            (M[rows[1] ][cols[0] ] * M[rows[2] ][cols[2] ] -
+             M[rows[1] ][cols[2] ] * M[rows[2] ][cols[0] ] ) +
+            M[rows[0] ][cols[2] ] *
+            (M[rows[1] ][cols[0] ] * M[rows[2] ][cols[1] ] - M[rows[1] ][cols[1] ] * M[rows[2] ][cols[0] ] );
     }
 
     T Cofactor(size_t I, size_t J) const {
         const size_t indices[4][3] = {{1, 2, 3}, {0, 2, 3}, {0, 1, 3}, {0, 1, 2}};
-        return ((I + J) & 1) ? -SubDet(indices[I], indices[J]) : SubDet(indices[I], indices[J]);
+        return ( (I + J) & 1) ? -SubDet(indices[I], indices[J] ) : SubDet(indices[I], indices[J] );
     }
 
     T Determinant() const {
@@ -3054,12 +3049,12 @@ class Matrix4 {
             Cofactor(0, 3),
             Cofactor(1, 3),
             Cofactor(2, 3),
-            Cofactor(3, 3));
+            Cofactor(3, 3) );
     }
 
     Matrix4 Inverted() const {
         T det = Determinant();
-        OVR_MATH_ASSERT(fabs(det) >= Math<T>::SmallestNonDenormal());
+        OVR_MATH_ASSERT(fabs(det) >= Math<T>::SmallestNonDenormal() );
         return Adjugated() * (T(1) / det);
     }
 
@@ -3074,7 +3069,7 @@ class Matrix4 {
         Matrix4 rinv = this->Transposed();
         rinv.M[3][0] = rinv.M[3][1] = rinv.M[3][2] = T(0);
         // Make the inverse translation matrix
-        Vector3<T> tvinv(-M[0][3], -M[1][3], -M[2][3]);
+        Vector3<T> tvinv(-M[0][3], -M[1][3], -M[2][3] );
         Matrix4 tinv = Matrix4::Translation(tvinv);
         return rinv * tinv; // "untranslate", then "unrotate"
     }
@@ -3100,23 +3095,23 @@ class Matrix4 {
         const T S = static_cast<T>(Senum);
 
         T psign = T(-1);
-        if (((A1 + 1) % 3 == A2) && ((A2 + 1) % 3 == A3)) // Determine whether even permutation
+        if ( ( (A1 + 1) % 3 == A2) && ( (A2 + 1) % 3 == A3) ) // Determine whether even permutation
             psign = T(1);
 
         T pm = psign * M[A1][A3];
         T singularityRadius = Math<T>::SingularityRadius();
         if (pm < T(-1) + singularityRadius) { // South pole singularity
             *a = T(0);
-            *b = -S * D * ((T)MATH_DOUBLE_PIOVER2);
-            *c = S * D * static_cast<T>(atan2(psign * M[A2][A1], M[A2][A2]));
+            *b = -S * D * ( (T)MATH_DOUBLE_PIOVER2);
+            *c = S * D * static_cast<T>(atan2(psign * M[A2][A1], M[A2][A2] ) );
         } else if (pm > T(1) - singularityRadius) { // North pole singularity
             *a = T(0);
-            *b = S * D * ((T)MATH_DOUBLE_PIOVER2);
-            *c = S * D * static_cast<T>(atan2(psign * M[A2][A1], M[A2][A2]));
+            *b = S * D * ( (T)MATH_DOUBLE_PIOVER2);
+            *c = S * D * static_cast<T>(atan2(psign * M[A2][A1], M[A2][A2] ) );
         } else { // Normal case (nonsingular)
-            *a = S * D * static_cast<T>(atan2(-psign * M[A2][A3], M[A3][A3]));
-            *b = S * D * static_cast<T>(asin(pm));
-            *c = S * D * static_cast<T>(atan2(-psign * M[A1][A2], M[A1][A1]));
+            *a = S * D * static_cast<T>(atan2(-psign * M[A2][A3], M[A3][A3] ) );
+            *b = S * D * static_cast<T>(asin(pm) );
+            *c = S * D * static_cast<T>(atan2(-psign * M[A1][A2], M[A1][A1] ) );
         }
     }
 
@@ -3137,33 +3132,33 @@ class Matrix4 {
         int m = 3 - A1 - A2;
 
         T psign = T(-1);
-        if ((A1 + 1) % 3 == A2) // Determine whether even permutation
+        if ( (A1 + 1) % 3 == A2) // Determine whether even permutation
             psign = T(1);
 
         T c2 = M[A1][A1];
         T singularityRadius = Math<T>::SingularityRadius();
         if (c2 < T(-1) + singularityRadius) { // South pole singularity
             *a = T(0);
-            *b = S * D * ((T)MATH_DOUBLE_PI);
-            *c = S * D * static_cast<T>(atan2(-psign * M[A2][m], M[A2][A2]));
+            *b = S * D * ( (T)MATH_DOUBLE_PI);
+            *c = S * D * static_cast<T>(atan2(-psign * M[A2][m], M[A2][A2] ) );
         } else if (c2 > T(1) - singularityRadius) { // North pole singularity
             *a = T(0);
             *b = T(0);
-            *c = S * D * static_cast<T>(atan2(-psign * M[A2][m], M[A2][A2]));
+            *c = S * D * static_cast<T>(atan2(-psign * M[A2][m], M[A2][A2] ) );
         } else { // Normal case (nonsingular)
-            *a = S * D * static_cast<T>(atan2(M[A2][A1], -psign * M[m][A1]));
-            *b = S * D * static_cast<T>(acos(c2));
-            *c = S * D * static_cast<T>(atan2(M[A1][A2], psign * M[A1][m]));
+            *a = S * D * static_cast<T>(atan2(M[A2][A1], -psign * M[m][A1] ) );
+            *b = S * D * static_cast<T>(acos(c2) );
+            *c = S * D * static_cast<T>(atan2(M[A1][A2], psign * M[A1][m] ) );
         }
     }
 
     // Decouple a TRS (translation, rotation, scaling) matrix.
     // The matrix should be a valid TRS matrix.
     void DecoupleTRS(Vector3<T>* translation, Quat<T>* rotation, Vector3<T>* scale) const {
-        *translation = Vector3<T>(M[0][3], M[1][3], M[2][3]);
-        scale->x = Vector3<T>(M[0][0], M[1][0], M[2][0]).Length();
-        scale->y = Vector3<T>(M[0][1], M[1][1], M[2][1]).Length();
-        scale->z = Vector3<T>(M[0][2], M[1][2], M[2][2]).Length();
+        *translation = Vector3<T>(M[0][3], M[1][3], M[2][3] );
+        scale->x = Vector3<T>(M[0][0], M[1][0], M[2][0] ).Length();
+        scale->y = Vector3<T>(M[0][1], M[1][1], M[2][1] ).Length();
+        scale->z = Vector3<T>(M[0][2], M[1][2], M[2][2] ).Length();
         Matrix3<T> rotationM(
             M[0][0] / scale->x,
             M[0][1] / scale->y,
@@ -3199,7 +3194,7 @@ class Matrix4 {
         t_lerped = ta.Lerp(tb, s);
         r_lerped = ra.Slerp(rb, s);
         s_lerped = sa.Lerp(sb, s);
-        return Matrix4(Pose(r_lerped, t_lerped)) * Matrix4::Scaling(s_lerped);
+        return Matrix4(Pose(r_lerped, t_lerped) ) * Matrix4::Scaling(s_lerped);
     }
 
     // Creates a matrix that converts the vertices from one coordinate system
@@ -3210,16 +3205,16 @@ class Matrix4 {
 
         // The inverse of the toArray
         int inv[4];
-        inv[0] = inv[abs(to.XAxis)] = 0;
-        inv[abs(to.YAxis)] = 1;
-        inv[abs(to.ZAxis)] = 2;
+        inv[0] = inv[abs(to.XAxis) ] = 0;
+        inv[abs(to.YAxis) ] = 1;
+        inv[abs(to.ZAxis) ] = 2;
 
         Matrix4 m(0, 0, 0, 0, 0, 0, 0, 0, 0);
 
         // Only three values in the matrix need to be changed to 1 or -1.
-        m.M[inv[abs(from.XAxis)]][0] = T(from.XAxis / toArray[inv[abs(from.XAxis)]]);
-        m.M[inv[abs(from.YAxis)]][1] = T(from.YAxis / toArray[inv[abs(from.YAxis)]]);
-        m.M[inv[abs(from.ZAxis)]][2] = T(from.ZAxis / toArray[inv[abs(from.ZAxis)]]);
+        m.M[inv[abs(from.XAxis) ] ][0] = T(from.XAxis / toArray[inv[abs(from.XAxis) ] ] );
+        m.M[inv[abs(from.YAxis) ] ][1] = T(from.YAxis / toArray[inv[abs(from.YAxis) ] ] );
+        m.M[inv[abs(from.ZAxis) ] ][2] = T(from.ZAxis / toArray[inv[abs(from.ZAxis) ] ] );
         return m;
     }
 
@@ -3233,7 +3228,7 @@ class Matrix4 {
     }
 
     // Creates a matrix for translation by vector
-    static Matrix4 Translation(T x, T y, T z = T(0)) {
+    static Matrix4 Translation(T x, T y, T z = T(0) ) {
         Matrix4 t;
         t.M[0][3] = x;
         t.M[1][3] = y;
@@ -3249,7 +3244,7 @@ class Matrix4 {
     }
 
     Vector3<T> GetTranslation() const {
-        return Vector3<T>(M[0][3], M[1][3], M[2][3]);
+        return Vector3<T>(M[0][3], M[1][3], M[2][3] );
     }
 
     // Creates a matrix for scaling by vector
@@ -3301,14 +3296,14 @@ class Matrix4 {
 
     // Simple L1 distance in R^12
     T Distance(const Matrix4& m2) const {
-        T d = fabs(M[0][0] - m2.M[0][0]) + fabs(M[0][1] - m2.M[0][1]);
-        d += fabs(M[0][2] - m2.M[0][2]) + fabs(M[0][3] - m2.M[0][3]);
-        d += fabs(M[1][0] - m2.M[1][0]) + fabs(M[1][1] - m2.M[1][1]);
-        d += fabs(M[1][2] - m2.M[1][2]) + fabs(M[1][3] - m2.M[1][3]);
-        d += fabs(M[2][0] - m2.M[2][0]) + fabs(M[2][1] - m2.M[2][1]);
-        d += fabs(M[2][2] - m2.M[2][2]) + fabs(M[2][3] - m2.M[2][3]);
-        d += fabs(M[3][0] - m2.M[3][0]) + fabs(M[3][1] - m2.M[3][1]);
-        d += fabs(M[3][2] - m2.M[3][2]) + fabs(M[3][3] - m2.M[3][3]);
+        T d = fabs(M[0][0] - m2.M[0][0] ) + fabs(M[0][1] - m2.M[0][1] );
+        d += fabs(M[0][2] - m2.M[0][2] ) + fabs(M[0][3] - m2.M[0][3] );
+        d += fabs(M[1][0] - m2.M[1][0] ) + fabs(M[1][1] - m2.M[1][1] );
+        d += fabs(M[1][2] - m2.M[1][2] ) + fabs(M[1][3] - m2.M[1][3] );
+        d += fabs(M[2][0] - m2.M[2][0] ) + fabs(M[2][1] - m2.M[2][1] );
+        d += fabs(M[2][2] - m2.M[2][2] ) + fabs(M[2][3] - m2.M[2][3] );
+        d += fabs(M[3][0] - m2.M[3][0] ) + fabs(M[3][1] - m2.M[3][1] );
+        d += fabs(M[3][2] - m2.M[3][2] ) + fabs(M[3][3] - m2.M[3][3] );
         return d;
     }
 
@@ -3340,8 +3335,8 @@ class Matrix4 {
     // LHS: Positive angle values rotate clock-wise (CW), while looking in the
     //       negative axis direction.
     static Matrix4 RotationX(T angle) {
-        T sina = static_cast<T>(sin(angle));
-        T cosa = static_cast<T>(cos(angle));
+        T sina = static_cast<T>(sin(angle) );
+        T cosa = static_cast<T>(cos(angle) );
         return Matrix4(1, 0, 0, 0, cosa, -sina, 0, sina, cosa);
     }
 
@@ -3353,8 +3348,8 @@ class Matrix4 {
     //  LHS: Positive angle values rotate clock-wise (CW), while looking in the
     //       negative axis direction.
     static Matrix4 RotationY(T angle) {
-        T sina = static_cast<T>(sin(angle));
-        T cosa = static_cast<T>(cos(angle));
+        T sina = static_cast<T>(sin(angle) );
+        T cosa = static_cast<T>(cos(angle) );
         return Matrix4(cosa, 0, sina, 0, 1, 0, -sina, 0, cosa);
     }
 
@@ -3366,8 +3361,8 @@ class Matrix4 {
     //  LHS: Positive angle values rotate clock-wise (CW), while looking in the
     //       negative axis direction.
     static Matrix4 RotationZ(T angle) {
-        T sina = static_cast<T>(sin(angle));
-        T cosa = static_cast<T>(cos(angle));
+        T sina = static_cast<T>(sin(angle) );
+        T cosa = static_cast<T>(cos(angle) );
         return Matrix4(cosa, -sina, 0, sina, cosa, 0, 0, 0, 1);
     }
 
@@ -3407,15 +3402,15 @@ class Matrix4 {
             x.x,
             x.y,
             x.z,
-            -(x.Dot(eye)),
+            -(x.Dot(eye) ),
             y.x,
             y.y,
             y.z,
-            -(y.Dot(eye)),
+            -(y.Dot(eye) ),
             z.x,
             z.y,
             z.z,
-            -(z.Dot(eye)),
+            -(z.Dot(eye) ),
             0,
             0,
             0,
@@ -3436,15 +3431,15 @@ class Matrix4 {
             x.x,
             x.y,
             x.z,
-            -(x.Dot(eye)),
+            -(x.Dot(eye) ),
             y.x,
             y.y,
             y.z,
-            -(y.Dot(eye)),
+            -(y.Dot(eye) ),
             z.x,
             z.y,
             z.z,
-            -(z.Dot(eye)),
+            -(z.Dot(eye) ),
             0,
             0,
             0,
@@ -3454,8 +3449,8 @@ class Matrix4 {
 
     // MERGE_MOBILE_SDK
     static Matrix4 CreateFromBasisVectors(Vector3<T> const& zBasis, Vector3<T> const& up) {
-        OVR_MATH_ASSERT(zBasis.IsNormalized());
-        OVR_MATH_ASSERT(up.IsNormalized());
+        OVR_MATH_ASSERT(zBasis.IsNormalized() );
+        OVR_MATH_ASSERT(up.IsNormalized() );
         T dot = zBasis.Dot(up);
         if (dot < (T)-0.9999 || dot > (T)0.9999) {
             // z basis cannot be parallel to the specified up
@@ -3500,7 +3495,7 @@ class Matrix4 {
     // are expected for znear and zfar.
     static Matrix4 PerspectiveRH(T yfov, T aspect, T znear, T zfar) {
         Matrix4 m;
-        T tanHalfFov = static_cast<T>(tan(yfov * T(0.5)));
+        T tanHalfFov = static_cast<T>(tan(yfov * T(0.5) ) );
 
         m.M[0][0] = T(1) / (aspect * tanHalfFov);
         m.M[1][1] = T(1) / tanHalfFov;
@@ -3524,7 +3519,7 @@ class Matrix4 {
     //  zfar   - Absolute value of far  Z clipping clipping range (larger then near).
     static Matrix4 PerspectiveLH(T yfov, T aspect, T znear, T zfar) {
         Matrix4 m;
-        T tanHalfFov = static_cast<T>(tan(yfov * T(0.5)));
+        T tanHalfFov = static_cast<T>(tan(yfov * T(0.5) ) );
 
         m.M[0][0] = T(1) / (aspect * tanHalfFov);
         m.M[1][1] = T(1) / tanHalfFov;
@@ -3628,7 +3623,7 @@ class Matrix3 {
     }
 
     explicit Matrix3(const Quat<T>& q) {
-        OVR_MATH_ASSERT(q.IsNormalized());
+        OVR_MATH_ASSERT(q.IsNormalized() );
         const T tx = q.x + q.x, ty = q.y + q.y, tz = q.z + q.z;
         const T twx = q.w * tx, twy = q.w * ty, twz = q.w * tz;
         const T txx = q.x * tx, txy = q.x * ty, txz = q.x * tz;
@@ -3670,7 +3665,7 @@ class Matrix3 {
     // C-interop support.
     Matrix3(const typename CompatibleTypes<Matrix3<T>>::Type& s) {
         OVR_MATH_STATIC_ASSERT(sizeof(s) == sizeof(Matrix3), "sizeof(s) == sizeof(Matrix3)");
-        memcpy(M, s.M, sizeof(M));
+        memcpy(M, s.M, sizeof(M) );
     }
 
     explicit Matrix3(const Matrix4<T>& m) {
@@ -3689,7 +3684,7 @@ class Matrix3 {
         typename CompatibleTypes<Matrix3<T>>::Type result;
         OVR_MATH_STATIC_ASSERT(
             sizeof(result) == sizeof(Matrix3), "sizeof(result) == sizeof(Matrix3)");
-        memcpy(result.M, M, sizeof(M));
+        memcpy(result.M, M, sizeof(M) );
         return result;
     }
 
@@ -3704,7 +3699,7 @@ class Matrix3 {
         size_t pos = 0;
         for (int r = 0; r < 3; r++) {
             for (int c = 0; c < 3; c++)
-                pos += OVRMath_sprintf(dest + pos, destsize - pos, "%g ", M[r][c]);
+                pos += OVRMath_sprintf(dest + pos, destsize - pos, "%g ", M[r][c] );
         }
     }
 
@@ -3749,7 +3744,7 @@ class Matrix3 {
         bool isEqual = true;
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++)
-                isEqual &= (M[i][j] == b.M[i][j]);
+                isEqual &= (M[i][j] == b.M[i][j] );
         }
 
         return isEqual;
@@ -3793,13 +3788,13 @@ class Matrix3 {
 
     // Multiplies two matrices into destination with minimum copying.
     static Matrix3& Multiply(Matrix3* d, const Matrix3& a, const Matrix3& b) {
-        OVR_MATH_ASSERT((d != &a) && (d != &b));
+        OVR_MATH_ASSERT( (d != &a) && (d != &b) );
         int i = 0;
         do {
             d->M[i][0] = a.M[i][0] * b.M[0][0] + a.M[i][1] * b.M[1][0] + a.M[i][2] * b.M[2][0];
             d->M[i][1] = a.M[i][0] * b.M[0][1] + a.M[i][1] * b.M[1][1] + a.M[i][2] * b.M[2][1];
             d->M[i][2] = a.M[i][0] * b.M[0][2] + a.M[i][1] * b.M[1][2] + a.M[i][2] * b.M[2][2];
-        } while ((++i) < 3);
+        } while ( (++i) < 3);
 
         return *d;
     }
@@ -3854,10 +3849,10 @@ class Matrix3 {
     }
 
     Vector2<T> Transform(const Vector2<T>& v) const {
-        const T rcpZ = T(1) / (M[2][0] * v.x + M[2][1] * v.y + M[2][2]);
+        const T rcpZ = T(1) / (M[2][0] * v.x + M[2][1] * v.y + M[2][2] );
         return Vector2<T>(
-            (M[0][0] * v.x + M[0][1] * v.y + M[0][2]) * rcpZ,
-            (M[1][0] * v.x + M[1][1] * v.y + M[1][2]) * rcpZ);
+            (M[0][0] * v.x + M[0][1] * v.y + M[0][2] ) * rcpZ,
+            (M[1][0] * v.x + M[1][1] * v.y + M[1][2] ) * rcpZ);
     }
 
     Vector3<T> Transform(const Vector3<T>& v) const {
@@ -3869,7 +3864,7 @@ class Matrix3 {
 
     Matrix3 Transposed() const {
         return Matrix3(
-            M[0][0], M[1][0], M[2][0], M[0][1], M[1][1], M[2][1], M[0][2], M[1][2], M[2][2]);
+            M[0][0], M[1][0], M[2][0], M[0][1], M[1][1], M[2][1], M[0][2], M[1][2], M[2][2] );
     }
 
     void Transpose() {
@@ -3877,14 +3872,14 @@ class Matrix3 {
     }
 
     T SubDet(const size_t* rows, const size_t* cols) const {
-        return M[rows[0]][cols[0]] *
-            (M[rows[1]][cols[1]] * M[rows[2]][cols[2]] -
-             M[rows[1]][cols[2]] * M[rows[2]][cols[1]]) -
-            M[rows[0]][cols[1]] *
-            (M[rows[1]][cols[0]] * M[rows[2]][cols[2]] -
-             M[rows[1]][cols[2]] * M[rows[2]][cols[0]]) +
-            M[rows[0]][cols[2]] *
-            (M[rows[1]][cols[0]] * M[rows[2]][cols[1]] - M[rows[1]][cols[1]] * M[rows[2]][cols[0]]);
+        return M[rows[0] ][cols[0] ] *
+            (M[rows[1] ][cols[1] ] * M[rows[2] ][cols[2] ] -
+             M[rows[1] ][cols[2] ] * M[rows[2] ][cols[1] ] ) -
+            M[rows[0] ][cols[1] ] *
+            (M[rows[1] ][cols[0] ] * M[rows[2] ][cols[2] ] -
+             M[rows[1] ][cols[2] ] * M[rows[2] ][cols[0] ] ) +
+            M[rows[0] ][cols[2] ] *
+            (M[rows[1] ][cols[0] ] * M[rows[2] ][cols[1] ] - M[rows[1] ][cols[1] ] * M[rows[2] ][cols[0] ] );
     }
 
     // M += a*b.t()
@@ -3914,19 +3909,19 @@ class Matrix3 {
     }
 
     inline Vector3<T> Col(int c) const {
-        return Vector3<T>(M[0][c], M[1][c], M[2][c]);
+        return Vector3<T>(M[0][c], M[1][c], M[2][c] );
     }
 
     inline Vector3<T> Row(int r) const {
-        return Vector3<T>(M[r][0], M[r][1], M[r][2]);
+        return Vector3<T>(M[r][0], M[r][1], M[r][2] );
     }
 
     inline Vector3<T> GetColumn(int c) const {
-        return Vector3<T>(M[0][c], M[1][c], M[2][c]);
+        return Vector3<T>(M[0][c], M[1][c], M[2][c] );
     }
 
     inline Vector3<T> GetRow(int r) const {
-        return Vector3<T>(M[r][0], M[r][1], M[r][2]);
+        return Vector3<T>(M[r][0], M[r][1], M[r][2] );
     }
 
     inline void SetColumn(int c, const Vector3<T>& v) {
@@ -3945,9 +3940,9 @@ class Matrix3 {
         const Matrix3<T>& m = *this;
         T d;
 
-        d = m.M[0][0] * (m.M[1][1] * m.M[2][2] - m.M[1][2] * m.M[2][1]);
-        d -= m.M[0][1] * (m.M[1][0] * m.M[2][2] - m.M[1][2] * m.M[2][0]);
-        d += m.M[0][2] * (m.M[1][0] * m.M[2][1] - m.M[1][1] * m.M[2][0]);
+        d = m.M[0][0] * (m.M[1][1] * m.M[2][2] - m.M[1][2] * m.M[2][1] );
+        d -= m.M[0][1] * (m.M[1][0] * m.M[2][2] - m.M[1][2] * m.M[2][0] );
+        d += m.M[0][2] * (m.M[1][0] * m.M[2][1] - m.M[1][1] * m.M[2][0] );
 
         return d;
     }
@@ -3957,20 +3952,20 @@ class Matrix3 {
         const Matrix3<T>& m = *this;
         T d = Determinant();
 
-        OVR_MATH_ASSERT(fabs(d) >= Math<T>::SmallestNonDenormal());
+        OVR_MATH_ASSERT(fabs(d) >= Math<T>::SmallestNonDenormal() );
         T s = T(1) / d;
 
-        a.M[0][0] = s * (m.M[1][1] * m.M[2][2] - m.M[1][2] * m.M[2][1]);
-        a.M[1][0] = s * (m.M[1][2] * m.M[2][0] - m.M[1][0] * m.M[2][2]);
-        a.M[2][0] = s * (m.M[1][0] * m.M[2][1] - m.M[1][1] * m.M[2][0]);
+        a.M[0][0] = s * (m.M[1][1] * m.M[2][2] - m.M[1][2] * m.M[2][1] );
+        a.M[1][0] = s * (m.M[1][2] * m.M[2][0] - m.M[1][0] * m.M[2][2] );
+        a.M[2][0] = s * (m.M[1][0] * m.M[2][1] - m.M[1][1] * m.M[2][0] );
 
-        a.M[0][1] = s * (m.M[0][2] * m.M[2][1] - m.M[0][1] * m.M[2][2]);
-        a.M[1][1] = s * (m.M[0][0] * m.M[2][2] - m.M[0][2] * m.M[2][0]);
-        a.M[2][1] = s * (m.M[0][1] * m.M[2][0] - m.M[0][0] * m.M[2][1]);
+        a.M[0][1] = s * (m.M[0][2] * m.M[2][1] - m.M[0][1] * m.M[2][2] );
+        a.M[1][1] = s * (m.M[0][0] * m.M[2][2] - m.M[0][2] * m.M[2][0] );
+        a.M[2][1] = s * (m.M[0][1] * m.M[2][0] - m.M[0][0] * m.M[2][1] );
 
-        a.M[0][2] = s * (m.M[0][1] * m.M[1][2] - m.M[0][2] * m.M[1][1]);
-        a.M[1][2] = s * (m.M[0][2] * m.M[1][0] - m.M[0][0] * m.M[1][2]);
-        a.M[2][2] = s * (m.M[0][0] * m.M[1][1] - m.M[0][1] * m.M[1][0]);
+        a.M[0][2] = s * (m.M[0][1] * m.M[1][2] - m.M[0][2] * m.M[1][1] );
+        a.M[1][2] = s * (m.M[0][2] * m.M[1][0] - m.M[0][0] * m.M[1][2] );
+        a.M[2][2] = s * (m.M[0][0] * m.M[1][1] - m.M[0][1] * m.M[1][0] );
 
         return a;
     }
@@ -3992,19 +3987,19 @@ class Matrix3 {
     // Vector cross product as a premultiply matrix:
     // L.Cross(R) = LeftCrossAsMatrix(L) * R
     static Matrix3 LeftCrossAsMatrix(const Vector3<T>& L) {
-        return Matrix3(T(0), -L.z, +L.y, +L.z, T(0), -L.x, -L.y, +L.x, T(0));
+        return Matrix3(T(0), -L.z, +L.y, +L.z, T(0), -L.x, -L.y, +L.x, T(0) );
     }
 
     // Vector cross product as a premultiply matrix:
     // L.Cross(R) = RightCrossAsMatrix(R) * L
     static Matrix3 RightCrossAsMatrix(const Vector3<T>& R) {
-        return Matrix3(T(0), +R.z, -R.y, -R.z, T(0), +R.x, +R.y, -R.x, T(0));
+        return Matrix3(T(0), +R.z, -R.y, -R.z, T(0), +R.x, +R.y, -R.x, T(0) );
     }
 
     // Angle in radians of a rotation matrix
     // Uses identity trace(a) = 2*cos(theta) + 1
     T Angle() const {
-        return Acos((Trace() - T(1)) * T(0.5));
+        return Acos( (Trace() - T(1) ) * T(0.5) );
     }
 
     // Angle in radians between two rotation matrices
@@ -4017,7 +4012,7 @@ class Matrix3 {
                 trace += M[i][j] * b.M[i][j];
             }
         }
-        return Acos((trace - T(1)) * T(0.5));
+        return Acos( (trace - T(1) ) * T(0.5) );
     }
 
     // Return inverse the left-top corner 3x3 matrix from a 4x4 matrix.
@@ -4031,7 +4026,7 @@ class Matrix3 {
             mat4.M[1][2],
             mat4.M[2][0],
             mat4.M[2][1],
-            mat4.M[2][2]);
+            mat4.M[2][2] );
         local3x3 = local3x3.Inverse();
         return local3x3;
     }
@@ -4094,10 +4089,10 @@ class Matrix2 {
     }
 
     explicit Matrix2(const Matrix2<typename Math<T>::OtherFloatType>& src) {
-        M[0][0] = T(src.M[0][0]);
-        M[0][1] = T(src.M[0][1]);
-        M[1][0] = T(src.M[1][0]);
-        M[1][1] = T(src.M[1][1]);
+        M[0][0] = T(src.M[0][0] );
+        M[0][1] = T(src.M[0][1] );
+        M[1][0] = T(src.M[1][0] );
+        M[1][1] = T(src.M[1][1] );
     }
 
     Matrix2(const Matrix2<T>& other) = default;
@@ -4105,14 +4100,14 @@ class Matrix2 {
     // C-interop support
     Matrix2(const typename CompatibleTypes<Matrix2<T>>::Type& s) {
         OVR_MATH_STATIC_ASSERT(sizeof(s) == sizeof(Matrix2), "sizeof(s) == sizeof(Matrix2)");
-        memcpy(M, s.M, sizeof(M));
+        memcpy(M, s.M, sizeof(M) );
     }
 
     operator const typename CompatibleTypes<Matrix2<T>>::Type() const {
         typename CompatibleTypes<Matrix2<T>>::Type result;
         OVR_MATH_STATIC_ASSERT(
             sizeof(result) == sizeof(Matrix2), "sizeof(result) == sizeof(Matrix2)");
-        memcpy(result.M, M, sizeof(M));
+        memcpy(result.M, M, sizeof(M) );
         return result;
     }
 
@@ -4156,7 +4151,7 @@ class Matrix2 {
 
     Matrix2 operator+(const Matrix2& b) const {
         return Matrix2(
-            M[0][0] + b.M[0][0], M[0][1] + b.M[0][1], M[1][0] + b.M[1][0], M[1][1] + b.M[1][1]);
+            M[0][0] + b.M[0][0], M[0][1] + b.M[0][1], M[1][0] + b.M[1][0], M[1][1] + b.M[1][1] );
     }
 
     Matrix2& operator+=(const Matrix2& b) {
@@ -4176,7 +4171,7 @@ class Matrix2 {
 
     Matrix2 operator-(const Matrix2& b) const {
         return Matrix2(
-            M[0][0] - b.M[0][0], M[0][1] - b.M[0][1], M[1][0] - b.M[1][0], M[1][1] - b.M[1][1]);
+            M[0][0] - b.M[0][0], M[0][1] - b.M[0][1], M[1][0] - b.M[1][0], M[1][1] - b.M[1][1] );
     }
 
     Matrix2& operator-=(const Matrix2& b) {
@@ -4192,7 +4187,7 @@ class Matrix2 {
             M[0][0] * b.M[0][0] + M[0][1] * b.M[1][0],
             M[0][0] * b.M[0][1] + M[0][1] * b.M[1][1],
             M[1][0] * b.M[0][0] + M[1][1] * b.M[1][0],
-            M[1][0] * b.M[0][1] + M[1][1] * b.M[1][1]);
+            M[1][0] * b.M[0][1] + M[1][1] * b.M[1][1] );
     }
 
     Matrix2& operator*=(const Matrix2& b) {
@@ -4229,19 +4224,19 @@ class Matrix2 {
     }
 
     Matrix2 Transposed() const {
-        return Matrix2(M[0][0], M[1][0], M[0][1], M[1][1]);
+        return Matrix2(M[0][0], M[1][0], M[0][1], M[1][1] );
     }
 
     void Transpose() {
-        OVRMath_Swap(M[1][0], M[0][1]);
+        OVRMath_Swap(M[1][0], M[0][1] );
     }
 
     Vector2<T> GetColumn(int c) const {
-        return Vector2<T>(M[0][c], M[1][c]);
+        return Vector2<T>(M[0][c], M[1][c] );
     }
 
     Vector2<T> GetRow(int r) const {
-        return Vector2<T>(M[r][0], M[r][1]);
+        return Vector2<T>(M[r][0], M[r][1] );
     }
 
     void SetColumn(int c, const Vector2<T>& v) {
@@ -4271,7 +4266,7 @@ class Matrix2 {
     // Angle in radians between two rotation matrices
     T Angle(const Matrix2& b) const {
         const Matrix2& a = *this;
-        return Acos(a(0, 0) * b(0, 0) + a(1, 0) * b(1, 0));
+        return Acos(a(0, 0) * b(0, 0) + a(1, 0) * b(1, 0) );
     }
 };
 
@@ -4308,20 +4303,20 @@ class SymMat3 {
 
     // Cast to symmetric Matrix3
     operator Matrix3<T>() const {
-        return Matrix3<T>(v[0], v[1], v[2], v[1], v[3], v[4], v[2], v[4], v[5]);
+        return Matrix3<T>(v[0], v[1], v[2], v[1], v[3], v[4], v[2], v[4], v[5] );
     }
 
     static inline int Index(unsigned int i, unsigned int j) {
         return static_cast<int>(
-            (i <= j) ? (3 * i - i * (i + 1) / 2 + j) : (3 * j - j * (j + 1) / 2 + i));
+            (i <= j) ? (3 * i - i * (i + 1) / 2 + j) : (3 * j - j * (j + 1) / 2 + i) );
     }
 
     inline T operator()(int i, int j) const {
-        return v[Index(i, j)];
+        return v[Index(i, j) ];
     }
 
     inline T& operator()(int i, int j) {
-        return v[Index(i, j)];
+        return v[Index(i, j) ];
     }
 
     inline this_type& operator+=(const this_type& b) {
@@ -4388,9 +4383,9 @@ class SymMat3 {
         const this_type& m = *this;
         T d;
 
-        d = m(0, 0) * (m(1, 1) * m(2, 2) - m(1, 2) * m(2, 1));
-        d -= m(0, 1) * (m(1, 0) * m(2, 2) - m(1, 2) * m(2, 0));
-        d += m(0, 2) * (m(1, 0) * m(2, 1) - m(1, 1) * m(2, 0));
+        d = m(0, 0) * (m(1, 1) * m(2, 2) - m(1, 2) * m(2, 1) );
+        d -= m(0, 1) * (m(1, 0) * m(2, 2) - m(1, 2) * m(2, 0) );
+        d += m(0, 2) * (m(1, 0) * m(2, 1) - m(1, 1) * m(2, 0) );
 
         return d;
     }
@@ -4400,17 +4395,17 @@ class SymMat3 {
         const this_type& m = *this;
         T d = Determinant();
 
-        OVR_MATH_ASSERT(fabs(d) >= Math<T>::SmallestNonDenormal());
+        OVR_MATH_ASSERT(fabs(d) >= Math<T>::SmallestNonDenormal() );
         T s = T(1) / d;
 
-        a(0, 0) = s * (m(1, 1) * m(2, 2) - m(1, 2) * m(2, 1));
+        a(0, 0) = s * (m(1, 1) * m(2, 2) - m(1, 2) * m(2, 1) );
 
-        a(0, 1) = s * (m(0, 2) * m(2, 1) - m(0, 1) * m(2, 2));
-        a(1, 1) = s * (m(0, 0) * m(2, 2) - m(0, 2) * m(2, 0));
+        a(0, 1) = s * (m(0, 2) * m(2, 1) - m(0, 1) * m(2, 2) );
+        a(1, 1) = s * (m(0, 0) * m(2, 2) - m(0, 2) * m(2, 0) );
 
-        a(0, 2) = s * (m(0, 1) * m(1, 2) - m(0, 2) * m(1, 1));
-        a(1, 2) = s * (m(0, 2) * m(1, 0) - m(0, 0) * m(1, 2));
-        a(2, 2) = s * (m(0, 0) * m(1, 1) - m(0, 1) * m(1, 0));
+        a(0, 2) = s * (m(0, 1) * m(1, 2) - m(0, 2) * m(1, 1) );
+        a(1, 2) = s * (m(0, 2) * m(1, 0) - m(0, 0) * m(1, 2) );
+        a(2, 2) = s * (m(0, 0) * m(1, 1) - m(0, 1) * m(1, 0) );
 
         return a;
     }
@@ -4455,7 +4450,7 @@ typedef SymMat3<double> SymMat3d;
 
 template <class T>
 inline Matrix3<T> operator*(const SymMat3<T>& a, const SymMat3<T>& b) {
-#define AJB_ARBC(r, c) (a(r, 0) * b(0, c) + a(r, 1) * b(1, c) + a(r, 2) * b(2, c))
+#define AJB_ARBC(r, c) (a(r, 0) * b(0, c) + a(r, 1) * b(1, c) + a(r, 2) * b(2, c) )
     return Matrix3<T>(
         AJB_ARBC(0, 0),
         AJB_ARBC(0, 1),
@@ -4465,13 +4460,13 @@ inline Matrix3<T> operator*(const SymMat3<T>& a, const SymMat3<T>& b) {
         AJB_ARBC(1, 2),
         AJB_ARBC(2, 0),
         AJB_ARBC(2, 1),
-        AJB_ARBC(2, 2));
+        AJB_ARBC(2, 2) );
 #undef AJB_ARBC
 }
 
 template <class T>
 inline Matrix3<T> operator*(const Matrix3<T>& a, const SymMat3<T>& b) {
-#define AJB_ARBC(r, c) (a(r, 0) * b(0, c) + a(r, 1) * b(1, c) + a(r, 2) * b(2, c))
+#define AJB_ARBC(r, c) (a(r, 0) * b(0, c) + a(r, 1) * b(1, c) + a(r, 2) * b(2, c) )
     return Matrix3<T>(
         AJB_ARBC(0, 0),
         AJB_ARBC(0, 1),
@@ -4481,7 +4476,7 @@ inline Matrix3<T> operator*(const Matrix3<T>& a, const SymMat3<T>& b) {
         AJB_ARBC(1, 2),
         AJB_ARBC(2, 0),
         AJB_ARBC(2, 1),
-        AJB_ARBC(2, 2));
+        AJB_ARBC(2, 2) );
 #undef AJB_ARBC
 }
 
@@ -4500,24 +4495,24 @@ class Angle {
 
     // Fix the range to be between -Pi and Pi
     Angle(T a_, AngularUnits u = Radians)
-        : a((u == Radians) ? a_ : a_ * ((T)MATH_DOUBLE_DEGREETORADFACTOR)) {
+        : a( (u == Radians) ? a_ : a_ * ( (T)MATH_DOUBLE_DEGREETORADFACTOR) ) {
         FixRange();
     }
 
-    Angle(T adjacent, T opposite) : Angle(Atan2(opposite, adjacent)) {}
+    Angle(T adjacent, T opposite) : Angle(Atan2(opposite, adjacent) ) {}
 
     static Angle FromOpposite(T opposite) {
-        return Angle(Asin(opposite));
+        return Angle(Asin(opposite) );
     }
     static Angle FromAdjacent(T adjacent) {
-        return Angle(Acos(adjacent));
+        return Angle(Acos(adjacent) );
     }
 
     T Get(AngularUnits u = Radians) const {
-        return (u == Radians) ? a : a * ((T)MATH_DOUBLE_RADTODEGREEFACTOR);
+        return (u == Radians) ? a : a * ( (T)MATH_DOUBLE_RADTODEGREEFACTOR);
     }
     void Set(const T& x, AngularUnits u = Radians) {
-        a = (u == Radians) ? x : x * ((T)MATH_DOUBLE_DEGREETORADFACTOR);
+        a = (u == Radians) ? x : x * ( (T)MATH_DOUBLE_DEGREETORADFACTOR);
         FixRange();
     }
     int Sign() const {
@@ -4601,7 +4596,7 @@ class Angle {
 
     T Distance(const Angle& b) const {
         T c = fabs(a - b.a);
-        return (c <= ((T)MATH_DOUBLE_PI)) ? c : ((T)MATH_DOUBLE_TWOPI) - c;
+        return (c <= ( (T)MATH_DOUBLE_PI) ) ? c : ( (T)MATH_DOUBLE_TWOPI) - c;
     }
 
     Angle Lerp(const Angle& b, T f) const {
@@ -4614,22 +4609,22 @@ class Angle {
 
     // Fixes the angle range to [-Pi,Pi], but assumes no more than 2Pi away on either side
     inline void FastFixRange() {
-        if (a < -((T)MATH_DOUBLE_PI))
-            a += ((T)MATH_DOUBLE_TWOPI);
-        else if (a > ((T)MATH_DOUBLE_PI))
-            a -= ((T)MATH_DOUBLE_TWOPI);
+        if (a < -( (T)MATH_DOUBLE_PI) )
+            a += ( (T)MATH_DOUBLE_TWOPI);
+        else if (a > ( (T)MATH_DOUBLE_PI) )
+            a -= ( (T)MATH_DOUBLE_TWOPI);
     }
 
     // Fixes the angle range to [-Pi,Pi] for any given range, but slower then the fast method
     inline void FixRange() {
         // do nothing if the value is already in the correct range, since fmod call is expensive
-        if (a >= -((T)MATH_DOUBLE_PI) && a <= ((T)MATH_DOUBLE_PI))
+        if (a >= -( (T)MATH_DOUBLE_PI) && a <= ( (T)MATH_DOUBLE_PI) )
             return;
-        a = static_cast<T>(fmod(a, ((T)MATH_DOUBLE_TWOPI)));
-        if (a < -((T)MATH_DOUBLE_PI))
-            a += ((T)MATH_DOUBLE_TWOPI);
-        else if (a > ((T)MATH_DOUBLE_PI))
-            a -= ((T)MATH_DOUBLE_TWOPI);
+        a = static_cast<T>(fmod(a, ( (T)MATH_DOUBLE_TWOPI) ) );
+        if (a < -( (T)MATH_DOUBLE_PI) )
+            a += ( (T)MATH_DOUBLE_TWOPI);
+        else if (a > ( (T)MATH_DOUBLE_PI) )
+            a -= ( (T)MATH_DOUBLE_TWOPI);
     }
 };
 
@@ -4654,12 +4649,12 @@ class Plane {
     Plane(T x, T y, T z, T d) : N(x, y, z), D(d) {}
 
     // construct from a point on the plane and the normal
-    Plane(const Vector3<T>& p, const Vector3<T>& n) : N(n), D(-(p.Dot(n))) {}
+    Plane(const Vector3<T>& p, const Vector3<T>& n) : N(n), D(-(p.Dot(n) ) ) {}
 
     // Find the point to plane distance. The sign indicates what side of the plane the point is on
     // (0 = point on plane).
     T TestSide(const Vector3<T>& p) const {
-        return (N.Dot(p)) + D;
+        return (N.Dot(p) ) + D;
     }
 
     Plane<T> Flipped() const {
@@ -4744,7 +4739,7 @@ struct FovPort {
 
     static FovPort CreateFromDegrees(float horizontalFovDegrees, float verticalFovDegrees) {
         return CreateFromRadians(
-            DegreeToRad(horizontalFovDegrees), DegreeToRad(verticalFovDegrees));
+            DegreeToRad(horizontalFovDegrees), DegreeToRad(verticalFovDegrees) );
     }
 
     //  Get Horizontal/Vertical components of Fov in radians.
@@ -4756,15 +4751,15 @@ struct FovPort {
     }
     //  Get Horizontal/Vertical components of Fov in degrees.
     float GetVerticalFovDegrees() const {
-        return RadToDegree(GetVerticalFovRadians());
+        return RadToDegree(GetVerticalFovRadians() );
     }
     float GetHorizontalFovDegrees() const {
-        return RadToDegree(GetHorizontalFovRadians());
+        return RadToDegree(GetHorizontalFovRadians() );
     }
 
     // Compute maximum tangent value among all four sides.
     float GetMaxSideTan() const {
-        return OVRMath_Max(OVRMath_Max(UpTan, DownTan), OVRMath_Max(LeftTan, RightTan));
+        return OVRMath_Max(OVRMath_Max(UpTan, DownTan), OVRMath_Max(LeftTan, RightTan) );
     }
 
     static ScaleAndOffset2D CreateNDCScaleAndOffsetFromFov(FovPort tanHalfFov) {
@@ -4795,7 +4790,7 @@ struct FovPort {
             OVRMath_Min(a.UpTan, b.UpTan),
             OVRMath_Min(a.DownTan, b.DownTan),
             OVRMath_Min(a.LeftTan, b.LeftTan),
-            OVRMath_Min(a.RightTan, b.RightTan));
+            OVRMath_Min(a.RightTan, b.RightTan) );
         return fov;
     }
 
@@ -4804,7 +4799,7 @@ struct FovPort {
             OVRMath_Max(a.UpTan, b.UpTan),
             OVRMath_Max(a.DownTan, b.DownTan),
             OVRMath_Max(a.LeftTan, b.LeftTan),
-            OVRMath_Max(a.RightTan, b.RightTan));
+            OVRMath_Max(a.RightTan, b.RightTan) );
         return fov;
     }
 };
@@ -4829,13 +4824,13 @@ struct MapRange {
         T fromRange = from.y - from.x;
         T toRange = to.y - to.x;
 
-        if (fromRange == T(0.0)) {
+        if (fromRange == T(0.0) ) {
             return T(0.0);
         }
 
         T in = (value - from.x) / fromRange;
         if (doClamp) {
-            in = std::clamp(in, T(0.0), T(1.0));
+            in = std::clamp(in, T(0.0), T(1.0) );
         }
         T out = in * toRange + to.x;
 
@@ -4849,7 +4844,3 @@ typedef MapRange<float> MapRangef;
 typedef MapRange<double> MapRanged;
 
 } // Namespace OVR
-
-#if defined(_MSC_VER)
-#pragma warning(pop)
-#endif

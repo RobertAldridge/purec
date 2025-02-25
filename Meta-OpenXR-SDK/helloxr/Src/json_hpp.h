@@ -222,8 +222,6 @@ inline bool operator<(const value_t lhs, const value_t rhs) noexcept
     #define JSON_HEDLEY_MSVC_VERSION JSON_HEDLEY_VERSION_ENCODE(_MSC_FULL_VER / 10000000, (_MSC_FULL_VER % 10000000) / 100000, (_MSC_FULL_VER % 100000) / 100)
 #elif defined(_MSC_FULL_VER) && !defined(__ICL)
     #define JSON_HEDLEY_MSVC_VERSION JSON_HEDLEY_VERSION_ENCODE(_MSC_FULL_VER / 1000000, (_MSC_FULL_VER % 1000000) / 10000, (_MSC_FULL_VER % 10000) / 10)
-#elif defined(_MSC_VER) && !defined(__ICL)
-    #define JSON_HEDLEY_MSVC_VERSION JSON_HEDLEY_VERSION_ENCODE(_MSC_VER / 100, _MSC_VER % 100, 0)
 #endif
 
 #if defined(JSON_HEDLEY_MSVC_VERSION_CHECK)
@@ -231,10 +229,6 @@ inline bool operator<(const value_t lhs, const value_t rhs) noexcept
 #endif
 #if !defined(JSON_HEDLEY_MSVC_VERSION)
     #define JSON_HEDLEY_MSVC_VERSION_CHECK(major,minor,patch) (0)
-#elif defined(_MSC_VER) && (_MSC_VER >= 1400)
-    #define JSON_HEDLEY_MSVC_VERSION_CHECK(major,minor,patch) (_MSC_FULL_VER >= ( (major * 10000000) + (minor * 100000) + (patch) ) )
-#elif defined(_MSC_VER) && (_MSC_VER >= 1200)
-    #define JSON_HEDLEY_MSVC_VERSION_CHECK(major,minor,patch) (_MSC_FULL_VER >= ( (major * 1000000) + (minor * 10000) + (patch) ) )
 #else
     #define JSON_HEDLEY_MSVC_VERSION_CHECK(major,minor,patch) (_MSC_VER >= ( (major * 100) + (minor) ) )
 #endif
@@ -17629,8 +17623,6 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         result["compiler"] = "hp"
 #elif defined(__IBMCPP__)
         result["compiler"] = {{"family", "ilecpp"}, {"version", __IBMCPP__}};
-#elif defined(_MSC_VER)
-        result["compiler"] = {{"family", "msvc"}, {"version", _MSC_VER}};
 #elif defined(__PGI)
         result["compiler"] = {{"family", "pgcpp"}, {"version", __PGI}};
 #elif defined(__SUNPRO_CC)
@@ -20647,7 +20639,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                                         detail::negation<detail::is_basic_json<ValueType>>,
                                         detail::negation<std::is_same<ValueType, std::initializer_list<typename string_t::value_type>>>,
 
-#if defined(JSON_HAS_CPP_17) && (defined(__GNUC__) || (defined(_MSC_VER) && _MSC_VER >= 1910 && _MSC_VER <= 1914) )
+#if defined(JSON_HAS_CPP_17) && defined(__GNUC__)
                                                 detail::negation<std::is_same<ValueType, std::string_view>>,
 #endif
                                                 detail::is_detected_lazy<detail::get_template_function, const basic_json_t&, ValueType>

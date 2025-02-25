@@ -1639,16 +1639,14 @@ bool hasStencilComponent(VkFormat format)
 #endif
 
 void VulkanTutorialCreateTextureImage(
-  const char* fileName,
   VkQueue& graphicsQueue,
   VkCommandPool& commandPool,
-  VkImage& textureImage,
-  VkDeviceMemory& textureImageMemory
+  TextureBlah& textureBlah
 )
 {
   int fileSize = 0;
 
-  unsigned char* buffer = AnagLoadFileBlah(fileName, &fileSize);
+  unsigned char* buffer = AnagLoadFileBlah(textureBlah.fileName, &fileSize);
 
   int texWidth = 0;
   int texHeight = 0;
@@ -1660,6 +1658,9 @@ void VulkanTutorialCreateTextureImage(
     int texChannels = 0;
 
     pixels = stbi_load_from_memory(buffer, fileSize, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+
+    textureBlah.width = texWidth;
+    textureBlah.height = texHeight;
 
     if(pixels)
       Log::Write(Log::Level::Info, Fmt("stbi_load_from_memory pixels valid pointer\n") );
@@ -1710,14 +1711,14 @@ void VulkanTutorialCreateTextureImage(
     VK_IMAGE_TILING_OPTIMAL,
     VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
     VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-    textureImage,
-    textureImageMemory
+    textureBlah.image,
+    textureBlah.deviceMemory
   );
 
   VulkanTutorialTransitionImageLayout(
     graphicsQueue,
     commandPool,
-    textureImage,
+    textureBlah.image,
     VK_FORMAT_R8G8B8A8_SRGB,
     VK_IMAGE_LAYOUT_UNDEFINED,
     VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
@@ -1727,7 +1728,7 @@ void VulkanTutorialCreateTextureImage(
     graphicsQueue,
     commandPool,
     stagingBuffer,
-    textureImage,
+    textureBlah.image,
     static_cast<uint32_t>(texWidth),
     static_cast<uint32_t>(texHeight)
   );
@@ -1735,7 +1736,7 @@ void VulkanTutorialCreateTextureImage(
   VulkanTutorialTransitionImageLayout(
     graphicsQueue,
     commandPool,
-    textureImage,
+    textureBlah.image,
     VK_FORMAT_R8G8B8A8_SRGB,
     VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
     VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL

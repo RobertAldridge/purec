@@ -9,10 +9,7 @@ VkDevice gVkDevice = VK_NULL_HANDLE;
 
 VkPhysicalDevice gVkPhysicalDevice = VK_NULL_HANDLE;
 
-VkImage gTextureVkImage = VK_NULL_HANDLE;
-VkDeviceMemory gTextureVkDeviceMemory = VK_NULL_HANDLE;
-VkImageView gTextureVkImageView = VK_NULL_HANDLE;
-VkSampler gTextureVkSampler = VK_NULL_HANDLE;
+TextureBlah gTextureBlahVk[OBJ_TEXTURE_COUNT] = { {0} };
 
 VkDescriptorPool gTextureVkDescriptorPool = VK_NULL_HANDLE;
 VkDescriptorSet gTextureVkDescriptorSet = VK_NULL_HANDLE;

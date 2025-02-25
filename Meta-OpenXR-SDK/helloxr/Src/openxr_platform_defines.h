@@ -27,8 +27,6 @@
 
 #if defined(__GNUC__) && defined(__GXX_EXPERIMENTAL_CXX0X__)
 #define XR_CPP11_ENABLED 1
-#elif defined(_MSC_VER) && (_MSC_VER >= 1600)
-#define XR_CPP11_ENABLED 1
 #else
 #define XR_CPP11_ENABLED 1
 #endif
@@ -40,7 +38,6 @@
 #if defined(XR_CPP11_ENABLED) && \
  ( (defined(__clang__) && XR_COMPILER_HAS_FEATURE(cxx_nullptr) ) || \
  (defined(__GNUC__) && ( ( (__GNUC__ * 1000) + __GNUC_MINOR__) >= 4006) ) || \
- (defined(_MSC_VER) && (_MSC_VER >= 1600) ) || \
  (defined(__EDG_VERSION__) && (__EDG_VERSION__ >= 403) ) )
 #define XR_CPP_NULLPTR_SUPPORTED 1
 #endif

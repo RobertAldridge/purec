@@ -48,13 +48,23 @@ struct VertexBufferBaseBlah
   uint32_t vtx;
 };
 
+struct TextureBlah
+{
+  VkImage image;
+  VkDeviceMemory deviceMemory;
+  VkImageView imageView;
+  VkSampler sampler;
+
+  int32_t width;
+  int32_t height;
+
+  const char* fileName;
+};
+
 constexpr VkFlags MemoryAllocator_m_memoryAllocatorDefaultFlags =
   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
-extern VkImage gTextureVkImage;
-extern VkDeviceMemory gTextureVkDeviceMemory;
-extern VkImageView gTextureVkImageView;
-extern VkSampler gTextureVkSampler;
+extern TextureBlah gTextureBlahVk[OBJ_TEXTURE_COUNT];
 
 extern VkDescriptorPool gTextureVkDescriptorPool;
 extern VkDescriptorSet gTextureVkDescriptorSet;
@@ -216,9 +226,11 @@ R"_(
   layout (location = 1) in vec3 Normal;
   layout (location = 2) in vec3 Color;
   layout (location = 3) in vec2 TexCoord;
+  layout (location = 4) in int Index;
 
   layout(location = 0) out vec4 fragColor;
   layout(location = 1) out vec2 fragTexCoord;
+  layout(location = 2) out int fragIndex;
 
   out gl_PerVertex
   {
@@ -264,6 +276,8 @@ R"_(
     gl_Position = uniformBuffer.modelViewProjectionMatrix * vec4(Position, 1.0);
 
     fragTexCoord = TexCoord;
+
+    fragIndex = Index;
   }
 
 )_";
@@ -277,10 +291,11 @@ R"_(
 
   layout(location = 0) in vec4 fragColor;
   layout(location = 1) in vec2 fragTexCoord;
+  layout(location = 2) flat in int fragIndex;
 
   layout(location = 0) out vec4 outColor;
 
-  layout(binding = 2) uniform sampler2D texSampler;
+  layout(binding = 2) uniform sampler2D texSampler[20];
 
   in vec4 gl_FragCoord;
 
@@ -288,17 +303,17 @@ R"_(
   {
     //outColor = fragColor;
 
-    //outColor = texture(texSampler, fragTexCoord);
+    //outColor = texture(texSampler[fragIndex], fragTexCoord);
 
     //outColor = vec4(min(abs(gl_FragCoord.w), 1.0), 0, 0, fragColor.a);
 
-    if(fragTexCoord.x < -0.5)
+    if(fragIndex < 0)
     {
       outColor = vec4(vec3(fragColor.r, fragColor.g, fragColor.b), fragColor.a);
     }
     else
     {
-      vec4 textureColor = texture(texSampler, fragTexCoord);
+      vec4 textureColor = texture(texSampler[fragIndex], fragTexCoord);
 
       outColor = vec4(vec3(fragColor.r * textureColor.r, fragColor.g * textureColor.g, fragColor.b * textureColor.b), fragColor.a * textureColor.a);
     }

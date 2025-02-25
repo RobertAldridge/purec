@@ -353,9 +353,7 @@ void VulkanTutorialCopyBufferToImage(
 );
 
 void VulkanTutorialCreateTextureImage(
-  const char* fileName,
   VkQueue& graphicsQueue,
   VkCommandPool& commandPool,
-  VkImage& textureImage,
-  VkDeviceMemory& textureImageMemory
+  TextureBlah& textureBlah
 );

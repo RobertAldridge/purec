@@ -293,37 +293,6 @@ typedef unsigned char validate_uint32[sizeof(stbi__uint32)==4 ? 1 : -1];
 #if !defined(STBI_NO_SIMD) && (defined(STBI__X86_TARGET) || defined(STBI__X64_TARGET) )
 #define STBI_SSE2
 
-#ifdef _MSC_VER
-
-#if _MSC_VER >= 1400  // not VC6
-
-static int stbi__cpuid3(void)
-{
-   int info[4];
-   __cpuid(info, 1);
-   return info[3];
-}
-#else
-static int stbi__cpuid3(void)
-{
-   int res;
-   __asm {
-      mov  eax, 1
-      cpuid
-      mov  res, edx
-   }
-   return res;
-}
-#endif
-
-#define STBI_SIMD_ALIGN(type, name) __declspec(align(16) ) type name
-
-static int stbi__sse2_available()
-{
-   int info3 = stbi__cpuid3();
-   return ( (info3 >> 26) & 1) != 0;
-}
-#else // assume GCC-style if not VC++
 #define STBI_SIMD_ALIGN(type, name) type name __attribute__( ( aligned(16) ) )
 
 static int stbi__sse2_available()
@@ -337,7 +306,6 @@ static int stbi__sse2_available()
    return 0;
 #endif
 }
-#endif
 #endif
 
 // ARM NEON

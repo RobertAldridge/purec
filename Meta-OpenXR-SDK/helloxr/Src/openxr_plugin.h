@@ -16,6 +16,8 @@ extern XrActionSet gOpenXrProgramInputState_InputState_actionSet;
 
 extern XrAction gOpenXrProgramInputState_InputState_grabAction;
 
+extern XrAction gOpenXrProgramInputState_InputState_triggerAction;
+
 extern XrAction gOpenXrProgramInputState_InputState_poseAction;
 
 extern XrAction gOpenXrProgramInputState_InputState_vibrateAction;

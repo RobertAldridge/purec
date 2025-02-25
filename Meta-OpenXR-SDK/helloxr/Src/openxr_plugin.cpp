@@ -13,6 +13,8 @@ XrActionSet gOpenXrProgramInputState_InputState_actionSet {XR_NULL_HANDLE};
 
 XrAction gOpenXrProgramInputState_InputState_grabAction {XR_NULL_HANDLE};
 
+XrAction gOpenXrProgramInputState_InputState_triggerAction {XR_NULL_HANDLE};
+
 XrAction gOpenXrProgramInputState_InputState_poseAction {XR_NULL_HANDLE};
 
 XrAction gOpenXrProgramInputState_InputState_vibrateAction {XR_NULL_HANDLE};

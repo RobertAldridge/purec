@@ -15,832 +15,6 @@
 
 #include "header.h"
 
-#if 1
-#define OBJ_SHAPES_INDEX {0}
-
-#define OBJ_WITH_TEXTURE {0}
-
-#define OBJ_FILENAME "stardew_farm.obj"
-#define OBJ_MTL_FILENAME "stardew_farm.mtl"
-#define OBJ_IMAGE_FILENAME "stardew_farm.png"
-
-#define OBJ_SCALE 256.0
-#define OBJ_HAND_SCALE 2.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-#if 0
-#define OBJ_SHAPES_INDEX {1}
-
-#define OBJ_WITH_TEXTURE {1}
-
-#define OBJ_FILENAME "neo_tokyo.obj"
-#define OBJ_MTL_FILENAME "neo_tokyo.mtl"
-#define OBJ_IMAGE_FILENAME "neo_tokyo.png"
-
-#define OBJ_SCALE 256.0
-#define OBJ_HAND_SCALE 4.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE true
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-#if 0
-#define OBJ_SHAPES_INDEX {0}
-
-#define OBJ_WITH_TEXTURE {0}
-
-#define OBJ_FILENAME "viking_room.obj"
-#define OBJ_MTL_FILENAME "viking_room.mtl"
-#define OBJ_IMAGE_FILENAME "viking_room.png"
-
-#define OBJ_SCALE 2.0
-#define OBJ_HAND_SCALE 4.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE true
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-#if 0
-#define OBJ_SHAPES_INDEX {0}
-
-#define OBJ_WITH_TEXTURE {0}
-
-#define OBJ_FILENAME "room_07.obj"
-#define OBJ_MTL_FILENAME "room_07.mtl"
-#define OBJ_IMAGE_FILENAME "room_07.png"
-
-#define OBJ_SCALE 128.0
-#define OBJ_HAND_SCALE 4.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-#if 0
-#define OBJ_SHAPES_INDEX {0}
-
-#define OBJ_WITH_TEXTURE {0}
-
-#define OBJ_FILENAME "woman_posing.obj"
-#define OBJ_MTL_FILENAME "woman_posing.mtl"
-#define OBJ_IMAGE_FILENAME "woman_posing.png"
-
-#define OBJ_SCALE 4.0
-#define OBJ_HAND_SCALE 2.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-#if 0
-#define OBJ_SHAPES_INDEX {1, 2, 3}
-
-#define OBJ_WITH_TEXTURE {1, 2}
-
-#define OBJ_FILENAME "chiku_sus_tetas_pose.obj"
-#define OBJ_MTL_FILENAME "chiku_sus_tetas_pose.mtl"
-#define OBJ_IMAGE_FILENAME "chiku_sus_tetas_pose.png"
-
-#define OBJ_SCALE 64.0
-#define OBJ_HAND_SCALE 4.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-#if 0
-#define OBJ_SHAPES_INDEX {7, 8}
-
-#define OBJ_WITH_TEXTURE {7, 8}
-
-#define OBJ_FILENAME "chiku-nsfw-pose.obj"
-#define OBJ_MTL_FILENAME "chiku-nsfw-pose.mtl"
-#define OBJ_IMAGE_FILENAME "chiku-nsfw-pose.png"
-
-#define OBJ_SCALE 64.0
-#define OBJ_HAND_SCALE 4.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-// texture issue; honda-shadow-rs-2010
-#if 0
-#define OBJ_SHAPES_INDEX {0}
-
-#define OBJ_WITH_TEXTURE {0}
-
-#define OBJ_FILENAME "honda-shadow-rs-2010.obj"
-#define OBJ_MTL_FILENAME "honda-shadow-rs-2010.mtl"
-#define OBJ_IMAGE_FILENAME "honda-shadow-rs-2010.png"
-
-#define OBJ_SCALE 2.0
-#define OBJ_HAND_SCALE 4.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-#if 0
-#define OBJ_SHAPES_INDEX {0, 3}
-
-#define OBJ_WITH_TEXTURE {0, 3}
-
-#define OBJ_FILENAME "sexy-goblin.obj"
-#define OBJ_MTL_FILENAME "sexy-goblin.mtl"
-#define OBJ_IMAGE_FILENAME "sexy-goblin.png"
-
-#define OBJ_SCALE 8.0
-#define OBJ_HAND_SCALE 4.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-// texture is for scene not body; sadmeal
-#if 0
-#define OBJ_SHAPES_INDEX {0, 1, 2}
-
-#define OBJ_WITH_TEXTURE {2}
-
-#define OBJ_FILENAME "sadmeal.obj"
-#define OBJ_MTL_FILENAME "sadmeal.mtl"
-#define OBJ_IMAGE_FILENAME "sadmeal.png"
-
-#define OBJ_SCALE 8.0
-#define OBJ_HAND_SCALE 4.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-// only face is textured; anime-girl-model-3
-#if 0
-#define OBJ_SHAPES_INDEX {0, 1, 3}
-
-#define OBJ_WITH_TEXTURE {1}
-
-#define OBJ_FILENAME "anime-girl-model-3.obj"
-#define OBJ_MTL_FILENAME "anime-girl-model-3.mtl"
-#define OBJ_IMAGE_FILENAME "anime-girl-model-3.png"
-
-#define OBJ_SCALE 128.0
-#define OBJ_HAND_SCALE 4.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-// only body texture is loaded; lopunny-pose-butt-ass
-#if 0
-#define OBJ_SHAPES_INDEX {0, 1, 2, 3, 4, 5, 8}
-
-#define OBJ_WITH_TEXTURE {0, 1, 2, 3, 4, 5, 8}
-
-#define OBJ_FILENAME "lopunny-pose-butt-ass.obj"
-#define OBJ_MTL_FILENAME "lopunny-pose-butt-ass.mtl"
-#define OBJ_IMAGE_FILENAME "lopunny-pose-butt-ass.png"
-
-#define OBJ_SCALE 2.0
-#define OBJ_HAND_SCALE 2.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-#if 0
-#define OBJ_SHAPES_INDEX {0}
-
-#define OBJ_WITH_TEXTURE {0}
-
-#define OBJ_FILENAME "interior-study.obj"
-#define OBJ_MTL_FILENAME "interior-study.mtl"
-#define OBJ_IMAGE_FILENAME "interior-study.png"
-
-#define OBJ_SCALE 128.0
-#define OBJ_HAND_SCALE 4.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-// clothes missing texture; chiku-se-sienta-su-nalga-en-la-tierra-pose
-#if 0
-#define OBJ_SHAPES_INDEX {0, 1, 2}
-
-#define OBJ_WITH_TEXTURE {0, 1}
-
-#define OBJ_FILENAME "chiku-se-sienta-su-nalga-en-la-tierra-pose.obj"
-#define OBJ_MTL_FILENAME "chiku-se-sienta-su-nalga-en-la-tierra-pose.mtl"
-#define OBJ_IMAGE_FILENAME "chiku-se-sienta-su-nalga-en-la-tierra-pose.png"
-
-#define OBJ_SCALE 64.0
-#define OBJ_HAND_SCALE 4.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-#if 0
-#define OBJ_SHAPES_INDEX {1, 2, 5, 6}
-
-#define OBJ_WITH_TEXTURE {1, 2, 5, 6}
-
-#define OBJ_FILENAME "ankha-pose-butt-naked.obj"
-#define OBJ_MTL_FILENAME "ankha-pose-butt-naked.mtl"
-#define OBJ_IMAGE_FILENAME "ankha-pose-butt-naked.png"
-
-#define OBJ_SCALE 8.0
-#define OBJ_HAND_SCALE 4.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-#if 0
-#define OBJ_SHAPES_INDEX {0, 1, 3, 4}
-
-#define OBJ_WITH_TEXTURE {0, 1, 3, 4}
-
-#define OBJ_FILENAME "momscarada-pose.obj"
-#define OBJ_MTL_FILENAME "momscarada-pose.mtl"
-#define OBJ_IMAGE_FILENAME "momscarada-pose.png"
-
-#define OBJ_SCALE 2.0
-#define OBJ_HAND_SCALE 4.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-// head is not textured; km-pinki
-#if 0
-#define OBJ_SHAPES_INDEX {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}
-
-#define OBJ_WITH_TEXTURE {0, 1}
-
-#define OBJ_FILENAME "km-pinki.obj"
-#define OBJ_MTL_FILENAME "km-pinki.mtl"
-#define OBJ_IMAGE_FILENAME "km-pinki.png"
-
-#define OBJ_SCALE 4.0
-#define OBJ_HAND_SCALE 4.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-#if 0
-#define OBJ_SHAPES_INDEX {0}
-
-#define OBJ_WITH_TEXTURE {0}
-
-#define OBJ_FILENAME "sword-of-artorias.obj"
-#define OBJ_MTL_FILENAME "sword-of-artorias.mtl"
-#define OBJ_IMAGE_FILENAME "sword-of-artorias.jpg"
-
-#define OBJ_SCALE 16.0
-#define OBJ_HAND_SCALE 4.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-// face messed up because it is using the body texture; elf-girl
-#if 0
-#define OBJ_SHAPES_INDEX {0}
-
-#define OBJ_WITH_TEXTURE {0}
-
-#define OBJ_FILENAME "elf-girl.obj"
-#define OBJ_MTL_FILENAME "elf-girl.mtl"
-#define OBJ_IMAGE_FILENAME "elf-girl.png"
-
-#define OBJ_SCALE 32.0
-#define OBJ_HAND_SCALE 4.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-#if 0
-#define OBJ_SHAPES_INDEX {0, 1, 2, 3, 4, 5}
-
-#define OBJ_WITH_TEXTURE {0, 1, 2, 3, 4, 5}
-
-#define OBJ_FILENAME "battle-bus.obj"
-#define OBJ_MTL_FILENAME "battle-bus.mtl"
-#define OBJ_IMAGE_FILENAME "battle-bus.png"
-
-#define OBJ_SCALE 512.0
-#define OBJ_HAND_SCALE 4.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-#if 0
-#define OBJ_SHAPES_INDEX {0}
-
-#define OBJ_WITH_TEXTURE {0}
-
-#define OBJ_FILENAME "trailer.obj"
-#define OBJ_MTL_FILENAME "trailer.mtl"
-#define OBJ_IMAGE_FILENAME "trailer.png"
-
-#define OBJ_SCALE 256.0
-#define OBJ_HAND_SCALE 2.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-// face not textured; just-a-girl
-#if 0
-#define OBJ_SHAPES_INDEX {0, 1, 2, 4}
-
-#define OBJ_WITH_TEXTURE {4}
-
-#define OBJ_FILENAME "just-a-girl.obj"
-#define OBJ_MTL_FILENAME "just-a-girl.mtl"
-#define OBJ_IMAGE_FILENAME "just-a-girl.png"
-
-#define OBJ_SCALE 128.0
-#define OBJ_HAND_SCALE 2.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-// no texture
-#if 0
-#define OBJ_SHAPES_INDEX \
-{ \
-  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, \
-  32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, \
-  64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, \
-  96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, \
-  128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, \
-  160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, \
-  192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, \
-  224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246 \
-}
-
-#define OBJ_WITH_TEXTURE {247}
-
-#define OBJ_FILENAME "vendels-workshop.obj"
-#define OBJ_MTL_FILENAME "vendels-workshop.mtl"
-#define OBJ_IMAGE_FILENAME "just-a-girl.png"
-
-#define OBJ_SCALE 4.0
-#define OBJ_HAND_SCALE 4.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-// no texture for eyes; solarfare-butt-pose
-#if 0
-#define OBJ_SHAPES_INDEX {2, 3, 4, 5, 6, 10}
-
-#define OBJ_WITH_TEXTURE {2, 3, 4, 5, 6, 10}
-
-#define OBJ_FILENAME "solarfare-butt-pose.obj"
-#define OBJ_MTL_FILENAME "solarfare-butt-pose.mtl"
-#define OBJ_IMAGE_FILENAME "solarfare-butt-pose.png"
-
-#define OBJ_SCALE 64.0
-#define OBJ_HAND_SCALE 4.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-#if 0
-#define OBJ_SHAPES_INDEX {0}
-
-#define OBJ_WITH_TEXTURE {0}
-
-#define OBJ_FILENAME "sea-house.obj"
-#define OBJ_MTL_FILENAME "sea-house.mtl"
-#define OBJ_IMAGE_FILENAME "sea-house.png"
-
-#define OBJ_SCALE 512.0
-#define OBJ_HAND_SCALE 2.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-#if 0
-#define OBJ_SHAPES_INDEX {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18}
-
-#define OBJ_WITH_TEXTURE {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18}
-
-#define OBJ_FILENAME "minecraft-bastion.obj"
-#define OBJ_MTL_FILENAME "minecraft-bastion.mtl"
-#define OBJ_IMAGE_FILENAME "minecraft-bastion.png"
-
-#define OBJ_SCALE 2.0
-#define OBJ_HAND_SCALE 4.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-#if 0
-#define OBJ_SHAPES_INDEX {0, 1}
-
-#define OBJ_WITH_TEXTURE {0, 1}
-
-#define OBJ_FILENAME "mayan-temple.obj"
-#define OBJ_MTL_FILENAME "mayan-temple.mtl"
-#define OBJ_IMAGE_FILENAME "mayan-temple.jpg"
-
-#define OBJ_SCALE 16.0
-#define OBJ_HAND_SCALE 4.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-#if 0
-#define OBJ_SHAPES_INDEX \
-{ \
-  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, \
-  32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52 \
-}
-
-#define OBJ_WITH_TEXTURE \
-{ \
-  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, \
-  32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52 \
-}
-
-#define OBJ_FILENAME "a-minecraft-village.obj"
-#define OBJ_MTL_FILENAME "a-minecraft-village.mtl"
-#define OBJ_IMAGE_FILENAME "a-minecraft-village.png"
-
-#define OBJ_SCALE 8.0
-#define OBJ_HAND_SCALE 2.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-#if 0
-#define OBJ_SHAPES_INDEX {0}
-
-#define OBJ_WITH_TEXTURE {0}
-
-#define OBJ_FILENAME "minecraft-3d-map-big-village.obj"
-#define OBJ_MTL_FILENAME "minecraft-3d-map-big-village.mtl"
-#define OBJ_IMAGE_FILENAME "minecraft-3d-map-big-village.png"
-
-#define OBJ_SCALE 512.0
-#define OBJ_HAND_SCALE 1.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-// local coordinate system origin is messed up; girl-sitting
-#if 0
-#define OBJ_SHAPES_INDEX {0}
-
-#define OBJ_WITH_TEXTURE {0}
-
-#define OBJ_FILENAME "girl-sitting.obj"
-#define OBJ_MTL_FILENAME "girl-sitting.mtl"
-#define OBJ_IMAGE_FILENAME "girl-sitting.jpeg"
-
-#define OBJ_SCALE 4.0
-#define OBJ_HAND_SCALE 2.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-// clothing is using skin texture
-#if 0
-#define OBJ_SHAPES_INDEX {0}
-
-#define OBJ_WITH_TEXTURE {0}
-
-#define OBJ_FILENAME "pride-bonfie-by-tristy-artist.obj"
-#define OBJ_MTL_FILENAME "pride-bonfie-by-tristy-artist.mtl"
-#define OBJ_IMAGE_FILENAME "pride-bonfie-by-tristy-artist.png"
-
-#define OBJ_SCALE 4.0
-#define OBJ_HAND_SCALE 2.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-#if 0
-#define OBJ_SHAPES_INDEX {0}
-
-#define OBJ_WITH_TEXTURE {0}
-
-#define OBJ_FILENAME "naked_woman.obj"
-#define OBJ_MTL_FILENAME "naked_woman.mtl"
-#define OBJ_IMAGE_FILENAME "naked_woman.jpeg"
-
-#define OBJ_SCALE 2.0
-#define OBJ_HAND_SCALE 2.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-#if 0
-#define OBJ_SHAPES_INDEX \
-{ \
-  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, \
-  32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46 \
-}
-
-#define OBJ_WITH_TEXTURE \
-{ \
-  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, \
-  32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46 \
-}
-
-#define OBJ_FILENAME "plaza_night_time.obj"
-#define OBJ_MTL_FILENAME "plaza_night_time.mtl"
-#define OBJ_IMAGE_FILENAME "plaza_night_time.png"
-
-#define OBJ_SCALE 128.0
-#define OBJ_HAND_SCALE 1.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
-#if 0
-#define OBJ_SHAPES_INDEX \
-{ \
-  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, /**/13, /**/14, 15, /**/16, /**/17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27 /*28; windows*/ \
-}
-
-#define OBJ_WITH_TEXTURE \
-{ \
-  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, /**/13, /**/14, 15, /**/16, /**/17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27 /*28; windows*/ \
-}
-
-#define OBJ_FILENAME "cathedral.obj"
-#define OBJ_MTL_FILENAME "cathedral.mtl"
-#define OBJ_IMAGE_FILENAME "cathedral.jpeg"
-
-#define OBJ_SCALE 64.0
-#define OBJ_HAND_SCALE 2.0
-
-#define OBJ_HAND_TRANSLATE_X 0.0
-#define OBJ_HAND_TRANSLATE_Y 0.0
-#define OBJ_HAND_TRANSLATE_Z 0.0
-
-#define OBJ_ROTATE false
-
-#define OBJ_NORMAL_NEGATIVE false
-
-#define OBJ_IMAGE_FLIP_Y true
-#endif
-
 void AnagTestTinyObjLoader()
 {
 
@@ -884,9 +58,9 @@ void AnagTestTinyObjLoader()
   shapes_size = shapes.size();
   Log::Write(Log::Level::Info, Fmt("shapes_size %i\n", (int)shapes_size) );
 
-  size_t object_shapes_index[] = OBJ_SHAPES_INDEX;
+  uint32_t object_shapes_index[] = OBJ_SHAPES_INDEX;
 
-  size_t object_with_texture[] = OBJ_WITH_TEXTURE;
+  int32_t object_with_texture[] = OBJ_WITH_TEXTURE;
 
   for(size_t s_index = 0; shapes_size > 0 && s_index < countof(object_shapes_index); s_index++)
   {
@@ -928,6 +102,7 @@ struct GeometryVertex
   XrVector3f Normal;
   XrVector3f Color;
   XrVector2f Texture;
+  int32_t Index;
 };
 #endif
 
@@ -971,6 +146,8 @@ struct GeometryVertex
   for(size_t s_index = 0; shapes_size > 0 && s_index < countof(object_shapes_index); s_index++)
   {
     size_t si = object_shapes_index[s_index];
+
+    int32_t ti = object_with_texture[s_index];
 
     // Loop over faces(polygon)
     size_t index_offset_per_shape = 0;
@@ -1065,44 +242,35 @@ struct GeometryVertex
         }
 
         // Check if `texcoord_index` is zero or positive. negative = no texcoord data
-        if(idx.texcoord_index >= 0)
+        if(idx.texcoord_index >= 0 && ti >= 0)
         {
+          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Index = ti;
+
           tinyobj::real_t tx = attrib.texcoords[2 * size_t(idx.texcoord_index) + 0];
           tinyobj::real_t ty = attrib.texcoords[2 * size_t(idx.texcoord_index) + 1];
 
-          bool texture_found = false;
+          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Texture.x = tx;
 
-          for(size_t t_index = 0; t_index < countof(object_with_texture); t_index++)
-          {
-            size_t ti = object_with_texture[t_index];
+          if(OBJ_IMAGE_FLIP_Y)
+            Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Texture.y = 1.0 - ty;
+          else
+            Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Texture.y = ty;
 
-            if(ti == si)
-            {
-              Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Texture.x = tx;
+          texture += tx;
+          texture += ty;
+        }
+        else
+        {
+          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Index = -1;
 
-              if(OBJ_IMAGE_FLIP_Y)
-                Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Texture.y = 1.0 - ty;
-              else
-                Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Texture.y = ty;
+          //Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Texture.x = -1.0;
+          //Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Texture.y = -1.0;
+          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Texture.x = 0.0;
+          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Texture.y = 0.0;
 
-              texture += tx;
-              texture += ty;
-
-              texture_found = true;
-
-              break;
-            }
-          }
-
-          if( !texture_found)
-          {
-            Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Texture.x = -1.0;
-            Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Texture.y = -1.0;
-
-            //Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Color.x = 1.0;
-            //Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Color.y = 1.0;
-            //Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Color.z = 1.0;
-          }
+          //Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Color.x = 1.0;
+          //Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Color.y = 1.0;
+          //Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Color.z = 1.0;
         }
 
         // Optional: vertex colors
@@ -3331,7 +2499,7 @@ struct VkExtensionProperties
       {
         .binding = 2,
         .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-        .descriptorCount = 1/*TUTORIAL_TEXTURE_COUNT*/,
+        .descriptorCount = OBJ_TEXTURE_COUNT,
         .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
         .pImmutableSamplers = nullptr
       };
@@ -3380,7 +2548,7 @@ struct VkExtensionProperties
     //}
   }
 
-  static_assert(sizeof(GeometryVertex) == 44, "Unexpected GeometryVertex size");
+  static_assert(sizeof(GeometryVertex) == 48, "Unexpected GeometryVertex size");
 
   gVertexBufferBaseAttrDesc =
   {
@@ -3390,7 +2558,9 @@ struct VkExtensionProperties
 
     {2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(GeometryVertex, Color) },
 
-    {3, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(GeometryVertex, Texture) }
+    {3, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(GeometryVertex, Texture) },
+
+    {4, 0, VK_FORMAT_R32_SINT, offsetof(GeometryVertex, Index) }
   };
 
   AnagTestTinyObjLoader();
@@ -3630,33 +2800,38 @@ struct VkExtensionProperties
     /*VulkanTutorialCreateDescriptorSetLayout(gTextureVkDescriptorSetLayout);*/
   }
 
-  if(gTextureVkSampler == VK_NULL_HANDLE && gTextureVkDescriptorSetLayout != VK_NULL_HANDLE)
+  if(gTextureBlahVk[0].sampler == VK_NULL_HANDLE && gTextureVkDescriptorSetLayout != VK_NULL_HANDLE)
   {
-    VulkanTutorialCreateTextureImage(
-      OBJ_IMAGE_FILENAME,
-      gVulkanGraphicsPluginVkQueue,
-      gCmdBufferPool,
-      gTextureVkImage,
-      gTextureVkDeviceMemory
-    );
+    const char* object_image_filename[] = OBJ_TEXTURE_FILENAME;
 
-    if(gTextureVkImage != VK_NULL_HANDLE && gTextureVkDeviceMemory != VK_NULL_HANDLE)
-      Log::Write(Log::Level::Info, Fmt("VulkanTutorialCreateTextureImage success\n") );
-    else
-      Log::Write(Log::Level::Info, Fmt("VulkanTutorialCreateTextureImage failure\n") );
+    for(uint32_t indexTexture = 0; indexTexture < OBJ_TEXTURE_COUNT; indexTexture++)
+    {
+      gTextureBlahVk[indexTexture].fileName = object_image_filename[indexTexture];
 
-    gTextureVkImageView = VulkanTutorialCreateImageView(
-      gTextureVkImage,
-      VK_FORMAT_R8G8B8A8_SRGB,
-      VK_IMAGE_ASPECT_COLOR_BIT
-    );
+      VulkanTutorialCreateTextureImage(
+        gVulkanGraphicsPluginVkQueue,
+        gCmdBufferPool,
+        gTextureBlahVk[indexTexture]
+      );
 
-    VulkanTutorialCreateTextureSampler(gTextureVkSampler);
+      if(gTextureBlahVk[indexTexture].image != VK_NULL_HANDLE && gTextureBlahVk[indexTexture].deviceMemory != VK_NULL_HANDLE)
+        Log::Write(Log::Level::Info, Fmt("VulkanTutorialCreateTextureImage success\n") );
+      else
+        Log::Write(Log::Level::Info, Fmt("VulkanTutorialCreateTextureImage failure\n") );
+
+      gTextureBlahVk[indexTexture].imageView = VulkanTutorialCreateImageView(
+        gTextureBlahVk[indexTexture].image,
+        VK_FORMAT_R8G8B8A8_SRGB,
+        VK_IMAGE_ASPECT_COLOR_BIT
+      );
+
+      VulkanTutorialCreateTextureSampler(gTextureBlahVk[indexTexture].sampler);
+    }
   }
 
   if(
     gTextureVkDescriptorSet == VK_NULL_HANDLE &&
-    gTextureVkSampler != VK_NULL_HANDLE &&
+    gTextureBlahVk[0].sampler != VK_NULL_HANDLE &&
     gTextureVkDescriptorSetLayout != VK_NULL_HANDLE
   )
   {
@@ -3724,71 +2899,100 @@ struct VkExtensionProperties
 
   // Create actions.
   {
-    // Create an input action for grabbing objects with the left and right hands.
-    XrActionCreateInfo actionInfo {XR_TYPE_ACTION_CREATE_INFO};
-    actionInfo.actionType = XR_ACTION_TYPE_FLOAT_INPUT;
-    strncpy(actionInfo.actionName, "grab_object", sizeof(actionInfo.actionName) );
-    strncpy(actionInfo.localizedActionName, "Grab Object", sizeof(actionInfo.localizedActionName) );
-    actionInfo.countSubactionPaths = uint32_t(gOpenXrProgramInputState_InputState_handSubactionPath.size() );
-    actionInfo.subactionPaths = gOpenXrProgramInputState_InputState_handSubactionPath.data();
-
-    if(tableXr.CreateAction)
     {
-      CHECK_XRCMD_CHECK(tableXr.CreateAction(
-        gOpenXrProgramInputState_InputState_actionSet,
-        &actionInfo,
-        &gOpenXrProgramInputState_InputState_grabAction
-      ) );
+      // Create an input action for grabbing objects with the left and right hands.
+      XrActionCreateInfo actionInfo {XR_TYPE_ACTION_CREATE_INFO};
+      actionInfo.actionType = XR_ACTION_TYPE_FLOAT_INPUT;
+      strncpy(actionInfo.actionName, "grab_object", sizeof(actionInfo.actionName) );
+      strncpy(actionInfo.localizedActionName, "Grab Object", sizeof(actionInfo.localizedActionName) );
+      actionInfo.countSubactionPaths = uint32_t(gOpenXrProgramInputState_InputState_handSubactionPath.size() );
+      actionInfo.subactionPaths = gOpenXrProgramInputState_InputState_handSubactionPath.data();
+
+      if(tableXr.CreateAction)
+      {
+        CHECK_XRCMD_CHECK(tableXr.CreateAction(
+          gOpenXrProgramInputState_InputState_actionSet,
+          &actionInfo,
+          &gOpenXrProgramInputState_InputState_grabAction
+        ) );
+      }
     }
 
-    // Create an input action getting the left and right hand poses.
-    actionInfo.actionType = XR_ACTION_TYPE_POSE_INPUT;
-    strncpy(actionInfo.actionName, "hand_pose", sizeof(actionInfo.actionName) );
-    strncpy(actionInfo.localizedActionName, "Hand OpenXrProgram_Pose", sizeof(actionInfo.localizedActionName) );
-    actionInfo.countSubactionPaths = uint32_t(gOpenXrProgramInputState_InputState_handSubactionPath.size() );
-    actionInfo.subactionPaths = gOpenXrProgramInputState_InputState_handSubactionPath.data();
-
-    if(tableXr.CreateAction)
     {
-      CHECK_XRCMD_CHECK(tableXr.CreateAction(
-        gOpenXrProgramInputState_InputState_actionSet,
-        &actionInfo,
-        &gOpenXrProgramInputState_InputState_poseAction
-      ) );
+      XrActionCreateInfo actionInfo {XR_TYPE_ACTION_CREATE_INFO};
+      actionInfo.actionType = XR_ACTION_TYPE_FLOAT_INPUT;
+      strncpy(actionInfo.actionName, "trigger_object", sizeof(actionInfo.actionName) );
+      strncpy(actionInfo.localizedActionName, "Trigger Object", sizeof(actionInfo.localizedActionName) );
+      actionInfo.countSubactionPaths = uint32_t(gOpenXrProgramInputState_InputState_handSubactionPath.size() );
+      actionInfo.subactionPaths = gOpenXrProgramInputState_InputState_handSubactionPath.data();
+
+      if(tableXr.CreateAction)
+      {
+        CHECK_XRCMD_CHECK(tableXr.CreateAction(
+          gOpenXrProgramInputState_InputState_actionSet,
+          &actionInfo,
+          &gOpenXrProgramInputState_InputState_triggerAction
+        ) );
+      }
     }
 
-    // Create output actions for vibrating the left and right controller.
-    actionInfo.actionType = XR_ACTION_TYPE_VIBRATION_OUTPUT;
-    strncpy(actionInfo.actionName, "vibrate_hand", sizeof(actionInfo.actionName) );
-    strncpy(actionInfo.localizedActionName, "Vibrate Hand", sizeof(actionInfo.localizedActionName) );
-    actionInfo.countSubactionPaths = uint32_t(gOpenXrProgramInputState_InputState_handSubactionPath.size() );
-    actionInfo.subactionPaths = gOpenXrProgramInputState_InputState_handSubactionPath.data();
-
-    if(tableXr.CreateAction)
     {
-      CHECK_XRCMD_CHECK(tableXr.CreateAction(
-        gOpenXrProgramInputState_InputState_actionSet,
-        &actionInfo,
-        &gOpenXrProgramInputState_InputState_vibrateAction
-      ) );
+      // Create an input action getting the left and right hand poses.
+      XrActionCreateInfo actionInfo {XR_TYPE_ACTION_CREATE_INFO};
+      actionInfo.actionType = XR_ACTION_TYPE_POSE_INPUT;
+      strncpy(actionInfo.actionName, "hand_pose", sizeof(actionInfo.actionName) );
+      strncpy(actionInfo.localizedActionName, "Hand OpenXrProgram_Pose", sizeof(actionInfo.localizedActionName) );
+      actionInfo.countSubactionPaths = uint32_t(gOpenXrProgramInputState_InputState_handSubactionPath.size() );
+      actionInfo.subactionPaths = gOpenXrProgramInputState_InputState_handSubactionPath.data();
+
+      if(tableXr.CreateAction)
+      {
+        CHECK_XRCMD_CHECK(tableXr.CreateAction(
+          gOpenXrProgramInputState_InputState_actionSet,
+          &actionInfo,
+          &gOpenXrProgramInputState_InputState_poseAction
+        ) );
+      }
     }
 
-    // Create input actions for quitting the session using the left and right controller.
-    // Since it doesn't matter which hand did this, we do not specify subaction paths for it.
-    // We will just suggest bindings for both hands, where possible.
-    actionInfo.actionType = XR_ACTION_TYPE_BOOLEAN_INPUT;
-    strncpy(actionInfo.actionName, "quit_session", sizeof(actionInfo.actionName) );
-    strncpy(actionInfo.localizedActionName, "Quit Session", sizeof(actionInfo.localizedActionName) );
-    actionInfo.countSubactionPaths = 0;
-    actionInfo.subactionPaths = nullptr;
-
-    if(tableXr.CreateAction)
     {
-      CHECK_XRCMD_CHECK(tableXr.CreateAction(
-        gOpenXrProgramInputState_InputState_actionSet,
-        &actionInfo,
-        &gOpenXrProgramInputState_InputState_quitAction
-      ) );
+      // Create output actions for vibrating the left and right controller.
+      XrActionCreateInfo actionInfo {XR_TYPE_ACTION_CREATE_INFO};
+      actionInfo.actionType = XR_ACTION_TYPE_VIBRATION_OUTPUT;
+      strncpy(actionInfo.actionName, "vibrate_hand", sizeof(actionInfo.actionName) );
+      strncpy(actionInfo.localizedActionName, "Vibrate Hand", sizeof(actionInfo.localizedActionName) );
+      actionInfo.countSubactionPaths = uint32_t(gOpenXrProgramInputState_InputState_handSubactionPath.size() );
+      actionInfo.subactionPaths = gOpenXrProgramInputState_InputState_handSubactionPath.data();
+
+      if(tableXr.CreateAction)
+      {
+        CHECK_XRCMD_CHECK(tableXr.CreateAction(
+          gOpenXrProgramInputState_InputState_actionSet,
+          &actionInfo,
+          &gOpenXrProgramInputState_InputState_vibrateAction
+        ) );
+      }
+    }
+
+    {
+      // Create input actions for quitting the session using the left and right controller.
+      // Since it doesn't matter which hand did this, we do not specify subaction paths for it.
+      // We will just suggest bindings for both hands, where possible.
+      XrActionCreateInfo actionInfo {XR_TYPE_ACTION_CREATE_INFO};
+      actionInfo.actionType = XR_ACTION_TYPE_BOOLEAN_INPUT;
+      strncpy(actionInfo.actionName, "quit_session", sizeof(actionInfo.actionName) );
+      strncpy(actionInfo.localizedActionName, "Quit Session", sizeof(actionInfo.localizedActionName) );
+      actionInfo.countSubactionPaths = 0;
+      actionInfo.subactionPaths = nullptr;
+
+      if(tableXr.CreateAction)
+      {
+        CHECK_XRCMD_CHECK(tableXr.CreateAction(
+          gOpenXrProgramInputState_InputState_actionSet,
+          &actionInfo,
+          &gOpenXrProgramInputState_InputState_quitAction
+        ) );
+      }
     }
   }
 
@@ -3969,6 +3173,10 @@ struct VkExtensionProperties
       {
         {gOpenXrProgramInputState_InputState_grabAction, squeezeValuePath[Side_LEFT] },
         {gOpenXrProgramInputState_InputState_grabAction, squeezeValuePath[Side_RIGHT] },
+
+        {gOpenXrProgramInputState_InputState_triggerAction, triggerValuePath[Side_LEFT] },
+        {gOpenXrProgramInputState_InputState_triggerAction, triggerValuePath[Side_RIGHT] },
+
         {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_LEFT] },
         {gOpenXrProgramInputState_InputState_poseAction, posePath[Side_RIGHT] },
         {gOpenXrProgramInputState_InputState_quitAction, menuClickPath[Side_LEFT] },
@@ -4913,7 +4121,7 @@ struct VkExtensionProperties
             const VkDescriptorPoolSize descriptorPoolSize =
             {
               .type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-              .descriptorCount = 1/*TUTORIAL_TEXTURE_COUNT*/
+              .descriptorCount = OBJ_TEXTURE_COUNT
             };
 
             const VkDescriptorPoolCreateInfo descriptorPoolCreateInfo =
@@ -4938,14 +4146,14 @@ struct VkExtensionProperties
 
             tableVk.AllocateDescriptorSets(gVkDevice, &descriptorSetAllocateInfo, &gTextureVkDescriptorSet);
 
-            VkDescriptorImageInfo descriptorImageInfo[1/*TUTORIAL_TEXTURE_COUNT*/];
-            memset(descriptorImageInfo, 0, sizeof(VkDescriptorImageInfo) * 1/*TUTORIAL_TEXTURE_COUNT*/);
+            VkDescriptorImageInfo descriptorImageInfo[OBJ_TEXTURE_COUNT];
+            memset(descriptorImageInfo, 0, sizeof(VkDescriptorImageInfo) * OBJ_TEXTURE_COUNT);
 
-            for(int32_t index = 0; index < 1/*TUTORIAL_TEXTURE_COUNT*/; index++)
+            for(int32_t index = 0; index < OBJ_TEXTURE_COUNT; index++)
             {
-              descriptorImageInfo[index].sampler = gTextureVkSampler/*textures[index].sampler*/;
-              descriptorImageInfo[index].imageView = gTextureVkImageView/*textures[index].view*/;
-              descriptorImageInfo[index].imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+              descriptorImageInfo[index].sampler = gTextureBlahVk[index].sampler;
+              descriptorImageInfo[index].imageView = gTextureBlahVk[index].imageView;
+              descriptorImageInfo[index].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL/*VK_IMAGE_LAYOUT_GENERAL*/;
             }
 
             VkWriteDescriptorSet writeDescriptorSet =
@@ -4955,7 +4163,7 @@ struct VkExtensionProperties
               .dstSet = gTextureVkDescriptorSet,
               .dstBinding = 2,
               .dstArrayElement = 0,
-              .descriptorCount = 1/*TUTORIAL_TEXTURE_COUNT*/,
+              .descriptorCount = OBJ_TEXTURE_COUNT,
               .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
               .pImageInfo = descriptorImageInfo,
               .pBufferInfo = nullptr,
@@ -5127,6 +4335,47 @@ struct VkExtensionProperties
             CHECK_XRCMD_CHECK(tableXr.BeginSession(gXrSession, &sessionBeginInfo) );
 
           gOpenXrProgramSessionRunning = true;
+
+          if(tableXr.PerfSettingsSetPerformanceLevelEXT)
+          {
+
+            tableXr.PerfSettingsSetPerformanceLevelEXT(
+              gXrSession,
+              XR_PERF_SETTINGS_DOMAIN_CPU_EXT,
+              XR_PERF_SETTINGS_LEVEL_SUSTAINED_LOW_EXT
+            );
+
+            tableXr.PerfSettingsSetPerformanceLevelEXT(
+              gXrSession,
+              XR_PERF_SETTINGS_DOMAIN_CPU_EXT,
+              XR_PERF_SETTINGS_LEVEL_SUSTAINED_HIGH_EXT
+            );
+
+            tableXr.PerfSettingsSetPerformanceLevelEXT(
+              gXrSession,
+              XR_PERF_SETTINGS_DOMAIN_CPU_EXT,
+              XR_PERF_SETTINGS_LEVEL_BOOST_EXT
+            );
+
+            tableXr.PerfSettingsSetPerformanceLevelEXT(
+              gXrSession,
+              XR_PERF_SETTINGS_DOMAIN_GPU_EXT,
+              XR_PERF_SETTINGS_LEVEL_SUSTAINED_LOW_EXT
+            );
+
+            tableXr.PerfSettingsSetPerformanceLevelEXT(
+              gXrSession,
+              XR_PERF_SETTINGS_DOMAIN_GPU_EXT,
+              XR_PERF_SETTINGS_LEVEL_SUSTAINED_HIGH_EXT
+            );
+
+            tableXr.PerfSettingsSetPerformanceLevelEXT(
+              gXrSession,
+              XR_PERF_SETTINGS_DOMAIN_GPU_EXT,
+              XR_PERF_SETTINGS_LEVEL_BOOST_EXT
+            );
+          }
+
           break;
         }
 
@@ -5166,11 +4415,12 @@ struct VkExtensionProperties
 
       case XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED:
       {
-        const int actionSourceNameCount = 4;
+        const int actionSourceNameCount = 5;
 
         XrAction gOpenXrProgramInputState_InputState_ActionBlah[actionSourceNameCount] =
         {
           gOpenXrProgramInputState_InputState_grabAction,
+          gOpenXrProgramInputState_InputState_triggerAction,
           gOpenXrProgramInputState_InputState_quitAction,
           gOpenXrProgramInputState_InputState_poseAction,
           gOpenXrProgramInputState_InputState_vibrateAction
@@ -5178,6 +4428,7 @@ struct VkExtensionProperties
 
         const std::string actionName[actionSourceNameCount] = {
           "Grab",
+          "Trigger",
           "Quit",
           "Pose",
           "Vibrate"
@@ -5303,20 +4554,37 @@ struct VkExtensionProperties
     // Get pose and grab action state and start haptic vibrate when hand is 90% squeezed.
     for(auto hand : {Side_LEFT, Side_RIGHT} )
     {
-      XrActionStateGetInfo getInfo {XR_TYPE_ACTION_STATE_GET_INFO};
-
-      getInfo.action = gOpenXrProgramInputState_InputState_grabAction;
-      getInfo.subactionPath = gOpenXrProgramInputState_InputState_handSubactionPath[hand];
-
       XrActionStateFloat grabValue {XR_TYPE_ACTION_STATE_FLOAT};
-
-      if(tableXr.GetActionStateFloat)
-        CHECK_XRCMD_CHECK(tableXr.GetActionStateFloat(gXrSession, &getInfo, &grabValue) );
-
-      if(grabValue.isActive == XR_TRUE)
       {
-        // Scale the rendered hand by 1.0f (open) to 0.5f (fully squeezed).
-        gOpenXrProgramInputState_InputState_handScale[hand] = 1.0f + 1.0f * grabValue.currentState;
+        XrActionStateGetInfo getInfo {XR_TYPE_ACTION_STATE_GET_INFO};
+        getInfo.action = gOpenXrProgramInputState_InputState_grabAction;
+        getInfo.subactionPath = gOpenXrProgramInputState_InputState_handSubactionPath[hand];
+
+        if(tableXr.GetActionStateFloat)
+          CHECK_XRCMD_CHECK(tableXr.GetActionStateFloat(gXrSession, &getInfo, &grabValue) );
+      }
+
+      XrActionStateFloat triggerValue {XR_TYPE_ACTION_STATE_FLOAT};
+      {
+        XrActionStateGetInfo getInfo {XR_TYPE_ACTION_STATE_GET_INFO};
+        getInfo.action = gOpenXrProgramInputState_InputState_triggerAction;
+        getInfo.subactionPath = gOpenXrProgramInputState_InputState_handSubactionPath[hand];
+
+        if(tableXr.GetActionStateFloat)
+          CHECK_XRCMD_CHECK(tableXr.GetActionStateFloat(gXrSession, &getInfo, &triggerValue) );
+      }
+
+      if(grabValue.isActive == XR_TRUE || triggerValue.isActive == XR_TRUE)
+      {
+        // Scale the rendered hand by 1.0f (open) to 2.0f (fully squeezed)
+
+        gOpenXrProgramInputState_InputState_handScale[hand] = 1.0f;
+
+        if(grabValue.isActive)
+          gOpenXrProgramInputState_InputState_handScale[hand] *= 1.0 + 1.0 * grabValue.currentState;
+
+        if(triggerValue.isActive)
+          gOpenXrProgramInputState_InputState_handScale[hand] *= 1.0 + 1.0 * triggerValue.currentState;
 
         if(grabValue.currentState > 0.9f)
         {
@@ -5344,12 +4612,15 @@ struct VkExtensionProperties
         }
       }
 
-      getInfo.action = gOpenXrProgramInputState_InputState_poseAction;
-
       XrActionStatePose poseState {XR_TYPE_ACTION_STATE_POSE};
+      {
+        XrActionStateGetInfo getInfo {XR_TYPE_ACTION_STATE_GET_INFO};
+        getInfo.action = gOpenXrProgramInputState_InputState_poseAction;
+        getInfo.subactionPath = gOpenXrProgramInputState_InputState_handSubactionPath[hand];
 
-      if(tableXr.GetActionStatePose)
-        CHECK_XRCMD_CHECK(tableXr.GetActionStatePose(gXrSession, &getInfo, &poseState) );
+        if(tableXr.GetActionStatePose)
+          CHECK_XRCMD_CHECK(tableXr.GetActionStatePose(gXrSession, &getInfo, &poseState) );
+      }
 
       gOpenXrProgramInputState_InputState_handActive[hand] = poseState.isActive;
     }
@@ -5481,8 +4752,10 @@ struct VkExtensionProperties
               (spaceLocation.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0
             )
             {
+#if 0
               //models.push_back(Model {257, spaceLocation.pose, {0.25f, 0.25f, 0.25f} } );
               models.push_back(Model {256, spaceLocation.pose, {0.25f, 0.25f, 0.25f} } );
+#endif
             }
           }
           else

@@ -7,6 +7,7 @@ struct GeometryVertex
   XrVector3f Normal;
   XrVector3f Color;
   XrVector2f Texture;
+  int32_t Index;
 };
 
 namespace Geometry
