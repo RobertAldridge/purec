@@ -10,10 +10,12 @@
 #define ANAG_LOGV(...) do{ /*nop*/; }while(0)
 #endif
 
-#if 0
-#define OBJ_SHAPES_INDEX {0}
+#if 1
+#define OBJ_SHAPES_INDEX  { 0}
 
-#define OBJ_WITH_TEXTURE {0}
+#define OBJ_WITH_TEXTURE  { 0}
+
+#define OBJ_WITH_MATERIAL {-1}
 
 #define OBJ_FILENAME "stardew_farm.obj"
 #define OBJ_MTL_FILENAME "stardew_farm.mtl"
@@ -36,9 +38,11 @@
 #endif
 
 #if 0
-#define OBJ_SHAPES_INDEX {1}
+#define OBJ_SHAPES_INDEX  { 1}
 
-#define OBJ_WITH_TEXTURE {0}
+#define OBJ_WITH_TEXTURE  { 0}
+
+#define OBJ_WITH_MATERIAL {-1}
 
 #define OBJ_FILENAME "neo_tokyo.obj"
 #define OBJ_MTL_FILENAME "neo_tokyo.mtl"
@@ -61,9 +65,11 @@
 #endif
 
 #if 0
-#define OBJ_SHAPES_INDEX {0}
+#define OBJ_SHAPES_INDEX  { 0}
 
-#define OBJ_WITH_TEXTURE {0}
+#define OBJ_WITH_TEXTURE  { 0}
+
+#define OBJ_WITH_MATERIAL {-1}
 
 #define OBJ_FILENAME "viking_room.obj"
 #define OBJ_MTL_FILENAME "viking_room.mtl"
@@ -86,9 +92,11 @@
 #endif
 
 #if 0
-#define OBJ_SHAPES_INDEX {0}
+#define OBJ_SHAPES_INDEX  { 0}
 
-#define OBJ_WITH_TEXTURE {0}
+#define OBJ_WITH_TEXTURE  { 0}
+
+#define OBJ_WITH_MATERIAL {-1}
 
 #define OBJ_FILENAME "room_07.obj"
 #define OBJ_MTL_FILENAME "room_07.mtl"
@@ -111,9 +119,11 @@
 #endif
 
 #if 0
-#define OBJ_SHAPES_INDEX {0}
+#define OBJ_SHAPES_INDEX  { 0}
 
-#define OBJ_WITH_TEXTURE {0}
+#define OBJ_WITH_TEXTURE  { 0}
+
+#define OBJ_WITH_MATERIAL {-1}
 
 #define OBJ_FILENAME "woman_posing.obj"
 #define OBJ_MTL_FILENAME "woman_posing.mtl"
@@ -136,12 +146,14 @@
 #endif
 
 #if 0
-#define OBJ_SHAPES_INDEX {1,  2,  3}
+#define OBJ_SHAPES_INDEX  { 1,  2,  3}
 
-#define OBJ_WITH_TEXTURE {0,  0,  1}
+#define OBJ_WITH_TEXTURE  { 0,  0,  1}
 
-#define OBJ_FILENAME "chiku_sus_tetas_pose.obj"
-#define OBJ_MTL_FILENAME "chiku_sus_tetas_pose.mtl"
+#define OBJ_WITH_MATERIAL {-1, -1, -1}
+
+#define OBJ_FILENAME "chiku-sus-tetas-pose.obj"
+#define OBJ_MTL_FILENAME "chiku-sus-tetas-pose.mtl"
 
 #define OBJ_TEXTURE_COUNT 2
 #define OBJ_TEXTURE_FILENAME {"chiku-sus-tetas-pose_chikufnia.png", "chiku-sus-tetas-pose_chicaClothesTex_baseColor.png"}
@@ -161,15 +173,17 @@
 #endif
 
 #if 0
-#define OBJ_SHAPES_INDEX {7,  8}
+#define OBJ_SHAPES_INDEX  { 0,  1,  2,  3,  4,  5,  6,  7,  8}
 
-#define OBJ_WITH_TEXTURE {0,  0}
+#define OBJ_WITH_TEXTURE  { 1,  1,  1,  1,  1,  1,  1,  0,  0}
+
+#define OBJ_WITH_MATERIAL {-1, -1, -1, -1, -1, -1, -1, -1, -1}
 
 #define OBJ_FILENAME "chiku-nsfw-pose.obj"
 #define OBJ_MTL_FILENAME "chiku-nsfw-pose.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"chiku-nsfw-pose.png"}
+#define OBJ_TEXTURE_COUNT 2
+#define OBJ_TEXTURE_FILENAME {"chiku-nsfw-pose_chiku_baseColor.png", "chiku-nsfw-pose_chiku_props_texture.png"}
 
 #define OBJ_SCALE 64.0
 #define OBJ_HAND_SCALE 4.0
@@ -185,11 +199,13 @@
 #define OBJ_IMAGE_FLIP_Y true
 #endif
 
-// texture issue; honda-shadow-rs-2010
+// texture issue (and only one shape); honda-shadow-rs-2010
 #if 0
-#define OBJ_SHAPES_INDEX {0}
+#define OBJ_SHAPES_INDEX  { 0}
 
-#define OBJ_WITH_TEXTURE {0}
+#define OBJ_WITH_TEXTURE  { 0}
+
+#define OBJ_WITH_MATERIAL {-1}
 
 #define OBJ_FILENAME "honda-shadow-rs-2010.obj"
 #define OBJ_MTL_FILENAME "honda-shadow-rs-2010.mtl"
@@ -211,16 +227,19 @@
 #define OBJ_IMAGE_FLIP_Y true
 #endif
 
+// hair is not textured correctly; sexy-goblin
 #if 0
-#define OBJ_SHAPES_INDEX {0,  3}
+#define OBJ_SHAPES_INDEX  { 0,  3}
 
-#define OBJ_WITH_TEXTURE {0,  0}
+#define OBJ_WITH_TEXTURE  { 1,  1}
+
+#define OBJ_WITH_MATERIAL {-1, -1}
 
 #define OBJ_FILENAME "sexy-goblin.obj"
 #define OBJ_MTL_FILENAME "sexy-goblin.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"sexy-goblin.png"}
+#define OBJ_TEXTURE_COUNT 2
+#define OBJ_TEXTURE_FILENAME {"sexy-goblin_hair.png", "sexy-goblin_skin_panties.png"}
 
 #define OBJ_SCALE 8.0
 #define OBJ_HAND_SCALE 4.0
@@ -238,15 +257,17 @@
 
 // texture is for scene not body; sadmeal
 #if 0
-#define OBJ_SHAPES_INDEX { 0,  1,  2}
+#define OBJ_SHAPES_INDEX  { 0,  1,  2}
 
-#define OBJ_WITH_TEXTURE {-1, -1,  0}
+#define OBJ_WITH_TEXTURE  { 1,  0,  2}
+
+#define OBJ_WITH_MATERIAL {-1, -1, -1}
 
 #define OBJ_FILENAME "sadmeal.obj"
 #define OBJ_MTL_FILENAME "sadmeal.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"sadmeal.png"}
+#define OBJ_TEXTURE_COUNT 3
+#define OBJ_TEXTURE_FILENAME {"sadmeal_clothes_color.png", "sadmeal_face_color.png", "sadmeal_scene_color.png"}
 
 #define OBJ_SCALE 8.0
 #define OBJ_HAND_SCALE 4.0
@@ -262,17 +283,18 @@
 #define OBJ_IMAGE_FLIP_Y true
 #endif
 
-// only face is textured; anime-girl-model-3
 #if 0
-#define OBJ_SHAPES_INDEX { 0,  1,  3}
+#define OBJ_SHAPES_INDEX  { 0,  1,  2,  3}
 
-#define OBJ_WITH_TEXTURE {-1,  0, -1}
+#define OBJ_WITH_TEXTURE  { 1,  0,  2,  3}
+
+#define OBJ_WITH_MATERIAL {-1, -1, -1, -1}
 
 #define OBJ_FILENAME "anime-girl-model-3.obj"
 #define OBJ_MTL_FILENAME "anime-girl-model-3.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"anime-girl-model-3.png"}
+#define OBJ_TEXTURE_COUNT 4
+#define OBJ_TEXTURE_FILENAME {"anime-girl-model-3_RGB_59d10c6ca0de4a22bfa4dbdc96d9616e_Body.png", "anime-girl-model-3_RGB_782632343fbb4317b1b0c7e18535426a_Cloth.png", "anime-girl-model-3_RGB_a503f10c281a40ccbcdec40277e26e20_Gun.png", "anime-girl-model-3_RGB_bd18134b252943558ae796c6564b9e2c_Hair.png"}
 
 #define OBJ_SCALE 128.0
 #define OBJ_HAND_SCALE 4.0
@@ -288,17 +310,18 @@
 #define OBJ_IMAGE_FLIP_Y true
 #endif
 
-// only body texture is loaded; lopunny-pose-butt-ass
 #if 0
-#define OBJ_SHAPES_INDEX {0,  1,  2,  3,  4,  5,  8}
+#define OBJ_SHAPES_INDEX  { 0,  1,  2,  3,  4,  5,  6,  7,  8}
 
-#define OBJ_WITH_TEXTURE {0,  0,  0,  0,  0,  0,  0}
+#define OBJ_WITH_TEXTURE  { 0,  1,  0,  3,  1, -1,  1,  1,  2}
+
+#define OBJ_WITH_MATERIAL {-1, -1, -1, -1, -1, -1, -1, -1, -1}
 
 #define OBJ_FILENAME "lopunny-pose-butt-ass.obj"
 #define OBJ_MTL_FILENAME "lopunny-pose-butt-ass.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"lopunny-pose-butt-ass.png"}
+#define OBJ_TEXTURE_COUNT 4
+#define OBJ_TEXTURE_FILENAME {"lopunny-pose-butt-ass_bodyS_diffuse.png", "lopunny-pose-butt-ass_eyeball_l_diffuse.png", "lopunny-pose-butt-ass_head_diffuse.png", "lopunny-pose-butt-ass_material_5_diffuse.png"}
 
 #define OBJ_SCALE 2.0
 #define OBJ_HAND_SCALE 2.0
@@ -315,9 +338,11 @@
 #endif
 
 #if 0
-#define OBJ_SHAPES_INDEX {0}
+#define OBJ_SHAPES_INDEX  { 0}
 
-#define OBJ_WITH_TEXTURE {0}
+#define OBJ_WITH_TEXTURE  { 0}
+
+#define OBJ_WITH_MATERIAL {-1}
 
 #define OBJ_FILENAME "interior-study.obj"
 #define OBJ_MTL_FILENAME "interior-study.mtl"
@@ -339,17 +364,18 @@
 #define OBJ_IMAGE_FLIP_Y true
 #endif
 
-// clothes missing texture; chiku-se-sienta-su-nalga-en-la-tierra-pose
 #if 0
-#define OBJ_SHAPES_INDEX {0,  1,  2}
+#define OBJ_SHAPES_INDEX  { 0,  1,  2}
 
-#define OBJ_WITH_TEXTURE {0,  0, -1}
+#define OBJ_WITH_TEXTURE  { 1,  1,  0}
+
+#define OBJ_WITH_MATERIAL {-1, -1, -1}
 
 #define OBJ_FILENAME "chiku-se-sienta-su-nalga-en-la-tierra-pose.obj"
 #define OBJ_MTL_FILENAME "chiku-se-sienta-su-nalga-en-la-tierra-pose.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"chiku-se-sienta-su-nalga-en-la-tierra-pose.png"}
+#define OBJ_TEXTURE_COUNT 2
+#define OBJ_TEXTURE_FILENAME {"chiku-se-sienta-su-nalga-en-la-tierra-pose_chicaClothesTex_baseColor.png", "chiku-se-sienta-su-nalga-en-la-tierra-pose_chikufnia.png"}
 
 #define OBJ_SCALE 64.0
 #define OBJ_HAND_SCALE 4.0
@@ -366,15 +392,17 @@
 #endif
 
 #if 0
-#define OBJ_SHAPES_INDEX {1,  2,  5,  6}
+#define OBJ_SHAPES_INDEX  { 0,  1,  2,  3,  4,  5,  6}
 
-#define OBJ_WITH_TEXTURE {0,  0,  0,  0}
+#define OBJ_WITH_TEXTURE  { 0,  0,  2,  0,  3,  1, -1}
+
+#define OBJ_WITH_MATERIAL {-1, -1, -1, -1, -1, -1, -1}
 
 #define OBJ_FILENAME "ankha-pose-butt-naked.obj"
 #define OBJ_MTL_FILENAME "ankha-pose-butt-naked.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"ankha-pose-butt-naked.png"}
+#define OBJ_TEXTURE_COUNT 4
+#define OBJ_TEXTURE_FILENAME {"ankha-pose-butt-naked_accessories_baseColor.png", "ankha-pose-butt-naked_body_baseColor.png", "ankha-pose-butt-naked_hair_baseColor.png", "ankha-pose-butt-naked_snake_baseColor.png"}
 
 #define OBJ_SCALE 8.0
 #define OBJ_HAND_SCALE 4.0
@@ -391,9 +419,11 @@
 #endif
 
 #if 0
-#define OBJ_SHAPES_INDEX {0,  1,  3,  4}
+#define OBJ_SHAPES_INDEX  { 0,  1,  3,  4}
 
-#define OBJ_WITH_TEXTURE {0,  0,  0,  0}
+#define OBJ_WITH_TEXTURE  { 0,  0,  0,  0}
+
+#define OBJ_WITH_MATERIAL {-1, -1, -1, -1}
 
 #define OBJ_FILENAME "momscarada-pose.obj"
 #define OBJ_MTL_FILENAME "momscarada-pose.mtl"
@@ -417,15 +447,17 @@
 
 // head is not textured; km-pinki
 #if 0
-#define OBJ_SHAPES_INDEX {0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}
+#define OBJ_SHAPES_INDEX  { 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}
 
-#define OBJ_WITH_TEXTURE {0,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}
+#define OBJ_WITH_TEXTURE  { 0,  1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}
+
+#define OBJ_WITH_MATERIAL {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}
 
 #define OBJ_FILENAME "km-pinki.obj"
 #define OBJ_MTL_FILENAME "km-pinki.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"km-pinki.png"}
+#define OBJ_TEXTURE_COUNT 2
+#define OBJ_TEXTURE_FILENAME {"km-pinki_1000018810.png", "km-pinki_1000018811.png"}
 
 #define OBJ_SCALE 4.0
 #define OBJ_HAND_SCALE 4.0
@@ -442,9 +474,11 @@
 #endif
 
 #if 0
-#define OBJ_SHAPES_INDEX {0}
+#define OBJ_SHAPES_INDEX  { 0}
 
-#define OBJ_WITH_TEXTURE {0}
+#define OBJ_WITH_TEXTURE  { 0}
+
+#define OBJ_WITH_MATERIAL {-1}
 
 #define OBJ_FILENAME "sword-of-artorias.obj"
 #define OBJ_MTL_FILENAME "sword-of-artorias.mtl"
@@ -466,11 +500,13 @@
 #define OBJ_IMAGE_FLIP_Y true
 #endif
 
-// face messed up because it is using the body texture; elf-girl
+// face messed up because it is using the body texture (the whole model is 1 shape); elf-girl
 #if 0
-#define OBJ_SHAPES_INDEX {0}
+#define OBJ_SHAPES_INDEX  { 0}
 
-#define OBJ_WITH_TEXTURE {0}
+#define OBJ_WITH_TEXTURE  { 0}
+
+#define OBJ_WITH_MATERIAL {-1}
 
 #define OBJ_FILENAME "elf-girl.obj"
 #define OBJ_MTL_FILENAME "elf-girl.mtl"
@@ -492,16 +528,19 @@
 #define OBJ_IMAGE_FLIP_Y true
 #endif
 
+// texture issues; battle-bus
 #if 0
-#define OBJ_SHAPES_INDEX {0,  1,  2,  3,  4,  5}
+#define OBJ_SHAPES_INDEX  { 0,  1,  2,  3,  4,  5}
 
-#define OBJ_WITH_TEXTURE {0,  0,  0,  0,  0,  0}
+#define OBJ_WITH_TEXTURE  { 0,  0,  1,  1,  1,  0}
+
+#define OBJ_WITH_MATERIAL {-1, -1, -1, -1, -1, -1}
 
 #define OBJ_FILENAME "battle-bus.obj"
 #define OBJ_MTL_FILENAME "battle-bus.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"battle-bus.png"}
+#define OBJ_TEXTURE_COUNT 2
+#define OBJ_TEXTURE_FILENAME {"battle-bus_bus17_bus1910_bus_Material__25_BaseColor.png", "battle-bus_bus17_bus1910_bus_Material__26_BaseColor.png"}
 
 #define OBJ_SCALE 512.0
 #define OBJ_HAND_SCALE 4.0
@@ -518,9 +557,11 @@
 #endif
 
 #if 0
-#define OBJ_SHAPES_INDEX {0}
+#define OBJ_SHAPES_INDEX  { 0}
 
-#define OBJ_WITH_TEXTURE {0}
+#define OBJ_WITH_TEXTURE  { 0}
+
+#define OBJ_WITH_MATERIAL {-1}
 
 #define OBJ_FILENAME "trailer.obj"
 #define OBJ_MTL_FILENAME "trailer.mtl"
@@ -542,17 +583,18 @@
 #define OBJ_IMAGE_FLIP_Y true
 #endif
 
-// face not textured; just-a-girl
 #if 0
-#define OBJ_SHAPES_INDEX { 0,  1,  2,  4}
+#define OBJ_SHAPES_INDEX  { 0,  1,  2,  3,  4,  5,  6,  7}
 
-#define OBJ_WITH_TEXTURE {-1, -1, -1,  0}
+#define OBJ_WITH_TEXTURE  { 1,  1,  1,  1,  0,  0,  0,  2}
+
+#define OBJ_WITH_MATERIAL {-1, -1, -1, -1, -1, -1, -1, -1}
 
 #define OBJ_FILENAME "just-a-girl.obj"
 #define OBJ_MTL_FILENAME "just-a-girl.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"just-a-girl.png"}
+#define OBJ_TEXTURE_COUNT 3
+#define OBJ_TEXTURE_FILENAME {"just-a-girl_body.png", "just-a-girl_head.png", "just-a-girl_all.png"}
 
 #define OBJ_SCALE 128.0
 #define OBJ_HAND_SCALE 2.0
@@ -568,7 +610,7 @@
 #define OBJ_IMAGE_FLIP_Y true
 #endif
 
-// no texture
+// only materials, no textures
 #if 0
 #define OBJ_SHAPES_INDEX \
 { \
@@ -584,21 +626,33 @@
 
 #define OBJ_WITH_TEXTURE \
 { \
-    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, \
-    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, \
-    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, \
-    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, \
-    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, \
-    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, \
-    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, \
-    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 \
+   -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, \
+   -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, \
+   -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, \
+   -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, \
+   -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, \
+   -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, \
+   -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, \
+   -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1 \
+}
+
+#define OBJ_WITH_MATERIAL \
+{ \
+   17,  18,  18,  18,  16,  16,  22,  18,  13,  22,  22,  22,  16,  13,  13,  13,  22,  22,  22,  23,  20,  21,  17,   1,  11,  20,  20,   1,  20,   1,  20,  16, \
+   20,  11,  20,   1,  11,  11,  22,  13,  13,  13,  13,  13,  13,  13,  18,  18,  13,  13,  13,  22,  13,  13,  18,  18,  18,  18,  17,  16,  18,  18,  18,  18, \
+   17,  18,  18,  18,  18,  18,  13,  13,  13,  13,  13,  13,  13,  13,  13,  20,  21,  22,  20,  22,  21,  21,  21,  21,  21,  21,  21,  21,  21,  21,  21,  21, \
+   21,  21,  17,  18,  21,  18,  13,  13,  16,  13,  13,  13,  13,  13,  16,  13,  13,  13,  17,  17,  21,  21,  16,  16,  13,  13,  13,  13,  13,  13,  13,  13, \
+   13,  13,  13,  13,  13,   5,  13,  13,  13,  13,  22,  24,  16,   1,  17,  21,  17,  17,  17,  17,  21,  13,  13,  13,  13,  13,  13,  13,  13,  13,  13,  16, \
+   16,  16,  16,  16,  17,  16,  17,  17,  16,  17,  17,  16,  17,  17,  16,  17,  17,  16,  20,  20,  17,  23,  16,  16,  17,  22,  17,  17,  17,  22,  22,  20, \
+   16,  17,  17,  17,  14,  16,  18,  17,  17,  16,  16,  17,  11,  20,  16,  17,  21,  17,  24,  16,  17,  17,  17,  24,  24,   9,   9,  24,  17,  17,  24,  17, \
+   21,  19,  17,  15,  17,  17,  24,  17,  20,  22,  22,  17,  17,  23,  15,  17,  17,  17,  17,  16,  16,  16,  16 \
 }
 
 #define OBJ_FILENAME "vendels-workshop.obj"
 #define OBJ_MTL_FILENAME "vendels-workshop.mtl"
 
 #define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"just-a-girl.png"}
+#define OBJ_TEXTURE_FILENAME {"just-a-girl_head.png"}
 
 #define OBJ_SCALE 4.0
 #define OBJ_HAND_SCALE 4.0
@@ -614,17 +668,18 @@
 #define OBJ_IMAGE_FLIP_Y true
 #endif
 
-// no texture for eyes; solarfare-butt-pose
 #if 0
-#define OBJ_SHAPES_INDEX {2,  3,  4,  5,  6, 10}
+#define OBJ_SHAPES_INDEX  { 2,  3,  4,  5,  6,  8,  9, 10}
 
-#define OBJ_WITH_TEXTURE {0,  0,  0,  0,  0,  0}
+#define OBJ_WITH_TEXTURE  { 0,  0,  0,  0,  0,  1,  1,  0}
+
+#define OBJ_WITH_MATERIAL {-1, -1, -1, -1, -1, -1, -1, -1}
 
 #define OBJ_FILENAME "solarfare-butt-pose.obj"
 #define OBJ_MTL_FILENAME "solarfare-butt-pose.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"solarfare-butt-pose.png"}
+#define OBJ_TEXTURE_COUNT 2
+#define OBJ_TEXTURE_FILENAME {"solarfare-butt-pose_Skin_baseColor.png", "solarfare-butt-pose_Lamp.001_baseColor.png"}
 
 #define OBJ_SCALE 64.0
 #define OBJ_HAND_SCALE 4.0
@@ -641,15 +696,17 @@
 #endif
 
 #if 0
-#define OBJ_SHAPES_INDEX {0}
+#define OBJ_SHAPES_INDEX  { 0,  1}
 
-#define OBJ_WITH_TEXTURE {0}
+#define OBJ_WITH_TEXTURE  { 0,  1}
+
+#define OBJ_WITH_MATERIAL {-1, -1}
 
 #define OBJ_FILENAME "sea-house.obj"
 #define OBJ_MTL_FILENAME "sea-house.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"sea-house.png"}
+#define OBJ_TEXTURE_COUNT 2
+#define OBJ_TEXTURE_FILENAME {"sea-house_sea_11112_sheet_Material__25_color.png", "sea-house_sea_11112_sheet_Material__37_color.png"}
 
 #define OBJ_SCALE 512.0
 #define OBJ_HAND_SCALE 2.0
@@ -666,9 +723,11 @@
 #endif
 
 #if 0
-#define OBJ_SHAPES_INDEX {0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18}
+#define OBJ_SHAPES_INDEX  { 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18}
 
-#define OBJ_WITH_TEXTURE {0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0}
+#define OBJ_WITH_TEXTURE  { 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0}
+
+#define OBJ_WITH_MATERIAL {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}
 
 #define OBJ_FILENAME "minecraft-bastion.obj"
 #define OBJ_MTL_FILENAME "minecraft-bastion.mtl"
@@ -691,9 +750,11 @@
 #endif
 
 #if 0
-#define OBJ_SHAPES_INDEX {0, 1}
+#define OBJ_SHAPES_INDEX  { 0,  1}
 
-#define OBJ_WITH_TEXTURE {0, 0}
+#define OBJ_WITH_TEXTURE  { 0,  0}
+
+#define OBJ_WITH_MATERIAL {-1, -1}
 
 #define OBJ_FILENAME "mayan-temple.obj"
 #define OBJ_MTL_FILENAME "mayan-temple.mtl"
@@ -718,14 +779,20 @@
 #if 0
 #define OBJ_SHAPES_INDEX \
 { \
-   0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, \
-  32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52 \
+    0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, \
+   32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52 \
 }
 
 #define OBJ_WITH_TEXTURE \
 { \
-   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, \
-   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 \
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, \
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 \
+}
+
+#define OBJ_WITH_MATERIAL \
+{ \
+   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, \
+   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 \
 }
 
 #define OBJ_FILENAME "a-minecraft-village.obj"
@@ -749,9 +816,11 @@
 #endif
 
 #if 0
-#define OBJ_SHAPES_INDEX {0}
+#define OBJ_SHAPES_INDEX  { 0}
 
-#define OBJ_WITH_TEXTURE {0}
+#define OBJ_WITH_TEXTURE  { 0}
+
+#define OBJ_WITH_MATERIAL {-1}
 
 #define OBJ_FILENAME "minecraft-3d-map-big-village.obj"
 #define OBJ_MTL_FILENAME "minecraft-3d-map-big-village.mtl"
@@ -775,9 +844,11 @@
 
 // local coordinate system origin is messed up; girl-sitting
 #if 0
-#define OBJ_SHAPES_INDEX {0}
+#define OBJ_SHAPES_INDEX  { 0}
 
-#define OBJ_WITH_TEXTURE {0}
+#define OBJ_WITH_TEXTURE  { 0}
+
+#define OBJ_WITH_MATERIAL {-1}
 
 #define OBJ_FILENAME "girl-sitting.obj"
 #define OBJ_MTL_FILENAME "girl-sitting.mtl"
@@ -799,11 +870,13 @@
 #define OBJ_IMAGE_FLIP_Y true
 #endif
 
-// clothing is using skin texture
+// clothing is using skin texture (there's only one shape)
 #if 0
-#define OBJ_SHAPES_INDEX {0}
+#define OBJ_SHAPES_INDEX  { 0}
 
-#define OBJ_WITH_TEXTURE {0}
+#define OBJ_WITH_TEXTURE  { 0}
+
+#define OBJ_WITH_MATERIAL {-1}
 
 #define OBJ_FILENAME "pride-bonfie-by-tristy-artist.obj"
 #define OBJ_MTL_FILENAME "pride-bonfie-by-tristy-artist.mtl"
@@ -826,9 +899,11 @@
 #endif
 
 #if 0
-#define OBJ_SHAPES_INDEX {0}
+#define OBJ_SHAPES_INDEX  { 0}
 
-#define OBJ_WITH_TEXTURE {0}
+#define OBJ_WITH_TEXTURE  { 0}
+
+#define OBJ_WITH_MATERIAL {-1}
 
 #define OBJ_FILENAME "naked_woman.obj"
 #define OBJ_MTL_FILENAME "naked_woman.mtl"
@@ -850,24 +925,31 @@
 #define OBJ_IMAGE_FLIP_Y true
 #endif
 
+// looks good but it's not night time
 #if 0
 #define OBJ_SHAPES_INDEX \
 { \
-   0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, \
-  32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46 \
+    0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, \
+   32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45 \
 }
 
 #define OBJ_WITH_TEXTURE \
 { \
-   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, \
-   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 \
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, \
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1 \
+}
+
+#define OBJ_WITH_MATERIAL \
+{ \
+   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, \
+   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 \
 }
 
 #define OBJ_FILENAME "plaza_night_time.obj"
 #define OBJ_MTL_FILENAME "plaza_night_time.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"plaza_night_time.png"}
+#define OBJ_TEXTURE_COUNT 2
+#define OBJ_TEXTURE_FILENAME {"plaza_night_time_opaque_diffuse.png", "plaza_night_time_transparent_diffuse.png"}
 
 #define OBJ_SCALE 128.0
 #define OBJ_HAND_SCALE 1.0
@@ -883,17 +965,23 @@
 #define OBJ_IMAGE_FLIP_Y true
 #endif
 
-#if 1
+#if 0
 #define OBJ_SHAPES_INDEX \
 { \
-   0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, \
-  32 \
+    0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, \
+   32 \
 }
 
 #define OBJ_WITH_TEXTURE \
 { \
-   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1, \
-   1 \
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1, \
+    1 \
+}
+
+#define OBJ_WITH_MATERIAL \
+{ \
+   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, \
+   -1 \
 }
 
 #define OBJ_FILENAME "cathedral.obj"

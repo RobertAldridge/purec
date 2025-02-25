@@ -316,6 +316,7 @@ R"_(
       vec4 textureColor = texture(texSampler[fragIndex], fragTexCoord);
 
       outColor = vec4(vec3(fragColor.r * textureColor.r, fragColor.g * textureColor.g, fragColor.b * textureColor.b), fragColor.a * textureColor.a);
+      //outColor = vec4(vec3(fragColor.r * textureColor.r, fragColor.g * textureColor.g, fragColor.b * textureColor.b), 1.0);
     }
   }
 

@@ -46,9 +46,9 @@ void AnagTestTinyObjLoader()
     std::cout << "TinyObjReader: " << reader.Warning();
   }
 
-  auto& attrib = reader.GetAttrib();
-  auto& shapes = reader.GetShapes();
-  auto& materials = reader.GetMaterials();
+  const tinyobj::attrib_t& attrib = reader.GetAttrib();
+  const std::vector<tinyobj::shape_t>& shapes = reader.GetShapes();
+  const std::vector<tinyobj::material_t>& materials = reader.GetMaterials();
 
   size_t shapes_size = 0;
   size_t indices_size = 0;
@@ -61,6 +61,8 @@ void AnagTestTinyObjLoader()
   uint32_t object_shapes_index[] = OBJ_SHAPES_INDEX;
 
   int32_t object_with_texture[] = OBJ_WITH_TEXTURE;
+
+  int32_t object_with_material[] = OBJ_WITH_MATERIAL;
 
   for(size_t s_index = 0; shapes_size > 0 && s_index < countof(object_shapes_index); s_index++)
   {
@@ -148,6 +150,8 @@ struct GeometryVertex
     size_t si = object_shapes_index[s_index];
 
     int32_t ti = object_with_texture[s_index];
+
+    int32_t mi = object_with_material[s_index];
 
     // Loop over faces(polygon)
     size_t index_offset_per_shape = 0;
@@ -285,6 +289,13 @@ struct GeometryVertex
         color += red;
         color += green;
         color += blue;
+
+        if(mi >= 0)
+        {
+          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Color.x = materials[mi].diffuse[0];
+          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Color.y = materials[mi].diffuse[1];
+          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Color.z = materials[mi].diffuse[2];
+        }
 
         Geometry::gModelsIndicesDynamicData[numModelsIdiciesStaticCountOf + v] = index_offset_all_shapes + v/*idx.vertex_index*/;
       }
