@@ -527,7 +527,7 @@ struct AnimationChannel {
 struct AnimationSampler {
   int input{-1};              // required
   int output{-1};             // required
-  std::string interpolation;  // "LINEAR", "STEP","CUBICSPLINE" or user defined
+  std::string interpolation;  // "LINEAR", "STEP", "CUBICSPLINE" or user defined
                               // string. default "LINEAR"
   Value extras;
   ExtensionMap extensions;
@@ -715,7 +715,7 @@ struct OcclusionTextureInfo {
 
 // pbrMetallicRoughness class defined in glTF 2.0 spec.
 struct PbrMetallicRoughness {
-  std::vector<double> baseColorFactor{1.0, 1.0, 1.0, 1.0};  // len = 4. default [1,1,1,1]
+  std::vector<double> baseColorFactor{1.0, 1.0, 1.0, 1.0};  // len = 4. default [1, 1, 1, 1]
   TextureInfo baseColorTexture;
   double metallicFactor{1.0};   // default 1
   double roughnessFactor{1.0};  // default 1
@@ -2734,7 +2734,7 @@ bool WriteImageData(const std::string *basepath, const std::string *filename,
         return false;
       }
     }
-    header = "data:image/png;base64,";
+    header = "data:image/png;base64, ";
   } else if(ext == "jpg") {
     if(!image->as_is &&
         !stbi_write_jpg_to_func(WriteToMemory_stbi, &data, image->width,
@@ -2742,7 +2742,7 @@ bool WriteImageData(const std::string *basepath, const std::string *filename,
                                 &image->image[0], 100) ) {
       return false;
     }
-    header = "data:image/jpeg;base64,";
+    header = "data:image/jpeg;base64, ";
   } else if(ext == "bmp") {
     if(!image->as_is &&
         !stbi_write_bmp_to_func(WriteToMemory_stbi, &data, image->width,
@@ -2750,7 +2750,7 @@ bool WriteImageData(const std::string *basepath, const std::string *filename,
                                 &image->image[0] ) ) {
       return false;
     }
-    header = "data:image/bmp;base64,";
+    header = "data:image/bmp;base64, ";
   } else if(!embedImages) {
     // Error: can't output requested format to file
     return false;
@@ -3138,37 +3138,37 @@ static bool UpdateImageObject(const Image &image, std::string &baseDir,
 }
 
 bool IsDataURI(const std::string &in) {
-  std::string header = "data:application/octet-stream;base64,";
+  std::string header = "data:application/octet-stream;base64, ";
   if(in.find(header) == 0) {
     return true;
   }
 
-  header = "data:image/jpeg;base64,";
+  header = "data:image/jpeg;base64, ";
   if(in.find(header) == 0) {
     return true;
   }
 
-  header = "data:image/png;base64,";
+  header = "data:image/png;base64, ";
   if(in.find(header) == 0) {
     return true;
   }
 
-  header = "data:image/bmp;base64,";
+  header = "data:image/bmp;base64, ";
   if(in.find(header) == 0) {
     return true;
   }
 
-  header = "data:image/gif;base64,";
+  header = "data:image/gif;base64, ";
   if(in.find(header) == 0) {
     return true;
   }
 
-  header = "data:text/plain;base64,";
+  header = "data:text/plain;base64, ";
   if(in.find(header) == 0) {
     return true;
   }
 
-  header = "data:application/gltf-buffer;base64,";
+  header = "data:application/gltf-buffer;base64, ";
   if(in.find(header) == 0) {
     return true;
   }
@@ -3178,14 +3178,14 @@ bool IsDataURI(const std::string &in) {
 
 bool DecodeDataURI(std::vector<unsigned char> *out, std::string &mime_type,
                    const std::string &in, size_t reqBytes, bool checkSize) {
-  std::string header = "data:application/octet-stream;base64,";
+  std::string header = "data:application/octet-stream;base64, ";
   std::string data;
   if(in.find(header) == 0) {
     data = base64_decode(in.substr(header.size() ) );  // cut mime string.
   }
 
   if(data.empty() ) {
-    header = "data:image/jpeg;base64,";
+    header = "data:image/jpeg;base64, ";
     if(in.find(header) == 0) {
       mime_type = "image/jpeg";
       data = base64_decode(in.substr(header.size() ) );  // cut mime string.
@@ -3193,7 +3193,7 @@ bool DecodeDataURI(std::vector<unsigned char> *out, std::string &mime_type,
   }
 
   if(data.empty() ) {
-    header = "data:image/png;base64,";
+    header = "data:image/png;base64, ";
     if(in.find(header) == 0) {
       mime_type = "image/png";
       data = base64_decode(in.substr(header.size() ) );  // cut mime string.
@@ -3201,7 +3201,7 @@ bool DecodeDataURI(std::vector<unsigned char> *out, std::string &mime_type,
   }
 
   if(data.empty() ) {
-    header = "data:image/bmp;base64,";
+    header = "data:image/bmp;base64, ";
     if(in.find(header) == 0) {
       mime_type = "image/bmp";
       data = base64_decode(in.substr(header.size() ) );  // cut mime string.
@@ -3209,7 +3209,7 @@ bool DecodeDataURI(std::vector<unsigned char> *out, std::string &mime_type,
   }
 
   if(data.empty() ) {
-    header = "data:image/gif;base64,";
+    header = "data:image/gif;base64, ";
     if(in.find(header) == 0) {
       mime_type = "image/gif";
       data = base64_decode(in.substr(header.size() ) );  // cut mime string.
@@ -3217,7 +3217,7 @@ bool DecodeDataURI(std::vector<unsigned char> *out, std::string &mime_type,
   }
 
   if(data.empty() ) {
-    header = "data:text/plain;base64,";
+    header = "data:text/plain;base64, ";
     if(in.find(header) == 0) {
       mime_type = "text/plain";
       data = base64_decode(in.substr(header.size() ) );
@@ -3225,7 +3225,7 @@ bool DecodeDataURI(std::vector<unsigned char> *out, std::string &mime_type,
   }
 
   if(data.empty() ) {
-    header = "data:application/gltf-buffer;base64,";
+    header = "data:application/gltf-buffer;base64, ";
     if(in.find(header) == 0) {
       data = base64_decode(in.substr(header.size() ) );
     }
@@ -4822,7 +4822,7 @@ static bool ParseDracoExtension(Primitive *primitive, Model *model,
         if(warn) {
           (*warn) +=
               "GLTF component type " + std::to_string(model->accessors[primitive->indices].componentType) +
-              " is not sufficient for number of stored points,"
+              " is not sufficient for number of stored points, "
               " treating as " + std::to_string(supposedComponentType) + "\n";
         }
         model->accessors[primitive->indices].componentType = supposedComponentType;
@@ -7003,7 +7003,7 @@ static void SerializeValue(const std::string &key, const Value &value,
 
 static void SerializeGltfBufferData(const std::vector<unsigned char> &data,
                                     detail::json &o) {
-  std::string header = "data:application/octet-stream;base64,";
+  std::string header = "data:application/octet-stream;base64, ";
   if(data.size() > 0) {
     std::string encodedData =
         base64_encode( &data[0], static_cast<unsigned int>(data.size() ) );

@@ -367,7 +367,7 @@ Earcut<N>::cureLocalIntersections(Node* start) {
         Node* a = p->prev;
         Node* b = p->next->next;
 
-        // a self-intersection where edge (v[i-1],v[i] ) intersects (v[i+1],v[i+2] )
+        // a self-intersection where edge (v[i-1], v[i] ) intersects (v[i+1], v[i+2] )
         if(!equals(a, b) && intersects(a, p, p->next, b) && locallyInside(a, b) && locallyInside(b, a) ) {
             indices.emplace_back(a->i);
             indices.emplace_back(p->i);

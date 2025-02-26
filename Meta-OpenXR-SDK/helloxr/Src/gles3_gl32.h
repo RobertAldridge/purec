@@ -1526,7 +1526,7 @@ GL_APICALL void GL_APIENTRY glVertexBindingDivisor (GLuint bindingindex, GLuint 
 #ifndef GL_ES_VERSION_3_2
 #define GL_ES_VERSION_3_2 1
 
-typedef void (GL_APIENTRY  *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum severity,GLsizei length,const GLchar *message,const void *userParam);
+typedef void (GL_APIENTRY  *GLDEBUGPROC)(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam);
 
 #define GL_MULTISAMPLE_LINE_WIDTH_RANGE   0x9381
 #define GL_MULTISAMPLE_LINE_WIDTH_GRANULARITY 0x9382

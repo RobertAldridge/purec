@@ -1632,7 +1632,7 @@ class Quat {
     typedef T ElementType;
     static const size_t ElementCount = 4;
 
-    // x,y,z = axis*sin(angle/2), w = cos(angle/2)
+    // x, y, z = axis*sin(angle/2), w = cos(angle/2)
     T x, y, z, w;
 
     Quat() : x(0), y(0), z(0), w(1) {}
@@ -2152,14 +2152,14 @@ class Quat {
             // to alignTo.  Choose axis to include largest magnitude components
             if(fabs(v.x) > fabs(v.y) ) {
                 // x or z is max magnitude component
-                // = Cross(v, (0,1,0) ).Normalized();
+                // = Cross(v, (0, 1, 0) ).Normalized();
                 T invLen = sqrt(v.x * v.x + v.z * v.z);
                 if(invLen > T(0) )
                     invLen = T(1) / invLen;
                 return Quat(-v.z * invLen, 0, v.x * invLen, 0);
             } else {
                 // y or z is max magnitude component
-                // = Cross(v, (1,0,0) ).Normalized();
+                // = Cross(v, (1, 0, 0) ).Normalized();
                 T invLen = sqrt(v.y * v.y + v.z * v.z);
                 if(invLen > T(0) )
                     invLen = T(1) / invLen;
@@ -2264,7 +2264,7 @@ class Quat {
     // GetEulerAngles extracts Euler angles from the quaternion, in the specified order of
     // axis rotations and the specified coordinate system. Right-handed coordinate system
     // is the default, with CCW rotations while looking in the negative axis direction.
-    // Here a,b,c, are the Yaw/Pitch/Roll angles to be returned.
+    // Here a, b, c, are the Yaw/Pitch/Roll angles to be returned.
     // Rotation order is c, b, a:
     // rotation c around axis A3
     // is followed by rotation b around axis A2
@@ -2280,7 +2280,7 @@ class Quat {
         const T D = static_cast<T>(Denum);
         const T S = static_cast<T>(Senum);
 
-        T Q[3] = {x, y, z}; // Quaternion components x,y,z
+        T Q[3] = {x, y, z}; // Quaternion components x, y, z
 
         T ww = w * w;
         T Q11 = Q[A1] * Q[A1];
@@ -2340,7 +2340,7 @@ class Quat {
     // GetEulerAnglesABA extracts Euler angles from the quaternion, in the specified order of
     // axis rotations and the specified coordinate system. Right-handed coordinate system
     // is the default, with CCW rotations while looking in the negative axis direction.
-    // Here a,b,c, are the Yaw/Pitch/Roll angles to be returned.
+    // Here a, b, c, are the Yaw/Pitch/Roll angles to be returned.
     // rotation a around axis A1
     // is followed by rotation b around axis A2
     // is followed by rotation c around axis A1
@@ -3081,7 +3081,7 @@ class Matrix4 {
     }
 
     // Matrix to Euler Angles conversion
-    // a,b,c, are the YawPitchRoll angles to be returned
+    // a, b, c, are the YawPitchRoll angles to be returned
     // rotation a around axis A1
     // is followed by rotation b around axis A2
     // is followed by rotation c around axis A3
@@ -3116,7 +3116,7 @@ class Matrix4 {
     }
 
     // Matrix to Euler Angles conversion
-    // a,b,c, are the YawPitchRoll angles to be returned
+    // a, b, c, are the YawPitchRoll angles to be returned
     // rotation a around axis A1
     // is followed by rotation b around axis A2
     // is followed by rotation c around axis A1
@@ -4607,7 +4607,7 @@ class Angle {
     // The stored angle, which should be maintained between -Pi and Pi
     T a;
 
-    // Fixes the angle range to [-Pi,Pi], but assumes no more than 2Pi away on either side
+    // Fixes the angle range to [-Pi, Pi], but assumes no more than 2Pi away on either side
     inline void FastFixRange() {
         if(a < -( (T)MATH_DOUBLE_PI) )
             a += ( (T)MATH_DOUBLE_TWOPI);
@@ -4615,7 +4615,7 @@ class Angle {
             a -= ( (T)MATH_DOUBLE_TWOPI);
     }
 
-    // Fixes the angle range to [-Pi,Pi] for any given range, but slower then the fast method
+    // Fixes the angle range to [-Pi, Pi] for any given range, but slower then the fast method
     inline void FixRange() {
         // do nothing if the value is already in the correct range, since fmod call is expensive
         if(a >= -( (T)MATH_DOUBLE_PI) && a <= ( (T)MATH_DOUBLE_PI) )
@@ -4778,7 +4778,7 @@ struct FovPort {
         return result;
     }
 
-    // Converts Fov Tan angle units to [-1,1] render target NDC space
+    // Converts Fov Tan angle units to [-1, 1] render target NDC space
     Vector2f TanAngleToRendertargetNDC(Vector2f const& tanEyeAngle) {
         ScaleAndOffset2D eyeToSourceNDC = CreateNDCScaleAndOffsetFromFov(*this);
         return tanEyeAngle * eyeToSourceNDC.Scale + eyeToSourceNDC.Offset;

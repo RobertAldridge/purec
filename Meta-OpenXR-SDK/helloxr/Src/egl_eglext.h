@@ -108,7 +108,7 @@ EGLAPI EGLSyncKHR EGLAPIENTRY eglCreateSync64KHR (EGLDisplay dpy, EGLenum type, 
 
 typedef void *EGLLabelKHR;
 typedef void *EGLObjectKHR;
-typedef void (EGLAPIENTRY  *EGLDEBUGPROCKHR)(EGLenum error,const char *command,EGLint messageType,EGLLabelKHR threadLabel,EGLLabelKHR objectLabel,const char* message);
+typedef void (EGLAPIENTRY  *EGLDEBUGPROCKHR)(EGLenum error, const char *command, EGLint messageType, EGLLabelKHR threadLabel, EGLLabelKHR objectLabel, const char* message);
 
 #define EGL_OBJECT_THREAD_KHR             0x33B0
 #define EGL_OBJECT_DISPLAY_KHR            0x33B1
@@ -216,7 +216,7 @@ EGLAPI EGLBoolean EGLAPIENTRY eglGetSyncAttribKHR (EGLDisplay dpy, EGLSyncKHR sy
 typedef void *EGLImageKHR;
 
 #define EGL_NATIVE_PIXMAP_KHR             0x30B0
-#define EGL_NO_IMAGE_KHR                  EGL_CAST(EGLImageKHR,0)
+#define EGL_NO_IMAGE_KHR                  EGL_CAST(EGLImageKHR, 0)
 
 typedef EGLImageKHR (EGLAPIENTRYP PFNEGLCREATEIMAGEKHRPROC) (EGLDisplay dpy, EGLContext ctx, EGLenum target, EGLClientBuffer buffer, const EGLint *attrib_list);
 typedef EGLBoolean (EGLAPIENTRYP PFNEGLDESTROYIMAGEKHRPROC) (EGLDisplay dpy, EGLImageKHR image);
@@ -294,7 +294,7 @@ EGLAPI EGLBoolean EGLAPIENTRY eglQuerySurface64KHR (EGLDisplay dpy, EGLSurface s
 
 #ifndef EGL_KHR_no_config_context
 #define EGL_KHR_no_config_context 1
-#define EGL_NO_CONFIG_KHR                 EGL_CAST(EGLConfig,0)
+#define EGL_NO_CONFIG_KHR                 EGL_CAST(EGLConfig, 0)
 #endif /* EGL_KHR_no_config_context */
 
 #ifndef EGL_KHR_partial_update
@@ -342,7 +342,7 @@ EGLAPI EGLBoolean EGLAPIENTRY eglSetDamageRegionKHR (EGLDisplay dpy, EGLSurface 
 #define EGL_SYNC_REUSABLE_KHR             0x30FA
 #define EGL_SYNC_FLUSH_COMMANDS_BIT_KHR   0x0001
 #define EGL_FOREVER_KHR                   0xFFFFFFFFFFFFFFFFull
-#define EGL_NO_SYNC_KHR                   EGL_CAST(EGLSyncKHR,0)
+#define EGL_NO_SYNC_KHR                   EGL_CAST(EGLSyncKHR, 0)
 
 typedef EGLBoolean (EGLAPIENTRYP PFNEGLSIGNALSYNCKHRPROC) (EGLDisplay dpy, EGLSyncKHR sync, EGLenum mode);
 
@@ -360,7 +360,7 @@ typedef void *EGLStreamKHR;
 typedef khronos_uint64_t EGLuint64KHR;
 
 #ifdef KHRONOS_SUPPORT_INT64
-#define EGL_NO_STREAM_KHR                 EGL_CAST(EGLStreamKHR,0)
+#define EGL_NO_STREAM_KHR                 EGL_CAST(EGLStreamKHR, 0)
 #define EGL_CONSUMER_LATENCY_USEC_KHR     0x3210
 #define EGL_PRODUCER_FRAME_KHR            0x3212
 #define EGL_CONSUMER_FRAME_KHR            0x3213
@@ -436,7 +436,7 @@ EGLAPI EGLBoolean EGLAPIENTRY eglStreamConsumerReleaseKHR (EGLDisplay dpy, EGLSt
 typedef int EGLNativeFileDescriptorKHR;
 
 #ifdef EGL_KHR_stream
-#define EGL_NO_FILE_DESCRIPTOR_KHR        EGL_CAST(EGLNativeFileDescriptorKHR,-1)
+#define EGL_NO_FILE_DESCRIPTOR_KHR        EGL_CAST(EGLNativeFileDescriptorKHR, -1)
 
 typedef EGLNativeFileDescriptorKHR (EGLAPIENTRYP PFNEGLGETSTREAMFILEDESCRIPTORKHRPROC) (EGLDisplay dpy, EGLStreamKHR stream);
 typedef EGLStreamKHR (EGLAPIENTRYP PFNEGLCREATESTREAMFROMFILEDESCRIPTORKHRPROC) (EGLDisplay dpy, EGLNativeFileDescriptorKHR file_descriptor);
@@ -561,8 +561,8 @@ EGLAPI EGLClientBuffer EGLAPIENTRY eglCreateNativeClientBufferANDROID (const EGL
 
 typedef khronos_stime_nanoseconds_t EGLnsecsANDROID;
 
-#define EGL_TIMESTAMP_PENDING_ANDROID     EGL_CAST(EGLnsecsANDROID,-2)
-#define EGL_TIMESTAMP_INVALID_ANDROID     EGL_CAST(EGLnsecsANDROID,-1)
+#define EGL_TIMESTAMP_PENDING_ANDROID     EGL_CAST(EGLnsecsANDROID, -2)
+#define EGL_TIMESTAMP_INVALID_ANDROID     EGL_CAST(EGLnsecsANDROID, -1)
 #define EGL_TIMESTAMPS_ANDROID            0x3430
 #define EGL_COMPOSITE_DEADLINE_ANDROID    0x3431
 #define EGL_COMPOSITE_INTERVAL_ANDROID    0x3432
@@ -578,17 +578,17 @@ typedef khronos_stime_nanoseconds_t EGLnsecsANDROID;
 #define EGL_READS_DONE_TIME_ANDROID       0x343C
 
 typedef EGLBoolean (EGLAPIENTRYP PFNEGLGETCOMPOSITORTIMINGSUPPORTEDANDROIDPROC) (EGLDisplay dpy, EGLSurface surface, EGLint name);
-typedef EGLBoolean (EGLAPIENTRYP PFNEGLGETCOMPOSITORTIMINGANDROIDPROC) (EGLDisplay dpy, EGLSurface surface, EGLint numTimestamps,  const EGLint *names, EGLnsecsANDROID *values);
+typedef EGLBoolean (EGLAPIENTRYP PFNEGLGETCOMPOSITORTIMINGANDROIDPROC) (EGLDisplay dpy, EGLSurface surface, EGLint numTimestamps, const EGLint *names, EGLnsecsANDROID *values);
 typedef EGLBoolean (EGLAPIENTRYP PFNEGLGETNEXTFRAMEIDANDROIDPROC) (EGLDisplay dpy, EGLSurface surface, EGLuint64KHR *frameId);
 typedef EGLBoolean (EGLAPIENTRYP PFNEGLGETFRAMETIMESTAMPSUPPORTEDANDROIDPROC) (EGLDisplay dpy, EGLSurface surface, EGLint timestamp);
-typedef EGLBoolean (EGLAPIENTRYP PFNEGLGETFRAMETIMESTAMPSANDROIDPROC) (EGLDisplay dpy, EGLSurface surface, EGLuint64KHR frameId, EGLint numTimestamps,  const EGLint *timestamps, EGLnsecsANDROID *values);
+typedef EGLBoolean (EGLAPIENTRYP PFNEGLGETFRAMETIMESTAMPSANDROIDPROC) (EGLDisplay dpy, EGLSurface surface, EGLuint64KHR frameId, EGLint numTimestamps, const EGLint *timestamps, EGLnsecsANDROID *values);
 
 #ifndef EGL_NO_PROTOTYPES
 EGLAPI EGLBoolean EGLAPIENTRY eglGetCompositorTimingSupportedANDROID (EGLDisplay dpy, EGLSurface surface, EGLint name);
-EGLAPI EGLBoolean EGLAPIENTRY eglGetCompositorTimingANDROID (EGLDisplay dpy, EGLSurface surface, EGLint numTimestamps,  const EGLint *names, EGLnsecsANDROID *values);
+EGLAPI EGLBoolean EGLAPIENTRY eglGetCompositorTimingANDROID (EGLDisplay dpy, EGLSurface surface, EGLint numTimestamps, const EGLint *names, EGLnsecsANDROID *values);
 EGLAPI EGLBoolean EGLAPIENTRY eglGetNextFrameIdANDROID (EGLDisplay dpy, EGLSurface surface, EGLuint64KHR *frameId);
 EGLAPI EGLBoolean EGLAPIENTRY eglGetFrameTimestampSupportedANDROID (EGLDisplay dpy, EGLSurface surface, EGLint timestamp);
-EGLAPI EGLBoolean EGLAPIENTRY eglGetFrameTimestampsANDROID (EGLDisplay dpy, EGLSurface surface, EGLuint64KHR frameId, EGLint numTimestamps,  const EGLint *timestamps, EGLnsecsANDROID *values);
+EGLAPI EGLBoolean EGLAPIENTRY eglGetFrameTimestampsANDROID (EGLDisplay dpy, EGLSurface surface, EGLuint64KHR frameId, EGLint numTimestamps, const EGLint *timestamps, EGLnsecsANDROID *values);
 #endif
 
 #endif /* EGL_ANDROID_get_frame_timestamps */
@@ -750,7 +750,7 @@ EGLAPI EGLBoolean EGLAPIENTRY eglCompositorSwapPolicyEXT (EGLint external_win_id
 
 typedef void *EGLDeviceEXT;
 
-#define EGL_NO_DEVICE_EXT                 EGL_CAST(EGLDeviceEXT,0)
+#define EGL_NO_DEVICE_EXT                 EGL_CAST(EGLDeviceEXT, 0)
 #define EGL_BAD_DEVICE_EXT                0x322B
 #define EGL_DEVICE_EXT                    0x322C
 
@@ -900,8 +900,8 @@ EGLAPI EGLBoolean EGLAPIENTRY eglQueryDmaBufModifiersEXT (EGLDisplay dpy, EGLint
 typedef void *EGLOutputLayerEXT;
 typedef void *EGLOutputPortEXT;
 
-#define EGL_NO_OUTPUT_LAYER_EXT           EGL_CAST(EGLOutputLayerEXT,0)
-#define EGL_NO_OUTPUT_PORT_EXT            EGL_CAST(EGLOutputPortEXT,0)
+#define EGL_NO_OUTPUT_LAYER_EXT           EGL_CAST(EGLOutputLayerEXT, 0)
+#define EGL_NO_OUTPUT_PORT_EXT            EGL_CAST(EGLOutputPortEXT, 0)
 #define EGL_BAD_OUTPUT_LAYER_EXT          0x322D
 #define EGL_BAD_OUTPUT_PORT_EXT           0x322E
 #define EGL_SWAP_INTERVAL_EXT             0x322F
@@ -1431,7 +1431,7 @@ typedef khronos_utime_nanoseconds_t EGLTimeNV;
 #define EGL_SYNC_TYPE_NV                  0x30ED
 #define EGL_SYNC_CONDITION_NV             0x30EE
 #define EGL_SYNC_FENCE_NV                 0x30EF
-#define EGL_NO_SYNC_NV                    EGL_CAST(EGLSyncNV,0)
+#define EGL_NO_SYNC_NV                    EGL_CAST(EGLSyncNV, 0)
 
 typedef EGLSyncNV (EGLAPIENTRYP PFNEGLCREATEFENCESYNCNVPROC) (EGLDisplay dpy, EGLenum condition, const EGLint *attrib_list);
 typedef EGLBoolean (EGLAPIENTRYP PFNEGLDESTROYSYNCNVPROC) (EGLSyncNV sync);
