@@ -1553,7 +1553,7 @@ void createGraphicsPipeline()
     VK_COLOR_COMPONENT_B_BIT |
     VK_COLOR_COMPONENT_A_BIT;
 
-  colorBlendAttachment.blendEnable = VK_FALSE;
+  colorBlendAttachment.blendEnable = VK_TRUE; // todo
 
   VkPipelineColorBlendStateCreateInfo colorBlending {};
   colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;

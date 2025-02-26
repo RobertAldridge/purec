@@ -29,6 +29,50 @@ struct XrMatrix4x4f
   float m[16];
 };
 
+struct XrMatrix3x3f
+{
+  float m[9];
+};
+
+inline static void XrMatrix4x4f_CreateXrMatrix3x3f(
+  XrMatrix3x3f* output,
+  XrMatrix4x4f* input
+)
+{
+  output->m[0] = input->m[0];
+  output->m[1] = input->m[1];
+  output->m[2] = input->m[2];
+
+  output->m[3] = input->m[4];
+  output->m[4] = input->m[5];
+  output->m[5] = input->m[6];
+
+  output->m[6] = input->m[8];
+  output->m[7] = input->m[9];
+  output->m[8] = input->m[10];
+}
+
+inline static XrMatrix3x3f XrMatrix4x4f_CreateXrMatrix3x3f(
+  XrMatrix4x4f* input
+)
+{
+  XrMatrix3x3f output;
+
+  output.m[0] = input->m[0];
+  output.m[1] = input->m[1];
+  output.m[2] = input->m[2];
+
+  output.m[3] = input->m[4];
+  output.m[4] = input->m[5];
+  output.m[5] = input->m[6];
+
+  output.m[6] = input->m[8];
+  output.m[7] = input->m[9];
+  output.m[8] = input->m[10];
+
+  return output;
+}
+
 inline static float XrRcpSqrt(const float x)
 {
   // ( 1U << 23 )

@@ -195,6 +195,7 @@ R"_(
 
 )_";
 
+#if 0
 constexpr char VertexShaderGlsl[] =
 R"_(
 
@@ -281,6 +282,58 @@ R"_(
   }
 
 )_";
+#endif
+
+constexpr char VertexShaderGlsl[] =
+R"_(
+
+  #version 450
+
+  #extension GL_ARB_separate_shader_objects : enable
+
+  layout (std140, push_constant) uniform buf
+  {
+    mat4 modelViewProjectionMatrix;
+
+    mat4 transpose_inverse_modelViewMatrix;
+
+    mat4 modelViewMatrix;
+
+    vec3 modelColor;
+
+  }uniformBuffer;
+
+  layout (location = 0) in vec3 Position;
+  layout (location = 1) in vec3 Normal;
+  layout (location = 2) in vec3 Color;
+  layout (location = 3) in vec2 TexCoord;
+  layout (location = 4) in int Index;
+
+  layout(location = 0) out vec4 fragColor;
+  layout(location = 1) out vec2 fragTexCoord;
+  layout(location = 2) out int fragIndex;
+
+  out gl_PerVertex
+  {
+    vec4 gl_Position;
+  };
+
+  void main()
+  {
+    vec4 transformedNormalReference = uniformBuffer.transpose_inverse_modelViewMatrix * vec4(Normal, 1.0);
+
+    float intensity = max(0.0, normalize(transformedNormalReference.xyz).z);
+
+    fragColor = vec4(intensity * Color, 1.0);
+
+    gl_Position = uniformBuffer.modelViewProjectionMatrix * vec4(Position, 1.0);
+
+    fragTexCoord = TexCoord;
+
+    fragIndex = Index;
+  }
+
+)_";
 
 constexpr char FragmentShaderGlsl[] =
 R"_(
@@ -301,23 +354,9 @@ R"_(
 
   void main()
   {
-    //outColor = fragColor;
+    vec4 textureColor = texture(texSampler[fragIndex], fragTexCoord);
 
-    //outColor = texture(texSampler[fragIndex], fragTexCoord);
-
-    //outColor = vec4(min(abs(gl_FragCoord.w), 1.0), 0, 0, fragColor.a);
-
-    if(fragIndex < 0)
-    {
-      outColor = vec4(vec3(fragColor.r, fragColor.g, fragColor.b), fragColor.a);
-    }
-    else
-    {
-      vec4 textureColor = texture(texSampler[fragIndex], fragTexCoord);
-
-      outColor = vec4(vec3(fragColor.r * textureColor.r, fragColor.g * textureColor.g, fragColor.b * textureColor.b), fragColor.a * textureColor.a);
-      //outColor = vec4(vec3(fragColor.r * textureColor.r, fragColor.g * textureColor.g, fragColor.b * textureColor.b), 1.0);
-    }
+    outColor = fragColor * textureColor;
   }
 
 )_";

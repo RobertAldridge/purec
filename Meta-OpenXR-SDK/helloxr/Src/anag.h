@@ -13,15 +13,15 @@
 #if 1
 #define OBJ_SHAPES_INDEX  {0}
 
-#define OBJ_WITH_TEXTURE  {0}
+#define OBJ_WITH_TEXTURE  {1}
 
 #define OBJ_WITH_MATERIAL {-1}
 
 #define OBJ_FILENAME "stardew_farm.obj"
 #define OBJ_MTL_FILENAME "stardew_farm.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"stardew_farm.png"}
+#define OBJ_TEXTURE_COUNT 2
+#define OBJ_TEXTURE_FILENAME {"white.png", "stardew_farm.png"}
 
 #define OBJ_SCALE 256.0
 #define OBJ_HAND_SCALE 2.0
@@ -40,15 +40,15 @@
 #if 0
 #define OBJ_SHAPES_INDEX  {1}
 
-#define OBJ_WITH_TEXTURE  {0}
+#define OBJ_WITH_TEXTURE  {1}
 
 #define OBJ_WITH_MATERIAL {-1}
 
 #define OBJ_FILENAME "neo_tokyo.obj"
 #define OBJ_MTL_FILENAME "neo_tokyo.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"neo_tokyo.png"}
+#define OBJ_TEXTURE_COUNT 2
+#define OBJ_TEXTURE_FILENAME {"white.png", "neo_tokyo.png"}
 
 #define OBJ_SCALE 256.0
 #define OBJ_HAND_SCALE 4.0
@@ -67,15 +67,15 @@
 #if 0
 #define OBJ_SHAPES_INDEX  {0}
 
-#define OBJ_WITH_TEXTURE  {0}
+#define OBJ_WITH_TEXTURE  {1}
 
 #define OBJ_WITH_MATERIAL {-1}
 
 #define OBJ_FILENAME "viking_room.obj"
 #define OBJ_MTL_FILENAME "viking_room.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"viking_room.png"}
+#define OBJ_TEXTURE_COUNT 2
+#define OBJ_TEXTURE_FILENAME {"white.png", "viking_room.png"}
 
 #define OBJ_SCALE 2.0
 #define OBJ_HAND_SCALE 4.0
@@ -94,15 +94,15 @@
 #if 0
 #define OBJ_SHAPES_INDEX  {0}
 
-#define OBJ_WITH_TEXTURE  {0}
+#define OBJ_WITH_TEXTURE  {1}
 
 #define OBJ_WITH_MATERIAL {-1}
 
 #define OBJ_FILENAME "room_07.obj"
 #define OBJ_MTL_FILENAME "room_07.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"room_07.png"}
+#define OBJ_TEXTURE_COUNT 2
+#define OBJ_TEXTURE_FILENAME {"white.png", "room_07.png"}
 
 #define OBJ_SCALE 128.0
 #define OBJ_HAND_SCALE 4.0
@@ -121,15 +121,15 @@
 #if 0
 #define OBJ_SHAPES_INDEX  {0}
 
-#define OBJ_WITH_TEXTURE  {0}
+#define OBJ_WITH_TEXTURE  {1}
 
 #define OBJ_WITH_MATERIAL {-1}
 
 #define OBJ_FILENAME "woman_posing.obj"
 #define OBJ_MTL_FILENAME "woman_posing.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"woman_posing.png"}
+#define OBJ_TEXTURE_COUNT 2
+#define OBJ_TEXTURE_FILENAME {"white.png", "woman_posing.png"}
 
 #define OBJ_SCALE 4.0
 #define OBJ_HAND_SCALE 2.0
@@ -148,15 +148,15 @@
 #if 0
 #define OBJ_SHAPES_INDEX  {1, 2, 3}
 
-#define OBJ_WITH_TEXTURE  {0, 0, 1}
+#define OBJ_WITH_TEXTURE  {1, 1, 2}
 
 #define OBJ_WITH_MATERIAL {-1, -1, -1}
 
 #define OBJ_FILENAME "chiku-sus-tetas-pose.obj"
 #define OBJ_MTL_FILENAME "chiku-sus-tetas-pose.mtl"
 
-#define OBJ_TEXTURE_COUNT 2
-#define OBJ_TEXTURE_FILENAME {"chiku-sus-tetas-pose_chikufnia.png", "chiku-sus-tetas-pose_chicaClothesTex_baseColor.png"}
+#define OBJ_TEXTURE_COUNT 3
+#define OBJ_TEXTURE_FILENAME {"white.png", "chiku-sus-tetas-pose_chikufnia.png", "chiku-sus-tetas-pose_chicaClothesTex_baseColor.png"}
 
 #define OBJ_SCALE 64.0
 #define OBJ_HAND_SCALE 4.0
@@ -203,15 +203,15 @@
 #if 0
 #define OBJ_SHAPES_INDEX  {0}
 
-#define OBJ_WITH_TEXTURE  {0}
+#define OBJ_WITH_TEXTURE  {1}
 
 #define OBJ_WITH_MATERIAL {-1}
 
 #define OBJ_FILENAME "honda-shadow-rs-2010.obj"
 #define OBJ_MTL_FILENAME "honda-shadow-rs-2010.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"honda-shadow-rs-2010.png"}
+#define OBJ_TEXTURE_COUNT 2
+#define OBJ_TEXTURE_FILENAME {"white.png", "honda-shadow-rs-2010.png"}
 
 #define OBJ_SCALE 2.0
 #define OBJ_HAND_SCALE 4.0
@@ -231,15 +231,15 @@
 #if 0
 #define OBJ_SHAPES_INDEX  {0, 3}
 
-#define OBJ_WITH_TEXTURE  {1, 1}
+#define OBJ_WITH_TEXTURE  {2, 2}
 
 #define OBJ_WITH_MATERIAL {-1, -1}
 
 #define OBJ_FILENAME "sexy-goblin.obj"
 #define OBJ_MTL_FILENAME "sexy-goblin.mtl"
 
-#define OBJ_TEXTURE_COUNT 2
-#define OBJ_TEXTURE_FILENAME {"sexy-goblin_hair.png", "sexy-goblin_skin_panties.png"}
+#define OBJ_TEXTURE_COUNT 3
+#define OBJ_TEXTURE_FILENAME {"white.png", "sexy-goblin_hair.png", "sexy-goblin_skin_panties.png"}
 
 #define OBJ_SCALE 8.0
 #define OBJ_HAND_SCALE 4.0
@@ -259,15 +259,15 @@
 #if 0
 #define OBJ_SHAPES_INDEX  {0, 1, 2}
 
-#define OBJ_WITH_TEXTURE  {1, 0, 2}
+#define OBJ_WITH_TEXTURE  {2, 1, 3}
 
 #define OBJ_WITH_MATERIAL {-1, -1, -1}
 
 #define OBJ_FILENAME "sadmeal.obj"
 #define OBJ_MTL_FILENAME "sadmeal.mtl"
 
-#define OBJ_TEXTURE_COUNT 3
-#define OBJ_TEXTURE_FILENAME {"sadmeal_clothes_color.png", "sadmeal_face_color.png", "sadmeal_scene_color.png"}
+#define OBJ_TEXTURE_COUNT 4
+#define OBJ_TEXTURE_FILENAME {"white.png", "sadmeal_clothes_color.png", "sadmeal_face_color.png", "sadmeal_scene_color.png"}
 
 #define OBJ_SCALE 8.0
 #define OBJ_HAND_SCALE 4.0
@@ -286,15 +286,15 @@
 #if 0
 #define OBJ_SHAPES_INDEX  {0, 1, 2, 3}
 
-#define OBJ_WITH_TEXTURE  {1, 0, 2, 3}
+#define OBJ_WITH_TEXTURE  {2, 1, 3, 4}
 
 #define OBJ_WITH_MATERIAL {-1, -1, -1, -1}
 
 #define OBJ_FILENAME "anime-girl-model-3.obj"
 #define OBJ_MTL_FILENAME "anime-girl-model-3.mtl"
 
-#define OBJ_TEXTURE_COUNT 4
-#define OBJ_TEXTURE_FILENAME {"anime-girl-model-3_RGB_59d10c6ca0de4a22bfa4dbdc96d9616e_Body.png", "anime-girl-model-3_RGB_782632343fbb4317b1b0c7e18535426a_Cloth.png", "anime-girl-model-3_RGB_a503f10c281a40ccbcdec40277e26e20_Gun.png", "anime-girl-model-3_RGB_bd18134b252943558ae796c6564b9e2c_Hair.png"}
+#define OBJ_TEXTURE_COUNT 5
+#define OBJ_TEXTURE_FILENAME {"white.png", "anime-girl-model-3_RGB_59d10c6ca0de4a22bfa4dbdc96d9616e_Body.png", "anime-girl-model-3_RGB_782632343fbb4317b1b0c7e18535426a_Cloth.png", "anime-girl-model-3_RGB_a503f10c281a40ccbcdec40277e26e20_Gun.png", "anime-girl-model-3_RGB_bd18134b252943558ae796c6564b9e2c_Hair.png"}
 
 #define OBJ_SCALE 128.0
 #define OBJ_HAND_SCALE 4.0
@@ -313,15 +313,15 @@
 #if 0
 #define OBJ_SHAPES_INDEX  {0, 1, 2, 3, 4, 5, 6, 7, 8}
 
-#define OBJ_WITH_TEXTURE  {0, 1, 0, 3, 1, -1, 1, 1, 2}
+#define OBJ_WITH_TEXTURE  {1, 2, 1, 4, 2, 0, 2, 2, 3}
 
 #define OBJ_WITH_MATERIAL {-1, -1, -1, -1, -1, -1, -1, -1, -1}
 
 #define OBJ_FILENAME "lopunny-pose-butt-ass.obj"
 #define OBJ_MTL_FILENAME "lopunny-pose-butt-ass.mtl"
 
-#define OBJ_TEXTURE_COUNT 4
-#define OBJ_TEXTURE_FILENAME {"lopunny-pose-butt-ass_bodyS_diffuse.png", "lopunny-pose-butt-ass_eyeball_l_diffuse.png", "lopunny-pose-butt-ass_head_diffuse.png", "lopunny-pose-butt-ass_material_5_diffuse.png"}
+#define OBJ_TEXTURE_COUNT 5
+#define OBJ_TEXTURE_FILENAME {"white.png", "lopunny-pose-butt-ass_bodyS_diffuse.png", "lopunny-pose-butt-ass_eyeball_l_diffuse.png", "lopunny-pose-butt-ass_head_diffuse.png", "lopunny-pose-butt-ass_material_5_diffuse.png"}
 
 #define OBJ_SCALE 2.0
 #define OBJ_HAND_SCALE 2.0
@@ -340,15 +340,15 @@
 #if 0
 #define OBJ_SHAPES_INDEX  {0}
 
-#define OBJ_WITH_TEXTURE  {0}
+#define OBJ_WITH_TEXTURE  {1}
 
 #define OBJ_WITH_MATERIAL {-1}
 
 #define OBJ_FILENAME "interior-study.obj"
 #define OBJ_MTL_FILENAME "interior-study.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"interior-study.png"}
+#define OBJ_TEXTURE_COUNT 2
+#define OBJ_TEXTURE_FILENAME {"white.png", "interior-study.png"}
 
 #define OBJ_SCALE 128.0
 #define OBJ_HAND_SCALE 4.0
@@ -367,15 +367,15 @@
 #if 0
 #define OBJ_SHAPES_INDEX  {0, 1, 2}
 
-#define OBJ_WITH_TEXTURE  {1, 1, 0}
+#define OBJ_WITH_TEXTURE  {2, 2, 1}
 
 #define OBJ_WITH_MATERIAL {-1, -1, -1}
 
 #define OBJ_FILENAME "chiku-se-sienta-su-nalga-en-la-tierra-pose.obj"
 #define OBJ_MTL_FILENAME "chiku-se-sienta-su-nalga-en-la-tierra-pose.mtl"
 
-#define OBJ_TEXTURE_COUNT 2
-#define OBJ_TEXTURE_FILENAME {"chiku-se-sienta-su-nalga-en-la-tierra-pose_chicaClothesTex_baseColor.png", "chiku-se-sienta-su-nalga-en-la-tierra-pose_chikufnia.png"}
+#define OBJ_TEXTURE_COUNT 3
+#define OBJ_TEXTURE_FILENAME {"white.png", "chiku-se-sienta-su-nalga-en-la-tierra-pose_chicaClothesTex_baseColor.png", "chiku-se-sienta-su-nalga-en-la-tierra-pose_chikufnia.png"}
 
 #define OBJ_SCALE 64.0
 #define OBJ_HAND_SCALE 4.0
@@ -394,15 +394,15 @@
 #if 0
 #define OBJ_SHAPES_INDEX  {0, 1, 2, 3, 4, 5, 6}
 
-#define OBJ_WITH_TEXTURE  {0, 0, 2, 0, 3, 1, -1}
+#define OBJ_WITH_TEXTURE  {1, 1, 3, 1, 4, 2, 0}
 
 #define OBJ_WITH_MATERIAL {-1, -1, -1, -1, -1, -1, -1}
 
 #define OBJ_FILENAME "ankha-pose-butt-naked.obj"
 #define OBJ_MTL_FILENAME "ankha-pose-butt-naked.mtl"
 
-#define OBJ_TEXTURE_COUNT 4
-#define OBJ_TEXTURE_FILENAME {"ankha-pose-butt-naked_accessories_baseColor.png", "ankha-pose-butt-naked_body_baseColor.png", "ankha-pose-butt-naked_hair_baseColor.png", "ankha-pose-butt-naked_snake_baseColor.png"}
+#define OBJ_TEXTURE_COUNT 5
+#define OBJ_TEXTURE_FILENAME {"white.png", "ankha-pose-butt-naked_accessories_baseColor.png", "ankha-pose-butt-naked_body_baseColor.png", "ankha-pose-butt-naked_hair_baseColor.png", "ankha-pose-butt-naked_snake_baseColor.png"}
 
 #define OBJ_SCALE 8.0
 #define OBJ_HAND_SCALE 4.0
@@ -421,15 +421,15 @@
 #if 0
 #define OBJ_SHAPES_INDEX  {0, 1, 3, 4}
 
-#define OBJ_WITH_TEXTURE  {0, 0, 0, 0}
+#define OBJ_WITH_TEXTURE  {1, 1, 1, 1}
 
 #define OBJ_WITH_MATERIAL {-1, -1, -1, -1}
 
 #define OBJ_FILENAME "momscarada-pose.obj"
 #define OBJ_MTL_FILENAME "momscarada-pose.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"momscarada-pose.png"}
+#define OBJ_TEXTURE_COUNT 2
+#define OBJ_TEXTURE_FILENAME {"white.png", "momscarada-pose.png"}
 
 #define OBJ_SCALE 2.0
 #define OBJ_HAND_SCALE 4.0
@@ -449,15 +449,15 @@
 #if 0
 #define OBJ_SHAPES_INDEX  {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}
 
-#define OBJ_WITH_TEXTURE  {0, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}
+#define OBJ_WITH_TEXTURE  {1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 
 #define OBJ_WITH_MATERIAL {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}
 
 #define OBJ_FILENAME "km-pinki.obj"
 #define OBJ_MTL_FILENAME "km-pinki.mtl"
 
-#define OBJ_TEXTURE_COUNT 2
-#define OBJ_TEXTURE_FILENAME {"km-pinki_1000018810.png", "km-pinki_1000018811.png"}
+#define OBJ_TEXTURE_COUNT 3
+#define OBJ_TEXTURE_FILENAME {"white.png", "km-pinki_1000018810.png", "km-pinki_1000018811.png"}
 
 #define OBJ_SCALE 4.0
 #define OBJ_HAND_SCALE 4.0
@@ -476,15 +476,15 @@
 #if 0
 #define OBJ_SHAPES_INDEX  {0}
 
-#define OBJ_WITH_TEXTURE  {0}
+#define OBJ_WITH_TEXTURE  {1}
 
 #define OBJ_WITH_MATERIAL {-1}
 
 #define OBJ_FILENAME "sword-of-artorias.obj"
 #define OBJ_MTL_FILENAME "sword-of-artorias.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"sword-of-artorias.jpg"}
+#define OBJ_TEXTURE_COUNT 2
+#define OBJ_TEXTURE_FILENAME {"white.png", "sword-of-artorias.jpg"}
 
 #define OBJ_SCALE 16.0
 #define OBJ_HAND_SCALE 4.0
@@ -504,15 +504,15 @@
 #if 0
 #define OBJ_SHAPES_INDEX  {0}
 
-#define OBJ_WITH_TEXTURE  {0}
+#define OBJ_WITH_TEXTURE  {1}
 
 #define OBJ_WITH_MATERIAL {-1}
 
 #define OBJ_FILENAME "elf-girl.obj"
 #define OBJ_MTL_FILENAME "elf-girl.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"elf-girl.png"}
+#define OBJ_TEXTURE_COUNT 2
+#define OBJ_TEXTURE_FILENAME {"white.png", "elf-girl.png"}
 
 #define OBJ_SCALE 32.0
 #define OBJ_HAND_SCALE 4.0
@@ -532,15 +532,15 @@
 #if 0
 #define OBJ_SHAPES_INDEX  {0, 1, 2, 3, 4, 5}
 
-#define OBJ_WITH_TEXTURE  {0, 0, 1, 1, 1, 0}
+#define OBJ_WITH_TEXTURE  {1, 1, 2, 2, 2, 1}
 
 #define OBJ_WITH_MATERIAL {-1, -1, -1, -1, -1, -1}
 
 #define OBJ_FILENAME "battle-bus.obj"
 #define OBJ_MTL_FILENAME "battle-bus.mtl"
 
-#define OBJ_TEXTURE_COUNT 2
-#define OBJ_TEXTURE_FILENAME {"battle-bus_bus17_bus1910_bus_Material__25_BaseColor.png", "battle-bus_bus17_bus1910_bus_Material__26_BaseColor.png"}
+#define OBJ_TEXTURE_COUNT 3
+#define OBJ_TEXTURE_FILENAME {"white.png", "battle-bus_bus17_bus1910_bus_Material__25_BaseColor.png", "battle-bus_bus17_bus1910_bus_Material__26_BaseColor.png"}
 
 #define OBJ_SCALE 512.0
 #define OBJ_HAND_SCALE 4.0
@@ -559,15 +559,15 @@
 #if 0
 #define OBJ_SHAPES_INDEX  {0}
 
-#define OBJ_WITH_TEXTURE  {0}
+#define OBJ_WITH_TEXTURE  {1}
 
 #define OBJ_WITH_MATERIAL {-1}
 
 #define OBJ_FILENAME "trailer.obj"
 #define OBJ_MTL_FILENAME "trailer.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"trailer.png"}
+#define OBJ_TEXTURE_COUNT 2
+#define OBJ_TEXTURE_FILENAME {"white.png", "trailer.png"}
 
 #define OBJ_SCALE 256.0
 #define OBJ_HAND_SCALE 2.0
@@ -586,15 +586,15 @@
 #if 0
 #define OBJ_SHAPES_INDEX  {0, 1, 2, 3, 4, 5, 6, 7}
 
-#define OBJ_WITH_TEXTURE  {1, 1, 1, 1, 0, 0, 0, 2}
+#define OBJ_WITH_TEXTURE  {2, 2, 2, 2, 1, 1, 1, 3}
 
 #define OBJ_WITH_MATERIAL {-1, -1, -1, -1, -1, -1, -1, -1}
 
 #define OBJ_FILENAME "just-a-girl.obj"
 #define OBJ_MTL_FILENAME "just-a-girl.mtl"
 
-#define OBJ_TEXTURE_COUNT 3
-#define OBJ_TEXTURE_FILENAME {"just-a-girl_body.png", "just-a-girl_head.png", "just-a-girl_all.png"}
+#define OBJ_TEXTURE_COUNT 4
+#define OBJ_TEXTURE_FILENAME {"white.png", "just-a-girl_body.png", "just-a-girl_head.png", "just-a-girl_all.png"}
 
 #define OBJ_SCALE 128.0
 #define OBJ_HAND_SCALE 2.0
@@ -626,14 +626,14 @@
 
 #define OBJ_WITH_TEXTURE \
 { \
-   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, \
-   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, \
-   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, \
-   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, \
-   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, \
-   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, \
-   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, \
-   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 \
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 \
 }
 
 #define OBJ_WITH_MATERIAL \
@@ -652,7 +652,7 @@
 #define OBJ_MTL_FILENAME "vendels-workshop.mtl"
 
 #define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"just-a-girl_head.png"}
+#define OBJ_TEXTURE_FILENAME {"white.png"}
 
 #define OBJ_SCALE 4.0
 #define OBJ_HAND_SCALE 4.0
@@ -671,15 +671,15 @@
 #if 0
 #define OBJ_SHAPES_INDEX  {2, 3, 4, 5, 6, 8, 9, 10}
 
-#define OBJ_WITH_TEXTURE  {0, 0, 0, 0, 0, 1, 1, 0}
+#define OBJ_WITH_TEXTURE  {1, 1, 1, 1, 1, 2, 2, 1}
 
 #define OBJ_WITH_MATERIAL {-1, -1, -1, -1, -1, -1, -1, -1}
 
 #define OBJ_FILENAME "solarfare-butt-pose.obj"
 #define OBJ_MTL_FILENAME "solarfare-butt-pose.mtl"
 
-#define OBJ_TEXTURE_COUNT 2
-#define OBJ_TEXTURE_FILENAME {"solarfare-butt-pose_Skin_baseColor.png", "solarfare-butt-pose_Lamp.001_baseColor.png"}
+#define OBJ_TEXTURE_COUNT 3
+#define OBJ_TEXTURE_FILENAME {"white.png", "solarfare-butt-pose_Skin_baseColor.png", "solarfare-butt-pose_Lamp.001_baseColor.png"}
 
 #define OBJ_SCALE 64.0
 #define OBJ_HAND_SCALE 4.0
@@ -698,15 +698,15 @@
 #if 0
 #define OBJ_SHAPES_INDEX  {0, 1}
 
-#define OBJ_WITH_TEXTURE  {0, 1}
+#define OBJ_WITH_TEXTURE  {1, 2}
 
 #define OBJ_WITH_MATERIAL {-1, -1}
 
 #define OBJ_FILENAME "sea-house.obj"
 #define OBJ_MTL_FILENAME "sea-house.mtl"
 
-#define OBJ_TEXTURE_COUNT 2
-#define OBJ_TEXTURE_FILENAME {"sea-house_sea_11112_sheet_Material__25_color.png", "sea-house_sea_11112_sheet_Material__37_color.png"}
+#define OBJ_TEXTURE_COUNT 3
+#define OBJ_TEXTURE_FILENAME {"white.png", "sea-house_sea_11112_sheet_Material__25_color.png", "sea-house_sea_11112_sheet_Material__37_color.png"}
 
 #define OBJ_SCALE 512.0
 #define OBJ_HAND_SCALE 2.0
@@ -725,15 +725,15 @@
 #if 0
 #define OBJ_SHAPES_INDEX  {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18}
 
-#define OBJ_WITH_TEXTURE  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+#define OBJ_WITH_TEXTURE  {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
 
 #define OBJ_WITH_MATERIAL {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}
 
 #define OBJ_FILENAME "minecraft-bastion.obj"
 #define OBJ_MTL_FILENAME "minecraft-bastion.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"minecraft-bastion.png"}
+#define OBJ_TEXTURE_COUNT 2
+#define OBJ_TEXTURE_FILENAME {"white.png", "minecraft-bastion.bmp"}
 
 #define OBJ_SCALE 2.0
 #define OBJ_HAND_SCALE 4.0
@@ -752,15 +752,15 @@
 #if 0
 #define OBJ_SHAPES_INDEX  {0, 1}
 
-#define OBJ_WITH_TEXTURE  {0, 0}
+#define OBJ_WITH_TEXTURE  {1, 2}
 
 #define OBJ_WITH_MATERIAL {-1, -1}
 
 #define OBJ_FILENAME "mayan-temple.obj"
 #define OBJ_MTL_FILENAME "mayan-temple.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"mayan-temple.jpg"}
+#define OBJ_TEXTURE_COUNT 2
+#define OBJ_TEXTURE_FILENAME {"white.png", "mayan-temple.jpg", "maya_temple.bmp"}
 
 #define OBJ_SCALE 16.0
 #define OBJ_HAND_SCALE 4.0
@@ -785,8 +785,8 @@
 
 #define OBJ_WITH_TEXTURE \
 { \
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 \
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, \
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 \
 }
 
 #define OBJ_WITH_MATERIAL \
@@ -798,8 +798,8 @@
 #define OBJ_FILENAME "a-minecraft-village.obj"
 #define OBJ_MTL_FILENAME "a-minecraft-village.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"a-minecraft-village.png"}
+#define OBJ_TEXTURE_COUNT 2
+#define OBJ_TEXTURE_FILENAME {"white.png", "a-minecraft-village.bmp"}
 
 #define OBJ_SCALE 8.0
 #define OBJ_HAND_SCALE 2.0
@@ -818,15 +818,15 @@
 #if 0
 #define OBJ_SHAPES_INDEX  {0}
 
-#define OBJ_WITH_TEXTURE  {0}
+#define OBJ_WITH_TEXTURE  {1}
 
 #define OBJ_WITH_MATERIAL {-1}
 
 #define OBJ_FILENAME "minecraft-3d-map-big-village.obj"
 #define OBJ_MTL_FILENAME "minecraft-3d-map-big-village.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"minecraft-3d-map-big-village.png"}
+#define OBJ_TEXTURE_COUNT 2
+#define OBJ_TEXTURE_FILENAME {"white.png", "minecraft-3d-map-big-village.bmp"}
 
 #define OBJ_SCALE 512.0
 #define OBJ_HAND_SCALE 1.0
@@ -846,15 +846,15 @@
 #if 0
 #define OBJ_SHAPES_INDEX  {0}
 
-#define OBJ_WITH_TEXTURE  {0}
+#define OBJ_WITH_TEXTURE  {1}
 
 #define OBJ_WITH_MATERIAL {-1}
 
 #define OBJ_FILENAME "girl-sitting.obj"
 #define OBJ_MTL_FILENAME "girl-sitting.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"girl-sitting.jpeg"}
+#define OBJ_TEXTURE_COUNT 2
+#define OBJ_TEXTURE_FILENAME {"white.png", "girl-sitting.jpeg"}
 
 #define OBJ_SCALE 4.0
 #define OBJ_HAND_SCALE 2.0
@@ -874,15 +874,15 @@
 #if 0
 #define OBJ_SHAPES_INDEX  {0}
 
-#define OBJ_WITH_TEXTURE  {0}
+#define OBJ_WITH_TEXTURE  {1}
 
 #define OBJ_WITH_MATERIAL {-1}
 
 #define OBJ_FILENAME "pride-bonfie-by-tristy-artist.obj"
 #define OBJ_MTL_FILENAME "pride-bonfie-by-tristy-artist.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"pride-bonfie-by-tristy-artist.png"}
+#define OBJ_TEXTURE_COUNT 2
+#define OBJ_TEXTURE_FILENAME {"white.png", "pride-bonfie-by-tristy-artist.png"}
 
 #define OBJ_SCALE 4.0
 #define OBJ_HAND_SCALE 2.0
@@ -901,15 +901,15 @@
 #if 0
 #define OBJ_SHAPES_INDEX  {0}
 
-#define OBJ_WITH_TEXTURE  {0}
+#define OBJ_WITH_TEXTURE  {1}
 
 #define OBJ_WITH_MATERIAL {-1}
 
 #define OBJ_FILENAME "naked_woman.obj"
 #define OBJ_MTL_FILENAME "naked_woman.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"naked_woman.jpeg"}
+#define OBJ_TEXTURE_COUNT 2
+#define OBJ_TEXTURE_FILENAME {"white.png", "naked_woman.jpeg"}
 
 #define OBJ_SCALE 2.0
 #define OBJ_HAND_SCALE 2.0
@@ -935,8 +935,8 @@
 
 #define OBJ_WITH_TEXTURE \
 { \
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 \
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, \
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 \
 }
 
 #define OBJ_WITH_MATERIAL \
@@ -949,10 +949,10 @@
 #define OBJ_MTL_FILENAME "plaza_night_time.mtl"
 
 #define OBJ_TEXTURE_COUNT 2
-#define OBJ_TEXTURE_FILENAME {"plaza_night_time_opaque_diffuse.png", "plaza_night_time_transparent_diffuse.png"}
+#define OBJ_TEXTURE_FILENAME {"white.png", "plaza_night_time_transparent_diffuse.bmp"}
 
 #define OBJ_SCALE 128.0
-#define OBJ_HAND_SCALE 1.0
+#define OBJ_HAND_SCALE 4.0
 
 #define OBJ_HAND_TRANSLATE_X 0.0
 #define OBJ_HAND_TRANSLATE_Y 0.0
@@ -974,8 +974,8 @@
 
 #define OBJ_WITH_TEXTURE \
 { \
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, \
-  1 \
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, \
+  2 \
 }
 
 #define OBJ_WITH_MATERIAL \
@@ -987,8 +987,8 @@
 #define OBJ_FILENAME "cathedral.obj"
 #define OBJ_MTL_FILENAME "cathedral.mtl"
 
-#define OBJ_TEXTURE_COUNT 2
-#define OBJ_TEXTURE_FILENAME {"cathedral_base_emissive.jpeg", "cathedral_transparent_emissive.jpeg"}
+#define OBJ_TEXTURE_COUNT 3
+#define OBJ_TEXTURE_FILENAME {"white.png", "cathedral_base_emissive.jpeg", "cathedral_transparent_emissive.bmp"}
 
 #define OBJ_SCALE 64.0
 #define OBJ_HAND_SCALE 2.0
@@ -1012,7 +1012,7 @@
 
 #define OBJ_WITH_TEXTURE \
 { \
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 \
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 \
 }
 
 #define OBJ_WITH_MATERIAL \
@@ -1023,8 +1023,8 @@
 #define OBJ_FILENAME "monastery_of_batalha-night.obj"
 #define OBJ_MTL_FILENAME "monastery_of_batalha-night.mtl"
 
-#define OBJ_TEXTURE_COUNT 1
-#define OBJ_TEXTURE_FILENAME {"monastery_of_batalha-night_material_baseColor.jpeg"}
+#define OBJ_TEXTURE_COUNT 2
+#define OBJ_TEXTURE_FILENAME {"white.png", "monastery_of_batalha-night_material_baseColor.jpeg"}
 
 #define OBJ_SCALE 128.0
 #define OBJ_HAND_SCALE 4.0

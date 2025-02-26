@@ -17,7 +17,6 @@
 
 void AnagTestTinyObjLoader()
 {
-
   if(Geometry::gModelsIndicesDynamicData)
     return;
 
@@ -265,7 +264,8 @@ struct GeometryVertex
         }
         else
         {
-          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Index = -1;
+          //Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Index = -1;
+          Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Index = 0;
 
           //Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Texture.x = -1.0;
           //Geometry::gModelsVerticesDynamicData[numModelsVerticiesStaticCountOf + v/*idx.vertex_index*/].Texture.y = -1.0;
@@ -350,13 +350,16 @@ struct GeometryVertex
     }
   }
 
+#if 0
   // set texture coordinates for all vertices before model to negative
   for(int index = 0; index < numModelsVerticiesStaticCountOf; index++)
   {
     Geometry::gModelsVerticesDynamicData[index].Texture.x = -1.0;
     Geometry::gModelsVerticesDynamicData[index].Texture.y = -1.0;
   }
+#endif
 
+#if 0
   // if the texture coordinates of all vertices is zero, change to negative
   if(fabs(texture) <= 1E-5)
   {
@@ -366,6 +369,7 @@ struct GeometryVertex
       Geometry::gModelsVerticesDynamicData[index].Texture.y = -1.0;
     }
   }
+#endif
 
 // center and scale
   for(int index = 0; index < 3 * num_face; index++)
@@ -3984,6 +3988,7 @@ struct VkExtensionProperties
             rs.depthBiasSlopeFactor = 0;
             rs.lineWidth = 1.0f;
 
+#if 0
             VkPipelineColorBlendAttachmentState attachState {};
             attachState.blendEnable = 0;
             attachState.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
@@ -3992,6 +3997,18 @@ struct VkExtensionProperties
             attachState.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
             attachState.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
             attachState.alphaBlendOp = VK_BLEND_OP_ADD;
+#else
+            VkPipelineColorBlendAttachmentState attachState {};
+            attachState.blendEnable = 1; // todo
+            attachState.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+            attachState.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+            attachState.colorBlendOp = VK_BLEND_OP_ADD;
+            //attachState.srcAlphaBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+            //attachState.dstAlphaBlendFactor = VK_BLEND_FACTOR_DST_ALPHA;
+            attachState.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+            attachState.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+            attachState.alphaBlendOp = VK_BLEND_OP_MAX;
+#endif
 
             attachState.colorWriteMask =
               VK_COLOR_COMPONENT_R_BIT |
@@ -4004,7 +4021,9 @@ struct VkExtensionProperties
             cb.pAttachments = &attachState;
             cb.logicOpEnable = VK_FALSE;
             cb.logicOp = VK_LOGIC_OP_NO_OP;
+#if 0
             _operator_assign(cb.blendConstants, 1.0f);
+#endif
 
             VkRect2D scissor =
             {
@@ -4385,6 +4404,21 @@ struct VkExtensionProperties
               XR_PERF_SETTINGS_DOMAIN_GPU_EXT,
               XR_PERF_SETTINGS_LEVEL_BOOST_EXT
             );
+          }
+
+          if(tableXr.SetAndroidApplicationThreadKHR)
+          {
+            CHECK_XRCMD_CHECK(tableXr.SetAndroidApplicationThreadKHR(
+              gXrSession,
+              XR_ANDROID_THREAD_TYPE_APPLICATION_MAIN_KHR,
+              gettid()
+            ) );
+
+            CHECK_XRCMD_CHECK(tableXr.SetAndroidApplicationThreadKHR(
+              gXrSession,
+              XR_ANDROID_THREAD_TYPE_RENDERER_MAIN_KHR,
+              gettid()
+            ) );
           }
 
           break;
