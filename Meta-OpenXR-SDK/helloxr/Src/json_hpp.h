@@ -2733,7 +2733,7 @@ class exception : public std::exception
                 {
                     for(std::size_t i = 0; i < current->m_parent->m_value.array->size(); ++i)
                     {
-                        if(&current->m_parent->m_value.array->operator[](i) == current)
+                        if( &current->m_parent->m_value.array->operator[](i) == current)
                         {
                             tokens.emplace_back(std::to_string(i) );
                             break;
@@ -2746,7 +2746,7 @@ class exception : public std::exception
                 {
                     for(const auto& element : *current->m_parent->m_value.object)
                     {
-                        if(&element.second == current)
+                        if( &element.second == current)
                         {
                             tokens.emplace_back(element.first.c_str() );
                             break;
@@ -3832,7 +3832,7 @@ struct is_ordered_map
         char x[2]; // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
     };
 
-    template <typename C> static one test( decltype(&C::capacity) ) ;
+    template <typename C> static one test( decltype( &C::capacity) ) ;
     template <typename C> static two test(...);
 
     enum { value = sizeof(test<T>(nullptr) ) == sizeof(char) }; // NOLINT(cppcoreguidelines-pro-type-vararg,hicpp-vararg)
@@ -4010,7 +4010,7 @@ void from_json(const BasicJsonType& j, std::valarray<T>& l)
 }
 
 template<typename BasicJsonType, typename T, std::size_t N>
-auto from_json(const BasicJsonType& j, T (&arr)[N] )  // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
+auto from_json(const BasicJsonType& j, T ( &arr)[N] )  // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
 -> decltype(j.template get<T>(), void() )
 {
     for(std::size_t i = 0; i < N; ++i)
@@ -4858,9 +4858,9 @@ void to_json(BasicJsonType& j, typename BasicJsonType::object_t&& obj)
 template <
     typename BasicJsonType, typename T, std::size_t N,
     enable_if_t < !std::is_constructible<typename BasicJsonType::string_t,
-                  const T(&)[N]>::value, // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
+                  const T( &)[N]>::value, // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
                   int > = 0 >
-void to_json(BasicJsonType& j, const T(&arr)[N] ) // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
+void to_json(BasicJsonType& j, const T( &arr)[N] ) // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
 {
     external_constructor<value_t::array>::construct(j, arr);
 }
@@ -5363,7 +5363,7 @@ class input_stream_adapter
     }
 
     explicit input_stream_adapter(std::istream& i)
-        : is(&i), sb(i.rdbuf() )
+        : is( &i), sb(i.rdbuf() )
     {}
 
     // delete because of pointer members
@@ -5718,7 +5718,7 @@ contiguous_bytes_input_adapter input_adapter(CharT b)
 }
 
 template<typename T, std::size_t N>
-auto input_adapter(T (&array)[N] ) -> decltype(input_adapter(array, array + N) ) // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
+auto input_adapter(T ( &array)[N] ) -> decltype(input_adapter(array, array + N) ) // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
 {
     return input_adapter(array, array + N);
 }
@@ -8258,7 +8258,7 @@ enum class cbor_tag_handler_t
 */
 static inline bool little_endianess(int num = 1) noexcept
 {
-    return *reinterpret_cast<char*>(&num) == 1;
+    return *reinterpret_cast<char*>( &num) == 1;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -10584,7 +10584,7 @@ class binary_reader
         }
 
         // step 2: convert array into number of type T and return
-        std::memcpy(&result, vec.data(), sizeof(NumberType) );
+        std::memcpy( &result, vec.data(), sizeof(NumberType) );
         return true;
     }
 
@@ -10831,7 +10831,7 @@ class parser
         if(callback)
         {
             json_sax_dom_callback_parser<BasicJsonType> sdp(result, callback, allow_exceptions);
-            sax_parse_internal(&sdp);
+            sax_parse_internal( &sdp);
 
             // in strict mode, input must be completely read
             if(strict && (get_token() != token_type::end_of_input) )
@@ -10859,7 +10859,7 @@ class parser
         else
         {
             json_sax_dom_parser<BasicJsonType> sdp(result, allow_exceptions);
-            sax_parse_internal(&sdp);
+            sax_parse_internal( &sdp);
 
             // in strict mode, input must be completely read
             if(strict && (get_token() != token_type::end_of_input) )
@@ -10889,7 +10889,7 @@ class parser
     bool accept(const bool strict = true)
     {
         json_sax_acceptor<BasicJsonType> sax_acceptor;
-        return sax_parse(&sax_acceptor, strict);
+        return sax_parse( &sax_acceptor, strict);
     }
 
     template<typename SAX>
@@ -11540,7 +11540,7 @@ class iter_impl
     */
     iter_impl& operator=(const iter_impl<const BasicJsonType>& other) noexcept
     {
-        if(&other != this)
+        if( &other != this)
         {
             m_object = other.m_object;
             m_it = other.m_it;
@@ -13256,7 +13256,7 @@ class json_ref
     {}
 
     json_ref(const value_type& value)
-        : value_ref(&value)
+        : value_ref( &value)
     {}
 
     json_ref(std::initializer_list<json_ref> init)
@@ -15030,7 +15030,7 @@ class binary_writer
                enable_if_t < std::is_signed<C>::value && std::is_signed<char>::value > * = nullptr >
     static constexpr CharType to_char_type(std::uint8_t x) noexcept
     {
-        return *reinterpret_cast<char*>(&x);
+        return *reinterpret_cast<char*>( &x);
     }
 
     template < typename C = CharType,
@@ -15040,7 +15040,7 @@ class binary_writer
         static_assert(sizeof(std::uint8_t) == sizeof(CharType), "size of CharType must be equal to std::uint8_t");
         static_assert(std::is_trivial<CharType>::value, "CharType must be trivial");
         CharType result;
-        std::memcpy(&result, &x, sizeof(x) );
+        std::memcpy( &result, &x, sizeof(x) );
         return result;
     }
 
@@ -15113,7 +15113,7 @@ Target reinterpret_bits(const Source source)
     static_assert(sizeof(Target) == sizeof(Source), "size mismatch");
 
     Target target;
-    std::memcpy(&target, &source, sizeof(Source) );
+    std::memcpy( &target, &source, sizeof(Source) );
     return target;
 }
 
@@ -16675,7 +16675,7 @@ class serializer
                         {
                             std::string sn(9, '\0');
                             // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg,hicpp-vararg)
-                            (std::snprintf)(&sn[0], sn.size(), "%.2X", byte);
+                            (std::snprintf)( &sn[0], sn.size(), "%.2X", byte);
                             JSON_THROW(type_error::create(316, "invalid UTF-8 byte at index " + std::to_string(i) + ": 0x" + sn, BasicJsonType() ) );
                         }
 
@@ -16770,7 +16770,7 @@ class serializer
                 {
                     std::string sn(9, '\0');
                     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg,hicpp-vararg)
-                    (std::snprintf)(&sn[0], sn.size(), "%.2X", static_cast<std::uint8_t>(s.back() ) );
+                    (std::snprintf)( &sn[0], sn.size(), "%.2X", static_cast<std::uint8_t>(s.back() ) );
                     JSON_THROW(type_error::create(316, "incomplete UTF-8 string; last byte: 0x" + sn, BasicJsonType() ) );
                 }
 
@@ -17222,7 +17222,7 @@ template <class Key, class T, class IgnoredLess = std::less<Key>,
                 for(auto next = it; ++next != this->end(); ++it)
                 {
                     it->~value_type(); // Destroy but keep allocation
-                    new (&*it) value_type{std::move(*next)};
+                    new ( &*it) value_type{std::move(*next)};
                 }
                 Container::pop_back();
                 return 1;
@@ -17239,7 +17239,7 @@ template <class Key, class T, class IgnoredLess = std::less<Key>,
         for(auto next = it; ++next != this->end(); ++it)
         {
             it->~value_type(); // Destroy but keep allocation
-            new (&*it) value_type{std::move(*next)};
+            new ( &*it) value_type{std::move(*next)};
         }
         Container::pop_back();
         return pos;
@@ -20544,10 +20544,10 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
 
     template <
         typename T, std::size_t N,
-        typename Array = T (&)[N], // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
+        typename Array = T ( &)[N], // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
         detail::enable_if_t <
             detail::has_from_json<basic_json_t, Array>::value, int > = 0 >
-    Array get_to(T (&v)[N] ) const // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
+    Array get_to(T ( &v)[N] ) const // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
     noexcept(noexcept(JSONSerializer<Array>::from_json(
                           std::declval<const basic_json_t&>(), v) ) )
     {

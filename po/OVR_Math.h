@@ -95,7 +95,7 @@
 #define OVR_MATH_UNUSED(a) \
   do \
   { \
-    __typeof__(&a) __attribute__( (unused) ) __tmp = &a; \
+    __typeof__( &a) __attribute__( (unused) ) __tmp = &a; \
   \
   }while(0)
 #else
@@ -651,7 +651,7 @@ class Vector2 {
 
     Vector2 Clamped(T maxMag) const {
         T magSquared = LengthSq();
-        if (magSquared <= Sqr(maxMag) )
+        if(magSquared <= Sqr(maxMag) )
             return *this;
         else
             return *this * (maxMag / sqrt(magSquared) );
@@ -669,11 +669,11 @@ class Vector2 {
     // Access element by index
     T& operator[](int idx) {
         OVR_MATH_ASSERT(0 <= idx && idx < 2);
-        return *(&x + idx);
+        return *( &x + idx);
     }
     const T& operator[](int idx) const {
         OVR_MATH_ASSERT(0 <= idx && idx < 2);
-        return *(&x + idx);
+        return *( &x + idx);
     }
 
     // Entry-wise product of two vectors
@@ -732,7 +732,7 @@ class Vector2 {
     // Normalize, convention vector length to 1.
     void Normalize() {
         T s = Length();
-        if (s != T(0) )
+        if(s != T(0) )
             s = T(1) / s;
         *this *= s;
     }
@@ -740,7 +740,7 @@ class Vector2 {
     // Returns normalized (unit) version of the vector without modifying itself.
     Vector2 Normalized() const {
         T s = Length();
-        if (s != T(0) )
+        if(s != T(0) )
             s = T(1) / s;
         return *this * s;
     }
@@ -888,7 +888,7 @@ class Vector3 {
 
     Vector3 Clamped(T maxMag) const {
         T magSquared = LengthSq();
-        if (magSquared <= Sqr(maxMag) )
+        if(magSquared <= Sqr(maxMag) )
             return *this;
         else
             return *this * (maxMag / sqrt(magSquared) );
@@ -906,12 +906,12 @@ class Vector3 {
 
     T& operator[](int idx) {
         OVR_MATH_ASSERT(0 <= idx && idx < 3);
-        return *(&x + idx);
+        return *( &x + idx);
     }
 
     const T& operator[](int idx) const {
         OVR_MATH_ASSERT(0 <= idx && idx < 3);
-        return *(&x + idx);
+        return *( &x + idx);
     }
 
     // Entrywise product of two vectors
@@ -977,7 +977,7 @@ class Vector3 {
     // Normalize, convention vector length to 1.
     void Normalize() {
         T s = Length();
-        if (s != T(0) )
+        if(s != T(0) )
             s = T(1) / s;
         *this *= s;
     }
@@ -985,7 +985,7 @@ class Vector3 {
     // Returns normalized (unit) version of the vector without modifying itself.
     Vector3 Normalized() const {
         T s = Length();
-        if (s != T(0) )
+        if(s != T(0) )
             s = T(1) / s;
         return *this * s;
     }
@@ -1173,7 +1173,7 @@ class Vector4 {
 
     Vector4 Clamped(T maxMag) const {
         T magSquared = LengthSq();
-        if (magSquared <= Sqr(maxMag) )
+        if(magSquared <= Sqr(maxMag) )
             return *this;
         else
             return *this * (maxMag / sqrt(magSquared) );
@@ -1191,12 +1191,12 @@ class Vector4 {
 
     T& operator[](int idx) {
         OVR_MATH_ASSERT(0 <= idx && idx < 4);
-        return *(&x + idx);
+        return *( &x + idx);
     }
 
     const T& operator[](int idx) const {
         OVR_MATH_ASSERT(0 <= idx && idx < 4);
-        return *(&x + idx);
+        return *( &x + idx);
     }
 
     // Entry wise product of two vectors
@@ -1251,7 +1251,7 @@ class Vector4 {
     // Normalize, convention vector length to 1.
     void Normalize() {
         T s = Length();
-        if (s != T(0) )
+        if(s != T(0) )
             s = T(1) / s;
         *this *= s;
     }
@@ -1259,7 +1259,7 @@ class Vector4 {
     // Returns normalized (unit) version of the vector without modifying itself.
     Vector4 Normalized() const {
         T s = Length();
-        if (s != T(0) )
+        if(s != T(0) )
             s = T(1) / s;
         return *this * s;
     }
@@ -1663,7 +1663,7 @@ class Quat {
     // Constructs quaternion for rotation around the axis by an angle.
     Quat(const Vector3<T>& axis, T angle) {
         // Make sure we don't divide by zero.
-        if (axis.LengthSq() == T(0) ) {
+        if(axis.LengthSq() == T(0) ) {
             // Assert if the axis is zero, but the angle isn't
             OVR_MATH_ASSERT(angle == T(0) );
             x = y = z = T(0);
@@ -1753,10 +1753,10 @@ class Quat {
 
     // Compute axis and angle from quaternion
     void GetAxisAngle(Vector3<T>* axis, T* angle) const {
-        if (x * x + y * y + z * z > Math<T>::Tolerance() * Math<T>::Tolerance() ) {
+        if(x * x + y * y + z * z > Math<T>::Tolerance() * Math<T>::Tolerance() ) {
             *axis = Vector3<T>(x, y, z).Normalized();
             *angle = 2 * Acos(w);
-            if (*angle > ( (T)MATH_DOUBLE_PI) ) // Reduce the magnitude of the angle, if necessary
+            if(*angle > ( (T)MATH_DOUBLE_PI) ) // Reduce the magnitude of the angle, if necessary
             {
                 *angle = ( (T)MATH_DOUBLE_TWOPI) - *angle;
                 *axis = *axis * (-1);
@@ -1776,12 +1776,12 @@ class Quat {
         OVR_MATH_ASSERT(IsNormalized() || LengthSq() == 0);
         T s = T(0);
         T sinHalfAngle = (T)sqrt(x * x + y * y + z * z);
-        if (sinHalfAngle > T(0) ) {
+        if(sinHalfAngle > T(0) ) {
             T cosHalfAngle = w;
             T halfAngle = (T)atan2(sinHalfAngle, cosHalfAngle);
 
             // Ensure minimum rotation magnitude
-            if (cosHalfAngle < 0)
+            if(cosHalfAngle < 0)
                 halfAngle -= T(MATH_DOUBLE_PI);
 
             s = T(2) * halfAngle / sinHalfAngle;
@@ -1795,7 +1795,7 @@ class Quat {
         OVR_MATH_ASSERT(IsNormalized() );
         T s;
         T sinHalfSquared = x * x + y * y + z * z;
-        if (sinHalfSquared < T(.0037) ) // =~ sin(7/2 degrees)^2
+        if(sinHalfSquared < T(.0037) ) // =~ sin(7/2 degrees)^2
         {
             // Max rotation magnitude error is about .062% at 7 degrees rotation, or about .0043
             // degrees
@@ -1806,7 +1806,7 @@ class Quat {
             T halfAngle = atan2(sinHalfAngle, cosHalfAngle);
 
             // Ensure minimum rotation magnitude
-            if (cosHalfAngle < 0)
+            if(cosHalfAngle < 0)
                 halfAngle -= T(MATH_DOUBLE_PI);
 
             s = T(2) * halfAngle / sinHalfAngle;
@@ -1820,7 +1820,7 @@ class Quat {
         T angleSquared = v.LengthSq();
         T s = T(0);
         T c = T(1);
-        if (angleSquared > T(0) ) {
+        if(angleSquared > T(0) ) {
             T angle = static_cast<T>(sqrt(angleSquared) );
             s = static_cast<T>(sin(angle * T(0.5) ) ) / angle; // normalize
             c = static_cast<T>(cos(angle * T(0.5) ) );
@@ -1834,13 +1834,13 @@ class Quat {
     inline static Quat FastFromRotationVector(const OVR::Vector3<T>& v, bool normalize = true) {
         T s, c;
         T angleSquared = v.LengthSq();
-        if (angleSquared < T(0.0076) ) // =~ (5 degrees*pi/180)^2
+        if(angleSquared < T(0.0076) ) // =~ (5 degrees*pi/180)^2
         {
             s = T(0.5);
             c = T(1.0);
             // Max rotation magnitude error (after normalization) is about .064% at 5 degrees
             // rotation, or .0032 degrees
-            if (normalize && angleSquared > 0) {
+            if(normalize && angleSquared > 0) {
                 // sin(angle/2)^2 ~= (angle/2)^2 and cos(angle/2)^2 ~= 1
                 T invLen = T(1) / sqrt(angleSquared * T(0.25) + T(1) ); // normalize
                 s = s * invLen;
@@ -1861,19 +1861,19 @@ class Quat {
         // In almost all cases, the first part is executed.
         // However, if the trace is not positive, the other
         // cases arise.
-        if (trace > T(0) ) {
+        if(trace > T(0) ) {
             T s = static_cast<T>(sqrt(trace + T(1) ) ) * T(2); // s=4*qw
             w = T(0.25) * s;
             x = (m.M[2][1] - m.M[1][2] ) / s;
             y = (m.M[0][2] - m.M[2][0] ) / s;
             z = (m.M[1][0] - m.M[0][1] ) / s;
-        } else if ( (m.M[0][0] > m.M[1][1] ) && (m.M[0][0] > m.M[2][2] ) ) {
+        } else if( (m.M[0][0] > m.M[1][1] ) && (m.M[0][0] > m.M[2][2] ) ) {
             T s = static_cast<T>(sqrt(T(1) + m.M[0][0] - m.M[1][1] - m.M[2][2] ) ) * T(2);
             w = (m.M[2][1] - m.M[1][2] ) / s;
             x = T(0.25) * s;
             y = (m.M[0][1] + m.M[1][0] ) / s;
             z = (m.M[2][0] + m.M[0][2] ) / s;
-        } else if (m.M[1][1] > m.M[2][2] ) {
+        } else if(m.M[1][1] > m.M[2][2] ) {
             T s = static_cast<T>(sqrt(T(1) + m.M[1][1] - m.M[0][0] - m.M[2][2] ) ) * T(2); // S=4*qy
             w = (m.M[0][2] - m.M[2][0] ) / s;
             x = (m.M[0][1] + m.M[1][0] ) / s;
@@ -1896,19 +1896,19 @@ class Quat {
         // In almost all cases, the first part is executed.
         // However, if the trace is not positive, the other
         // cases arise.
-        if (trace > T(0) ) {
+        if(trace > T(0) ) {
             T s = static_cast<T>(sqrt(trace + T(1) ) ) * T(2); // s=4*qw
             w = T(0.25) * s;
             x = (m.M[2][1] - m.M[1][2] ) / s;
             y = (m.M[0][2] - m.M[2][0] ) / s;
             z = (m.M[1][0] - m.M[0][1] ) / s;
-        } else if ( (m.M[0][0] > m.M[1][1] ) && (m.M[0][0] > m.M[2][2] ) ) {
+        } else if( (m.M[0][0] > m.M[1][1] ) && (m.M[0][0] > m.M[2][2] ) ) {
             T s = static_cast<T>(sqrt(T(1) + m.M[0][0] - m.M[1][1] - m.M[2][2] ) ) * T(2);
             w = (m.M[2][1] - m.M[1][2] ) / s;
             x = T(0.25) * s;
             y = (m.M[0][1] + m.M[1][0] ) / s;
             z = (m.M[2][0] + m.M[0][2] ) / s;
-        } else if (m.M[1][1] > m.M[2][2] ) {
+        } else if(m.M[1][1] > m.M[2][2] ) {
             T s = static_cast<T>(sqrt(T(1) + m.M[1][1] - m.M[0][0] - m.M[2][2] ) ) * T(2); // S=4*qy
             w = (m.M[0][2] - m.M[2][0] ) / s;
             x = (m.M[0][1] + m.M[1][0] ) / s;
@@ -1934,10 +1934,10 @@ class Quat {
         const T crossLengthSq = cx * cx + cy * cy + cz * cz;
         const T magnitude = static_cast<T>(sqrt(crossLengthSq + dot * dot) );
         const T cw = dot + magnitude;
-        if (cw < Math<T>::SmallestNonDenormal() ) {
+        if(cw < Math<T>::SmallestNonDenormal() ) {
             const T sx = to.y * to.y + to.z * to.z;
             const T sz = to.x * to.x + to.y * to.y;
-            if (sx > sz) {
+            if(sx > sz) {
                 const T rcpLength = RcpSqrt(sx);
                 x = T(0);
                 y = to.z * rcpLength;
@@ -2077,14 +2077,14 @@ class Quat {
 
     void Normalize() {
         T s = Length();
-        if (s != T(0) )
+        if(s != T(0) )
             s = T(1) / s;
         *this *= s;
     }
 
     Quat Normalized() const {
         T s = Length();
-        if (s != T(0) )
+        if(s != T(0) )
             s = T(1) / s;
         return *this * s;
     }
@@ -2097,7 +2097,7 @@ class Quat {
     }
 
     inline void EnsureSameHemisphere(const Quat& o) {
-        if (Dot(o) < T(0) ) {
+        if(Dot(o) < T(0) ) {
             ChangeHemisphere();
         }
     }
@@ -2132,7 +2132,7 @@ class Quat {
     Quat PowNormalized(T p) const {
         Vector3<T> v;
         T a;
-        GetAxisAngle(&v, &a);
+        GetAxisAngle( &v, &a);
         return Quat(v, a * p);
     }
 
@@ -2143,25 +2143,25 @@ class Quat {
         Vector3<T> bisector = (v + alignTo);
         bisector.Normalize();
         T cosHalfAngle = v.Dot(bisector); // 0..1
-        if (cosHalfAngle > T(0) ) {
+        if(cosHalfAngle > T(0) ) {
             Vector3<T> imag = v.Cross(bisector);
             return Quat(imag.x, imag.y, imag.z, cosHalfAngle);
         } else {
             // cosHalfAngle == 0: a 180 degree rotation.
             // sinHalfAngle == 1, rotation axis is any axis perpendicular
             // to alignTo.  Choose axis to include largest magnitude components
-            if (fabs(v.x) > fabs(v.y) ) {
+            if(fabs(v.x) > fabs(v.y) ) {
                 // x or z is max magnitude component
                 // = Cross(v, (0,1,0) ).Normalized();
                 T invLen = sqrt(v.x * v.x + v.z * v.z);
-                if (invLen > T(0) )
+                if(invLen > T(0) )
                     invLen = T(1) / invLen;
                 return Quat(-v.z * invLen, 0, v.x * invLen, 0);
             } else {
                 // y or z is max magnitude component
                 // = Cross(v, (1,0,0) ).Normalized();
                 T invLen = sqrt(v.y * v.y + v.z * v.z);
-                if (invLen > T(0) )
+                if(invLen > T(0) )
                     invLen = T(1) / invLen;
                 return Quat(0, v.z * invLen, -v.y * invLen, 0);
             }
@@ -2289,38 +2289,38 @@ class Quat {
 
         T psign = T(-1);
         // Determine whether even permutation
-        if ( ( (A1 + 1) % 3 == A2) && ( (A2 + 1) % 3 == A3) )
+        if( ( (A1 + 1) % 3 == A2) && ( (A2 + 1) % 3 == A3) )
             psign = T(1);
 
         T s2 = psign * T(2) * (psign * w * Q[A2] + Q[A1] * Q[A3] );
 
         T singularityRadius = Math<T>::SingularityRadius();
-        if (s2 < T(-1) + singularityRadius) { // South pole singularity
-            if (a)
+        if(s2 < T(-1) + singularityRadius) { // South pole singularity
+            if(a)
                 *a = T(0);
-            if (b)
+            if(b)
                 *b = -S * D * ( (T)MATH_DOUBLE_PIOVER2);
-            if (c)
+            if(c)
                 *c = S * D *
                     static_cast<T>(
                          atan2(T(2) * (psign * Q[A1] * Q[A2] + w * Q[A3] ), ww + Q22 - Q11 - Q33) );
-        } else if (s2 > T(1) - singularityRadius) { // North pole singularity
-            if (a)
+        } else if(s2 > T(1) - singularityRadius) { // North pole singularity
+            if(a)
                 *a = T(0);
-            if (b)
+            if(b)
                 *b = S * D * ( (T)MATH_DOUBLE_PIOVER2);
-            if (c)
+            if(c)
                 *c = S * D *
                     static_cast<T>(
                          atan2(T(2) * (psign * Q[A1] * Q[A2] + w * Q[A3] ), ww + Q22 - Q11 - Q33) );
         } else {
-            if (a)
+            if(a)
                 *a = -S * D *
                     static_cast<T>(
                         atan2(T(-2) * (w * Q[A1] - psign * Q[A2] * Q[A3] ), ww + Q33 - Q11 - Q22) );
-            if (b)
+            if(b)
                 *b = S * D * static_cast<T>(asin(s2) );
-            if (c)
+            if(c)
                 *c = S * D *
                     static_cast<T>(
                          atan2(T(2) * (w * Q[A3] - psign * Q[A1] * Q[A2] ), ww + Q11 - Q22 - Q33) );
@@ -2364,39 +2364,39 @@ class Quat {
         T Qmm = Q[m] * Q[m];
 
         T psign = T(-1);
-        if ( (A1 + 1) % 3 == A2) // Determine whether even permutation
+        if( (A1 + 1) % 3 == A2) // Determine whether even permutation
         {
             psign = T(1);
         }
 
         T c2 = ww + Q11 - Q22 - Qmm;
         T singularityRadius = Math<T>::SingularityRadius();
-        if (c2 < T(-1) + singularityRadius) { // South pole singularity
-            if (a)
+        if(c2 < T(-1) + singularityRadius) { // South pole singularity
+            if(a)
                 *a = T(0);
-            if (b)
+            if(b)
                 *b = S * D * ( (T)MATH_DOUBLE_PI);
-            if (c)
+            if(c)
                 *c = S * D *
                     static_cast<T>(
                          atan2(T(2) * (w * Q[A1] - psign * Q[A2] * Q[m] ), ww + Q22 - Q11 - Qmm) );
-        } else if (c2 > T(1) - singularityRadius) { // North pole singularity
-            if (a)
+        } else if(c2 > T(1) - singularityRadius) { // North pole singularity
+            if(a)
                 *a = T(0);
-            if (b)
+            if(b)
                 *b = T(0);
-            if (c)
+            if(c)
                 *c = S * D *
                     static_cast<T>(
                          atan2(T(2) * (w * Q[A1] - psign * Q[A2] * Q[m] ), ww + Q22 - Q11 - Qmm) );
         } else {
-            if (a)
+            if(a)
                 *a = S * D *
                     static_cast<T>(
                          atan2(psign * w * Q[m] + Q[A1] * Q[A2], w * Q[A2] - psign * Q[A1] * Q[m] ) );
-            if (b)
+            if(b)
                 *b = S * D * static_cast<T>(acos(c2) );
-            if (c)
+            if(c)
                 *c = S * D *
                     static_cast<T>(atan2(
                         -psign * w * Q[m] + Q[A1] * Q[A2], w * Q[A2] + psign * Q[A1] * Q[m] ) );
@@ -2413,7 +2413,7 @@ class Quat {
         auto projected = twistAxis * dotProd;
         Quat<T> twist(projected.x, projected.y, projected.z, w);
         twist.Normalize();
-        if (dotProd < 0) {
+        if(dotProd < 0) {
             twist.ChangeHemisphere();
         }
         return twist;
@@ -2476,12 +2476,12 @@ class Pose {
     explicit Pose(const Pose<typename Math<T>::OtherFloatType>& s)
         : Rotation(s.Rotation), Translation(s.Translation) {
         // Ensure normalized rotation if converting from float to double
-        if (sizeof(T) > sizeof(typename Math<T>::OtherFloatType) )
+        if(sizeof(T) > sizeof(typename Math<T>::OtherFloatType) )
             Rotation.Normalize();
     }
 
     Pose& operator=(Pose const& rhs) {
-        if (&rhs != this) {
+        if( &rhs != this) {
             this->Rotation = rhs.Rotation;
             this->Translation = rhs.Translation;
         }
@@ -2538,7 +2538,7 @@ class Pose {
             Translation.x,
             Translation.y,
             Translation.z};
-        for (int i = 0; i < 7; i++)
+        for(int i = 0; i < 7; i++)
             arr[i] = temp[i];
     }
 
@@ -2785,8 +2785,8 @@ class Matrix4 {
 
     // C-interop support
     explicit Matrix4(const Matrix4<typename Math<T>::OtherFloatType>& src) {
-        for (int i = 0; i < 4; i++)
-            for (int j = 0; j < 4; j++)
+        for(int i = 0; i < 4; i++)
+            for(int j = 0; j < 4; j++)
                 M[i][j] = (T)src.M[i][j];
     }
 
@@ -2806,8 +2806,8 @@ class Matrix4 {
 
     void ToString(char* dest, size_t destsize) const {
         size_t pos = 0;
-        for (int r = 0; r < 4; r++) {
-            for (int c = 0; c < 4; c++) {
+        for(int r = 0; r < 4; r++) {
+            for(int c = 0; c < 4; c++) {
                 pos += OVRMath_sprintf(dest + pos, destsize - pos, "%g ", M[r][c] );
             }
         }
@@ -2815,14 +2815,14 @@ class Matrix4 {
 
     static Matrix4 FromString(const char* src) {
         Matrix4 result;
-        if (src) {
-            for (int r = 0; r < 4; r++) {
-                for (int c = 0; c < 4; c++) {
+        if(src) {
+            for(int r = 0; r < 4; r++) {
+                for(int c = 0; c < 4; c++) {
                     result.M[r][c] = (T)atof(src);
-                    while (*src && *src != ' ') {
+                    while(*src && *src != ' ') {
                         src++;
                     }
-                    while (*src && *src == ' ') {
+                    while(*src && *src == ' ') {
                         src++;
                     }
                 }
@@ -2878,8 +2878,8 @@ class Matrix4 {
 
     bool operator==(const Matrix4& b) const {
         bool isEqual = true;
-        for (int i = 0; i < 4; i++)
-            for (int j = 0; j < 4; j++)
+        for(int i = 0; i < 4; i++)
+            for(int j = 0; j < 4; j++)
                 isEqual &= (M[i][j] == b.M[i][j] );
 
         return isEqual;
@@ -2892,8 +2892,8 @@ class Matrix4 {
     }
 
     Matrix4& operator+=(const Matrix4& b) {
-        for (int i = 0; i < 4; i++)
-            for (int j = 0; j < 4; j++)
+        for(int i = 0; i < 4; i++)
+            for(int j = 0; j < 4; j++)
                 M[i][j] += b.M[i][j];
         return *this;
     }
@@ -2905,8 +2905,8 @@ class Matrix4 {
     }
 
     Matrix4& operator-=(const Matrix4& b) {
-        for (int i = 0; i < 4; i++)
-            for (int j = 0; j < 4; j++)
+        for(int i = 0; i < 4; i++)
+            for(int j = 0; j < 4; j++)
                 M[i][j] -= b.M[i][j];
         return *this;
     }
@@ -2924,14 +2924,14 @@ class Matrix4 {
                 a.M[i][3] * b.M[3][2];
             d->M[i][3] = a.M[i][0] * b.M[0][3] + a.M[i][1] * b.M[1][3] + a.M[i][2] * b.M[2][3] +
                 a.M[i][3] * b.M[3][3];
-        } while ( (++i) < 4);
+        } while( (++i) < 4);
 
         return *d;
     }
 
     Matrix4 operator*(const Matrix4& b) const {
         Matrix4 result(Matrix4::NoInit);
-        Multiply(&result, *this, b);
+        Multiply( &result, *this, b);
         return result;
     }
 
@@ -2950,8 +2950,8 @@ class Matrix4 {
     }
 
     Matrix4& operator*=(T s) {
-        for (int i = 0; i < 4; i++)
-            for (int j = 0; j < 4; j++)
+        for(int i = 0; i < 4; i++)
+            for(int j = 0; j < 4; j++)
                 M[i][j] *= s;
         return *this;
     }
@@ -2963,8 +2963,8 @@ class Matrix4 {
     }
 
     Matrix4& operator/=(T s) {
-        for (int i = 0; i < 4; i++)
-            for (int j = 0; j < 4; j++)
+        for(int i = 0; i < 4; i++)
+            for(int j = 0; j < 4; j++)
                 M[i][j] /= s;
         return *this;
     }
@@ -3095,16 +3095,16 @@ class Matrix4 {
         const T S = static_cast<T>(Senum);
 
         T psign = T(-1);
-        if ( ( (A1 + 1) % 3 == A2) && ( (A2 + 1) % 3 == A3) ) // Determine whether even permutation
+        if( ( (A1 + 1) % 3 == A2) && ( (A2 + 1) % 3 == A3) ) // Determine whether even permutation
             psign = T(1);
 
         T pm = psign * M[A1][A3];
         T singularityRadius = Math<T>::SingularityRadius();
-        if (pm < T(-1) + singularityRadius) { // South pole singularity
+        if(pm < T(-1) + singularityRadius) { // South pole singularity
             *a = T(0);
             *b = -S * D * ( (T)MATH_DOUBLE_PIOVER2);
             *c = S * D * static_cast<T>(atan2(psign * M[A2][A1], M[A2][A2] ) );
-        } else if (pm > T(1) - singularityRadius) { // North pole singularity
+        } else if(pm > T(1) - singularityRadius) { // North pole singularity
             *a = T(0);
             *b = S * D * ( (T)MATH_DOUBLE_PIOVER2);
             *c = S * D * static_cast<T>(atan2(psign * M[A2][A1], M[A2][A2] ) );
@@ -3132,16 +3132,16 @@ class Matrix4 {
         int m = 3 - A1 - A2;
 
         T psign = T(-1);
-        if ( (A1 + 1) % 3 == A2) // Determine whether even permutation
+        if( (A1 + 1) % 3 == A2) // Determine whether even permutation
             psign = T(1);
 
         T c2 = M[A1][A1];
         T singularityRadius = Math<T>::SingularityRadius();
-        if (c2 < T(-1) + singularityRadius) { // South pole singularity
+        if(c2 < T(-1) + singularityRadius) { // South pole singularity
             *a = T(0);
             *b = S * D * ( (T)MATH_DOUBLE_PI);
             *c = S * D * static_cast<T>(atan2(-psign * M[A2][m], M[A2][A2] ) );
-        } else if (c2 > T(1) - singularityRadius) { // North pole singularity
+        } else if(c2 > T(1) - singularityRadius) { // North pole singularity
             *a = T(0);
             *b = T(0);
             *c = S * D * static_cast<T>(atan2(-psign * M[A2][m], M[A2][A2] ) );
@@ -3172,7 +3172,7 @@ class Matrix4 {
         // Because we may have flipY applied to modelMatrix, we may have a matrix which has both TRS
         // and reflection. If we found there are odd number of reflections (i.e. determinate is -1),
         // we arbitrarily flip one axis.
-        if (rotationM.Determinant() < 0) {
+        if(rotationM.Determinant() < 0) {
             scale->x *= -1;
             rotationM.M[0][0] *= -1;
             rotationM.M[1][0] *= -1;
@@ -3189,8 +3189,8 @@ class Matrix4 {
         Vector3<T> ta, tb, t_lerped;
         Quat<T> ra, rb, r_lerped;
         Vector3<T> sa, sb, s_lerped;
-        this->DecoupleTRS(&ta, &ra, &sa);
-        b.DecoupleTRS(&tb, &rb, &sb);
+        this->DecoupleTRS( &ta, &ra, &sa);
+        b.DecoupleTRS( &tb, &rb, &sb);
         t_lerped = ta.Lerp(tb, s);
         r_lerped = ra.Slerp(rb, s);
         s_lerped = sa.Lerp(sb, s);
@@ -3315,7 +3315,7 @@ class Matrix4 {
         T sina = s * d * sin(angle);
         T cosa = cos(angle);
 
-        switch (A) {
+        switch(A) {
             case Axis_X:
                 return Matrix4(1, 0, 0, 0, cosa, -sina, 0, sina, cosa);
             case Axis_Y:
@@ -3452,7 +3452,7 @@ class Matrix4 {
         OVR_MATH_ASSERT(zBasis.IsNormalized() );
         OVR_MATH_ASSERT(up.IsNormalized() );
         T dot = zBasis.Dot(up);
-        if (dot < (T)-0.9999 || dot > (T)0.9999) {
+        if(dot < (T)-0.9999 || dot > (T)0.9999) {
             // z basis cannot be parallel to the specified up
             OVR_MATH_ASSERT(dot >= (T)-0.9999 || dot <= (T)0.9999);
             return Matrix4<T>();
@@ -3657,8 +3657,8 @@ class Matrix3 {
     }
 
     explicit Matrix3(const Matrix3<typename Math<T>::OtherFloatType>& src) {
-        for (int i = 0; i < 3; i++)
-            for (int j = 0; j < 3; j++)
+        for(int i = 0; i < 3; i++)
+            for(int j = 0; j < 3; j++)
                 M[i][j] = (T)src.M[i][j];
     }
 
@@ -3697,21 +3697,21 @@ class Matrix3 {
 
     void ToString(char* dest, size_t destsize) const {
         size_t pos = 0;
-        for (int r = 0; r < 3; r++) {
-            for (int c = 0; c < 3; c++)
+        for(int r = 0; r < 3; r++) {
+            for(int c = 0; c < 3; c++)
                 pos += OVRMath_sprintf(dest + pos, destsize - pos, "%g ", M[r][c] );
         }
     }
 
     static Matrix3 FromString(const char* src) {
         Matrix3 result;
-        if (src) {
-            for (int r = 0; r < 3; r++) {
-                for (int c = 0; c < 3; c++) {
+        if(src) {
+            for(int r = 0; r < 3; r++) {
+                for(int c = 0; c < 3; c++) {
                     result.M[r][c] = (T)atof(src);
-                    while (*src && *src != ' ')
+                    while(*src && *src != ' ')
                         src++;
-                    while (*src && *src == ' ')
+                    while(*src && *src == ' ')
                         src++;
                 }
             }
@@ -3742,8 +3742,8 @@ class Matrix3 {
 
     bool operator==(const Matrix3& b) const {
         bool isEqual = true;
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++)
+        for(int i = 0; i < 3; i++) {
+            for(int j = 0; j < 3; j++)
                 isEqual &= (M[i][j] == b.M[i][j] );
         }
 
@@ -3757,15 +3757,15 @@ class Matrix3 {
     }
 
     Matrix3& operator+=(const Matrix3& b) {
-        for (int i = 0; i < 3; i++)
-            for (int j = 0; j < 3; j++)
+        for(int i = 0; i < 3; i++)
+            for(int j = 0; j < 3; j++)
                 M[i][j] += b.M[i][j];
         return *this;
     }
 
     void operator=(const Matrix3& b) {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
+        for(int i = 0; i < 3; i++) {
+            for(int j = 0; j < 3; j++) {
                 M[i][j] = b.M[i][j];
             }
         }
@@ -3778,8 +3778,8 @@ class Matrix3 {
     }
 
     Matrix3& operator-=(const Matrix3& b) {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++)
+        for(int i = 0; i < 3; i++) {
+            for(int j = 0; j < 3; j++)
                 M[i][j] -= b.M[i][j];
         }
 
@@ -3794,14 +3794,14 @@ class Matrix3 {
             d->M[i][0] = a.M[i][0] * b.M[0][0] + a.M[i][1] * b.M[1][0] + a.M[i][2] * b.M[2][0];
             d->M[i][1] = a.M[i][0] * b.M[0][1] + a.M[i][1] * b.M[1][1] + a.M[i][2] * b.M[2][1];
             d->M[i][2] = a.M[i][0] * b.M[0][2] + a.M[i][1] * b.M[1][2] + a.M[i][2] * b.M[2][2];
-        } while ( (++i) < 3);
+        } while( (++i) < 3);
 
         return *d;
     }
 
     Matrix3 operator*(const Matrix3& b) const {
         Matrix3 result(Matrix3::NoInit);
-        Multiply(&result, *this, b);
+        Multiply( &result, *this, b);
         return result;
     }
 
@@ -3816,8 +3816,8 @@ class Matrix3 {
     }
 
     Matrix3& operator*=(T s) {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++)
+        for(int i = 0; i < 3; i++) {
+            for(int j = 0; j < 3; j++)
                 M[i][j] *= s;
         }
 
@@ -3840,8 +3840,8 @@ class Matrix3 {
     }
 
     Matrix3& operator/=(T s) {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++)
+        for(int i = 0; i < 3; i++) {
+            for(int j = 0; j < 3; j++)
                 M[i][j] /= s;
         }
 
@@ -4007,8 +4007,8 @@ class Matrix3 {
         // Compute trace of (this->Transposed() * b)
         // This works out to sum of products of elements.
         T trace = T(0);
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
+        for(int i = 0; i < 3; i++) {
+            for(int j = 0; j < 3; j++) {
                 trace += M[i][j] * b.M[i][j];
             }
         }
@@ -4516,7 +4516,7 @@ class Angle {
         FixRange();
     }
     int Sign() const {
-        if (a == 0)
+        if(a == 0)
             return 0;
         else
             return (a > 0) ? 1 : -1;
@@ -4609,21 +4609,21 @@ class Angle {
 
     // Fixes the angle range to [-Pi,Pi], but assumes no more than 2Pi away on either side
     inline void FastFixRange() {
-        if (a < -( (T)MATH_DOUBLE_PI) )
+        if(a < -( (T)MATH_DOUBLE_PI) )
             a += ( (T)MATH_DOUBLE_TWOPI);
-        else if (a > ( (T)MATH_DOUBLE_PI) )
+        else if(a > ( (T)MATH_DOUBLE_PI) )
             a -= ( (T)MATH_DOUBLE_TWOPI);
     }
 
     // Fixes the angle range to [-Pi,Pi] for any given range, but slower then the fast method
     inline void FixRange() {
         // do nothing if the value is already in the correct range, since fmod call is expensive
-        if (a >= -( (T)MATH_DOUBLE_PI) && a <= ( (T)MATH_DOUBLE_PI) )
+        if(a >= -( (T)MATH_DOUBLE_PI) && a <= ( (T)MATH_DOUBLE_PI) )
             return;
         a = static_cast<T>(fmod(a, ( (T)MATH_DOUBLE_TWOPI) ) );
-        if (a < -( (T)MATH_DOUBLE_PI) )
+        if(a < -( (T)MATH_DOUBLE_PI) )
             a += ( (T)MATH_DOUBLE_TWOPI);
-        else if (a > ( (T)MATH_DOUBLE_PI) )
+        else if(a > ( (T)MATH_DOUBLE_PI) )
             a -= ( (T)MATH_DOUBLE_TWOPI);
     }
 };
@@ -4824,12 +4824,12 @@ struct MapRange {
         T fromRange = from.y - from.x;
         T toRange = to.y - to.x;
 
-        if (fromRange == T(0.0) ) {
+        if(fromRange == T(0.0) ) {
             return T(0.0);
         }
 
         T in = (value - from.x) / fromRange;
-        if (doClamp) {
+        if(doClamp) {
             in = std::clamp(in, T(0.0), T(1.0) );
         }
         T out = in * toRange + to.x;

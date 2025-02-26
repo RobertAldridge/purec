@@ -1995,10 +1995,10 @@ void inverse_mdct(float *buffer, int n, vorb *f, int blocktype)
    mdct_lookup *M;
    if(M1.n == n) M = &M1;
    else if(M2.n == n) M = &M2;
-   else if(M1.n == 0) { mdct_init(&M1, n); M = &M1; }
+   else if(M1.n == 0) { mdct_init( &M1, n); M = &M1; }
    else {
       if(M2.n) __asm int 3;
-      mdct_init(&M2, n);
+      mdct_init( &M2, n);
       M = &M2;
    }
 
@@ -4026,25 +4026,25 @@ stb_vorbis *stb_vorbis_open_pushdata(
          int *error, const stb_vorbis_alloc *alloc)
 {
    stb_vorbis *f, p;
-   vorbis_init(&p, alloc);
+   vorbis_init( &p, alloc);
    p.stream     = (uint8 *) data;
    p.stream_end = (uint8 *) data + data_len;
    p.push_mode  = TRUE;
-   if(!start_decoder(&p) ) {
+   if(!start_decoder( &p) ) {
       if(p.eof)
          *error = VORBIS_need_more_data;
       else
          *error = p.error;
       return NULL;
    }
-   f = vorbis_alloc(&p);
+   f = vorbis_alloc( &p);
    if(f) {
       *f = p;
       *data_used = (int) (f->stream - data);
       *error = 0;
       return f;
    } else {
-      vorbis_deinit(&p);
+      vorbis_deinit( &p);
       return NULL;
    }
 }
@@ -4549,13 +4549,13 @@ int stb_vorbis_get_frame_float(stb_vorbis *f, int *channels, float ***output)
 stb_vorbis * stb_vorbis_open_file_section(FILE *file, int close_on_free, int *error, const stb_vorbis_alloc *alloc, unsigned int length)
 {
    stb_vorbis *f, p;
-   vorbis_init(&p, alloc);
+   vorbis_init( &p, alloc);
    p.f = file;
    p.f_start = (uint32) ftell(file);
    p.stream_len   = length;
    p.close_on_free = close_on_free;
-   if(start_decoder(&p) ) {
-      f = vorbis_alloc(&p);
+   if(start_decoder( &p) ) {
+      f = vorbis_alloc( &p);
       if(f) {
          *f = p;
          vorbis_pump_first_frame(f);
@@ -4563,7 +4563,7 @@ stb_vorbis * stb_vorbis_open_file_section(FILE *file, int close_on_free, int *er
       }
    }
    if(error) *error = p.error;
-   vorbis_deinit(&p);
+   vorbis_deinit( &p);
    return NULL;
 }
 
@@ -4590,14 +4590,14 @@ stb_vorbis * stb_vorbis_open_memory(const unsigned char *data, int len, int *err
 {
    stb_vorbis *f, p;
    if(data == NULL) return NULL;
-   vorbis_init(&p, alloc);
+   vorbis_init( &p, alloc);
    p.stream = (uint8 *) data;
    p.stream_end = (uint8 *) data + len;
    p.stream_start = (uint8 *) p.stream;
    p.stream_len = len;
    p.push_mode = FALSE;
-   if(start_decoder(&p) ) {
-      f = vorbis_alloc(&p);
+   if(start_decoder( &p) ) {
+      f = vorbis_alloc( &p);
       if(f) {
          *f = p;
          vorbis_pump_first_frame(f);
@@ -4605,7 +4605,7 @@ stb_vorbis * stb_vorbis_open_memory(const unsigned char *data, int len, int *err
       }
    }
    if(error) *error = p.error;
-   vorbis_deinit(&p);
+   vorbis_deinit( &p);
    return NULL;
 }
 

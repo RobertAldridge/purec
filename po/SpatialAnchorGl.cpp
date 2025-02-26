@@ -247,7 +247,7 @@ void ovrGeometry::Clear()
 
   for(int i = 0; i < MAX_VERTEX_ATTRIB_POINTERS; i++)
   {
-    memset(&VertexAttribs[i], 0, sizeof(VertexAttribs[i] ) );
+    memset( &VertexAttribs[i], 0, sizeof(VertexAttribs[i] ) );
 
     VertexAttribs[i].Index = -1;
   }

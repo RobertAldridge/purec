@@ -688,7 +688,7 @@ void ovrApp::HandleXrEvents()
   // Poll for events
   for(/*nop*/; /*nop*/; /*nop*/)
   {
-    XrEventDataBaseHeader* baseEventHeader = (XrEventDataBaseHeader*)(&eventDataBuffer);
+    XrEventDataBaseHeader* baseEventHeader = (XrEventDataBaseHeader*)( &eventDataBuffer);
     baseEventHeader->type = XR_TYPE_EVENT_DATA_BUFFER;
     baseEventHeader->next = NULL;
     XrResult r;
@@ -1537,7 +1537,7 @@ void android_main(struct android_app* androidApp)
   ALOGV("    android_main()");
 
   JNIEnv* Env = 0;
-  (*androidApp->activity->vm).AttachCurrentThread(&Env, nullptr);
+  (*androidApp->activity->vm).AttachCurrentThread( &Env, nullptr);
 
   // Note that AttachCurrentThread will reset the thread name.
   prctl(PR_SET_NAME, (long)"OVR::Main", 0, 0, 0);
@@ -1691,7 +1691,7 @@ void android_main(struct android_app* androidApp)
   instanceCreateInfo.enabledExtensionNames = requestedExtensionNames.data();
 
   XrResult initResult;
-  OXR(initResult = xrCreateInstance(&instanceCreateInfo, &instance) );
+  OXR(initResult = xrCreateInstance( &instanceCreateInfo, &instance) );
 
   if(initResult != XR_SUCCESS)
   {
@@ -2404,17 +2404,17 @@ void android_main(struct android_app* androidApp)
     {
       // LOG_POSE( "viewTransform", &projectionInfo.projections[eye].viewTransform );
       XrPosef xfHeadFromEye = projections[eye].pose;
-      XrPosef_Multiply(&xfLocalFromEye[eye], &xfLocalFromHead, &xfHeadFromEye);
+      XrPosef_Multiply( &xfLocalFromEye[eye], &xfLocalFromHead, &xfHeadFromEye);
 
       XrPosef xfEyeFromLocal;
-      XrPosef_Invert(&xfEyeFromLocal, &xfLocalFromEye[eye] );
+      XrPosef_Invert( &xfEyeFromLocal, &xfLocalFromEye[eye] );
 
       XrMatrix4x4f viewMat{};
-      XrMatrix4x4f_CreateFromRigidTransform(&viewMat, &xfEyeFromLocal);
+      XrMatrix4x4f_CreateFromRigidTransform( &viewMat, &xfEyeFromLocal);
 
       const XrFovf fov = projections[eye].fov;
       XrMatrix4x4f projMat;
-      XrMatrix4x4f_CreateProjectionFov(&projMat, GRAPHICS_OPENGL_ES, fov, 0.1f, 0.0f);
+      XrMatrix4x4f_CreateProjectionFov( &projMat, GRAPHICS_OPENGL_ES, fov, 0.1f, 0.0f);
 
       frameIn.View[eye] = OvrFromXr(viewMat);
       frameIn.Proj[eye] = OvrFromXr(projMat);

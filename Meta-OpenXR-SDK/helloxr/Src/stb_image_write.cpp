@@ -311,16 +311,16 @@ static int stbi_write_bmp_core(stbi__write_context *s, int x, int y, int comp, c
 STBIWDEF int stbi_write_bmp_to_func(stbi_write_func *func, void *context, int x, int y, int comp, const void *data)
 {
    stbi__write_context s;
-   stbi__start_write_callbacks(&s, func, context);
-   return stbi_write_bmp_core(&s, x, y, comp, data);
+   stbi__start_write_callbacks( &s, func, context);
+   return stbi_write_bmp_core( &s, x, y, comp, data);
 }
 
 STBIWDEF int stbi_write_bmp(char const *filename, int x, int y, int comp, const void *data)
 {
    stbi__write_context s;
-   if(stbi__start_write_file(&s, filename) ) {
-      int r = stbi_write_bmp_core(&s, x, y, comp, data);
-      stbi__end_write_file(&s);
+   if(stbi__start_write_file( &s, filename) ) {
+      int r = stbi_write_bmp_core( &s, x, y, comp, data);
+      stbi__end_write_file( &s);
       return r;
    } else
       return 0;
@@ -397,16 +397,16 @@ static int stbi_write_tga_core(stbi__write_context *s, int x, int y, int comp, v
 int stbi_write_tga_to_func(stbi_write_func *func, void *context, int x, int y, int comp, const void *data)
 {
    stbi__write_context s;
-   stbi__start_write_callbacks(&s, func, context);
-   return stbi_write_tga_core(&s, x, y, comp, (void *) data);
+   stbi__start_write_callbacks( &s, func, context);
+   return stbi_write_tga_core( &s, x, y, comp, (void *) data);
 }
 
 int stbi_write_tga(char const *filename, int x, int y, int comp, const void *data)
 {
    stbi__write_context s;
-   if(stbi__start_write_file(&s, filename) ) {
-      int r = stbi_write_tga_core(&s, x, y, comp, (void *) data);
-      stbi__end_write_file(&s);
+   if(stbi__start_write_file( &s, filename) ) {
+      int r = stbi_write_tga_core( &s, x, y, comp, (void *) data);
+      stbi__end_write_file( &s);
       return r;
    } else
       return 0;
@@ -565,16 +565,16 @@ static int stbi_write_hdr_core(stbi__write_context *s, int x, int y, int comp, f
 int stbi_write_hdr_to_func(stbi_write_func *func, void *context, int x, int y, int comp, const float *data)
 {
    stbi__write_context s;
-   stbi__start_write_callbacks(&s, func, context);
-   return stbi_write_hdr_core(&s, x, y, comp, (float *) data);
+   stbi__start_write_callbacks( &s, func, context);
+   return stbi_write_hdr_core( &s, x, y, comp, (float *) data);
 }
 
 int stbi_write_hdr(char const *filename, int x, int y, int comp, const float *data)
 {
    stbi__write_context s;
-   if(stbi__start_write_file(&s, filename) ) {
-      int r = stbi_write_hdr_core(&s, x, y, comp, (float *) data);
-      stbi__end_write_file(&s);
+   if(stbi__start_write_file( &s, filename) ) {
+      int r = stbi_write_hdr_core( &s, x, y, comp, (float *) data);
+      stbi__end_write_file( &s);
       return r;
    } else
       return 0;
@@ -907,18 +907,18 @@ unsigned char *stbi_write_png_to_mem(unsigned char *pixels, int stride_bytes, in
    *o++ = 0;
    *o++ = 0;
    *o++ = 0;
-   stbiw__wpcrc(&o, 13);
+   stbiw__wpcrc( &o, 13);
 
    stbiw__wp32(o, zlen);
    stbiw__wptag(o, "IDAT");
    STBIW_MEMMOVE(o, zlib, zlen);
    o += zlen;
    STBIW_FREE(zlib);
-   stbiw__wpcrc(&o, zlen);
+   stbiw__wpcrc( &o, zlen);
 
    stbiw__wp32(o, 0);
    stbiw__wptag(o, "IEND");
-   stbiw__wpcrc(&o, 0);
+   stbiw__wpcrc( &o, 0);
 
    STBIW_ASSERT(o == out + *out_len);
 

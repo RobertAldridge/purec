@@ -1261,38 +1261,38 @@ bool ParseTextureNameAndOption(std::string *texname, texture_option_t *texopt,
     token += strspn(token, " \t");  // skip space
     if( (0 == strncmp(token, "-blendu", 7) ) && IS_SPACE( (token[7] ) ) ) {
       token += 8;
-      texopt->blendu = parseOnOff(&token, /* default */ true);
+      texopt->blendu = parseOnOff( &token, /* default */ true);
     } else if( (0 == strncmp(token, "-blendv", 7) ) && IS_SPACE( (token[7] ) ) ) {
       token += 8;
-      texopt->blendv = parseOnOff(&token, /* default */ true);
+      texopt->blendv = parseOnOff( &token, /* default */ true);
     } else if( (0 == strncmp(token, "-clamp", 6) ) && IS_SPACE( (token[6] ) ) ) {
       token += 7;
-      texopt->clamp = parseOnOff(&token, /* default */ true);
+      texopt->clamp = parseOnOff( &token, /* default */ true);
     } else if( (0 == strncmp(token, "-boost", 6) ) && IS_SPACE( (token[6] ) ) ) {
       token += 7;
-      texopt->sharpness = parseReal(&token, 1.0);
+      texopt->sharpness = parseReal( &token, 1.0);
     } else if( (0 == strncmp(token, "-bm", 3) ) && IS_SPACE( (token[3] ) ) ) {
       token += 4;
-      texopt->bump_multiplier = parseReal(&token, 1.0);
+      texopt->bump_multiplier = parseReal( &token, 1.0);
     } else if( (0 == strncmp(token, "-o", 2) ) && IS_SPACE( (token[2] ) ) ) {
       token += 3;
-      parseReal3(&(texopt->origin_offset[0] ), &(texopt->origin_offset[1] ),
+      parseReal3( &(texopt->origin_offset[0] ), &(texopt->origin_offset[1] ),
                  &(texopt->origin_offset[2] ), &token);
     } else if( (0 == strncmp(token, "-s", 2) ) && IS_SPACE( (token[2] ) ) ) {
       token += 3;
-      parseReal3(&(texopt->scale[0] ), &(texopt->scale[1] ), &(texopt->scale[2] ),
+      parseReal3( &(texopt->scale[0] ), &(texopt->scale[1] ), &(texopt->scale[2] ),
                  &token, 1.0, 1.0, 1.0);
     } else if( (0 == strncmp(token, "-t", 2) ) && IS_SPACE( (token[2] ) ) ) {
       token += 3;
-      parseReal3(&(texopt->turbulence[0] ), &(texopt->turbulence[1] ),
+      parseReal3( &(texopt->turbulence[0] ), &(texopt->turbulence[1] ),
                  &(texopt->turbulence[2] ), &token);
     } else if( (0 == strncmp(token, "-type", 5) ) && IS_SPACE( (token[5] ) ) ) {
       token += 5;
-      texopt->type = parseTextureType( (&token), TEXTURE_TYPE_NONE);
+      texopt->type = parseTextureType( ( &token), TEXTURE_TYPE_NONE);
     } else if( (0 == strncmp(token, "-texres", 7) ) && IS_SPACE( (token[7] ) ) ) {
       token += 7;
       // TODO(syoyo): Check if arg is int type.
-      texopt->texture_resolution = parseInt(&token);
+      texopt->texture_resolution = parseInt( &token);
     } else if( (0 == strncmp(token, "-imfchan", 8) ) && IS_SPACE( (token[8] ) ) ) {
       token += 9;
       token += strspn(token, " \t");
@@ -1303,11 +1303,11 @@ bool ParseTextureNameAndOption(std::string *texname, texture_option_t *texopt,
       token = end;
     } else if( (0 == strncmp(token, "-mm", 3) ) && IS_SPACE( (token[3] ) ) ) {
       token += 4;
-      parseReal2(&(texopt->brightness), &(texopt->contrast), &token, 0.0, 1.0);
+      parseReal2( &(texopt->brightness), &(texopt->contrast), &token, 0.0, 1.0);
     } else if( (0 == strncmp(token, "-colorspace", 11) ) &&
                IS_SPACE( (token[11] ) ) ) {
       token += 12;
-      texopt->colorspace = parseString(&token);
+      texopt->colorspace = parseString( &token);
     } else {
 // Assume texture filename
 #if 0
@@ -1362,19 +1362,19 @@ static void InitTexOpt(texture_option_t *texopt, const bool is_bump) {
 }
 
 static void InitMaterial(material_t *material) {
-  InitTexOpt(&material->ambient_texopt, /* is_bump */ false);
-  InitTexOpt(&material->diffuse_texopt, /* is_bump */ false);
-  InitTexOpt(&material->specular_texopt, /* is_bump */ false);
-  InitTexOpt(&material->specular_highlight_texopt, /* is_bump */ false);
-  InitTexOpt(&material->bump_texopt, /* is_bump */ true);
-  InitTexOpt(&material->displacement_texopt, /* is_bump */ false);
-  InitTexOpt(&material->alpha_texopt, /* is_bump */ false);
-  InitTexOpt(&material->reflection_texopt, /* is_bump */ false);
-  InitTexOpt(&material->roughness_texopt, /* is_bump */ false);
-  InitTexOpt(&material->metallic_texopt, /* is_bump */ false);
-  InitTexOpt(&material->sheen_texopt, /* is_bump */ false);
-  InitTexOpt(&material->emissive_texopt, /* is_bump */ false);
-  InitTexOpt(&material->normal_texopt,
+  InitTexOpt( &material->ambient_texopt, /* is_bump */ false);
+  InitTexOpt( &material->diffuse_texopt, /* is_bump */ false);
+  InitTexOpt( &material->specular_texopt, /* is_bump */ false);
+  InitTexOpt( &material->specular_highlight_texopt, /* is_bump */ false);
+  InitTexOpt( &material->bump_texopt, /* is_bump */ true);
+  InitTexOpt( &material->displacement_texopt, /* is_bump */ false);
+  InitTexOpt( &material->alpha_texopt, /* is_bump */ false);
+  InitTexOpt( &material->reflection_texopt, /* is_bump */ false);
+  InitTexOpt( &material->roughness_texopt, /* is_bump */ false);
+  InitTexOpt( &material->metallic_texopt, /* is_bump */ false);
+  InitTexOpt( &material->sheen_texopt, /* is_bump */ false);
+  InitTexOpt( &material->emissive_texopt, /* is_bump */ false);
+  InitTexOpt( &material->normal_texopt,
              /* is_bump */ false);  // @fixme { is_bump will be true? }
   material->name = "";
   material->ambient_texname = "";
@@ -2051,7 +2051,7 @@ void LoadMtl(std::map<std::string, int> *material_map,
 
   // Create a default material anyway.
   material_t material;
-  InitMaterial(&material);
+  InitMaterial( &material);
 
   // Issue 43. `d` wins against `Tr` since `Tr` is not in the MTL specification.
   bool has_d = false;
@@ -2108,7 +2108,7 @@ void LoadMtl(std::map<std::string, int> *material_map,
       }
 
       // initial temporary material
-      InitMaterial(&material);
+      InitMaterial( &material);
 
       has_d = false;
       has_tr = false;
@@ -2117,7 +2117,7 @@ void LoadMtl(std::map<std::string, int> *material_map,
       // set new mtl name
       token += 7;
       {
-        std::string namebuf = parseString(&token);
+        std::string namebuf = parseString( &token);
         // TODO: empty name check?
         if(namebuf.empty() ) {
           if(warning) {
@@ -2133,7 +2133,7 @@ void LoadMtl(std::map<std::string, int> *material_map,
     if(token[0] == 'K' && token[1] == 'a' && IS_SPACE( (token[2] ) ) ) {
       token += 2;
       real_t r, g, b;
-      parseReal3(&r, &g, &b, &token);
+      parseReal3( &r, &g, &b, &token);
       material.ambient[0] = r;
       material.ambient[1] = g;
       material.ambient[2] = b;
@@ -2144,7 +2144,7 @@ void LoadMtl(std::map<std::string, int> *material_map,
     if(token[0] == 'K' && token[1] == 'd' && IS_SPACE( (token[2] ) ) ) {
       token += 2;
       real_t r, g, b;
-      parseReal3(&r, &g, &b, &token);
+      parseReal3( &r, &g, &b, &token);
       material.diffuse[0] = r;
       material.diffuse[1] = g;
       material.diffuse[2] = b;
@@ -2156,7 +2156,7 @@ void LoadMtl(std::map<std::string, int> *material_map,
     if(token[0] == 'K' && token[1] == 's' && IS_SPACE( (token[2] ) ) ) {
       token += 2;
       real_t r, g, b;
-      parseReal3(&r, &g, &b, &token);
+      parseReal3( &r, &g, &b, &token);
       material.specular[0] = r;
       material.specular[1] = g;
       material.specular[2] = b;
@@ -2168,7 +2168,7 @@ void LoadMtl(std::map<std::string, int> *material_map,
         (token[0] == 'T' && token[1] == 'f' && IS_SPACE( (token[2] ) ) ) ) {
       token += 2;
       real_t r, g, b;
-      parseReal3(&r, &g, &b, &token);
+      parseReal3( &r, &g, &b, &token);
       material.transmittance[0] = r;
       material.transmittance[1] = g;
       material.transmittance[2] = b;
@@ -2178,7 +2178,7 @@ void LoadMtl(std::map<std::string, int> *material_map,
     // ior(index of refraction)
     if(token[0] == 'N' && token[1] == 'i' && IS_SPACE( (token[2] ) ) ) {
       token += 2;
-      material.ior = parseReal(&token);
+      material.ior = parseReal( &token);
       continue;
     }
 
@@ -2186,7 +2186,7 @@ void LoadMtl(std::map<std::string, int> *material_map,
     if(token[0] == 'K' && token[1] == 'e' && IS_SPACE(token[2] ) ) {
       token += 2;
       real_t r, g, b;
-      parseReal3(&r, &g, &b, &token);
+      parseReal3( &r, &g, &b, &token);
       material.emission[0] = r;
       material.emission[1] = g;
       material.emission[2] = b;
@@ -2196,21 +2196,21 @@ void LoadMtl(std::map<std::string, int> *material_map,
     // shininess
     if(token[0] == 'N' && token[1] == 's' && IS_SPACE(token[2] ) ) {
       token += 2;
-      material.shininess = parseReal(&token);
+      material.shininess = parseReal( &token);
       continue;
     }
 
     // illum model
     if(0 == strncmp(token, "illum", 5) && IS_SPACE(token[5] ) ) {
       token += 6;
-      material.illum = parseInt(&token);
+      material.illum = parseInt( &token);
       continue;
     }
 
     // dissolve
     if( (token[0] == 'd' && IS_SPACE(token[1] ) ) ) {
       token += 1;
-      material.dissolve = parseReal(&token);
+      material.dissolve = parseReal( &token);
 
       if(has_tr) {
         warn_ss << "Both `d` and `Tr` parameters defined for \""
@@ -2233,7 +2233,7 @@ void LoadMtl(std::map<std::string, int> *material_map,
         // We invert value of Tr(assume Tr is in range [0, 1] )
         // NOTE: Interpretation of Tr is application(exporter) dependent. For
         // some application(e.g. 3ds max obj exporter), Tr = d(Issue 43)
-        material.dissolve = static_cast<real_t>(1.0) - parseReal(&token);
+        material.dissolve = static_cast<real_t>(1.0) - parseReal( &token);
       }
       has_tr = true;
       continue;
@@ -2242,56 +2242,56 @@ void LoadMtl(std::map<std::string, int> *material_map,
     // PBR: roughness
     if(token[0] == 'P' && token[1] == 'r' && IS_SPACE(token[2] ) ) {
       token += 2;
-      material.roughness = parseReal(&token);
+      material.roughness = parseReal( &token);
       continue;
     }
 
     // PBR: metallic
     if(token[0] == 'P' && token[1] == 'm' && IS_SPACE(token[2] ) ) {
       token += 2;
-      material.metallic = parseReal(&token);
+      material.metallic = parseReal( &token);
       continue;
     }
 
     // PBR: sheen
     if(token[0] == 'P' && token[1] == 's' && IS_SPACE(token[2] ) ) {
       token += 2;
-      material.sheen = parseReal(&token);
+      material.sheen = parseReal( &token);
       continue;
     }
 
     // PBR: clearcoat thickness
     if(token[0] == 'P' && token[1] == 'c' && IS_SPACE(token[2] ) ) {
       token += 2;
-      material.clearcoat_thickness = parseReal(&token);
+      material.clearcoat_thickness = parseReal( &token);
       continue;
     }
 
     // PBR: clearcoat roughness
     if( (0 == strncmp(token, "Pcr", 3) ) && IS_SPACE(token[3] ) ) {
       token += 4;
-      material.clearcoat_roughness = parseReal(&token);
+      material.clearcoat_roughness = parseReal( &token);
       continue;
     }
 
     // PBR: anisotropy
     if( (0 == strncmp(token, "aniso", 5) ) && IS_SPACE(token[5] ) ) {
       token += 6;
-      material.anisotropy = parseReal(&token);
+      material.anisotropy = parseReal( &token);
       continue;
     }
 
     // PBR: anisotropy rotation
     if( (0 == strncmp(token, "anisor", 6) ) && IS_SPACE(token[6] ) ) {
       token += 7;
-      material.anisotropy_rotation = parseReal(&token);
+      material.anisotropy_rotation = parseReal( &token);
       continue;
     }
 
     // ambient or ambient occlusion texture
     if( (0 == strncmp(token, "map_Ka", 6) ) && IS_SPACE(token[6] ) ) {
       token += 7;
-      ParseTextureNameAndOption(&(material.ambient_texname),
+      ParseTextureNameAndOption( &(material.ambient_texname),
                                 &(material.ambient_texopt), token);
       continue;
     }
@@ -2299,7 +2299,7 @@ void LoadMtl(std::map<std::string, int> *material_map,
     // diffuse texture
     if( (0 == strncmp(token, "map_Kd", 6) ) && IS_SPACE(token[6] ) ) {
       token += 7;
-      ParseTextureNameAndOption(&(material.diffuse_texname),
+      ParseTextureNameAndOption( &(material.diffuse_texname),
                                 &(material.diffuse_texopt), token);
 
       // Set a decent diffuse default value if a diffuse texture is specified
@@ -2316,7 +2316,7 @@ void LoadMtl(std::map<std::string, int> *material_map,
     // specular texture
     if( (0 == strncmp(token, "map_Ks", 6) ) && IS_SPACE(token[6] ) ) {
       token += 7;
-      ParseTextureNameAndOption(&(material.specular_texname),
+      ParseTextureNameAndOption( &(material.specular_texname),
                                 &(material.specular_texopt), token);
       continue;
     }
@@ -2324,7 +2324,7 @@ void LoadMtl(std::map<std::string, int> *material_map,
     // specular highlight texture
     if( (0 == strncmp(token, "map_Ns", 6) ) && IS_SPACE(token[6] ) ) {
       token += 7;
-      ParseTextureNameAndOption(&(material.specular_highlight_texname),
+      ParseTextureNameAndOption( &(material.specular_highlight_texname),
                                 &(material.specular_highlight_texopt), token);
       continue;
     }
@@ -2334,7 +2334,7 @@ void LoadMtl(std::map<std::string, int> *material_map,
          (0 == strncmp(token, "map_Bump", 8) ) ) &&
         IS_SPACE(token[8] ) ) {
       token += 9;
-      ParseTextureNameAndOption(&(material.bump_texname),
+      ParseTextureNameAndOption( &(material.bump_texname),
                                 &(material.bump_texopt), token);
       continue;
     }
@@ -2342,7 +2342,7 @@ void LoadMtl(std::map<std::string, int> *material_map,
     // bump texture
     if( (0 == strncmp(token, "bump", 4) ) && IS_SPACE(token[4] ) ) {
       token += 5;
-      ParseTextureNameAndOption(&(material.bump_texname),
+      ParseTextureNameAndOption( &(material.bump_texname),
                                 &(material.bump_texopt), token);
       continue;
     }
@@ -2351,7 +2351,7 @@ void LoadMtl(std::map<std::string, int> *material_map,
     if( (0 == strncmp(token, "map_d", 5) ) && IS_SPACE(token[5] ) ) {
       token += 6;
       material.alpha_texname = token;
-      ParseTextureNameAndOption(&(material.alpha_texname),
+      ParseTextureNameAndOption( &(material.alpha_texname),
                                 &(material.alpha_texopt), token);
       continue;
     }
@@ -2361,7 +2361,7 @@ void LoadMtl(std::map<std::string, int> *material_map,
          (0 == strncmp(token, "map_Disp", 8) ) ) &&
         IS_SPACE(token[8] ) ) {
       token += 9;
-      ParseTextureNameAndOption(&(material.displacement_texname),
+      ParseTextureNameAndOption( &(material.displacement_texname),
                                 &(material.displacement_texopt), token);
       continue;
     }
@@ -2369,7 +2369,7 @@ void LoadMtl(std::map<std::string, int> *material_map,
     // displacement texture
     if( (0 == strncmp(token, "disp", 4) ) && IS_SPACE(token[4] ) ) {
       token += 5;
-      ParseTextureNameAndOption(&(material.displacement_texname),
+      ParseTextureNameAndOption( &(material.displacement_texname),
                                 &(material.displacement_texopt), token);
       continue;
     }
@@ -2377,7 +2377,7 @@ void LoadMtl(std::map<std::string, int> *material_map,
     // reflection map
     if( (0 == strncmp(token, "refl", 4) ) && IS_SPACE(token[4] ) ) {
       token += 5;
-      ParseTextureNameAndOption(&(material.reflection_texname),
+      ParseTextureNameAndOption( &(material.reflection_texname),
                                 &(material.reflection_texopt), token);
       continue;
     }
@@ -2385,7 +2385,7 @@ void LoadMtl(std::map<std::string, int> *material_map,
     // PBR: roughness texture
     if( (0 == strncmp(token, "map_Pr", 6) ) && IS_SPACE(token[6] ) ) {
       token += 7;
-      ParseTextureNameAndOption(&(material.roughness_texname),
+      ParseTextureNameAndOption( &(material.roughness_texname),
                                 &(material.roughness_texopt), token);
       continue;
     }
@@ -2393,7 +2393,7 @@ void LoadMtl(std::map<std::string, int> *material_map,
     // PBR: metallic texture
     if( (0 == strncmp(token, "map_Pm", 6) ) && IS_SPACE(token[6] ) ) {
       token += 7;
-      ParseTextureNameAndOption(&(material.metallic_texname),
+      ParseTextureNameAndOption( &(material.metallic_texname),
                                 &(material.metallic_texopt), token);
       continue;
     }
@@ -2401,7 +2401,7 @@ void LoadMtl(std::map<std::string, int> *material_map,
     // PBR: sheen texture
     if( (0 == strncmp(token, "map_Ps", 6) ) && IS_SPACE(token[6] ) ) {
       token += 7;
-      ParseTextureNameAndOption(&(material.sheen_texname),
+      ParseTextureNameAndOption( &(material.sheen_texname),
                                 &(material.sheen_texopt), token);
       continue;
     }
@@ -2409,7 +2409,7 @@ void LoadMtl(std::map<std::string, int> *material_map,
     // PBR: emissive texture
     if( (0 == strncmp(token, "map_Ke", 6) ) && IS_SPACE(token[6] ) ) {
       token += 7;
-      ParseTextureNameAndOption(&(material.emissive_texname),
+      ParseTextureNameAndOption( &(material.emissive_texname),
                                 &(material.emissive_texopt), token);
       continue;
     }
@@ -2417,7 +2417,7 @@ void LoadMtl(std::map<std::string, int> *material_map,
     // PBR: normal map texture
     if( (0 == strncmp(token, "norm", 4) ) && IS_SPACE(token[4] ) ) {
       token += 5;
-      ParseTextureNameAndOption(&(material.normal_texname),
+      ParseTextureNameAndOption( &(material.normal_texname),
                                 &(material.normal_texopt), token);
       continue;
     }
@@ -2626,7 +2626,7 @@ bool LoadObj(attrib_t *attrib, std::vector<shape_t> *shapes,
       real_t x, y, z;
       real_t r, g, b;
 
-      int num_components = parseVertexWithColor(&x, &y, &z, &r, &g, &b, &token);
+      int num_components = parseVertexWithColor( &x, &y, &z, &r, &g, &b, &token);
       found_all_colors &= (num_components == 6);
 
       v.push_back(x);
@@ -2649,7 +2649,7 @@ bool LoadObj(attrib_t *attrib, std::vector<shape_t> *shapes,
     if(token[0] == 'v' && token[1] == 'n' && IS_SPACE( (token[2] ) ) ) {
       token += 3;
       real_t x, y, z;
-      parseReal3(&x, &y, &z, &token);
+      parseReal3( &x, &y, &z, &token);
       vn.push_back(x);
       vn.push_back(y);
       vn.push_back(z);
@@ -2660,7 +2660,7 @@ bool LoadObj(attrib_t *attrib, std::vector<shape_t> *shapes,
     if(token[0] == 'v' && token[1] == 't' && IS_SPACE( (token[2] ) ) ) {
       token += 3;
       real_t x, y;
-      parseReal2(&x, &y, &token);
+      parseReal2( &x, &y, &token);
       vt.push_back(x);
       vt.push_back(y);
       continue;
@@ -2676,7 +2676,7 @@ bool LoadObj(attrib_t *attrib, std::vector<shape_t> *shapes,
 
       // TODO(syoyo): Add syntax check
       int vid = 0;
-      vid = parseInt(&token);
+      vid = parseInt( &token);
 
       skin_weight_t sw;
 
@@ -2686,7 +2686,7 @@ bool LoadObj(attrib_t *attrib, std::vector<shape_t> *shapes,
         real_t j, w;
         // joint_id should not be negative, weight may be negative
         // TODO(syoyo): # of elements check
-        parseReal2(&j, &w, &token, -1.0);
+        parseReal2( &j, &w, &token, -1.0);
 
         if(j < static_cast<real_t>(0) ) {
           if(err) {
@@ -2725,7 +2725,7 @@ bool LoadObj(attrib_t *attrib, std::vector<shape_t> *shapes,
 
       while(!IS_NEW_LINE(token[0] ) && token[0] != '#') {
         vertex_index_t vi;
-        if(!parseTriple(&token, static_cast<int>(v.size() / 3),
+        if(!parseTriple( &token, static_cast<int>(v.size() / 3),
                          static_cast<int>(vn.size() / 3),
                          static_cast<int>(vt.size() / 2), &vi, context) ) {
           if(err) {
@@ -2756,7 +2756,7 @@ bool LoadObj(attrib_t *attrib, std::vector<shape_t> *shapes,
 
       while(!IS_NEW_LINE(token[0] ) && token[0] != '#') {
         vertex_index_t vi;
-        if(!parseTriple(&token, static_cast<int>(v.size() / 3),
+        if(!parseTriple( &token, static_cast<int>(v.size() / 3),
                          static_cast<int>(vn.size() / 3),
                          static_cast<int>(vt.size() / 2), &vi, context) ) {
           if(err) {
@@ -2791,7 +2791,7 @@ bool LoadObj(attrib_t *attrib, std::vector<shape_t> *shapes,
 
       while(!IS_NEW_LINE(token[0] ) && token[0] != '#') {
         vertex_index_t vi;
-        if(!parseTriple(&token, static_cast<int>(v.size() / 3),
+        if(!parseTriple( &token, static_cast<int>(v.size() / 3),
                          static_cast<int>(vn.size() / 3),
                          static_cast<int>(vt.size() / 2), &vi, context) ) {
           if(err) {
@@ -2823,7 +2823,7 @@ bool LoadObj(attrib_t *attrib, std::vector<shape_t> *shapes,
     // use mtl
     if( (0 == strncmp(token, "usemtl", 6) ) ) {
       token += 6;
-      std::string namebuf = parseString(&token);
+      std::string namebuf = parseString( &token);
 
       int newMaterialId = -1;
       std::map<std::string, int>::const_iterator it =
@@ -2841,7 +2841,7 @@ bool LoadObj(attrib_t *attrib, std::vector<shape_t> *shapes,
         // Create per-face material. Thus we don't add `shape` to `shapes` at
         // this time.
         // just clear `faceGroup` after `exportGroupsToShape()` call.
-        exportGroupsToShape(&shape, prim_group, tags, material, name,
+        exportGroupsToShape( &shape, prim_group, tags, material, name,
                             triangulate, v, warn);
         prim_group.faceGroup.clear();
         material = newMaterialId;
@@ -2910,7 +2910,7 @@ bool LoadObj(attrib_t *attrib, std::vector<shape_t> *shapes,
     // group name
     if(token[0] == 'g' && IS_SPACE( (token[1] ) ) ) {
       // flush previous face group.
-      bool ret = exportGroupsToShape(&shape, prim_group, tags, material, name,
+      bool ret = exportGroupsToShape( &shape, prim_group, tags, material, name,
                                      triangulate, v, warn);
       (void)ret;  // return value not used.
 
@@ -2926,7 +2926,7 @@ bool LoadObj(attrib_t *attrib, std::vector<shape_t> *shapes,
       std::vector<std::string> names;
 
       while(!IS_NEW_LINE(token[0] ) && token[0] != '#') {
-        std::string str = parseString(&token);
+        std::string str = parseString( &token);
         names.push_back(str);
         token += strspn(token, " \t\r");  // skip tag
       }
@@ -2962,7 +2962,7 @@ bool LoadObj(attrib_t *attrib, std::vector<shape_t> *shapes,
     // object name
     if(token[0] == 'o' && IS_SPACE( (token[1] ) ) ) {
       // flush previous face group.
-      bool ret = exportGroupsToShape(&shape, prim_group, tags, material, name,
+      bool ret = exportGroupsToShape( &shape, prim_group, tags, material, name,
                                      triangulate, v, warn);
       (void)ret;  // return value not used.
 
@@ -2990,9 +2990,9 @@ bool LoadObj(attrib_t *attrib, std::vector<shape_t> *shapes,
 
       token += 2;
 
-      tag.name = parseString(&token);
+      tag.name = parseString( &token);
 
-      tag_sizes ts = parseTagTriple(&token);
+      tag_sizes ts = parseTagTriple( &token);
 
       if(ts.num_ints < 0) {
         ts.num_ints = 0;
@@ -3018,17 +3018,17 @@ bool LoadObj(attrib_t *attrib, std::vector<shape_t> *shapes,
       tag.intValues.resize(static_cast<size_t>(ts.num_ints) );
 
       for(size_t i = 0; i < static_cast<size_t>(ts.num_ints); ++i) {
-        tag.intValues[i] = parseInt(&token);
+        tag.intValues[i] = parseInt( &token);
       }
 
       tag.floatValues.resize(static_cast<size_t>(ts.num_reals) );
       for(size_t i = 0; i < static_cast<size_t>(ts.num_reals); ++i) {
-        tag.floatValues[i] = parseReal(&token);
+        tag.floatValues[i] = parseReal( &token);
       }
 
       tag.stringValues.resize(static_cast<size_t>(ts.num_strings) );
       for(size_t i = 0; i < static_cast<size_t>(ts.num_strings); ++i) {
-        tag.stringValues[i] = parseString(&token);
+        tag.stringValues[i] = parseString( &token);
       }
 
       tags.push_back(tag);
@@ -3056,7 +3056,7 @@ bool LoadObj(attrib_t *attrib, std::vector<shape_t> *shapes,
         current_smoothing_id = 0;
       } else {
         // assume number
-        int smGroupId = parseInt(&token);
+        int smGroupId = parseInt( &token);
         if(smGroupId < 0) {
           // parse error. force set to 0.
           // FIXME(syoyo): Report warning.
@@ -3101,7 +3101,7 @@ bool LoadObj(attrib_t *attrib, std::vector<shape_t> *shapes,
     }
   }
 
-  bool ret = exportGroupsToShape(&shape, prim_group, tags, material, name,
+  bool ret = exportGroupsToShape( &shape, prim_group, tags, material, name,
                                  triangulate, v, warn);
   // exportGroupsToShape return false when `usemtl` is called in the last
   // line.
@@ -3180,7 +3180,7 @@ bool LoadObjWithCallback(std::istream &inStream, const callback_t &callback,
       real_t x, y, z;
       real_t r, g, b;
 
-      int num_components = parseVertexWithColor(&x, &y, &z, &r, &g, &b, &token);
+      int num_components = parseVertexWithColor( &x, &y, &z, &r, &g, &b, &token);
       if(callback.vertex_cb) {
         callback.vertex_cb(user_data, x, y, z, r);  // r=w is optional
       }
@@ -3195,7 +3195,7 @@ bool LoadObjWithCallback(std::istream &inStream, const callback_t &callback,
     if(token[0] == 'v' && token[1] == 'n' && IS_SPACE( (token[2] ) ) ) {
       token += 3;
       real_t x, y, z;
-      parseReal3(&x, &y, &z, &token);
+      parseReal3( &x, &y, &z, &token);
       if(callback.normal_cb) {
         callback.normal_cb(user_data, x, y, z);
       }
@@ -3206,7 +3206,7 @@ bool LoadObjWithCallback(std::istream &inStream, const callback_t &callback,
     if(token[0] == 'v' && token[1] == 't' && IS_SPACE( (token[2] ) ) ) {
       token += 3;
       real_t x, y, z;  // y and z are optional. default = 0.0
-      parseReal3(&x, &y, &z, &token);
+      parseReal3( &x, &y, &z, &token);
       if(callback.texcoord_cb) {
         callback.texcoord_cb(user_data, x, y, z);
       }
@@ -3220,7 +3220,7 @@ bool LoadObjWithCallback(std::istream &inStream, const callback_t &callback,
 
       indices.clear();
       while(!IS_NEW_LINE(token[0] ) && token[0] != '#') {
-        vertex_index_t vi = parseRawTriple(&token);
+        vertex_index_t vi = parseRawTriple( &token);
 
         index_t idx;
         idx.vertex_index = vi.v_idx;
@@ -3335,7 +3335,7 @@ bool LoadObjWithCallback(std::istream &inStream, const callback_t &callback,
       names.clear();
 
       while(!IS_NEW_LINE(token[0] ) && token[0] != '#') {
-        std::string str = parseString(&token);
+        std::string str = parseString( &token);
         names.push_back(str);
         token += strspn(token, " \t\r");  // skip tag
       }
@@ -3387,7 +3387,7 @@ bool LoadObjWithCallback(std::istream &inStream, const callback_t &callback,
 
       token += tag.name.size() + 1;
 
-      tag_sizes ts = parseTagTriple(&token);
+      tag_sizes ts = parseTagTriple( &token);
 
       tag.intValues.resize(static_cast<size_t>(ts.num_ints) );
 
@@ -3398,7 +3398,7 @@ bool LoadObjWithCallback(std::istream &inStream, const callback_t &callback,
 
       tag.floatValues.resize(static_cast<size_t>(ts.num_reals) );
       for(size_t i = 0; i < static_cast<size_t>(ts.num_reals); ++i) {
-        tag.floatValues[i] = parseReal(&token);
+        tag.floatValues[i] = parseReal( &token);
         token += strcspn(token, "/ \t\r") + 1;
       }
 
@@ -3441,7 +3441,7 @@ bool ObjReader::ParseFromFile(const std::string &filename,
     mtl_search_path = config.mtl_search_path;
   }
 
-  valid_ = LoadObj(&attrib_, &shapes_, &materials_, &warning_, &error_,
+  valid_ = LoadObj( &attrib_, &shapes_, &materials_, &warning_, &error_,
                    filename.c_str(), mtl_search_path.c_str(),
                    config.triangulate, config.vertex_color);
 
@@ -3454,12 +3454,12 @@ bool ObjReader::ParseFromString(const std::string &obj_text,
   std::stringbuf obj_buf(obj_text);
   std::stringbuf mtl_buf(mtl_text);
 
-  std::istream obj_ifs(&obj_buf);
-  std::istream mtl_ifs(&mtl_buf);
+  std::istream obj_ifs( &obj_buf);
+  std::istream mtl_ifs( &mtl_buf);
 
   MaterialStreamReader mtl_ss(mtl_ifs);
 
-  valid_ = LoadObj(&attrib_, &shapes_, &materials_, &warning_, &error_,
+  valid_ = LoadObj( &attrib_, &shapes_, &materials_, &warning_, &error_,
                    &obj_ifs, &mtl_ss, config.triangulate, config.vertex_color);
 
   return valid_;
