@@ -312,6 +312,32 @@ struct GeometryVertex
       }
 #endif
 
+#if 0
+      // try out some kind of cell shading crap
+      {
+        uint32_t index0 = Geometry::gModelsIndicesDynamicData[numModelsIdiciesStaticCountOf];
+        uint32_t index1 = Geometry::gModelsIndicesDynamicData[numModelsIdiciesStaticCountOf + 1];
+        uint32_t index2 = Geometry::gModelsIndicesDynamicData[numModelsIdiciesStaticCountOf + 2];
+
+        float u0 = (Geometry::gModelsVerticesDynamicData[index1].Texture.x - Geometry::gModelsVerticesDynamicData[index0].Texture.x) / 2.0 + Geometry::gModelsVerticesDynamicData[index0].Texture.x;
+
+        float v0 = (Geometry::gModelsVerticesDynamicData[index1].Texture.y - Geometry::gModelsVerticesDynamicData[index0].Texture.y) / 2.0 + Geometry::gModelsVerticesDynamicData[index0].Texture.y;
+
+        float u1 = (Geometry::gModelsVerticesDynamicData[index2].Texture.x - u0) / 2.0 + u0;
+
+        float v1 = (Geometry::gModelsVerticesDynamicData[index2].Texture.y - v0) / 2.0 + v0;
+
+        Geometry::gModelsVerticesDynamicData[index0].Texture.x = u1;
+        Geometry::gModelsVerticesDynamicData[index0].Texture.y = v1;
+
+        Geometry::gModelsVerticesDynamicData[index1].Texture.x = u1;
+        Geometry::gModelsVerticesDynamicData[index1].Texture.y = v1;
+
+        Geometry::gModelsVerticesDynamicData[index2].Texture.x = u1;
+        Geometry::gModelsVerticesDynamicData[index2].Texture.y = v1;
+      }
+#endif
+
       index_offset_per_shape += fv;
 
       index_offset_all_shapes += fv;
@@ -1062,121 +1088,6 @@ try
 #endif
   }
 
-#if 0
-XR_ALMALENCE_DIGITAL_LENS_CONTROL_EXTENSION_NAME "XR_ALMALENCE_digital_lens_control"
-XR_BD_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_BD_controller_interaction"
-XR_EXTX_OVERLAY_EXTENSION_NAME "XR_EXTX_overlay"
-XR_EXT_ACTIVE_ACTION_SET_PRIORITY_EXTENSION_NAME "XR_EXT_active_action_set_priority"
-XR_EXT_COMPOSITION_LAYER_INVERTED_ALPHA_EXTENSION_NAME "XR_EXT_composition_layer_inverted_alpha"
-XR_EXT_CONFORMANCE_AUTOMATION_EXTENSION_NAME "XR_EXT_conformance_automation"
-XR_EXT_DEBUG_UTILS_EXTENSION_NAME "XR_EXT_debug_utils"
-XR_EXT_DPAD_BINDING_EXTENSION_NAME "XR_EXT_dpad_binding"
-XR_EXT_EYE_GAZE_INTERACTION_EXTENSION_NAME "XR_EXT_eye_gaze_interaction"
-XR_EXT_FUTURE_EXTENSION_NAME "XR_EXT_future"
-XR_EXT_HAND_INTERACTION_EXTENSION_NAME "XR_EXT_hand_interaction"
-XR_EXT_HAND_JOINTS_MOTION_RANGE_EXTENSION_NAME "XR_EXT_hand_joints_motion_range"
-XR_EXT_HAND_TRACKING_DATA_SOURCE_EXTENSION_NAME "XR_EXT_hand_tracking_data_source"
-XR_EXT_HAND_TRACKING_EXTENSION_NAME "XR_EXT_hand_tracking"
-XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME "XR_EXT_hp_mixed_reality_controller"
-XR_EXT_LOCAL_FLOOR_EXTENSION_NAME "XR_EXT_local_floor"
-XR_EXT_PALM_POSE_EXTENSION_NAME "XR_EXT_palm_pose"
-XR_EXT_PERFORMANCE_SETTINGS_EXTENSION_NAME "XR_EXT_performance_settings"
-XR_EXT_PLANE_DETECTION_EXTENSION_NAME "XR_EXT_plane_detection"
-XR_EXT_SAMSUNG_ODYSSEY_CONTROLLER_EXTENSION_NAME "XR_EXT_samsung_odyssey_controller"
-XR_EXT_THERMAL_QUERY_EXTENSION_NAME "XR_EXT_thermal_query"
-XR_EXT_USER_PRESENCE_EXTENSION_NAME "XR_EXT_user_presence"
-XR_EXT_UUID_EXTENSION_NAME "XR_EXT_uuid"
-XR_EXT_VIEW_CONFIGURATION_DEPTH_RANGE_EXTENSION_NAME "XR_EXT_view_configuration_depth_range"
-XR_FB_ANDROID_SURFACE_SWAPCHAIN_CREATE_EXTENSION_NAME "XR_FB_android_surface_swapchain_create"
-XR_FB_BODY_TRACKING_EXTENSION_NAME "XR_FB_body_tracking"
-XR_FB_COLOR_SPACE_EXTENSION_NAME "XR_FB_color_space"
-XR_FB_COMPOSITION_LAYER_ALPHA_BLEND_EXTENSION_NAME "XR_FB_composition_layer_alpha_blend"
-XR_FB_COMPOSITION_LAYER_DEPTH_TEST_EXTENSION_NAME "XR_FB_composition_layer_depth_test"
-XR_FB_COMPOSITION_LAYER_IMAGE_LAYOUT_EXTENSION_NAME "XR_FB_composition_layer_image_layout"
-XR_FB_COMPOSITION_LAYER_SECURE_CONTENT_EXTENSION_NAME "XR_FB_composition_layer_secure_content"
-XR_FB_COMPOSITION_LAYER_SETTINGS_EXTENSION_NAME "XR_FB_composition_layer_settings"
-XR_FB_DISPLAY_REFRESH_RATE_EXTENSION_NAME "XR_FB_display_refresh_rate"
-XR_FB_EYE_TRACKING_SOCIAL_EXTENSION_NAME "XR_FB_eye_tracking_social"
-XR_FB_FACE_TRACKING2_EXTENSION_NAME "XR_FB_face_tracking2"
-XR_FB_FACE_TRACKING_EXTENSION_NAME "XR_FB_face_tracking"
-XR_FB_FOVEATION_CONFIGURATION_EXTENSION_NAME "XR_FB_foveation_configuration"
-XR_FB_FOVEATION_EXTENSION_NAME "XR_FB_foveation"
-XR_FB_FOVEATION_VULKAN_EXTENSION_NAME "XR_FB_foveation_vulkan"
-XR_FB_HAND_TRACKING_AIM_EXTENSION_NAME "XR_FB_hand_tracking_aim"
-XR_FB_HAND_TRACKING_CAPSULES_EXTENSION_NAME "XR_FB_hand_tracking_capsules"
-XR_FB_HAND_TRACKING_MESH_EXTENSION_NAME "XR_FB_hand_tracking_mesh"
-XR_FB_HAPTIC_AMPLITUDE_ENVELOPE_EXTENSION_NAME "XR_FB_haptic_amplitude_envelope"
-XR_FB_HAPTIC_PCM_EXTENSION_NAME "XR_FB_haptic_pcm"
-XR_FB_KEYBOARD_TRACKING_EXTENSION_NAME "XR_FB_keyboard_tracking"
-XR_FB_PASSTHROUGH_EXTENSION_NAME "XR_FB_passthrough"
-XR_FB_PASSTHROUGH_KEYBOARD_HANDS_EXTENSION_NAME "XR_FB_passthrough_keyboard_hands"
-XR_FB_RENDER_MODEL_EXTENSION_NAME "XR_FB_render_model"
-XR_FB_SCENE_CAPTURE_EXTENSION_NAME "XR_FB_scene_capture"
-XR_FB_SCENE_EXTENSION_NAME "XR_FB_scene"
-XR_FB_SPACE_WARP_EXTENSION_NAME "XR_FB_space_warp"
-XR_FB_SPATIAL_ENTITY_CONTAINER_EXTENSION_NAME "XR_FB_spatial_entity_container"
-XR_FB_SPATIAL_ENTITY_EXTENSION_NAME "XR_FB_spatial_entity"
-XR_FB_SPATIAL_ENTITY_QUERY_EXTENSION_NAME "XR_FB_spatial_entity_query"
-XR_FB_SPATIAL_ENTITY_SHARING_EXTENSION_NAME "XR_FB_spatial_entity_sharing"
-XR_FB_SPATIAL_ENTITY_STORAGE_BATCH_EXTENSION_NAME "XR_FB_spatial_entity_storage_batch"
-XR_FB_SPATIAL_ENTITY_STORAGE_EXTENSION_NAME "XR_FB_spatial_entity_storage"
-XR_FB_SPATIAL_ENTITY_USER_EXTENSION_NAME "XR_FB_spatial_entity_user"
-XR_FB_SWAPCHAIN_UPDATE_STATE_ANDROID_SURFACE_EXTENSION_NAME "XR_FB_swapchain_update_state_android_surface"
-XR_FB_SWAPCHAIN_UPDATE_STATE_EXTENSION_NAME "XR_FB_swapchain_update_state"
-XR_FB_SWAPCHAIN_UPDATE_STATE_VULKAN_EXTENSION_NAME "XR_FB_swapchain_update_state_vulkan"
-XR_FB_TOUCH_CONTROLLER_PROXIMITY_EXTENSION_NAME "XR_FB_touch_controller_proximity"
-XR_FB_TOUCH_CONTROLLER_PRO_EXTENSION_NAME "XR_FB_touch_controller_pro"
-XR_FB_TRIANGLE_MESH_EXTENSION_NAME "XR_FB_triangle_mesh"
-XR_HUAWEI_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_HUAWEI_controller_interaction"
-XR_KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME "XR_KHR_android_create_instance"
-XR_KHR_ANDROID_SURFACE_SWAPCHAIN_EXTENSION_NAME "XR_KHR_android_surface_swapchain"
-XR_KHR_ANDROID_THREAD_SETTINGS_EXTENSION_NAME "XR_KHR_android_thread_settings"
-XR_KHR_BINDING_MODIFICATION_EXTENSION_NAME "XR_KHR_binding_modification"
-XR_KHR_COMPOSITION_LAYER_COLOR_SCALE_BIAS_EXTENSION_NAME "XR_KHR_composition_layer_color_scale_bias"
-XR_KHR_COMPOSITION_LAYER_CUBE_EXTENSION_NAME "XR_KHR_composition_layer_cube"
-XR_KHR_COMPOSITION_LAYER_CYLINDER_EXTENSION_NAME "XR_KHR_composition_layer_cylinder"
-XR_KHR_COMPOSITION_LAYER_DEPTH_EXTENSION_NAME "XR_KHR_composition_layer_depth"
-XR_KHR_COMPOSITION_LAYER_EQUIRECT2_EXTENSION_NAME "XR_KHR_composition_layer_equirect2"
-XR_KHR_COMPOSITION_LAYER_EQUIRECT_EXTENSION_NAME "XR_KHR_composition_layer_equirect"
-XR_KHR_CONVERT_TIMESPEC_TIME_EXTENSION_NAME "XR_KHR_convert_timespec_time"
-XR_KHR_LOADER_INIT_ANDROID_EXTENSION_NAME "XR_KHR_loader_init_android"
-XR_KHR_LOADER_INIT_EXTENSION_NAME "XR_KHR_loader_init"
-XR_KHR_LOCATE_SPACES_EXTENSION_NAME "XR_KHR_locate_spaces"
-XR_KHR_MAINTENANCE1_EXTENSION_NAME "XR_KHR_maintenance1"
-XR_KHR_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_EXTENSION_NAME "XR_KHR_swapchain_usage_input_attachment_bit"
-XR_KHR_VISIBILITY_MASK_EXTENSION_NAME "XR_KHR_visibility_mask"
-XR_KHR_VULKAN_ENABLE2_EXTENSION_NAME "XR_KHR_vulkan_enable2"
-XR_KHR_VULKAN_ENABLE_EXTENSION_NAME "XR_KHR_vulkan_enable"
-XR_KHR_VULKAN_SWAPCHAIN_FORMAT_LIST_EXTENSION_NAME "XR_KHR_vulkan_swapchain_format_list"
-XR_META_AUTOMATIC_LAYER_FILTER_EXTENSION_NAME "XR_META_automatic_layer_filter"
-XR_META_COLOCATION_DISCOVERY_EXTENSION_NAME "XR_META_colocation_discovery"
-XR_META_ENVIRONMENT_DEPTH_EXTENSION_NAME "XR_META_environment_depth"
-XR_META_FOVEATION_EYE_TRACKED_EXTENSION_NAME "XR_META_foveation_eye_tracked"
-XR_META_HEADSET_ID_EXTENSION_NAME "XR_META_headset_id"
-XR_META_LOCAL_DIMMING_EXTENSION_NAME "XR_META_local_dimming"
-XR_META_PASSTHROUGH_COLOR_LUT_EXTENSION_NAME "XR_META_passthrough_color_lut"
-XR_META_PASSTHROUGH_LAYER_RESUMED_EVENT_EXTENSION_NAME "XR_META_passthrough_layer_resumed_event"
-XR_META_PASSTHROUGH_PREFERENCES_EXTENSION_NAME "XR_META_passthrough_preferences"
-XR_META_PERFORMANCE_METRICS_EXTENSION_NAME "XR_META_performance_metrics"
-XR_META_RECOMMENDED_LAYER_RESOLUTION_EXTENSION_NAME "XR_META_recommended_layer_resolution"
-XR_META_SPATIAL_ENTITY_GROUP_SHARING_EXTENSION_NAME "XR_META_spatial_entity_group_sharing"
-XR_META_SPATIAL_ENTITY_MESH_EXTENSION_NAME "XR_META_spatial_entity_mesh"
-XR_META_SPATIAL_ENTITY_SHARING_EXTENSION_NAME "XR_META_spatial_entity_sharing"
-XR_META_TOUCH_CONTROLLER_PLUS_EXTENSION_NAME "XR_META_touch_controller_plus"
-XR_META_VIRTUAL_KEYBOARD_EXTENSION_NAME "XR_META_virtual_keyboard"
-XR_META_VULKAN_SWAPCHAIN_CREATE_INFO_EXTENSION_NAME "XR_META_vulkan_swapchain_create_info"
-XR_MNDX_FORCE_FEEDBACK_CURL_EXTENSION_NAME "XR_MNDX_force_feedback_curl"
-XR_MND_HEADLESS_EXTENSION_NAME "XR_MND_headless"
-XR_MND_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_EXTENSION_NAME "XR_MND_swapchain_usage_input_attachment_bit"
-XR_OCULUS_ANDROID_SESSION_STATE_ENABLE_EXTENSION_NAME "XR_OCULUS_android_session_state_enable"
-XR_OCULUS_EXTERNAL_CAMERA_EXTENSION_NAME "XR_OCULUS_external_camera"
-XR_OPPO_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_OPPO_controller_interaction"
-XR_QCOM_TRACKING_OPTIMIZATION_SETTINGS_EXTENSION_NAME "XR_QCOM_tracking_optimization_settings"
-XR_ULTRALEAP_HAND_TRACKING_FOREARM_EXTENSION_NAME "XR_ULTRALEAP_hand_tracking_forearm"
-XR_VALVE_ANALOG_THRESHOLD_EXTENSION_NAME "XR_VALVE_analog_threshold"
-XR_YVR_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_YVR_controller_interaction"
-#endif
-
   CHECK_CHECK(gXrInstance == XR_NULL_HANDLE);
 
   {
@@ -1204,97 +1115,97 @@ XR_YVR_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_YVR_controller_interaction"
     XrInstanceCreateInfo createInfo {XR_TYPE_INSTANCE_CREATE_INFO};
     createInfo.next = &instanceCreateInfoAndroid;
 
-    extensions.push_back("XR_KHR_android_create_instance"); // SpecVersion = 3
-    extensions.push_back("XR_KHR_android_surface_swapchain"); // SpecVersion = 4
-    extensions.push_back("XR_KHR_android_thread_settings"); // SpecVersion = 6
-    extensions.push_back("XR_FB_android_surface_swapchain_create"); // SpecVersion = 1
-    extensions.push_back("XR_KHR_opengl_es_enable"); // SpecVersion = 8
-    extensions.push_back("XR_KHR_vulkan_enable"); // SpecVersion = 8
-    extensions.push_back("XR_KHR_vulkan_enable2"); // SpecVersion = 2
-    extensions.push_back("XR_KHR_composition_layer_cube"); // SpecVersion = 8
-    extensions.push_back("XR_KHR_composition_layer_cylinder"); // SpecVersion = 4
-    extensions.push_back("XR_KHR_composition_layer_equirect2"); // SpecVersion = 1
-    extensions.push_back("XR_KHR_composition_layer_color_scale_bias"); // SpecVersion = 5
-    extensions.push_back("XR_KHR_composition_layer_depth"); // SpecVersion = 6
-    extensions.push_back("XR_FB_color_space"); // SpecVersion = 3
-    extensions.push_back("XR_EXT_performance_settings"); // SpecVersion = 4
-    extensions.push_back("XR_EXT_hand_tracking"); // SpecVersion = 4
-    extensions.push_back("XR_EXT_debug_utils"); // SpecVersion = 5
-    extensions.push_back("XR_FB_display_refresh_rate"); // SpecVersion = 1
-    extensions.push_back("XR_FB_swapchain_update_state"); // SpecVersion = 3
-    extensions.push_back("XR_FB_swapchain_update_state_opengl_es"); // SpecVersion = 1
-    extensions.push_back("XR_FB_swapchain_update_state_vulkan"); // SpecVersion = 1
-    extensions.push_back("XR_FB_swapchain_update_state_android_surface"); // SpecVersion = 1
-    extensions.push_back("XR_OCULUS_common_reference_spaces"); // SpecVersion = 1
-    extensions.push_back("XR_FB_composition_layer_image_layout"); // SpecVersion = 1
-    extensions.push_back("XR_FB_composition_layer_alpha_blend"); // SpecVersion = 3
-    extensions.push_back("XR_FB_common_events"); // SpecVersion = 2
-    extensions.push_back("XR_FB_hand_tracking_mesh"); // SpecVersion = 3
-    extensions.push_back("XR_FB_hand_tracking_aim"); // SpecVersion = 2
-    extensions.push_back("XR_FB_hand_tracking_capsules"); // SpecVersion = 3
-    extensions.push_back("XR_FB_foveation"); // SpecVersion = 1
-    extensions.push_back("XR_FB_foveation_configuration"); // SpecVersion = 1
-    extensions.push_back("XR_FB_foveation_vulkan"); // SpecVersion = 1
-    extensions.push_back("XR_FB_composition_layer_secure_content"); // SpecVersion = 1
-    extensions.push_back("XR_KHR_convert_timespec_time"); // SpecVersion = 1
-    extensions.push_back("XR_META_body_tracking_full_body"); // SpecVersion = 1
-    extensions.push_back("XR_FB_body_tracking"); // SpecVersion = 1
-    extensions.push_back("XR_FB_spatial_entity"); // SpecVersion = 1
-    extensions.push_back("XR_FB_triangle_mesh"); // SpecVersion = 2
-    extensions.push_back("XR_FB_passthrough"); // SpecVersion = 4
-    extensions.push_back("XR_META_passthrough_color_lut"); // SpecVersion = 1
-    extensions.push_back("XR_META_passthrough_layer_resumed_event"); // SpecVersion = 1
-    extensions.push_back("XR_META_passthrough_preferences"); // SpecVersion = 1
-    extensions.push_back("XR_FB_spatial_entity_query"); // SpecVersion = 1
-    extensions.push_back("XR_META_spatial_entity_persistence"); // SpecVersion = 1
-    extensions.push_back("XR_META_spatial_entity_discovery"); // SpecVersion = 1
-    extensions.push_back("XR_FB_touch_controller_proximity"); // SpecVersion = 1
-    extensions.push_back("XR_FB_touch_controller_pro"); // SpecVersion = 1
-    extensions.push_back("XR_META_touch_controller_plus"); // SpecVersion = 1
-    extensions.push_back("XR_FB_haptic_amplitude_envelope"); // SpecVersion = 1
-    extensions.push_back("XR_FB_haptic_pcm"); // SpecVersion = 1
-    extensions.push_back("XR_FB_spatial_entity_storage"); // SpecVersion = 1
-    extensions.push_back("XR_FB_spatial_entity_storage_batch"); // SpecVersion = 1
-    extensions.push_back("XR_FB_spatial_entity_sharing"); // SpecVersion = 1
-    extensions.push_back("XR_META_spatial_entity_sharing"); // SpecVersion = 1
-    extensions.push_back("XR_META_spatial_entity_group_sharing"); // SpecVersion = 1
-    extensions.push_back("XR_FB_spatial_entity_user"); // SpecVersion = 1
-    extensions.push_back("XR_FB_space_warp"); // SpecVersion = 2
-    extensions.push_back("XR_FB_spatial_entity_container"); // SpecVersion = 1
-    extensions.push_back("XR_META_colocation_discovery"); // SpecVersion = 1
-    extensions.push_back("XR_FB_scene"); // SpecVersion = 1
-    extensions.push_back("XR_FB_scene_capture"); // SpecVersion = 1
-    extensions.push_back("XR_META_spatial_entity_mesh"); // SpecVersion = 1
-    extensions.push_back("XR_FB_face_tracking2"); // SpecVersion = 1
-    extensions.push_back("XR_META_vulkan_swapchain_create_info"); // SpecVersion = 1
-    extensions.push_back("XR_FB_passthrough_keyboard_hands"); // SpecVersion = 2
-    extensions.push_back("XR_FB_composition_layer_settings"); // SpecVersion = 1
-    extensions.push_back("XR_META_feature_fidelity"); // SpecVersion = 1
-    extensions.push_back("XR_FB_composition_layer_depth_test"); // SpecVersion = 1
-    extensions.push_back("XR_EXT_hand_joints_motion_range"); // SpecVersion = 1
-    extensions.push_back("XR_EXT_hand_tracking_data_source"); // SpecVersion = 1
-    extensions.push_back("XR_META_hand_tracking_wide_motion_mode"); // SpecVersion = 1
-    extensions.push_back("XR_META_performance_metrics"); // SpecVersion = 2
-    extensions.push_back("XR_META_virtual_keyboard"); // SpecVersion = 1
-    extensions.push_back("XR_META_detached_controllers"); // SpecVersion = 1
-    extensions.push_back("XR_MSFT_hand_interaction"); // SpecVersion = 1
-    extensions.push_back("XR_META_headset_id"); // SpecVersion = 2
-    extensions.push_back("XR_META_recommended_layer_resolution"); // SpecVersion = 1
-    extensions.push_back("XR_META_environment_depth"); // SpecVersion = 1
-    extensions.push_back("XR_EXT_active_action_set_priority"); // SpecVersion = 1
-    extensions.push_back("XR_META_automatic_layer_filter"); // SpecVersion = 1
-    extensions.push_back("XR_META_body_tracking_fidelity"); // SpecVersion = 1
-    extensions.push_back("XR_META_simultaneous_hands_and_controllers"); // SpecVersion = 1
-    extensions.push_back("XR_EXT_local_floor"); // SpecVersion = 1
-    extensions.push_back("XR_META_body_tracking_calibration"); // SpecVersion = 1
-    extensions.push_back("XR_EXT_hand_interaction"); // SpecVersion = 1
-    extensions.push_back("XR_META_boundary_visibility"); // SpecVersion = 1
-    extensions.push_back("XR_EXT_user_presence"); // SpecVersion = 1
-    extensions.push_back("XR_KHR_visibility_mask"); // SpecVersion = 2
-    extensions.push_back("XR_LOGITECH_mx_ink_stylus_interaction"); // SpecVersion = 1
-
-    //extensions.push_back("XR_METAX1_environment_depth");
-    //extensions.push_back("XR_METAX2_environment_depth");
+    extensions.push_back("XR_EXT_active_action_set_priority");
+    extensions.push_back("XR_EXT_composition_layer_inverted_alpha");
+    extensions.push_back("XR_EXT_debug_utils");
+    extensions.push_back("XR_EXT_hand_interaction");
+    extensions.push_back("XR_EXT_hand_joints_motion_range");
+    extensions.push_back("XR_EXT_hand_tracking");
+    extensions.push_back("XR_EXT_hand_tracking_data_source");
+    extensions.push_back("XR_EXT_local_floor");
+    extensions.push_back("XR_EXT_performance_settings");
+    extensions.push_back("XR_EXT_user_presence");
+    extensions.push_back("XR_FB_android_surface_swapchain_create");
+    extensions.push_back("XR_FB_body_tracking");
+    extensions.push_back("XR_FB_color_space");
+    extensions.push_back("XR_FB_common_events");
+    extensions.push_back("XR_FB_composition_layer_alpha_blend");
+    extensions.push_back("XR_FB_composition_layer_depth_test");
+    extensions.push_back("XR_FB_composition_layer_image_layout");
+    extensions.push_back("XR_FB_composition_layer_secure_content");
+    extensions.push_back("XR_FB_composition_layer_settings");
+    extensions.push_back("XR_FB_display_refresh_rate");
+    extensions.push_back("XR_FB_face_tracking2");
+    extensions.push_back("XR_FB_foveation");
+    extensions.push_back("XR_FB_foveation_configuration");
+    extensions.push_back("XR_FB_foveation_vulkan");
+    extensions.push_back("XR_FB_hand_tracking_aim");
+    extensions.push_back("XR_FB_hand_tracking_capsules");
+    extensions.push_back("XR_FB_hand_tracking_mesh");
+    extensions.push_back("XR_FB_haptic_amplitude_envelope");
+    extensions.push_back("XR_FB_haptic_pcm");
+    extensions.push_back("XR_FB_passthrough");
+    extensions.push_back("XR_FB_scene");
+    extensions.push_back("XR_FB_scene_capture");
+    extensions.push_back("XR_FB_space_warp");
+    extensions.push_back("XR_FB_spatial_entity");
+    extensions.push_back("XR_FB_spatial_entity_container");
+    extensions.push_back("XR_FB_spatial_entity_query");
+    extensions.push_back("XR_FB_spatial_entity_sharing");
+    extensions.push_back("XR_FB_spatial_entity_storage");
+    extensions.push_back("XR_FB_spatial_entity_storage_batch");
+    extensions.push_back("XR_FB_spatial_entity_user");
+    extensions.push_back("XR_FB_swapchain_update_state");
+    extensions.push_back("XR_FB_swapchain_update_state_android_surface");
+    extensions.push_back("XR_FB_swapchain_update_state_opengl_es");
+    extensions.push_back("XR_FB_swapchain_update_state_vulkan");
+    extensions.push_back("XR_FB_touch_controller_pro");
+    extensions.push_back("XR_FB_touch_controller_proximity");
+    extensions.push_back("XR_FB_triangle_mesh");
+    extensions.push_back("XR_KHR_android_create_instance");
+    extensions.push_back("XR_KHR_android_surface_swapchain");
+    extensions.push_back("XR_KHR_android_thread_settings");
+    extensions.push_back("XR_KHR_composition_layer_color_scale_bias");
+    extensions.push_back("XR_KHR_composition_layer_cube");
+    extensions.push_back("XR_KHR_composition_layer_cylinder");
+    extensions.push_back("XR_KHR_composition_layer_depth");
+    extensions.push_back("XR_KHR_composition_layer_equirect2");
+    extensions.push_back("XR_KHR_convert_timespec_time");
+    extensions.push_back("XR_KHR_opengl_es_enable");
+    extensions.push_back("XR_KHR_visibility_mask");
+    extensions.push_back("XR_KHR_vulkan_enable");
+    extensions.push_back("XR_KHR_vulkan_enable2");
+    extensions.push_back("XR_LOGITECH_mx_ink_stylus_interaction");
+    extensions.push_back("XR_META_automatic_layer_filter");
+    extensions.push_back("XR_META_body_tracking_calibration");
+    extensions.push_back("XR_META_body_tracking_fidelity");
+    extensions.push_back("XR_META_body_tracking_full_body");
+    extensions.push_back("XR_META_boundary_visibility");
+    extensions.push_back("XR_META_colocation_discovery");
+    extensions.push_back("XR_META_detached_controllers");
+    extensions.push_back("XR_META_dynamic_object_keyboard");
+    extensions.push_back("XR_META_dynamic_object_tracker");
+    extensions.push_back("XR_META_environment_depth");
+    extensions.push_back("XR_META_feature_fidelity");
+    extensions.push_back("XR_META_hand_tracking_microgestures");
+    extensions.push_back("XR_META_hand_tracking_wide_motion_mode");
+    extensions.push_back("XR_META_headset_id");
+    extensions.push_back("XR_META_passthrough_color_lut");
+    extensions.push_back("XR_META_passthrough_layer_resumed_event");
+    extensions.push_back("XR_META_passthrough_preferences");
+    extensions.push_back("XR_META_performance_metrics");
+    extensions.push_back("XR_META_recommended_layer_resolution");
+    extensions.push_back("XR_META_simultaneous_hands_and_controllers");
+    extensions.push_back("XR_META_spatial_entity_discovery");
+    extensions.push_back("XR_META_spatial_entity_group_sharing");
+    extensions.push_back("XR_META_spatial_entity_mesh");
+    extensions.push_back("XR_META_spatial_entity_persistence");
+    extensions.push_back("XR_META_spatial_entity_sharing");
+    extensions.push_back("XR_META_touch_controller_plus");
+    extensions.push_back("XR_META_virtual_keyboard");
+    extensions.push_back("XR_META_vulkan_swapchain_create_info");
+    extensions.push_back("XR_MSFT_hand_interaction");
+    extensions.push_back("XR_OCULUS_common_reference_spaces");
 
     createInfo.enabledExtensionCount = (uint32_t)extensions.size();
     createInfo.enabledExtensionNames = extensions.data();
@@ -1693,58 +1604,19 @@ XR_YVR_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_YVR_controller_interaction"
       return (it != e);
     };
 
-    extensions.push_back("VK_KHR_surface"); // SpecVersion = 25
-    extensions.push_back("VK_KHR_android_surface"); // SpecVersion = 6
-    extensions.push_back("VK_EXT_swapchain_colorspace"); // SpecVersion = 4
-    extensions.push_back("VK_KHR_get_surface_capabilities2"); // SpecVersion = 1
-    extensions.push_back("VK_EXT_debug_report"); // SpecVersion = 9
-    extensions.push_back("VK_KHR_get_physical_device_properties2"); // SpecVersion = 2
-    extensions.push_back("VK_KHR_external_semaphore_capabilities"); // SpecVersion = 1
-    extensions.push_back("VK_KHR_external_memory_capabilities"); // SpecVersion = 1
-    extensions.push_back("VK_KHR_device_group_creation"); // SpecVersion = 1
-    extensions.push_back("VK_EXT_debug_utils"); // SpecVersion = 2
-    extensions.push_back("VK_KHR_external_fence_capabilities"); // SpecVersion = 1
+    extensions.push_back("VK_EXT_debug_report");
+    extensions.push_back("VK_EXT_debug_utils");
+    extensions.push_back("VK_EXT_swapchain_colorspace");
+    extensions.push_back("VK_KHR_android_surface");
+    extensions.push_back("VK_KHR_device_group_creation");
+    extensions.push_back("VK_KHR_external_fence_capabilities");
+    extensions.push_back("VK_KHR_external_memory_capabilities");
+    extensions.push_back("VK_KHR_external_semaphore_capabilities");
+    extensions.push_back("VK_KHR_get_physical_device_properties2");
+    extensions.push_back("VK_KHR_get_surface_capabilities2");
+    extensions.push_back("VK_KHR_surface");
 
-#if 0
-VulkanLoader::LoadInstanceFunctions: Failed to load vkCreateDebugReportCallbackEXT,
-likely vkInstance created without xrGetVulkanInstanceExtensionsKHR/vrapi_GetInstanceExtensionsVulkan
-
-VulkanLoader::LoadInstanceFunctions: Failed to load vkDestroyDebugReportCallbackEXT,
-likely vkInstance created without xrGetVulkanInstanceExtensionsKHR/vrapi_GetInstanceExtensionsVulkan
-
-VK_KHR_swapchain
-
-VK_EXT_fragment_density_map
-
-VulkanLoader::LoadInstanceFunctions: Failed to load vkCreateDebugReportCallbackEXT,
-likely vkInstance created without xrGetVulkanInstanceExtensionsKHR/vrapi_GetInstanceExtensionsVulkan
-
-VulkanLoader::LoadInstanceFunctions: Failed to load vkDestroyDebugReportCallbackEXT,
-likely vkInstance created without xrGetVulkanInstanceExtensionsKHR/vrapi_GetInstanceExtensionsVulkan
-
-VulkanLoader::LoadDeviceFunctions: Failed to load vkCmdDebugMarkerInsertEXT,
-likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
-
-VulkanLoader::LoadDeviceFunctions: Failed to load vkCmdSetCullModeEXT,
-likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
-
-VulkanLoader::LoadDeviceFunctions: Failed to load vkCmdSetDepthCompareOpEXT,
-likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
-
-VulkanLoader::LoadDeviceFunctions: Failed to load vkCmdSetDepthTestEnableEXT,
-likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
-
-VulkanLoader::LoadDeviceFunctions: Failed to load vkCmdSetDepthWriteEnableEXT,
-likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
-
-VulkanLoader::LoadDeviceFunctions: Failed to load vkDebugMarkerSetObjectTagEXT,
-likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
-
-VulkanLoader::LoadDeviceFunctions: Failed to load vkGetMemoryFdKHR,
-likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceExtensionsVulkan
-#endif
-
-    // TODO add back VK_EXT_debug_report code for compatibility with older systems? (Android)
+    // todo add back VK_EXT_debug_report code for compatibility with older systems? (Android)
   }
 
   VkDebugUtilsMessengerCreateInfoEXT debugInfo {VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT};
@@ -1764,248 +1636,6 @@ likely vkDevice created without xrGetVulkanDeviceExtensionsKHR/vrapi_GetDeviceEx
 
   debugInfo.pfnUserCallback = VulkanGraphicsPlugin_debugMessageThunk;
   debugInfo.pUserData = 0;
-
-#if 0
-VK_ANDROID_EXTERNAL_FORMAT_RESOLVE_EXTENSION_NAME "VK_ANDROID_external_format_resolve"
-VK_ANDROID_EXTERNAL_MEMORY_ANDROID_HARDWARE_BUFFER_EXTENSION_NAME "VK_ANDROID_external_memory_android_hardware_buffer"
-VK_ARM_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_EXTENSION_NAME "VK_ARM_rasterization_order_attachment_access"
-VK_ARM_RENDER_PASS_STRIPED_EXTENSION_NAME "VK_ARM_render_pass_striped"
-VK_ARM_SCHEDULING_CONTROLS_EXTENSION_NAME "VK_ARM_scheduling_controls"
-VK_ARM_SHADER_CORE_BUILTINS_EXTENSION_NAME "VK_ARM_shader_core_builtins"
-VK_ARM_SHADER_CORE_PROPERTIES_EXTENSION_NAME "VK_ARM_shader_core_properties"
-VK_EXT_4444_FORMATS_EXTENSION_NAME "VK_EXT_4444_formats"
-VK_EXT_ACQUIRE_DRM_DISPLAY_EXTENSION_NAME "VK_EXT_acquire_drm_display"
-VK_EXT_ASTC_DECODE_MODE_EXTENSION_NAME "VK_EXT_astc_decode_mode"
-VK_EXT_ATTACHMENT_FEEDBACK_LOOP_DYNAMIC_STATE_EXTENSION_NAME "VK_EXT_attachment_feedback_loop_dynamic_state"
-VK_EXT_ATTACHMENT_FEEDBACK_LOOP_LAYOUT_EXTENSION_NAME "VK_EXT_attachment_feedback_loop_layout"
-VK_EXT_BLEND_OPERATION_ADVANCED_EXTENSION_NAME "VK_EXT_blend_operation_advanced"
-VK_EXT_BORDER_COLOR_SWIZZLE_EXTENSION_NAME "VK_EXT_border_color_swizzle"
-VK_EXT_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME "VK_EXT_buffer_device_address"
-VK_EXT_CALIBRATED_TIMESTAMPS_EXTENSION_NAME "VK_EXT_calibrated_timestamps"
-VK_EXT_COLOR_WRITE_ENABLE_EXTENSION_NAME "VK_EXT_color_write_enable"
-VK_EXT_CONDITIONAL_RENDERING_EXTENSION_NAME "VK_EXT_conditional_rendering"
-VK_EXT_CONSERVATIVE_RASTERIZATION_EXTENSION_NAME "VK_EXT_conservative_rasterization"
-VK_EXT_CUSTOM_BORDER_COLOR_EXTENSION_NAME "VK_EXT_custom_border_color"
-VK_EXT_DEBUG_MARKER_EXTENSION_NAME "VK_EXT_debug_marker"
-VK_EXT_DEBUG_REPORT_EXTENSION_NAME "VK_EXT_debug_report"
-VK_EXT_DEBUG_UTILS_EXTENSION_NAME "VK_EXT_debug_utils"
-VK_EXT_DEPTH_BIAS_CONTROL_EXTENSION_NAME "VK_EXT_depth_bias_control"
-VK_EXT_DEPTH_CLAMP_ZERO_ONE_EXTENSION_NAME "VK_EXT_depth_clamp_zero_one"
-VK_EXT_DEPTH_CLIP_CONTROL_EXTENSION_NAME "VK_EXT_depth_clip_control"
-VK_EXT_DEPTH_CLIP_ENABLE_EXTENSION_NAME "VK_EXT_depth_clip_enable"
-VK_EXT_DEPTH_RANGE_UNRESTRICTED_EXTENSION_NAME "VK_EXT_depth_range_unrestricted"
-VK_EXT_DESCRIPTOR_BUFFER_EXTENSION_NAME "VK_EXT_descriptor_buffer"
-VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME "VK_EXT_descriptor_indexing"
-VK_EXT_DEVICE_ADDRESS_BINDING_REPORT_EXTENSION_NAME "VK_EXT_device_address_binding_report"
-VK_EXT_DEVICE_FAULT_EXTENSION_NAME "VK_EXT_device_fault"
-VK_EXT_DEVICE_MEMORY_REPORT_EXTENSION_NAME "VK_EXT_device_memory_report"
-VK_EXT_DIRECT_MODE_DISPLAY_EXTENSION_NAME "VK_EXT_direct_mode_display"
-VK_EXT_DISCARD_RECTANGLES_EXTENSION_NAME "VK_EXT_discard_rectangles"
-VK_EXT_DISPLAY_CONTROL_EXTENSION_NAME "VK_EXT_display_control"
-VK_EXT_DISPLAY_SURFACE_COUNTER_EXTENSION_NAME "VK_EXT_display_surface_counter"
-VK_EXT_DYNAMIC_RENDERING_UNUSED_ATTACHMENTS_EXTENSION_NAME "VK_EXT_dynamic_rendering_unused_attachments"
-VK_EXT_EXTENDED_DYNAMIC_STATE_2_EXTENSION_NAME "VK_EXT_extended_dynamic_state2"
-VK_EXT_EXTENDED_DYNAMIC_STATE_3_EXTENSION_NAME "VK_EXT_extended_dynamic_state3"
-VK_EXT_EXTENDED_DYNAMIC_STATE_EXTENSION_NAME "VK_EXT_extended_dynamic_state"
-VK_EXT_EXTERNAL_MEMORY_ACQUIRE_UNMODIFIED_EXTENSION_NAME "VK_EXT_external_memory_acquire_unmodified"
-VK_EXT_EXTERNAL_MEMORY_DMA_BUF_EXTENSION_NAME "VK_EXT_external_memory_dma_buf"
-VK_EXT_EXTERNAL_MEMORY_HOST_EXTENSION_NAME "VK_EXT_external_memory_host"
-VK_EXT_FILTER_CUBIC_EXTENSION_NAME "VK_EXT_filter_cubic"
-VK_EXT_FRAGMENT_DENSITY_MAP_2_EXTENSION_NAME "VK_EXT_fragment_density_map2"
-VK_EXT_FRAGMENT_DENSITY_MAP_EXTENSION_NAME "VK_EXT_fragment_density_map"
-VK_EXT_FRAGMENT_SHADER_INTERLOCK_EXTENSION_NAME "VK_EXT_fragment_shader_interlock"
-VK_EXT_FRAME_BOUNDARY_EXTENSION_NAME "VK_EXT_frame_boundary"
-VK_EXT_GLOBAL_PRIORITY_EXTENSION_NAME "VK_EXT_global_priority"
-VK_EXT_GLOBAL_PRIORITY_QUERY_EXTENSION_NAME "VK_EXT_global_priority_query"
-VK_EXT_GRAPHICS_PIPELINE_LIBRARY_EXTENSION_NAME "VK_EXT_graphics_pipeline_library"
-VK_EXT_HDR_METADATA_EXTENSION_NAME "VK_EXT_hdr_metadata"
-VK_EXT_HEADLESS_SURFACE_EXTENSION_NAME "VK_EXT_headless_surface"
-VK_EXT_HOST_IMAGE_COPY_EXTENSION_NAME "VK_EXT_host_image_copy"
-VK_EXT_HOST_QUERY_RESET_EXTENSION_NAME "VK_EXT_host_query_reset"
-VK_EXT_IMAGE_2D_VIEW_OF_3D_EXTENSION_NAME "VK_EXT_image_2d_view_of_3d"
-VK_EXT_IMAGE_COMPRESSION_CONTROL_EXTENSION_NAME "VK_EXT_image_compression_control"
-VK_EXT_IMAGE_COMPRESSION_CONTROL_SWAPCHAIN_EXTENSION_NAME "VK_EXT_image_compression_control_swapchain"
-VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME "VK_EXT_image_drm_format_modifier"
-VK_EXT_IMAGE_ROBUSTNESS_EXTENSION_NAME "VK_EXT_image_robustness"
-VK_EXT_IMAGE_SLICED_VIEW_OF_3D_EXTENSION_NAME "VK_EXT_image_sliced_view_of_3d"
-VK_EXT_IMAGE_VIEW_MIN_LOD_EXTENSION_NAME "VK_EXT_image_view_min_lod"
-VK_EXT_INDEX_TYPE_UINT8_EXTENSION_NAME "VK_EXT_index_type_uint8"
-VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME "VK_EXT_inline_uniform_block"
-VK_EXT_LAYER_SETTINGS_EXTENSION_NAME "VK_EXT_layer_settings"
-VK_EXT_LEGACY_DITHERING_EXTENSION_NAME "VK_EXT_legacy_dithering"
-VK_EXT_LINE_RASTERIZATION_EXTENSION_NAME "VK_EXT_line_rasterization"
-VK_EXT_LOAD_STORE_OP_NONE_EXTENSION_NAME "VK_EXT_load_store_op_none"
-VK_EXT_MEMORY_BUDGET_EXTENSION_NAME "VK_EXT_memory_budget"
-VK_EXT_MEMORY_PRIORITY_EXTENSION_NAME "VK_EXT_memory_priority"
-VK_EXT_MESH_SHADER_EXTENSION_NAME "VK_EXT_mesh_shader"
-VK_EXT_MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED_EXTENSION_NAME "VK_EXT_multisampled_render_to_single_sampled"
-VK_EXT_MULTI_DRAW_EXTENSION_NAME "VK_EXT_multi_draw"
-VK_EXT_MUTABLE_DESCRIPTOR_TYPE_EXTENSION_NAME "VK_EXT_mutable_descriptor_type"
-VK_EXT_NESTED_COMMAND_BUFFER_EXTENSION_NAME "VK_EXT_nested_command_buffer"
-VK_EXT_NON_SEAMLESS_CUBE_MAP_EXTENSION_NAME "VK_EXT_non_seamless_cube_map"
-VK_EXT_OPACITY_MICROMAP_EXTENSION_NAME "VK_EXT_opacity_micromap"
-VK_EXT_PAGEABLE_DEVICE_LOCAL_MEMORY_EXTENSION_NAME "VK_EXT_pageable_device_local_memory"
-VK_EXT_PCI_BUS_INFO_EXTENSION_NAME "VK_EXT_pci_bus_info"
-VK_EXT_PHYSICAL_DEVICE_DRM_EXTENSION_NAME "VK_EXT_physical_device_drm"
-VK_EXT_PIPELINE_CREATION_CACHE_CONTROL_EXTENSION_NAME "VK_EXT_pipeline_creation_cache_control"
-VK_EXT_PIPELINE_CREATION_FEEDBACK_EXTENSION_NAME "VK_EXT_pipeline_creation_feedback"
-VK_EXT_PIPELINE_LIBRARY_GROUP_HANDLES_EXTENSION_NAME "VK_EXT_pipeline_library_group_handles"
-VK_EXT_PIPELINE_PROPERTIES_EXTENSION_NAME "VK_EXT_pipeline_properties"
-VK_EXT_PIPELINE_PROTECTED_ACCESS_EXTENSION_NAME "VK_EXT_pipeline_protected_access"
-VK_EXT_PIPELINE_ROBUSTNESS_EXTENSION_NAME "VK_EXT_pipeline_robustness"
-VK_EXT_POST_DEPTH_COVERAGE_EXTENSION_NAME "VK_EXT_post_depth_coverage"
-VK_EXT_PRIMITIVES_GENERATED_QUERY_EXTENSION_NAME "VK_EXT_primitives_generated_query"
-VK_EXT_PRIMITIVE_TOPOLOGY_LIST_RESTART_EXTENSION_NAME "VK_EXT_primitive_topology_list_restart"
-VK_EXT_PRIVATE_DATA_EXTENSION_NAME "VK_EXT_private_data"
-VK_EXT_PROVOKING_VERTEX_EXTENSION_NAME "VK_EXT_provoking_vertex"
-VK_EXT_QUEUE_FAMILY_FOREIGN_EXTENSION_NAME "VK_EXT_queue_family_foreign"
-VK_EXT_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_EXTENSION_NAME "VK_EXT_rasterization_order_attachment_access"
-VK_EXT_RGBA10X6_FORMATS_EXTENSION_NAME "VK_EXT_rgba10x6_formats"
-VK_EXT_ROBUSTNESS_2_EXTENSION_NAME "VK_EXT_robustness2"
-VK_EXT_SAMPLER_FILTER_MINMAX_EXTENSION_NAME "VK_EXT_sampler_filter_minmax"
-VK_EXT_SAMPLE_LOCATIONS_EXTENSION_NAME "VK_EXT_sample_locations"
-VK_EXT_SCALAR_BLOCK_LAYOUT_EXTENSION_NAME "VK_EXT_scalar_block_layout"
-VK_EXT_SEPARATE_STENCIL_USAGE_EXTENSION_NAME "VK_EXT_separate_stencil_usage"
-VK_EXT_SHADER_ATOMIC_FLOAT_2_EXTENSION_NAME "VK_EXT_shader_atomic_float2"
-VK_EXT_SHADER_ATOMIC_FLOAT_EXTENSION_NAME "VK_EXT_shader_atomic_float"
-VK_EXT_SHADER_DEMOTE_TO_HELPER_INVOCATION_EXTENSION_NAME "VK_EXT_shader_demote_to_helper_invocation"
-VK_EXT_SHADER_IMAGE_ATOMIC_INT64_EXTENSION_NAME "VK_EXT_shader_image_atomic_int64"
-VK_EXT_SHADER_MODULE_IDENTIFIER_EXTENSION_NAME "VK_EXT_shader_module_identifier"
-VK_EXT_SHADER_OBJECT_EXTENSION_NAME "VK_EXT_shader_object"
-VK_EXT_SHADER_STENCIL_EXPORT_EXTENSION_NAME "VK_EXT_shader_stencil_export"
-VK_EXT_SHADER_SUBGROUP_BALLOT_EXTENSION_NAME "VK_EXT_shader_subgroup_ballot"
-VK_EXT_SHADER_SUBGROUP_VOTE_EXTENSION_NAME "VK_EXT_shader_subgroup_vote"
-VK_EXT_SHADER_TILE_IMAGE_EXTENSION_NAME "VK_EXT_shader_tile_image"
-VK_EXT_SHADER_VIEWPORT_INDEX_LAYER_EXTENSION_NAME "VK_EXT_shader_viewport_index_layer"
-VK_EXT_SUBGROUP_SIZE_CONTROL_EXTENSION_NAME "VK_EXT_subgroup_size_control"
-VK_EXT_SUBPASS_MERGE_FEEDBACK_EXTENSION_NAME "VK_EXT_subpass_merge_feedback"
-VK_EXT_SURFACE_MAINTENANCE_1_EXTENSION_NAME "VK_EXT_surface_maintenance1"
-VK_EXT_SWAPCHAIN_COLOR_SPACE_EXTENSION_NAME "VK_EXT_swapchain_colorspace"
-VK_EXT_SWAPCHAIN_MAINTENANCE_1_EXTENSION_NAME "VK_EXT_swapchain_maintenance1"
-VK_EXT_TEXEL_BUFFER_ALIGNMENT_EXTENSION_NAME "VK_EXT_texel_buffer_alignment"
-VK_EXT_TEXTURE_COMPRESSION_ASTC_HDR_EXTENSION_NAME "VK_EXT_texture_compression_astc_hdr"
-VK_EXT_TOOLING_INFO_EXTENSION_NAME "VK_EXT_tooling_info"
-VK_EXT_TRANSFORM_FEEDBACK_EXTENSION_NAME "VK_EXT_transform_feedback"
-VK_EXT_VALIDATION_CACHE_EXTENSION_NAME "VK_EXT_validation_cache"
-VK_EXT_VALIDATION_FEATURES_EXTENSION_NAME "VK_EXT_validation_features"
-VK_EXT_VALIDATION_FLAGS_EXTENSION_NAME "VK_EXT_validation_flags"
-VK_EXT_VERTEX_ATTRIBUTE_DIVISOR_EXTENSION_NAME "VK_EXT_vertex_attribute_divisor"
-VK_EXT_VERTEX_INPUT_DYNAMIC_STATE_EXTENSION_NAME "VK_EXT_vertex_input_dynamic_state"
-VK_EXT_YCBCR_2PLANE_444_FORMATS_EXTENSION_NAME "VK_EXT_ycbcr_2plane_444_formats"
-VK_EXT_YCBCR_IMAGE_ARRAYS_EXTENSION_NAME "VK_EXT_ycbcr_image_arrays"
-VK_IMG_FILTER_CUBIC_EXTENSION_NAME "VK_IMG_filter_cubic"
-VK_IMG_FORMAT_PVRTC_EXTENSION_NAME "VK_IMG_format_pvrtc"
-VK_IMG_RELAXED_LINE_RASTERIZATION_EXTENSION_NAME "VK_IMG_relaxed_line_rasterization"
-VK_KHR_16BIT_STORAGE_EXTENSION_NAME "VK_KHR_16bit_storage"
-VK_KHR_8BIT_STORAGE_EXTENSION_NAME "VK_KHR_8bit_storage"
-VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME "VK_KHR_acceleration_structure"
-VK_KHR_ANDROID_SURFACE_EXTENSION_NAME "VK_KHR_android_surface"
-VK_KHR_BIND_MEMORY_2_EXTENSION_NAME "VK_KHR_bind_memory2"
-VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME "VK_KHR_buffer_device_address"
-VK_KHR_CALIBRATED_TIMESTAMPS_EXTENSION_NAME "VK_KHR_calibrated_timestamps"
-VK_KHR_COOPERATIVE_MATRIX_EXTENSION_NAME "VK_KHR_cooperative_matrix"
-VK_KHR_COPY_COMMANDS_2_EXTENSION_NAME "VK_KHR_copy_commands2"
-VK_KHR_CREATE_RENDERPASS_2_EXTENSION_NAME "VK_KHR_create_renderpass2"
-VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME "VK_KHR_dedicated_allocation"
-VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME "VK_KHR_deferred_host_operations"
-VK_KHR_DEPTH_STENCIL_RESOLVE_EXTENSION_NAME "VK_KHR_depth_stencil_resolve"
-VK_KHR_DESCRIPTOR_UPDATE_TEMPLATE_EXTENSION_NAME "VK_KHR_descriptor_update_template"
-VK_KHR_DEVICE_GROUP_CREATION_EXTENSION_NAME "VK_KHR_device_group_creation"
-VK_KHR_DEVICE_GROUP_EXTENSION_NAME "VK_KHR_device_group"
-VK_KHR_DISPLAY_EXTENSION_NAME "VK_KHR_display"
-VK_KHR_DISPLAY_SWAPCHAIN_EXTENSION_NAME "VK_KHR_display_swapchain"
-VK_KHR_DRAW_INDIRECT_COUNT_EXTENSION_NAME "VK_KHR_draw_indirect_count"
-VK_KHR_DRIVER_PROPERTIES_EXTENSION_NAME "VK_KHR_driver_properties"
-VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME "VK_KHR_dynamic_rendering"
-VK_KHR_EXTERNAL_FENCE_CAPABILITIES_EXTENSION_NAME "VK_KHR_external_fence_capabilities"
-VK_KHR_EXTERNAL_FENCE_EXTENSION_NAME "VK_KHR_external_fence"
-VK_KHR_EXTERNAL_FENCE_FD_EXTENSION_NAME "VK_KHR_external_fence_fd"
-VK_KHR_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME "VK_KHR_external_memory_capabilities"
-VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME "VK_KHR_external_memory"
-VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME "VK_KHR_external_memory_fd"
-VK_KHR_EXTERNAL_SEMAPHORE_CAPABILITIES_EXTENSION_NAME "VK_KHR_external_semaphore_capabilities"
-VK_KHR_EXTERNAL_SEMAPHORE_EXTENSION_NAME "VK_KHR_external_semaphore"
-VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME "VK_KHR_external_semaphore_fd"
-VK_KHR_FORMAT_FEATURE_FLAGS_2_EXTENSION_NAME "VK_KHR_format_feature_flags2"
-VK_KHR_FRAGMENT_SHADER_BARYCENTRIC_EXTENSION_NAME "VK_KHR_fragment_shader_barycentric"
-VK_KHR_FRAGMENT_SHADING_RATE_EXTENSION_NAME "VK_KHR_fragment_shading_rate"
-VK_KHR_GET_DISPLAY_PROPERTIES_2_EXTENSION_NAME "VK_KHR_get_display_properties2"
-VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME "VK_KHR_get_memory_requirements2"
-VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME "VK_KHR_get_physical_device_properties2"
-VK_KHR_GET_SURFACE_CAPABILITIES_2_EXTENSION_NAME "VK_KHR_get_surface_capabilities2"
-VK_KHR_GLOBAL_PRIORITY_EXTENSION_NAME "VK_KHR_global_priority"
-VK_KHR_IMAGELESS_FRAMEBUFFER_EXTENSION_NAME "VK_KHR_imageless_framebuffer"
-VK_KHR_IMAGE_FORMAT_LIST_EXTENSION_NAME "VK_KHR_image_format_list"
-VK_KHR_INCREMENTAL_PRESENT_EXTENSION_NAME "VK_KHR_incremental_present"
-VK_KHR_MAINTENANCE1_EXTENSION_NAME VK_KHR_MAINTENANCE_1_EXTENSION_NAME
-VK_KHR_MAINTENANCE2_EXTENSION_NAME VK_KHR_MAINTENANCE_2_EXTENSION_NAME
-VK_KHR_MAINTENANCE3_EXTENSION_NAME VK_KHR_MAINTENANCE_3_EXTENSION_NAME
-VK_KHR_MAINTENANCE_1_EXTENSION_NAME "VK_KHR_maintenance1"
-VK_KHR_MAINTENANCE_2_EXTENSION_NAME "VK_KHR_maintenance2"
-VK_KHR_MAINTENANCE_3_EXTENSION_NAME "VK_KHR_maintenance3"
-VK_KHR_MAINTENANCE_4_EXTENSION_NAME "VK_KHR_maintenance4"
-VK_KHR_MAINTENANCE_5_EXTENSION_NAME "VK_KHR_maintenance5"
-VK_KHR_MAINTENANCE_6_EXTENSION_NAME "VK_KHR_maintenance6"
-VK_KHR_MAP_MEMORY_2_EXTENSION_NAME "VK_KHR_map_memory2"
-VK_KHR_MULTIVIEW_EXTENSION_NAME "VK_KHR_multiview"
-VK_KHR_PERFORMANCE_QUERY_EXTENSION_NAME "VK_KHR_performance_query"
-VK_KHR_PIPELINE_EXECUTABLE_PROPERTIES_EXTENSION_NAME "VK_KHR_pipeline_executable_properties"
-VK_KHR_PIPELINE_LIBRARY_EXTENSION_NAME "VK_KHR_pipeline_library"
-VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME "VK_KHR_portability_enumeration"
-VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME "VK_KHR_portability_subset"
-VK_KHR_PRESENT_ID_EXTENSION_NAME "VK_KHR_present_id"
-VK_KHR_PRESENT_WAIT_EXTENSION_NAME "VK_KHR_present_wait"
-VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME "VK_KHR_push_descriptor"
-VK_KHR_RAY_QUERY_EXTENSION_NAME "VK_KHR_ray_query"
-VK_KHR_RAY_TRACING_MAINTENANCE_1_EXTENSION_NAME "VK_KHR_ray_tracing_maintenance1"
-VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME "VK_KHR_ray_tracing_pipeline"
-VK_KHR_RAY_TRACING_POSITION_FETCH_EXTENSION_NAME "VK_KHR_ray_tracing_position_fetch"
-VK_KHR_RELAXED_BLOCK_LAYOUT_EXTENSION_NAME "VK_KHR_relaxed_block_layout"
-VK_KHR_SAMPLER_MIRROR_CLAMP_TO_EDGE_EXTENSION_NAME "VK_KHR_sampler_mirror_clamp_to_edge"
-VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME "VK_KHR_sampler_ycbcr_conversion"
-VK_KHR_SEPARATE_DEPTH_STENCIL_LAYOUTS_EXTENSION_NAME "VK_KHR_separate_depth_stencil_layouts"
-VK_KHR_SHADER_ATOMIC_INT64_EXTENSION_NAME "VK_KHR_shader_atomic_int64"
-VK_KHR_SHADER_CLOCK_EXTENSION_NAME "VK_KHR_shader_clock"
-VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME "VK_KHR_shader_draw_parameters"
-VK_KHR_SHADER_FLOAT16_INT8_EXTENSION_NAME "VK_KHR_shader_float16_int8"
-VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME "VK_KHR_shader_float_controls"
-VK_KHR_SHADER_INTEGER_DOT_PRODUCT_EXTENSION_NAME "VK_KHR_shader_integer_dot_product"
-VK_KHR_SHADER_NON_SEMANTIC_INFO_EXTENSION_NAME "VK_KHR_shader_non_semantic_info"
-VK_KHR_SHADER_SUBGROUP_EXTENDED_TYPES_EXTENSION_NAME "VK_KHR_shader_subgroup_extended_types"
-VK_KHR_SHADER_SUBGROUP_UNIFORM_CONTROL_FLOW_EXTENSION_NAME "VK_KHR_shader_subgroup_uniform_control_flow"
-VK_KHR_SHADER_TERMINATE_INVOCATION_EXTENSION_NAME "VK_KHR_shader_terminate_invocation"
-VK_KHR_SHARED_PRESENTABLE_IMAGE_EXTENSION_NAME "VK_KHR_shared_presentable_image"
-VK_KHR_SPIRV_1_4_EXTENSION_NAME "VK_KHR_spirv_1_4"
-VK_KHR_STORAGE_BUFFER_STORAGE_CLASS_EXTENSION_NAME "VK_KHR_storage_buffer_storage_class"
-VK_KHR_SURFACE_EXTENSION_NAME "VK_KHR_surface"
-VK_KHR_SURFACE_PROTECTED_CAPABILITIES_EXTENSION_NAME "VK_KHR_surface_protected_capabilities"
-VK_KHR_SWAPCHAIN_EXTENSION_NAME "VK_KHR_swapchain"
-VK_KHR_SWAPCHAIN_MUTABLE_FORMAT_EXTENSION_NAME "VK_KHR_swapchain_mutable_format"
-VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME "VK_KHR_synchronization2"
-VK_KHR_TIMELINE_SEMAPHORE_EXTENSION_NAME "VK_KHR_timeline_semaphore"
-VK_KHR_UNIFORM_BUFFER_STANDARD_LAYOUT_EXTENSION_NAME "VK_KHR_uniform_buffer_standard_layout"
-VK_KHR_VARIABLE_POINTERS_EXTENSION_NAME "VK_KHR_variable_pointers"
-VK_KHR_VERTEX_ATTRIBUTE_DIVISOR_EXTENSION_NAME "VK_KHR_vertex_attribute_divisor"
-VK_KHR_VIDEO_DECODE_H264_EXTENSION_NAME "VK_KHR_video_decode_h264"
-VK_KHR_VIDEO_DECODE_H265_EXTENSION_NAME "VK_KHR_video_decode_h265"
-VK_KHR_VIDEO_DECODE_QUEUE_EXTENSION_NAME "VK_KHR_video_decode_queue"
-VK_KHR_VIDEO_ENCODE_H264_EXTENSION_NAME "VK_KHR_video_encode_h264"
-VK_KHR_VIDEO_ENCODE_H265_EXTENSION_NAME "VK_KHR_video_encode_h265"
-VK_KHR_VIDEO_ENCODE_QUEUE_EXTENSION_NAME "VK_KHR_video_encode_queue"
-VK_KHR_VIDEO_MAINTENANCE_1_EXTENSION_NAME "VK_KHR_video_maintenance1"
-VK_KHR_VIDEO_QUEUE_EXTENSION_NAME "VK_KHR_video_queue"
-VK_KHR_VULKAN_MEMORY_MODEL_EXTENSION_NAME "VK_KHR_vulkan_memory_model"
-VK_KHR_WORKGROUP_MEMORY_EXPLICIT_LAYOUT_EXTENSION_NAME "VK_KHR_workgroup_memory_explicit_layout"
-VK_KHR_ZERO_INITIALIZE_WORKGROUP_MEMORY_EXTENSION_NAME "VK_KHR_zero_initialize_workgroup_memory"
-VK_LUNARG_DIRECT_DRIVER_LOADING_EXTENSION_NAME "VK_LUNARG_direct_driver_loading"
-VK_SEC_AMIGO_PROFILING_EXTENSION_NAME "VK_SEC_amigo_profiling"
-VK_STD_VULKAN_VIDEO_CODEC_H264_DECODE_EXTENSION_NAME "VK_STD_vulkan_video_codec_h264_decode"
-VK_STD_VULKAN_VIDEO_CODEC_H264_ENCODE_EXTENSION_NAME "VK_STD_vulkan_video_codec_h264_encode"
-VK_STD_VULKAN_VIDEO_CODEC_H265_DECODE_EXTENSION_NAME "VK_STD_vulkan_video_codec_h265_decode"
-VK_STD_VULKAN_VIDEO_CODEC_H265_ENCODE_EXTENSION_NAME "VK_STD_vulkan_video_codec_h265_encode"
-VK_VALVE_DESCRIPTOR_SET_HOST_MAPPING_EXTENSION_NAME "VK_VALVE_descriptor_set_host_mapping"
-VK_VALVE_MUTABLE_DESCRIPTOR_TYPE_EXTENSION_NAME "VK_VALVE_mutable_descriptor_type"
-#endif
 
   VkApplicationInfo appInfo {VK_STRUCTURE_TYPE_APPLICATION_INFO};
 
